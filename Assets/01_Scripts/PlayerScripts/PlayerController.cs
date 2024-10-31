@@ -15,7 +15,7 @@ public class PlayerController : NetworkBehaviour
 {
     [Header("Player Movement Settings")]
     public float moveSpeed = 5f;
-    public float jumpForce = 5f;
+    public float jumpForce = 12f;
     public float forwardJumpForce = 2f;
     public float pickupYpos = 1.1f;
     public float throwForce = 10f;

@@ -428,7 +428,7 @@ MonoBehaviour:
   showRoomGUI: 1
   readyToBegin: 0
   index: 0
-  roomPlayer: {fileID: 6905750548526170650}
+  roomPlayer: {fileID: 9169323911838460119}
   readyStatusSprite: {fileID: 7923887409529554320}
   playerName: No Name
   isReady: 0
@@ -458,14 +458,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5770694923896158547}
-  - component: {fileID: 6905750548526170650}
-  - component: {fileID: 4475837977385514879}
   - component: {fileID: 2876235901877965958}
   - component: {fileID: 7078889410800011261}
   - component: {fileID: 4217056360665520894}
   - component: {fileID: 7067267600096052128}
-  - component: {fileID: 1372456168017308412}
   - component: {fileID: 6172365893439528788}
+  - component: {fileID: 9169323911838460119}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -490,50 +488,6 @@ Transform:
   - {fileID: 6853855019926899544}
   m_Father: {fileID: 5833463016011372280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6905750548526170650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6684100225725923603}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b81205bcc070b84282a07ed5bb0f681, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  moveSpeed: 3
-  jumpForce: 12
-  forwardJumpForce: 2
-  pickupYpos: 1
-  throwForce: 4
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 193
-  flipLayer:
-    serializedVersion: 2
-    m_Bits: 65
-  captureDuration: 1
-  captureCollider: {fileID: 2449957540526680859}
-  nameText: {fileID: 2311169017510941771}
-  playerName: No Name
-  animationController: {fileID: 4475837977385514879}
---- !u!114 &4475837977385514879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6684100225725923603}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 591d677b3812f1849bb29f23b0e79828, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 7067267600096052128}
 --- !u!61 &2876235901877965958
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -544,7 +498,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5608c8b0affd37540816be3924471d68, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -595,7 +549,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 2
+  m_GravityScale: 4
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -684,21 +638,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1372456168017308412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6684100225725923603}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01eae8e40f034b64590667d541dba2d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!114 &6172365893439528788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -732,3 +671,31 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &9169323911838460119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6684100225725923603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 991874aa7ebcb6d42ac03e2517e246c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  moveSpeed: 4
+  runMultiplier: 1.5
+  jumpForce: 20
+  minJumpForce: 10
+  maxRunJumpMultiplier: 1.2
+  jumpHoldDuration: 0.3
+  throwForce: 15
+  movementForceMultiplier: 2
+  pickupRadius: 1
+  dampingFactor: 0.9
+  interactableLayerMask:
+    serializedVersion: 2
+    m_Bits: 0

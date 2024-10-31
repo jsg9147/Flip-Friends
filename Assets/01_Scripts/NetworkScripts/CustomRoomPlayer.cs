@@ -6,7 +6,7 @@ using Steamworks;
 
 public class CustomRoomPlayer : NetworkRoomPlayer
 {
-    public PlayerController roomPlayer;
+    public MarioLikePlayerController roomPlayer;
     public SpriteRenderer readyStatusSprite;
 
     [SyncVar(hook = nameof(OnNameChanged))]
@@ -61,7 +61,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     void OnNameChanged(string oldName, string newName)
     {
         Debug.Log($"플레이어 이름이 {oldName}에서 {newName}으로 변경되었습니다.");
-        roomPlayer.nameText.text = newName;
+        //roomPlayer.nameText.text = newName;
     }
 
     private void OnReadyButtonClicked()
