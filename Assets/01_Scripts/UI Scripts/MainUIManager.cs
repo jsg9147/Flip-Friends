@@ -7,6 +7,7 @@ public class MainUIManager : MonoBehaviour
     public MainUI mainUI;
 
     public List<GameObject> uiList;
+    public int targetFrameRate = 60;
     void Start()
     {
         StartInit();
@@ -20,5 +21,6 @@ public class MainUIManager : MonoBehaviour
         }
 
         mainUI.gameObject.SetActive(true);
+        Application.targetFrameRate = targetFrameRate;
     }
 }

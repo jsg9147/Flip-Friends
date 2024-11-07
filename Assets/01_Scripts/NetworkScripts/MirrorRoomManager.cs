@@ -268,4 +268,12 @@ public class MirrorRoomManager : NetworkRoomManager
 
         return allReady;
     }
+
+    public void HideRoomPlayer()
+    {
+        foreach (var player in roomSlots)
+        {
+            player.GetComponent<CustomRoomPlayer>().roomPlayer.gameObject.SetActive(false);
+        }
+    }
 }

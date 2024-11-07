@@ -6,8 +6,8 @@ public class PickupObj : NetworkBehaviour
     [SyncVar] private bool isCarried = false;
     public bool IsCarried => isCarried;
 
-    private PlayerController playerController;
-    private Rigidbody2D rb;
+    private Transform playerTransform;
+    public Rigidbody2D rb { get; private set; }
 
     private void Start()
     {
@@ -16,28 +16,35 @@ public class PickupObj : NetworkBehaviour
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
-    public void SetPickupState(PlayerController playerController, bool isCarried)
+    private void Update()
     {
-        this.playerController = playerController;
+        if (isServer && !isCarried)
+        {
+            RpcUpdatePosition(transform.position);
+        }
+    }
+
+    public void SetPickupState(Transform playerTransform, bool isCarried)
+    {
+        this.playerTransform = playerTransform;
         this.isCarried = isCarried;
 
         if (isCarried)
         {
-            //rb.bodyType = RigidbodyType2D.Kinematic; // 물리적인 힘의 영향을 받지 않도록 설정
             rb.linearVelocity = Vector2.zero; // 속도 초기화
-        }
-        else
-        {
-            rb.bodyType = RigidbodyType2D.Dynamic;
         }
     }
 
     public void StateReset()
     {
-        this.playerController = null;
+        this.playerTransform = null;
         this.isCarried = false;
         rb.bodyType = RigidbodyType2D.Dynamic;
     }
 
-   
+    [ClientRpc]
+    private void RpcUpdatePosition(Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
 }

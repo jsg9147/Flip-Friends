@@ -6,13 +6,13 @@ using Steamworks;
 
 public class CustomRoomPlayer : NetworkRoomPlayer
 {
-    public MarioLikePlayerController roomPlayer;
+    public PlayerController roomPlayer;
     public SpriteRenderer readyStatusSprite;
 
     [SyncVar(hook = nameof(OnNameChanged))]
     public string playerName = "No Name";
 
-    [SyncVar]
+    [SyncVar(hook =nameof(ReadySpriteChanged))]
     public bool isReady = false;
 
     private Button readyButton;
@@ -26,7 +26,8 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         {
             CmdPLayerObjSetActive(true);
             string playerName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
-            MirrorRoomManager.Instance.playerName = playerName;
+            if(MirrorRoomManager.Instance != null)
+                MirrorRoomManager.Instance.playerName = playerName;
             CmdSetPlayerName(playerName);
 
             readyButton = GameObject.Find("ReadyButton").GetComponent<Button>();
@@ -61,7 +62,12 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     void OnNameChanged(string oldName, string newName)
     {
         Debug.Log($"플레이어 이름이 {oldName}에서 {newName}으로 변경되었습니다.");
-        //roomPlayer.nameText.text = newName;
+        roomPlayer.nameText.text = newName;
+    }
+
+    void ReadySpriteChanged(bool oldValue, bool newValue)
+    {
+        readyStatusSprite.gameObject.SetActive(newValue);
     }
 
     private void OnReadyButtonClicked()
@@ -77,28 +83,16 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         }
     }
 
-    [ClientRpc]
-    private void RpcReadyStateChange(bool readyToBegin)
-    {
-        readyStatusSprite.gameObject.SetActive(readyToBegin);
-
-        if (!isServer)
-        {
-            CmdChangeReadyState(readyToBegin);
-        }
-    }
 
     [Command]
     private void CmdPlayerReadyChange()
     {
         isReady = !isReady;
-        readyStatusSprite.gameObject.SetActive(isReady);
-        RpcReadyStateChange(isReady);
 
         if (MirrorRoomManager.Instance.CheckAllPlayersReady())
         {
-            FindAnyObjectByType<StageSelectUI>().stageSelectionUI.SetActive(true);
-            roomPlayer.gameObject.SetActive(false);
+            MirrorRoomManager.Instance.HideRoomPlayer();
+            FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(true);
             RpcStageSelectUIOn();
         }
     }
@@ -106,8 +100,8 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     [ClientRpc]
     private void RpcStageSelectUIOn()
     {
-        FindAnyObjectByType<StageSelectUI>().stageSelectionUI.SetActive(true);
-        roomPlayer.gameObject.SetActive(false);
+        FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(true);
+        MirrorRoomManager.Instance.HideRoomPlayer();
     }
 
     [Command]

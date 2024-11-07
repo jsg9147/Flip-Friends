@@ -15,6 +15,6 @@ public class FinishObj : NetworkBehaviour
 
     private void Finish(PlayerController player)
     {
-        player.CmdFinishState();
+        //player.CmdFinishState();
     }
 }

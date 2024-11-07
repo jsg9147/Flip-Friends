@@ -15,6 +15,34 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int IsFalling = Animator.StringToHash("isFalling");
     private static readonly int IsGround = Animator.StringToHash("isGround");
 
+    private PlayerState currentState;
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
+
+    public void ChangeAnimation(PlayerState state)
+    {
+        switch (state)
+        {
+            case PlayerState.Idle:
+                PlayIdleAnimation();
+                break;
+            case PlayerState.Walk:
+                PlayWalkAnimation();
+                break;
+            case PlayerState.Jump:
+                PlayJumpAnimation();
+                break;
+            case PlayerState.Shrink:
+                break;
+            default:
+                print("Not yet");
+                break;
+        }
+    }
+
     public void PlayIdleAnimation()
     {
         animator.SetBool(IsWalking, false);

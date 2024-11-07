@@ -1,11 +1,14 @@
 using UnityEngine;
 using Mirror;
+using TMPro;
 
 public class StageSelectUI : NetworkBehaviour
 {
     public GameObject stageSelectionUI;
     public GameObject mapSelectionUI; // 맵 선택 UI 패널
     public MapSelectionManager mapSelectionManager; // 맵 선택 관리자
+
+    public TMP_Text currentPlayerCountText;
 
     public void OnStageButtonClicked(int stageNumber)
     {
@@ -38,5 +41,17 @@ public class StageSelectUI : NetworkBehaviour
         stageSelectionUI.SetActive(false);
         mapSelectionUI.SetActive(true);
         mapSelectionManager.InitializeMapSelection(stageNumber);
+    }
+
+    public void StageSelectionUISetActive(bool isAcitve)
+    {
+        stageSelectionUI.SetActive(isAcitve);
+        CurrentPlayerCountUpdate(NetworkManager.singleton.numPlayers);
+    }
+
+
+    private void CurrentPlayerCountUpdate(int count)
+    {
+        currentPlayerCountText.text = $"{count} / 4";
     }
 }
