@@ -18,12 +18,17 @@ public class MapSelectionManager : NetworkBehaviour
         currentChapter = chapter;
         stageTitleText.text = $"Stage {chapter}"; // 스테이지 제목 설정
 
+        int clearStage = PlayerPrefs.GetInt($"Chapter_{chapter}", 0);
+
         for (int i = 0; i < mapButtons.Length; i++)
         {
             int stageNum = i + 1;
-            mapButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = $"{chapter}-{stageNum}";
+            mapButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = $"{chapter + 1}-{stageNum}";
             mapButtons[i].onClick.RemoveAllListeners();
             mapButtons[i].onClick.AddListener(() => LoadStageScene(chapter, stageNum));
+
+            //mapButtons[i].interactable = clearStage >= i;
+            mapButtons[i].interactable = true;
         }
     }
 

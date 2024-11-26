@@ -24,22 +24,17 @@ public class GameRoomUI : MonoBehaviour
         }
         else
         {
-            lobbyKeyText.text = MirrorRoomManager.Instance?.lobbyKeyStr;
+            lobbyKeyText.text = SteamRoomManager.Instance?.lobbyKeyStr;
         }
     }
 
     public void CopyLobbyKey()
     {
-        GUIUtility.systemCopyBuffer = MirrorRoomManager.Instance?.lobbyKeyStr; // 텍스트를 클립보드에 복사
+        GUIUtility.systemCopyBuffer = SteamRoomManager.Instance?.lobbyKeyStr; // 텍스트를 클립보드에 복사
     }
 
     public void ExitRoom()
     {
-        MirrorRoomManager.Instance.LeaveLobby();
-    }
-
-    public void ReadyStatusChanged()
-    {
-        MirrorRoomManager.Instance.ReadyStatusChanged();
+        SteamRoomManager.Instance.LeaveLobby();
     }
 }

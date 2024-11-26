@@ -27,6 +27,6 @@ public class LobbyItem : MonoBehaviour
     private void JoinLobby()
     {
         if (lobbyInfo != null)
-            MirrorRoomManager.Instance.JoinLobby(lobbyInfo.LobbyID);
+            SteamRoomManager.Instance.JoinLobby(lobbyInfo.LobbyID);
     }
 }

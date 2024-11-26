@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
@@ -8,7 +9,26 @@ public class StageSelectUI : NetworkBehaviour
     public GameObject mapSelectionUI; // 맵 선택 UI 패널
     public MapSelectionManager mapSelectionManager; // 맵 선택 관리자
 
+    public Button[] stageBtns; // 6개의 맵 버튼
+
     public TMP_Text currentPlayerCountText;
+
+    private void Start()
+    {
+        InitializeStageSelectBtn();
+    }
+
+    public void InitializeStageSelectBtn()
+    {
+        int clearChapter = PlayerPrefs.GetInt("Chapter", 0);
+
+        for (int i = 0; i < stageBtns.Length; i++)
+        {
+            stageBtns[i].onClick.RemoveAllListeners();
+            //stageBtns[i].interactable = clearChapter >= i;
+            stageBtns[i].interactable = true;
+        }
+    }
 
     public void OnStageButtonClicked(int stageNumber)
     {

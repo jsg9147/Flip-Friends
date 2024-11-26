@@ -15,7 +15,12 @@ public class DynamicObj : NetworkBehaviour
 
     private void UpdateDynamicObjPos()
     {
-        int playerCount = MirrorRoomManager.Instance.numPlayers - 1;
-        transform.position = transform.position + new Vector3(xMoveValue * playerCount, yMoveValue * playerCount);
+        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
+
+        if(slimeRoomManager != null)
+        {
+            int playerCount = slimeRoomManager.numPlayers - 1;
+            transform.position = transform.position + new Vector3(xMoveValue * playerCount, yMoveValue * playerCount);
+        }
     }
 }

@@ -11,18 +11,22 @@ public class PlayerStateController : NetworkBehaviour
         if (playerState == newState) return;
 
         playerState = newState;
-    }
-}
 
-public enum PlayerState
-{
-    Idle,
-    Walk,
-    Jump,
-    Damaged,
-    Attack,
-    Climb,
-    Shrink,
-    Carried,
-    Throw
+        switch (newState)
+        {
+            case PlayerState.Idle:
+                break;
+            case PlayerState.Walk:
+                break;
+            case PlayerState.Jump:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void LayerChange()
+    {
+
+    }
 }

@@ -51,7 +51,7 @@ public class PrivateJoinUI : MonoBehaviour
 
     public void JoinSteamLobby()
     {
-        MirrorRoomManager.Instance.JoinPrivateLobby(joinCodeInputField.text);
+        SteamRoomManager.Instance.JoinPrivateLobby(joinCodeInputField.text);
     }
 
     public void ExitJoinUI()

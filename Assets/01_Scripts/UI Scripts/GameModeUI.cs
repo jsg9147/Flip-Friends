@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 public class GameModeUI : MonoBehaviour
@@ -25,7 +26,9 @@ public class GameModeUI : MonoBehaviour
 
     public void CreateRoom()
     {
-        MirrorRoomManager.Instance.HostLobby();
+        SteamRoomManager roomManager = NetworkManager.singleton as SteamRoomManager;
+        if(roomManager != null )
+            roomManager.HostLobby();
     }
 }
 

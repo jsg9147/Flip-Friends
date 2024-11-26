@@ -1,34 +1,37 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using Mirror;
 using Steamworks;
+using System.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 
 public class CustomRoomPlayer : NetworkRoomPlayer
 {
-    public PlayerController roomPlayer;
-    public SpriteRenderer readyStatusSprite;
-
     [SyncVar(hook = nameof(OnNameChanged))]
     public string playerName = "No Name";
-
-    [SyncVar(hook =nameof(ReadySpriteChanged))]
-    public bool isReady = false;
 
     private Button readyButton;
     private int stage;
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
+    private PlayerController2D playerController;
 
+    public override void OnClientEnterRoom()
+    {
+        base.OnClientEnterRoom();
+        Init();
+    }
+
+    public void Init()
+    {
         if (isLocalPlayer)
         {
-            CmdPLayerObjSetActive(true);
-            string playerName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
-            if(MirrorRoomManager.Instance != null)
-                MirrorRoomManager.Instance.playerName = playerName;
-            CmdSetPlayerName(playerName);
+            SteamRoomManager roomManager = NetworkManager.singleton as SteamRoomManager;
+            if (roomManager != null)
+            {
+                CmdSetPlayerName(roomManager.playerName);
+            }
 
             readyButton = GameObject.Find("ReadyButton").GetComponent<Button>();
             if (readyButton != null)
@@ -36,21 +39,18 @@ public class CustomRoomPlayer : NetworkRoomPlayer
                 readyButton.onClick.AddListener(OnReadyButtonClicked);
             }
 
-            FindAnyObjectByType<MapSelectionManager>().roomPlayer = this;
+            MapSelectionManager mapSelectionManager = FindAnyObjectByType<MapSelectionManager>();
+            if(mapSelectionManager != null)
+                mapSelectionManager.roomPlayer = this;
+
+            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID))
+            {
+                if (lobbyPlayer.isOwned)
+                {
+                    playerController = lobbyPlayer;
+                }
+            }
         }
-    }
-
-    [Command]
-    private void CmdPLayerObjSetActive(bool isActive)
-    {
-        roomPlayer.gameObject.SetActive(isActive);
-        RpcPLayerObjSetActive(isActive);
-    }
-
-    [ClientRpc]
-    private void RpcPLayerObjSetActive(bool isActive)
-    {
-        roomPlayer.gameObject.SetActive(isActive);
     }
 
     [Command]
@@ -61,54 +61,75 @@ public class CustomRoomPlayer : NetworkRoomPlayer
 
     void OnNameChanged(string oldName, string newName)
     {
-        Debug.Log($"플레이어 이름이 {oldName}에서 {newName}으로 변경되었습니다.");
-        roomPlayer.nameText.text = newName;
-    }
-
-    void ReadySpriteChanged(bool oldValue, bool newValue)
-    {
-        readyStatusSprite.gameObject.SetActive(newValue);
-    }
-
-    private void OnReadyButtonClicked()
-    {
-        if (isLocalPlayer)
+        if (playerController != null)
         {
-            CmdPlayerReadyChange();
-
-            if (isLocalPlayer && readyButton != null)
+            playerController.CmdSetPlayerName(newName);
+        }
+        else
+        {
+            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID))
             {
-                readyButton.GetComponentInChildren<TMP_Text>().text = isReady ? "CANCEL" : "READY";
+                if (isLocalPlayer && lobbyPlayer.isOwned)
+                {
+                    playerController = lobbyPlayer;
+                    lobbyPlayer.CmdSetPlayerName(playerName);
+                }
             }
         }
     }
 
 
-    [Command]
-    private void CmdPlayerReadyChange()
+    private void OnReadyButtonClicked()
     {
-        isReady = !isReady;
-
-        if (MirrorRoomManager.Instance.CheckAllPlayersReady())
+        if (isLocalPlayer)
         {
-            MirrorRoomManager.Instance.HideRoomPlayer();
-            FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(true);
-            RpcStageSelectUIOn();
+            CmdChangeReadyState(!readyToBegin);
+
+            if (isLocalPlayer && readyButton != null)
+            {
+                readyButton.GetComponentInChildren<TMP_Text>().text = readyToBegin ? "READY" : "CANCEL";
+            }
         }
     }
 
-    [ClientRpc]
-    private void RpcStageSelectUIOn()
+    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
-        FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(true);
-        MirrorRoomManager.Instance.HideRoomPlayer();
+        base.ReadyStateChanged(oldReadyState, newReadyState);
+        ReadySpriteChanged(newReadyState);
+    }
+
+    void ReadySpriteChanged(bool isReady)
+    {
+        if (playerController != null && isLocalPlayer)
+        {
+            playerController.CmdSetPlayerReady(isReady);
+        }
+    }
+
+    public void StageSelectionUISetAcitve(bool isActive)
+    {
+        FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(isActive);
+        RpcStageSelectUIOn(isActive);
+    }
+
+    [ClientRpc]
+    private void RpcStageSelectUIOn(bool isActive)
+    {
+        FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(isActive);
     }
 
     [Command]
     public void CmdStageSelect(int chapter, int stage)
     {
         this.stage = stage;
-        MirrorRoomManager.Instance.currentStage = stage;
+
+        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
+        if (slimeRoomManager != null)
+        {
+            slimeRoomManager.currentChapter = chapter;
+            slimeRoomManager.currentStage = stage;
+        }
+
         CmdChangeScene(chapter);
     }
 

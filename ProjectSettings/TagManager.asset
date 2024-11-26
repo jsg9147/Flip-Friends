@@ -8,22 +8,25 @@ TagManager:
   - Pickable
   - Attack
   - Rope
+  - Trap
+  - Through
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Finish
   - Water
   - UI
   - Ground
-  - Player
+  - Through
   - Pickable
   - Rope
+  - Enemy
+  - Player
   - 
   - 
-  - 
-  - 
-  - 
+  - Trap
   - 
   - 
   - 

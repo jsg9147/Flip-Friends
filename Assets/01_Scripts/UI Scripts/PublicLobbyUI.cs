@@ -26,7 +26,7 @@ public class PublicLobbyUI : MonoBehaviour
     {
         LobbyListReset();
 
-        List<SteamLobbyInfo> lobbyInfoList = await MirrorRoomManager.Instance.GetLobbyListAsync();
+        List<SteamLobbyInfo> lobbyInfoList = await SteamRoomManager.Instance.GetLobbyListAsync();
 
         foreach (SteamLobbyInfo info in lobbyInfoList)
         {
@@ -48,10 +48,10 @@ public class PublicLobbyUI : MonoBehaviour
         gameModeUI.SetActive(true);
         gameObject.SetActive(false);
     }
-    // 버튼을 위해 동기 메서드 추가
-    public void OnLobbyListUpdateButtonClicked()
+
+    public async void OnLobbyListUpdateButtonClicked()
     {
-        // 비동기 작업을 실행하는 방법
-        LobbyListUpdate().ConfigureAwait(false);
+        if (SteamManager.Initialized)
+            await LobbyListUpdate();
     }
 }

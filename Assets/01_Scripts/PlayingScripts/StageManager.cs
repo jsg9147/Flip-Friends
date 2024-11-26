@@ -9,6 +9,8 @@ public class StageManager : NetworkBehaviour
 
     public List<GameObject> stageMapPrefabs;
 
+    public Transform startPos;
+
     private void Awake()
     {
         if (instance == null)
@@ -22,30 +24,23 @@ public class StageManager : NetworkBehaviour
         instance = null;
     }
 
-    private void Start()
+    public override void OnStartServer()
     {
-        if (isServer)
-            StageLoad();
+        base.OnStartServer();
+        StageLoad();
     }
 
     [Server]
     public void StageLoad()
     {
-        int stage = MirrorRoomManager.Instance.currentStage - 1;
-        GameObject stageObject = stageMapPrefabs[stage];
-        stageObject.SetActive(true);
+        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
 
-        // 모든 클라이언트에서 이 오브젝트를 활성화하도록 호출
-        RpcActivateStageObject(stage);
-    }
+        if (slimeRoomManager == null)
+            return; 
 
-    [ClientRpc]
-    private void RpcActivateStageObject(int stage)
-    {
-        // 클라이언트에서 특정 오브젝트 활성화
-        if (stageMapPrefabs[stage] != null)
-        {
-            stageMapPrefabs[stage].SetActive(true);
-        }
+        int stage = slimeRoomManager.currentStage - 1;
+
+        GameObject stageObject = Instantiate(stageMapPrefabs[stage]);
+        NetworkServer.Spawn(stageObject);
     }
 }

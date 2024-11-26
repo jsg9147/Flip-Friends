@@ -4,49 +4,60 @@ using UnityEngine;
 public class PlayerInteraction : NetworkBehaviour
 {
     public float throwForce = 3f;
+    public BoxCollider2D catchedCollider;
+    public LayerMask detectionLayer; // 탐지할 레이어
 
-    private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
 
-    private GameObject heldObject;
+    private PickupObj heldObject;
 
-    private Vector3 heldPos;
+    [SerializeField] private Vector3 heldPos;
 
-    public bool IsPickUpState => heldObject != null;
+    private float throwDealy = 0.5f;
+    private float currentDelay = 0f;
+
+    public bool IsCarried => heldObject != null;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-
-        heldPos = Vector3.up;
     }
 
     private void Update()
+    {
+        if (currentDelay > 0)
+            currentDelay -= Time.deltaTime;
+    }
+
+    private void FixedUpdate()
     {
         FollowToPlayer();
     }
 
     public void TryIntractive(Vector2 dir)
     {
-        if(heldObject == null)
+        if (heldObject == null)
         {
-            GameObject obj = SearchObject(dir);
-            if (obj != null)
+            if (!CheckObjectAbove())
             {
-                CmdPickUpObj(obj);
+                var obj = SearchObject<PickupObj>(dir);
+                if (obj != null)
+                {
+                    CmdPickUpObj(obj);
+                }
             }
         }
         else
         {
-            CmdThrowObj(dir);
+            if (currentDelay <= 0)
+                CmdThrowObj(dir);
         }
     }
 
     [Command]
-    private void CmdPickUpObj(GameObject pickableObj)
+    private void CmdPickUpObj(PickupObj pickableObj)
     {
-        if (pickableObj.GetComponent<PickupObj>() != null)
+        if (pickableObj != null)
         {
             if (!pickableObj.GetComponent<PickupObj>().IsCarried)
             {
@@ -56,7 +67,7 @@ public class PlayerInteraction : NetworkBehaviour
         }
     }
     [ClientRpc]
-    private void RpcPickUpObj(GameObject pickableObj)
+    private void RpcPickUpObj(PickupObj pickableObj)
     {
         if (pickableObj.GetComponent<PickupObj>() != null)
         {
@@ -64,11 +75,13 @@ public class PlayerInteraction : NetworkBehaviour
         }
     }
 
-    private void PickUpObj(GameObject pickableObj)
+    private void PickUpObj(PickupObj pickableObj)
     {
         if (pickableObj.GetComponent<PickupObj>() != null)
         {
+            currentDelay = throwDealy;
             heldObject = pickableObj;
+            GetComponent<Controller2D>().SetHoldObj(pickableObj.gameObject);
             pickableObj.GetComponent<PickupObj>().SetPickupState(transform, true);
             DisableCollisionWithHeldObject(pickableObj);
         }
@@ -95,13 +108,12 @@ public class PlayerInteraction : NetworkBehaviour
             if (objectRb != null)
             {
                 Vector2 force = new Vector2(dir.x, 1f) * throwForce;
-                objectRb.linearVelocity = (force + rb.linearVelocity);
+                objectRb.linearVelocity = (force);
             }
-
+            GetComponent<Controller2D>().HoldReset();
             heldObject.GetComponent<PickupObj>()?.StateReset();
 
             EnableCollisionWithHeldObject(heldObject);
-
             heldObject = null;
         }
     }
@@ -114,49 +126,69 @@ public class PlayerInteraction : NetworkBehaviour
         }
     }
 
-    private GameObject SearchObject(Vector2 dir)
+    private bool CheckObjectAbove()
+    {
+        // 박스의 중심 계산 (플레이어의 위쪽)
+        Vector2 boxCenter = catchedCollider.transform.position;
+
+        // 박스 내부의 모든 충돌 감지
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, catchedCollider.size, 0f, detectionLayer);
+
+        // 디버그용 시각화 (Scene 창에서 확인 가능)
+        Debug.DrawLine(boxCenter - new Vector2(catchedCollider.size.x / 2, catchedCollider.size.y / 2),
+                       boxCenter + new Vector2(catchedCollider.size.x / 2, catchedCollider.size.y / 2),
+                       Color.red, 0.1f);
+
+        return hits.Length > 0; // 박스 안에 물체가 있으면 true 반환
+    }
+    private T SearchObject<T>(Vector2 dir) where T : Component
     {
         Vector2 boxSize = boxCollider.size;
         Vector2 boxCenter = (Vector2)transform.position + boxCollider.offset;
-        float raySpacing = boxSize.y / 4f; // Use the height of the box to calculate spacing
-        int rayCount = 5; // Total of 5 Raycasts
+        float raySpacing = boxSize.x / 4f; // 박스의 가로 크기를 기준으로 여러 개의 레이를 생성
+        int rayCount = 5; // 총 5개의 Raycast 사용
         float xPos = (dir.x > 0) ? boxCollider.bounds.max.x : boxCollider.bounds.min.x;
 
         for (int i = 0; i < rayCount; i++)
         {
-            // Set the starting position of the Ray from bottom to top at fixed intervals
+            // 레이 시작 위치를 왼쪽에서 일정 간격으로 설정
             Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing));
 
             RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.15f, LayerMask.GetMask("Pickable"));
-            Debug.DrawRay(rayOrigin, dir * 0.15f, Color.red, 0.1f);
+            Debug.DrawRay(rayOrigin, dir * 0.1f, Color.red, 0.1f);
 
             foreach (RaycastHit2D hit in hits)
             {
                 if (hit.collider != null && hit.collider.gameObject != gameObject)
                 {
-                    GameObject obj = hit.collider.gameObject;
-                    return obj;
+                    T obj = hit.collider.GetComponent<T>();
+                    if (obj != null)
+                    {
+                        return obj;
+                    }
                 }
             }
         }
         return null;
     }
 
-    void DisableCollisionWithHeldObject(GameObject objectToPickUp)
+    void DisableCollisionWithHeldObject(PickupObj objectToPickUp)
     {
         Collider2D heldCollider = objectToPickUp.GetComponent<Collider2D>();
         if (heldCollider != null && boxCollider != null)
         {
             Physics2D.IgnoreCollision(boxCollider, heldCollider, true);
+            Physics2D.IgnoreCollision(catchedCollider, heldCollider, true);
         }
     }
 
-    void EnableCollisionWithHeldObject(GameObject objectToRelease)
+    void EnableCollisionWithHeldObject(PickupObj objectToRelease)
     {
         Collider2D heldCollider = objectToRelease.GetComponent<Collider2D>();
         if (heldCollider != null && boxCollider != null)
         {
             Physics2D.IgnoreCollision(boxCollider, heldCollider, false);
+            Physics2D.IgnoreCollision(catchedCollider, heldCollider, false);
         }
     }
 }

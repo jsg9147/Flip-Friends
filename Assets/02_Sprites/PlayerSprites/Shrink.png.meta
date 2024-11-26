@@ -187,6 +187,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Shrink_4
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00353408743dc3547bcbe7a4f85f2ec6
+      internalID: 1891091763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -205,6 +227,7 @@ TextureImporter:
       Shrink_1: 1551266307
       Shrink_2: 1321768604
       Shrink_3: -1604723138
+      Shrink_4: 1891091763
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
