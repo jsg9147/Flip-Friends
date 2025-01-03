@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using Mirror;
 
@@ -7,7 +6,7 @@ public class PlayerAnimationController : NetworkBehaviour
     [SerializeField]
     private Animator animator;
 
-    // 애니메이션 파라미터 이름 정의
+    // Cached animation parameters
     private static readonly int IsWalking = Animator.StringToHash("isWalking");
     private static readonly int JumpTrigger = Animator.StringToHash("jumpTrigger");
     private static readonly int AttackTrigger = Animator.StringToHash("attackTrigger");
@@ -17,122 +16,73 @@ public class PlayerAnimationController : NetworkBehaviour
     private static readonly int IsFalling = Animator.StringToHash("isFalling");
     private static readonly int IsGround = Animator.StringToHash("isGround");
     private static readonly int IsClimb = Animator.StringToHash("isClimb");
+    private static readonly int IsShrinkTrigger = Animator.StringToHash("isShrink");
 
-    private void Start()
+    private void Awake()
     {
-        animator = GetComponent<Animator>();
+        // Avoid redundant GetComponent calls
+        if (animator == null) animator = GetComponent<Animator>();
     }
 
-    [Command] // 클라이언트에서 서버로 명령을 전송
-    public void CmdChangeAnimation(PlayerState state)
+    [ClientRpc]
+    public void RpcChangeAnimation(PlayerState state)
     {
-        RpcChangeAnimation(state); // 서버에서 모든 클라이언트에게 애니메이션 변경을 요청
-    }
+        if (animator.speed != 1) animator.speed = 1; // Ensure speed reset
 
-    [ClientRpc] // 서버에서 모든 클라이언트로 애니메이션 변경을 브로드캐스트
-    private void RpcChangeAnimation(PlayerState state)
-    {
-        if (animator.speed != 1)
-            animator.speed = 1;
+        ResetAllAnimations(); // Reset before playing a new one
 
         switch (state)
         {
             case PlayerState.Idle:
-                PlayIdleAnimation();
+                animator.SetBool(IsWalking, false);
                 break;
             case PlayerState.Walk:
-                PlayWalkAnimation();
+                animator.SetBool(IsWalking, true);
                 break;
             case PlayerState.Jump:
-                PlayJumpAnimation();
+                animator.SetTrigger(JumpTrigger);
                 break;
             case PlayerState.Shrink:
-                ShrinkAnimation();
+                animator.SetTrigger(IsShrinkTrigger);
                 break;
             case PlayerState.Damaged:
-                PlayDamagedAnimation();
+                animator.SetTrigger(DamagedTrigger);
                 break;
             case PlayerState.Climb:
-                ClimbAnimation();
+                animator.SetBool(IsClimb, true);
                 break;
             case PlayerState.ClimbIdle:
-                ClimbIdleAnimation();
+                animator.SetBool(IsClimb, true);
+                animator.speed = 0; // Pause animation
                 break;
             default:
-                print($"Not yet {state} motion");
+                Debug.LogWarning($"Animation state '{state}' not implemented.");
                 break;
         }
     }
 
-    public void PlayIdleAnimation()
+    private void ResetAllAnimations()
     {
+        animator.ResetTrigger(JumpTrigger);
+        animator.ResetTrigger(AttackTrigger);
+        animator.ResetTrigger(DamagedTrigger);
+        animator.ResetTrigger(IsShrinkTrigger);
+
         animator.SetBool(IsWalking, false);
-        animator.SetBool(IsFalling, false);
         animator.SetBool(IsLifting, false);
-        animator.SetBool(IsClimb, false);
-    }
-
-    public void PlayWalkAnimation()
-    {
-        animator.SetBool(IsWalking, true);
-    }
-
-    public void PlayJumpAnimation()
-    {
-        animator.SetBool(IsClimb, false);
-        animator.SetBool(IsGround, false);
-        animator.SetBool(IsWalking, false);
-        animator.SetTrigger(JumpTrigger);
-    }
-
-    public void PlayAttackAnimation()
-    {
-        animator.SetTrigger(AttackTrigger);
-    }
-
-    public void PlayLiftingAnimation(bool isLifting)
-    {
-        animator.SetBool(IsLifting, isLifting);
-    }
-
-    public void PlayThrowAnimation()
-    {
-        animator.SetTrigger(ThrowTrigger);
-    }
-
-    public void PlayDamagedAnimation()
-    {
-        animator.SetTrigger(DamagedTrigger);
-    }
-
-    public void PlayFallAnimation()
-    {
-        animator.SetBool(IsFalling, true);
-    }
-
-    public void StopFallAnimation()
-    {
         animator.SetBool(IsFalling, false);
+        animator.SetBool(IsGround, true); // Default state as ground
+        animator.SetBool(IsClimb, false);
     }
 
-    public void ClimbAnimation()
-    {
-        animator.SetBool(IsClimb, true);
-        animator.speed = 1;
-    }
-
-    public void ClimbIdleAnimation()
-    {
-        animator.SetBool(IsClimb, true);
-        animator.speed = 0;
-    }
-
-    public void ShrinkAnimation()
-    {
-        animator.SetTrigger("isShrink");
-    }
-    public void GroundState(bool isGround)
+    [ClientRpc]
+    public void RpcGroundState(bool isGround)
     {
         animator.SetBool(IsGround, isGround);
     }
+
+    public void PlayAttackAnimation() => animator.SetTrigger(AttackTrigger);
+    public void PlayLiftingAnimation(bool isLifting) => animator.SetBool(IsLifting, isLifting);
+    public void PlayThrowAnimation() => animator.SetTrigger(ThrowTrigger);
+    public void PlayFallAnimation(bool isFalling) => animator.SetBool(IsFalling, isFalling);
 }

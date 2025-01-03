@@ -27,14 +27,14 @@ public class PlayerInteraction : NetworkBehaviour
     {
         if (currentDelay > 0)
             currentDelay -= Time.deltaTime;
+
+        if (isServer)
+        {
+            FollowToPlayer();
+        }
     }
 
-    private void FixedUpdate()
-    {
-        FollowToPlayer();
-    }
-
-    public void TryIntractive(Vector2 dir)
+    public void TryIntractive(Vector2 dir, bool inputDown)
     {
         if (heldObject == null)
         {
@@ -43,14 +43,16 @@ public class PlayerInteraction : NetworkBehaviour
                 var obj = SearchObject<PickupObj>(dir);
                 if (obj != null)
                 {
-                    CmdPickUpObj(obj);
+                    PickUpObj(obj);
                 }
             }
         }
         else
         {
-            if (currentDelay <= 0)
-                CmdThrowObj(dir);
+            if(currentDelay <= 0)
+            {
+                ThrowObject(dir, inputDown);
+            }
         }
     }
 
@@ -84,46 +86,66 @@ public class PlayerInteraction : NetworkBehaviour
             GetComponent<Controller2D>().SetHoldObj(pickableObj.gameObject);
             pickableObj.GetComponent<PickupObj>().SetPickupState(transform, true);
             DisableCollisionWithHeldObject(pickableObj);
+
+            if (isServer)
+                RpcVisibleBox(true);
         }
     }
 
-    [Command]
-    private void CmdThrowObj(Vector2 dir)
+    [ClientRpc]
+    private void RpcVisibleBox(bool visible)
     {
-        ThrowObject(dir);
-        RpcThrowObj(dir);
+        catchedCollider.enabled = visible;
+        catchedCollider.GetComponent<SpriteRenderer>().enabled = visible;
+    }
+
+    [Command]
+    private void CmdThrowObj(Vector2 dir, bool isPutDown)
+    {
+        ThrowObject(dir, isPutDown);
+        RpcThrowObj(dir, isPutDown);
     }
 
     [ClientRpc]
-    private void RpcThrowObj(Vector2 dir)
+    private void RpcThrowObj(Vector2 dir, bool isPutDown)
     {
-        ThrowObject(dir);
+        ThrowObject(dir, isPutDown);
     }
 
-    void ThrowObject(Vector2 dir)
+    void ThrowObject(Vector2 dir, bool isPutDown)
     {
         if (heldObject != null)
         {
-            Rigidbody2D objectRb = heldObject.GetComponent<Rigidbody2D>();
-            if (objectRb != null)
+            if (isServer)
             {
-                Vector2 force = new Vector2(dir.x, 1f) * throwForce;
-                objectRb.linearVelocity = (force);
+                PickupObj pickUp = heldObject.GetComponent<PickupObj>();
+                if (pickUp != null)
+                {
+                    Vector3 throwDir = new(dir.x * throwForce, throwForce);
+                    pickUp.RpcApplyVelocity(throwDir);
+                    pickUp.StateReset();
+                }
             }
-            GetComponent<Controller2D>().HoldReset();
-            heldObject.GetComponent<PickupObj>()?.StateReset();
 
+            RpcVisibleBox(false);
+            GetComponent<Controller2D>().HoldReset();
             EnableCollisionWithHeldObject(heldObject);
             heldObject = null;
         }
     }
-
     private void FollowToPlayer()
     {
         if (heldObject != null)
         {
             heldObject.transform.position = transform.position + heldPos;
+            RpcheldPosUpdate(transform.position + heldPos);
         }
+    }
+    [ClientRpc]
+    private void RpcheldPosUpdate(Vector3 pos)
+    {
+        if(heldObject != null)
+            heldObject.transform.position = pos;
     }
 
     private bool CheckObjectAbove()
@@ -145,17 +167,17 @@ public class PlayerInteraction : NetworkBehaviour
     {
         Vector2 boxSize = boxCollider.size;
         Vector2 boxCenter = (Vector2)transform.position + boxCollider.offset;
-        float raySpacing = boxSize.x / 4f; // 박스의 가로 크기를 기준으로 여러 개의 레이를 생성
-        int rayCount = 5; // 총 5개의 Raycast 사용
+        float raySpacing = boxSize.x / 8f; // 박스의 가로 크기를 기준으로 여러 개의 레이를 생성
+        int rayCount = 10; // 총 5개의 Raycast 사용
         float xPos = (dir.x > 0) ? boxCollider.bounds.max.x : boxCollider.bounds.min.x;
 
         for (int i = 0; i < rayCount; i++)
         {
             // 레이 시작 위치를 왼쪽에서 일정 간격으로 설정
-            Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing));
+            Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing) - raySpacing);
 
-            RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.15f, LayerMask.GetMask("Pickable"));
-            Debug.DrawRay(rayOrigin, dir * 0.1f, Color.red, 0.1f);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.2f, LayerMask.GetMask("Pickable"));
+            Debug.DrawRay(rayOrigin, dir * 0.2f, Color.red, 0.1f);
 
             foreach (RaycastHit2D hit in hits)
             {

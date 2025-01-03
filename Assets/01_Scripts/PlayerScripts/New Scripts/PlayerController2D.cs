@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Mirror;
 using TMPro;
 
@@ -8,31 +9,30 @@ public class PlayerController2D : NetworkBehaviour
     public GameObject readySprite;
 
     private PlayerAnimationController animationController;
-    private PlayerInput inputHandler;
+    private PlayerInputManager inputHandler;
     private MovementHandler movementHandler;
     private PlayerStateController stateController;
     private PlayerInteraction interactionController;
-    
     private SpriteRenderer spriteRenderer;
     private CameraController cameraController;
+    private PlayerSound soundController;
 
-    private int ropeCollisionCount = 0; // Rope 충돌 상태를 추적
+    [SyncVar]private int ropeCollisionCount;
 
-    [SyncVar(hook = nameof(OnFlipChanged))]
-    private bool flipSprite; // SyncVar로 flipX 상태 동기화
-
-    [SyncVar(hook = nameof(PlayerNameUpdate))] 
-    public string playerName = "No Name";
-
+    [SyncVar(hook = nameof(OnFlipChanged))] private bool flipSprite;
+    [SyncVar(hook = nameof(PlayerNameUpdate))] public string playerName = "No Name";
     [SyncVar(hook = nameof(FinishCheck))] public bool isFinish;
     [SyncVar(hook = nameof(SetPlayerReady))] private bool isReady;
+    [SyncVar(hook = nameof(PlayerColorUpdate))] private Vector4 colorVec;
 
     [Command]
-    public void CmdSetPlayerName(string playerName) => this.playerName = playerName;
+    public void CmdSetPlayerName(string name) => playerName = name;
 
     [Command]
-    public void CmdSetPlayerReady(bool isReady) =>this.isReady = isReady;
+    public void CmdSetPlayerColor(Vector4 playerColor) => colorVec = playerColor;
 
+    [Command]
+    public void CmdSetPlayerReady(bool ready) => isReady = ready;
     private void SetPlayerReady(bool oldValue, bool newValue)
     {
         readySprite.SetActive(newValue);
@@ -45,6 +45,11 @@ public class PlayerController2D : NetworkBehaviour
         Debug.Log($"플레이어 이름이 {oldName}에서 {newName}으로 변경되었습니다.");
     }
 
+    private void PlayerColorUpdate(Vector4 oldValue, Vector4 newValue)
+    {
+        GetComponent<SpriteRenderer>().color = newValue;
+    }
+
     private void Start()
     {
         InitializeComponents();
@@ -54,33 +59,37 @@ public class PlayerController2D : NetworkBehaviour
         {
             CmdSetPlayerName(SteamRoomManager.Instance.playerName);
         }
+        if (isOwned)
+        {
+            CmdSetPlayerColor(new Vector4(PlayerPrefs.GetFloat("Red", 0.3f), PlayerPrefs.GetFloat("Green", 1.0f), PlayerPrefs.GetFloat("Blue", 1.0f), 1f));
+        }
     }
 
     private void Update()
     {
-        if (!isOwned) return;
-
-        HandleHorizontalMovement();
-        HandleJump();
-        ObjectInteraction();
-        PositionReset();
+        if (isOwned)
+        {
+            HandleInput();
+        }
     }
 
     private void FixedUpdate()
     {
-        if (!isOwned) return;
-
-        UpdatePlayerState();
+        if (isServer && !isFinish)
+        {
+            UpdatePlayerState();
+        }
     }
 
     private void InitializeComponents()
     {
         animationController = GetComponent<PlayerAnimationController>();
-        inputHandler = GetComponent<PlayerInput>();
+        inputHandler = GetComponent<PlayerInputManager>();
         movementHandler = GetComponent<MovementHandler>();
         stateController = GetComponent<PlayerStateController>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         interactionController = GetComponent<PlayerInteraction>();
+        soundController = GetComponent<PlayerSound>();
     }
 
     private void SetupCamera()
@@ -92,76 +101,165 @@ public class PlayerController2D : NetworkBehaviour
         }
     }
 
-    private void HandleHorizontalMovement()
+    private void HandleInput()
     {
-        movementHandler.SetDirectionalInput(inputHandler.MovementInput, inputHandler.IsRunPressed);
+        if (inputHandler.IsNextPressed)
+        {
+            cameraController.MoveNextTarget(1);
+        }
+        if (inputHandler.IsPreviousPressed)
+        {
+            cameraController.MoveNextTarget(-1);
+        }
+
+        if (isFinish)
+        {
+            HandleFinishState();
+        }
+        else
+        {
+            HandleMovement();
+            HandleJump();
+
+            if(inputHandler.IsPickUpPressed)
+                CmdObjectInteraction();
+
+            if (inputHandler.ResetPressed)
+            {
+                CmdPositionReset();
+            }
+        }
+    }
+
+    private void HandleFinishState()
+    {
+
+        if (inputHandler.MovementInput.y < 0)
+        {
+            SetFinishState(inputHandler.MovementInput);
+        }
+    }
+
+    private void HandleMovement()
+    {
+        CmdHandleHorizontalMovement(inputHandler.MovementInput, inputHandler.IsRunPressed);
     }
 
     private void HandleJump()
     {
         if (inputHandler.IsJumpPressed)
         {
-            movementHandler.OnJumpInputDown();
-            UpdatePlayerStateAndAnimation(PlayerState.Jump);
+            CmdJumpInputDown();
         }
+
+        CmdJumpInputHold(inputHandler.IsJumpHold);
 
         if (inputHandler.IsJumpUp)
         {
-            movementHandler.OnJumpInputUp();
+            CmdJumpInputUp();
         }
     }
-
-    private void PositionReset()
+    public void TargetFunction()
     {
-        if (inputHandler.ResetPressed)
+        UpdatePlayerStateAndAnimation(PlayerState.Shrink);
+        movementHandler.BlockJump(0.15f);
+    }
+
+
+    [Command]
+    private void CmdHandleHorizontalMovement(Vector2 movementInput, bool isRun)
+    {
+        if (interactionController.IsCarried)
         {
-            transform.position = Vector3.zero;
+            movementHandler.SetClimbState(false);
         }
+
+        movementHandler.SetDirectionalInput(movementInput, isRun);
+    }
+
+    [Command]
+    private void CmdJumpInputDown()
+    {
+        movementHandler.OnJumpInputDown();
+        UpdatePlayerStateAndAnimation(PlayerState.Jump);
+    }
+
+    [Command]
+    private void CmdJumpInputHold(bool isHold)
+    {
+        movementHandler.JumpHold(isHold);
+    }
+
+    [Command]
+    private void CmdJumpInputUp()
+    {
+        movementHandler.OnJumpInputUp();
+    }
+
+    [Command]
+    private void CmdPositionReset()
+    {
+        transform.position = Vector3.zero;
+        movementHandler.RpcVelocityReset();
     }
 
     private void UpdatePlayerState()
     {
+        if (movementHandler == null) return;
+
         if (movementHandler.isGrounded)
         {
-            if (Mathf.Abs(movementHandler.CurrentVelocity.x) > 0.05f)
-            {
-                UpdateFlipState(movementHandler.CurrentVelocity.x < 0);
-                UpdatePlayerStateAndAnimation(PlayerState.Walk);
-            }
-            else
-            {
-                UpdatePlayerStateAndAnimation(PlayerState.Idle);
-            }
+            UpdateGroundedState();
         }
 
-        animationController.GroundState(movementHandler.isGrounded);
+        animationController.RpcGroundState(movementHandler.isGrounded);
+    }
+
+    private void UpdateGroundedState()
+    {
+        if (Mathf.Abs(movementHandler.CurrentVelocity.x) > 0.05f)
+        {
+            UpdateFlipState(movementHandler.CurrentVelocity.x < 0);
+            UpdatePlayerStateAndAnimation(PlayerState.Walk);
+        }
+        else
+        {
+            UpdatePlayerStateAndAnimation(PlayerState.Idle);
+        }
     }
 
     private void UpdateFlipState(bool isFlip)
     {
-        if (flipSprite != isFlip)
+        if (spriteRenderer.flipX != isFlip)
         {
-            CmdFlipChanged(isFlip);
+            RpcFlipChanged(isFlip);
         }
+    }
+
+    [ClientRpc]
+    private void RpcFlipChanged(bool isFlip)
+    {
+        spriteRenderer.flipX = isFlip;
     }
 
     private void UpdatePlayerStateAndAnimation(PlayerState newState)
     {
         stateController.ChangeState(newState);
 
-        if (isOwned)
-            animationController.CmdChangeAnimation(stateController.playerState);
-    }
-
-    [Command]
-    private void CmdFlipChanged(bool isFlip)
-    {
-        flipSprite = isFlip;
+        if (isServer)
+        {
+            animationController.RpcChangeAnimation(stateController.playerState);
+            if (newState == PlayerState.Shrink)
+                GetComponent<PlayerSound>().RpcPlayShrinkSound();
+        }
     }
 
     private void OnFlipChanged(bool oldFlip, bool newFlip)
     {
-        spriteRenderer.flipX = newFlip;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = newFlip;
+        }
     }
 
     private void HandleDamage(Collider2D collision)
@@ -177,67 +275,83 @@ public class PlayerController2D : NetworkBehaviour
         }
 
         UpdatePlayerStateAndAnimation(PlayerState.Damaged);
+        interactionController.TryIntractive(GetInteractionDirection(), true);
         movementHandler.OnDamaged(knockbackDirection);
     }
 
-    private void HandleClimbing(Collider2D collision)
+    private Vector3 GetInteractionDirection()
     {
-        if (!collision.CompareTag("Rope")) return;
+        return spriteRenderer.flipX ? Vector3.left : Vector3.right;
+    }
 
-        // 위/아래 입력이 있는 경우만 등반 상태로 전환
-        if (inputHandler.MovementInput.y != 0 && !interactionController.IsCarried)
+    [Command]
+    private void CmdHandleClimbing()
+    {
+        if (interactionController.IsCarried) return;
+
+        movementHandler.SetClimbState(true);
+
+        if (movementHandler.isClimbed)
         {
-            movementHandler.SetClimbState(true);
             UpdatePlayerStateAndAnimation(PlayerState.Climb);
         }
     }
 
-    private void ExitClimbing(Collider2D collision)
+    [Command]
+    private void CmdEnterRope()
     {
-        if (!collision.CompareTag("Rope")) return;
+        ropeCollisionCount++;
+    }
+    [Command]
+    private void CmdExitClimbing()
+    {
+        ropeCollisionCount = Mathf.Max(0, ropeCollisionCount - 1);
 
-        // Rope와의 충돌이 종료되었으므로 감소
-        ropeCollisionCount--;
-
-        // 더 이상 Rope에 닿아있지 않으면 등반 상태 종료
-        if (ropeCollisionCount <= 0)
+        if (ropeCollisionCount == 0)
         {
-            ropeCollisionCount = 0; // 음수 방지
             movementHandler.SetClimbState(false);
             UpdatePlayerStateAndAnimation(PlayerState.Idle);
         }
     }
-    [ClientRpc]
-    public void RpcTargetFunction()
-    {
-        UpdatePlayerStateAndAnimation(PlayerState.Shrink);
-    }
 
-    private void ObjectInteraction()
+    [Command]
+    private void CmdObjectInteraction()
     {
-        if (inputHandler.IsPickUpPressed)
-        {
-            Vector3 dir = GetComponent<SpriteRenderer>().flipX ? Vector3.left : Vector3.right;
-            interactionController.TryIntractive(dir);
-        }
+        interactionController.TryIntractive(GetInteractionDirection(), inputHandler.MovementInput.y < 0);
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        HandleDamage(collision);
-        HandleClimbing(collision);
+        if(isServer)
+        {
+            HandleDamage(collision);
+        }
+
+        if (isOwned && collision.CompareTag("Rope") && inputHandler.MovementInput.y != 0)
+        {
+            CmdHandleClimbing();
+        }
+
+        if (collision.CompareTag("Finish") && inputHandler.MovementInput.y > 0)
+        {
+            SetFinishState(inputHandler.MovementInput);
+        }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Rope"))
+        if (isOwned && collision.CompareTag("Rope"))
         {
-            ropeCollisionCount++; // Rope와의 충돌이 시작되면 증가
+            CmdEnterRope();
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        ExitClimbing(collision);
+        if (isOwned && collision.CompareTag("Rope"))
+        {
+            CmdExitClimbing();
+        }
     }
 
     private void FinishCheck(bool oldValue, bool newValue)
@@ -249,24 +363,53 @@ public class PlayerController2D : NetworkBehaviour
             GameManager.Instance.FinishCheck();
         }
     }
-    private void PlayerSetActive(bool value)
-    {
-        GetComponent<SpriteRenderer>().enabled = !value;
-        nameText.enabled = !value;
-        GetComponent<BoxCollider2D>().enabled = !value;
 
-        if (value)
+    private void SetFinishState(Vector2 input)
+    {
+        if (input.y != 0)
         {
-            //rb.bodyType = RigidbodyType2D.Kinematic;
+            CmdSetFinishState(input.y > 0);
+        }
+    }
+
+    [Command]
+    private void CmdSetFinishState(bool isFinish)
+    {
+        this.isFinish = isFinish;
+        RpcEnterFinish(isFinish);
+
+        if (isFinish)
+        {
+            GetComponent<PlayerSound>().RpcPlayEnterSound();
         }
         else
         {
-            //rb.bodyType = RigidbodyType2D.Dynamic;
-            if (isLocalPlayer)
-            {
-                cameraController.SetTarget(transform);
-                isFinish = false;
-            }
+            GetComponent<PlayerSound>().RpcPlayExitSound();
+        }
+    }
+
+    [ClientRpc]
+    private void RpcEnterFinish(bool isFinish)
+    {
+        this.isFinish = isFinish;
+        PlayerSetActive(isFinish);
+    }
+
+    private void PlayerSetActive(bool isActive)
+    {
+        bool value = !isActive;
+        nameText.enabled = value;
+        spriteRenderer.enabled = value;
+        GetComponent<BoxCollider2D>().enabled = value;
+        animationController.enabled = value;
+        movementHandler.enabled = value;
+        stateController.enabled = value;
+        interactionController.enabled = value;
+
+        if (value && isOwned)
+        {
+            cameraController.SetTarget(transform);
+            isFinish = false;
         }
     }
 }

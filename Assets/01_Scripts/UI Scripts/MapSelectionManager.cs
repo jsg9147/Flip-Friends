@@ -16,7 +16,7 @@ public class MapSelectionManager : NetworkBehaviour
     public void InitializeMapSelection(int chapter)
     {
         currentChapter = chapter;
-        stageTitleText.text = $"Stage {chapter}"; // 스테이지 제목 설정
+        stageTitleText.text = $"Stage {chapter + 1 }"; // 스테이지 제목 설정
 
         int clearStage = PlayerPrefs.GetInt($"Chapter_{chapter}", 0);
 
@@ -35,8 +35,15 @@ public class MapSelectionManager : NetworkBehaviour
     // 스테이지 씬 로드
     private void LoadStageScene(int chapter, int stage)
     {
-        Debug.Log($"챕터 '{chapter}' 스테이지{stage} 로드 중...");
-        roomPlayer.CmdStageSelect(chapter, stage);
+        if (isServer)
+        {
+            Debug.Log($"챕터 '{chapter}' 스테이지{stage} 로드 중...");
+            roomPlayer.CmdStageSelect(chapter, stage);
+        }
+        else
+        {
+            Debug.Log("방장만 맵을 선택할 수 있습니다.");
+        }
     }
 
     // 씬 전환을 트리거하는 서버 명령

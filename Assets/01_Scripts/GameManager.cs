@@ -10,11 +10,29 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private int maxStageNum = 5;
     [SerializeField] private int maxChapterNum = 5;
 
+    public GameObject menuScreen;
+
     private PlayerController2D[] playerControllers;
 
     public void Awake()
     {
         Instance = this;
+    }
+
+    private void OnEnable()
+    {
+        if(InputManager.instance != null)
+        {
+            InputManager.instance.OnMenuEvent += SetMenu;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (InputManager.instance != null)
+        {
+            InputManager.instance.OnMenuEvent -= SetMenu;
+        }
     }
 
     public void SetPlayerController(PlayerController2D[] playerControllers)
@@ -79,5 +97,19 @@ public class GameManager : NetworkBehaviour
             if(slimeRoomManager != null)
                 slimeRoomManager.ReturnRoomScene();
         }
+    }
+
+    public void ExitGame()
+    {
+        if (SteamRoomManager.Instance != null)
+        {
+            SteamRoomManager.Instance.LeaveLobby();
+        }
+        NetworkManager.singleton.StopClient();
+    }
+
+    private void SetMenu()
+    {
+        menuScreen.SetActive(!menuScreen.activeSelf);
     }
 }

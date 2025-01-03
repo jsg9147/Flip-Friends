@@ -66,11 +66,12 @@ public class StageSelectUI : NetworkBehaviour
     public void StageSelectionUISetActive(bool isAcitve)
     {
         stageSelectionUI.SetActive(isAcitve);
-        CurrentPlayerCountUpdate(NetworkManager.singleton.numPlayers);
+        if(isServer)
+            RpcCurrentPlayerCountUpdate(NetworkManager.singleton.numPlayers);
     }
 
-
-    private void CurrentPlayerCountUpdate(int count)
+    [ClientRpc]
+    private void RpcCurrentPlayerCountUpdate(int count)
     {
         currentPlayerCountText.text = $"{count} / 4";
     }

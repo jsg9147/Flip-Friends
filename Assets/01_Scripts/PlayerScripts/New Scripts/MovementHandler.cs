@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Mirror;
+using UnityEngine.InputSystem.XR;
 
 [RequireComponent(typeof(Controller2D))]
 public class MovementHandler : NetworkBehaviour
@@ -20,13 +21,14 @@ public class MovementHandler : NetworkBehaviour
     public float wallSlideSpeedMax = 3f;
     public float wallStickTime = 0.25f;
     public float wallSlideTime;
+    public float bounceForce = 30f;
 
     [Header("Damage")]
     public Vector2 damagedMove;
     public float invincibilityDuration = 1f;
 
     private float gravity;
-    private float maxGravity = 15f;
+    private float maxGravity = 12f;
     private float maxJumpVelocity;
     private float minJumpVelocity;
     private float velocityXSmoothing;
@@ -43,18 +45,22 @@ public class MovementHandler : NetworkBehaviour
     private bool uncontrollable;
     private float currentMoveSpeed;
 
-    private bool isClimbed;
+    public bool isClimbed { get; private set; }
+    private bool climbBlock;
+    private bool jumpBlock;
+    private bool isJumpHold;
+
     public bool isGrounded => controller.collisions.below;
     public Vector2 CurrentVelocity => velocity;
 
-    private void Start()
+    private void Awake()
     {
         Initialize();
     }
 
     private void FixedUpdate()
     {
-        if (!isOwned) return;
+        if (!isServer) return;
 
         CalculateMovement();
 
@@ -65,7 +71,7 @@ public class MovementHandler : NetworkBehaviour
     private void Initialize()
     {
         controller = GetComponent<Controller2D>();
-        gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
+        gravity = -((2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2)) * 0.9f;
         maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
         minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
         currentMoveSpeed = moveSpeed;
@@ -77,7 +83,41 @@ public class MovementHandler : NetworkBehaviour
         this.isRunPressed = isRunPressed;
         currentMoveSpeed = isRunPressed ? runSpeed : moveSpeed;
     }
-    public void SetClimbState(bool isClimb) => this.isClimbed = isClimb;
+    public void SetClimbState(bool isClimb)
+    {
+        if (climbBlock)
+            return;
+
+        this.isClimbed = isClimb;
+    }
+
+    public void BlockJump(float delay) => StartCoroutine(EnableJumpAfterDelay(delay));
+
+    public void DisableClimbTemporarily(float duration)
+    {
+        SetClimbState(false); // isClimbed를 비활성화
+        
+        StartCoroutine(EnableClimbAfterDelay(duration));
+    }
+
+    private IEnumerator EnableClimbAfterDelay(float duration)
+    {
+        climbBlock = true;
+        yield return new WaitForSeconds(duration);
+        climbBlock = false;
+    }
+    private IEnumerator EnableJumpAfterDelay(float duration)
+    {
+        jumpBlock = true;
+        yield return new WaitForSeconds(duration);
+        jumpBlock = false;
+    }
+
+    public void JumpHold(bool inputJumpHold)
+    {
+        isJumpHold = inputJumpHold;
+    }
+
 
     public void OnJumpInputDown()
     {
@@ -107,10 +147,10 @@ public class MovementHandler : NetworkBehaviour
             HandleWallSliding();
 
         float targetVelocityX = directionalInput.x * currentMoveSpeed;
-        float smoothTime = controller.collisions.below ? 0.4f : 0.8f;
+        float smoothTime = 0.4f;
         if (Mathf.Sign(directionalInput.x) != Mathf.Sign(velocity.x))
         {
-            smoothTime = smoothTime * 0.8f;
+            smoothTime = smoothTime * 0.7f;
         }
 
         if (uncontrollable)
@@ -168,6 +208,9 @@ public class MovementHandler : NetworkBehaviour
 
     private void HandleGroundJump()
     {
+        if (!controller.CanJump())
+            return;
+
         if (controller.collisions.slidingDownMaxSlope)
         {
             if (directionalInput.x != -Mathf.Sign(controller.collisions.slopeNormal.x))
@@ -186,40 +229,49 @@ public class MovementHandler : NetworkBehaviour
                 velocity.y += runJumpHeight * speedRatio;
             }
         }
+
+        GetComponent<PlayerSound>().RpcPlayJumpSound();
     }
 
     private void HandleRopeJump()
     {
+        if (uncontrollable)
+            return;
+
         velocity.y = maxJumpVelocity;
-        isClimbed = false;
+        DisableClimbTemporarily(0.3f);
     }
 
     private void PlayerMovementInteract()
     {
-        if (controller.underPlayer != null)
+        if (isClimbed)
         {
-            CmdPlayerInteractEffect(controller.underPlayer.netId);
+            controller.VerticalCollisionsDetect(Vector2.down);
+        }
+
+        if (controller.underPlayer != null && !jumpBlock)
+        {
+            controller.underPlayer.GetComponent<PlayerController2D>().TargetFunction();
+
+            DisableClimbTemporarily(0.3f);
             //점프 구현
-            velocity.y = maxJumpVelocity;
+            velocity.y = isJumpHold ? maxJumpVelocity * 1.2f : maxJumpVelocity;
+            BlockJump(0.3f);
+            velocity.x = velocity.x + ((transform.position.x - controller.underPlayer.transform.position.x) * 0.5f);
             controller.UnderPlayerReset();
         }
     }
 
-    [Command]
-
-    private void CmdPlayerInteractEffect(uint targetNetId)
+    private void BounceMovement(Vector3 targetPosition)
     {
-        NetworkIdentity targetIdentity = NetworkServer.spawned[targetNetId];
-        if (targetIdentity != null)
-        {
-            // 해당 객체의 함수를 호출
-            targetIdentity.GetComponent<PlayerController2D>().RpcTargetFunction();
-        }
+        Vector3 dir = transform.position - targetPosition;
+
+        velocity = dir.normalized * bounceForce;
     }
 
     private void ApplyMovement()
     {
-        if (isClimbed)
+        if (isClimbed && !uncontrollable)
         {
             velocity = directionalInput * moveSpeed;
         }
@@ -244,8 +296,8 @@ public class MovementHandler : NetworkBehaviour
     {
         if (invincible) return;
 
-        SetClimbState(false);
         velocity = knockbackDirection * damagedMove;
+        DisableClimbTemporarily(1f);
         StartCoroutine(ActivateInvincibility());
         StartCoroutine(TemporaryUncontrollable(1f));
     }
@@ -262,5 +314,23 @@ public class MovementHandler : NetworkBehaviour
         uncontrollable = true;
         yield return new WaitForSeconds(duration);
         uncontrollable = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isServer)
+        {
+            if (collision.CompareTag("Reset"))
+                RpcVelocityReset();
+
+            if (collision.CompareTag("Bounce"))
+                BounceMovement(collision.transform.position);
+        }
+    }
+
+    [ClientRpc]
+    public void RpcVelocityReset()
+    {
+        velocity = Vector3.zero;
     }
 }

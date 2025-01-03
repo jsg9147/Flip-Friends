@@ -1,25 +1,46 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Threading.Tasks; // Task를 사용하기 위해 추가
+using System.Threading.Tasks;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Linq;
 
 public class PublicLobbyUI : MonoBehaviour
 {
+    public List<GameObject> inputCodeBtns;
+
     public LobbyItem lobbyItemPrefab;
     public Transform lobbyItemContent;
 
     public GameObject gameModeUI;
 
-    private SteamLobbyInfo lobbyInfo;
+    private List<LobbyItem> lobbyItems = new();
 
     private async void OnEnable()
     {
         if (SteamManager.Initialized)
             await LobbyListUpdate();
+
+        if (InputManager.instance != null)
+            InputManager.instance.OnCancelEvent += CancelBtnEvent;
     }
 
     private void OnDisable()
     {
         LobbyListReset();
+        if (InputManager.instance != null)
+            InputManager.instance.OnCancelEvent -= CancelBtnEvent;
+    }
+
+    private void Update()
+    {
+        if (InputManager.instance.dir.x != 0)
+        {
+            if (inputCodeBtns.Contains(EventSystem.current.currentSelectedGameObject))
+            {
+
+            }
+        }
     }
 
     public async Task LobbyListUpdate()
@@ -32,6 +53,8 @@ public class PublicLobbyUI : MonoBehaviour
         {
             LobbyItem item = Instantiate(lobbyItemPrefab, lobbyItemContent);
             item.SetLobbyInfo(info);
+
+            lobbyItems.Add(item);
         }
     }
 
@@ -41,17 +64,18 @@ public class PublicLobbyUI : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-    }
 
-    public void Back()
-    {
-        gameModeUI.SetActive(true);
-        gameObject.SetActive(false);
+        lobbyItems.Clear();
     }
 
     public async void OnLobbyListUpdateButtonClicked()
     {
         if (SteamManager.Initialized)
             await LobbyListUpdate();
+    }
+
+    private void CancelBtnEvent()
+    {
+        MainUIManager.instance.GameModeUIOpen();
     }
 }

@@ -40,13 +40,6 @@ public class SlimeRoomManager : NetworkRoomManager
             if (player.isOwned)
                 player.GetComponent<CustomRoomPlayer>().StageSelectionUISetAcitve(true);
         }
-
-        DestroyAllLobbyPlayers();
-    }
-
-    public virtual void StartHosting()
-    {
-        StartHost();
     }
 
     public virtual void StartJoining(string networkAddress)
@@ -61,13 +54,13 @@ public class SlimeRoomManager : NetworkRoomManager
         ServerChangeScene(RoomScene);
     }
 
-    private void DestroyAllLobbyPlayers()
+    public void DestroyAllLobbyPlayers()
     {
         foreach (GameObject player in lobbyPlayerList)
         {
             if (player != null)
             {
-                Destroy(player);
+                NetworkServer.Destroy(player);
             }
         }
         lobbyPlayerList.Clear();

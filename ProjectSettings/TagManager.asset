@@ -11,6 +11,9 @@ TagManager:
   - Trap
   - Through
   - Enemy
+  - Reset
+  - Switch
+  - Bounce
   layers:
   - Default
   - TransparentFX
@@ -24,10 +27,10 @@ TagManager:
   - Rope
   - Enemy
   - Player
-  - 
-  - 
+  - Switch
+  - Bounce
   - Trap
-  - 
+  - Reset
   - 
   - 
   - 

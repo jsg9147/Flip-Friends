@@ -16,14 +16,20 @@ public class MovingPlatform : NetworkBehaviour
     private void Start()
     {
         startPosition = transform.position;
-        endPositionToWorld = (Vector2)transform.localPosition + endPosition;
+        endPositionToWorld = (Vector2)transform.position + endPosition;
     }
 
     [ServerCallback]
-    void Update()
+    void FixedUpdate()
     {
         MovePlatform();
-        RotatePlatform();
+        RpcRotatePlatform();
+        RpcUpdatePosition(transform.position);
+    }
+    [ClientRpc] // 모든 클라이언트에서 실행되는 함수
+    void RpcUpdatePosition(Vector3 newPosition)
+    {
+        transform.position = newPosition;
     }
 
     [Server]
@@ -38,9 +44,11 @@ public class MovingPlatform : NetworkBehaviour
         }
     }
 
-    void RotatePlatform()
+    [ClientRpc]
+    void RpcRotatePlatform()
     {
-        transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+        if(isRotate)
+            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
     }
 
     // 씬 화면에 끝 지점을 나타내기 위해 Gizmos 사용

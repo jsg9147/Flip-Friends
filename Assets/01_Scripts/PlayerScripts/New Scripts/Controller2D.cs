@@ -1,24 +1,31 @@
 using Mirror;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Controller2D : RaycastController
 {
     public float maxSlopeAngle = 45f;
+    public float coyoteTimeDuration = 0.2f; // 코요태 타임 지속 시간
+    private float coyoteTimeCounter = 0f;
     public CollisionInfo collisions;
     private Vector2 playerInput;
+    public Collider2D objCollider;
 
     private GameObject heldObj;
     public bool isHold => heldObj != null;
 
     public NetworkIdentity underPlayer { get; private set; }
-
     private Vector2 movementVector;
 
     public override void Start()
     {
         base.Start();
         collisions.faceDir = 1;
+    }
+    public void Move(Vector2 moveAmount, bool standingOnPlatform)
+    {
+        Move(moveAmount, Vector2.zero, standingOnPlatform);
     }
 
     public void Move(Vector2 moveAmount, Vector2 input, bool standingOnPlatform = false)
@@ -41,7 +48,23 @@ public class Controller2D : RaycastController
 
         if (standingOnPlatform)
             collisions.below = true;
+
+        // 코요태 타임 카운터 업데이트
+        if (collisions.below)
+        {
+            coyoteTimeCounter = coyoteTimeDuration;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
     }
+    public bool CanJump()
+    {
+        // 코요태 타임 내에 있는지 확인
+        return collisions.below || coyoteTimeCounter > 0f;
+    }
+
 
     private void ProcessCollisions(ref Vector2 moveAmount)
     {
@@ -116,6 +139,21 @@ public class Controller2D : RaycastController
             AdjustSlopeMovement(ref moveAmount);
     }
 
+    public void VerticalCollisionsDetect(Vector2 dir)
+    {
+        float directionY = Mathf.Sign(dir.y);
+        float rayLength = skinWidth + 0.1f;
+
+        for (int i = 0; i < verticalRayCount; i++)
+        {
+            Vector2 rayOrigin = GetVerticalRayOrigin(directionY, movementVector.x, i);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
+
+            Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength, Color.red);
+            ProcessVerticalHitsPlayer(hits, dir, directionY);
+        }
+    }
+
     private Vector2 GetVerticalRayOrigin(float directionY, float moveAmountX, int i)
     {
         Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
@@ -139,7 +177,26 @@ public class Controller2D : RaycastController
             collisions.below = directionY == -1;
             collisions.above = directionY == 1;
 
-            if (hit.transform != transform && hit.collider.CompareTag("Player"))
+            if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f)  < transform.position.y)
+            {
+                // 네트워크 객체의 NetId를 가져오기
+                NetworkIdentity networkIdentity = hit.transform.GetComponent<NetworkIdentity>();
+
+                if (networkIdentity != null)
+                {
+                    underPlayer = networkIdentity;
+                }
+            }
+        }
+    }
+
+    private void ProcessVerticalHitsPlayer(RaycastHit2D[] hits, Vector2 dir, float directionY)
+    {
+        foreach (var hit in hits)
+        {
+            if (!IsValidHit(hit, dir)) continue;
+
+            if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f) < transform.position.y)
             {
                 // 네트워크 객체의 NetId를 가져오기
                 NetworkIdentity networkIdentity = hit.transform.GetComponent<NetworkIdentity>();
@@ -283,7 +340,7 @@ public class Controller2D : RaycastController
         if (hit.collider.CompareTag("Through") && Mathf.Sign(moveAmount.y) == 1)
             return false;
 
-        if (hit.collider.gameObject == heldObj)
+        if (hit.collider.gameObject == objCollider.gameObject)
             return false;
 
         return true;

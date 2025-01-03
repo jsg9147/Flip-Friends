@@ -12,7 +12,6 @@ public class SteamRoomManager : SlimeRoomManager
 {
     public static SteamRoomManager Instance { get; private set; }
 
-    public int maxLobbyMembers = 4;
     public List<SteamLobbyInfo> lobbyInfos = new List<SteamLobbyInfo>();
     public string lobbyKeyStr { get; private set; }
 
@@ -29,7 +28,9 @@ public class SteamRoomManager : SlimeRoomManager
     Callback<LobbyMatchList_t> lobbyMatchList;
 
     public string playerName { get; private set; }
-    public GameObject temp;
+
+    private RoomType roomType;
+    private int maxPlayer;
 
     public override void Awake()
     {
@@ -46,7 +47,7 @@ public class SteamRoomManager : SlimeRoomManager
         if (!SteamAPI.Init())
         {
             Debug.LogError("SteamAPI 초기화 실패");
-            temp.SetActive(true);
+            Application.Quit();
             return;
         }
 
@@ -75,15 +76,13 @@ public class SteamRoomManager : SlimeRoomManager
         SteamAPI.Shutdown();
     }
 
-    public override void StartHosting()
+    public void HostLobby(RoomType roomType, int maxPlayer)
     {
-        base.StartHosting();
-        HostLobby();
-    }
+        StartHost();
+        this.roomType = roomType;
+        this.maxPlayer = maxPlayer;
 
-    public void HostLobby()
-    {
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxLobbyMembers);
+        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxPlayer);
     }
 
     public void JoinPrivateLobby(string joinCode)
@@ -114,10 +113,11 @@ public class SteamRoomManager : SlimeRoomManager
         currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
 
         string playerSteamName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
-        SteamMatchmaking.SetLobbyData(currentLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
+        if(roomType == RoomType.Public)
+            SteamMatchmaking.SetLobbyData(currentLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
+        
         SteamMatchmaking.SetLobbyData(currentLobbyID, PrivateLobbyKey, lobbyKeyStr);
         SteamMatchmaking.SetLobbyData(currentLobbyID, "Name", playerSteamName);
-        SteamMatchmaking.SetLobbyData(currentLobbyID, "Color", "Green");
     }
 
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
@@ -144,7 +144,7 @@ public class SteamRoomManager : SlimeRoomManager
 
     private string GenerateUniqueLobbyKey(int length = 8)
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const string chars = "0123456789";
         using (var rng = new RNGCryptoServiceProvider())
         {
             byte[] data = new byte[length];

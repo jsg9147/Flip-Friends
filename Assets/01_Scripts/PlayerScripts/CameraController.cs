@@ -1,17 +1,21 @@
+using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using System;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform target; // The object that the camera will follow
-    public float smoothSpeed = 0.125f; // Camera smoothness
-    public Vector3 offset; // Offset from the target position
-    private const float FixedZ = -10f; // Fixed Z position for the camera
+    public Transform target;
+    public float smoothSpeed = 0.125f;
+    public Vector3 offset;
+    private const float FixedZ = -10f;
 
     private PlayerController2D[] playerControllers;
+    private Vector3 velocity = Vector3.zero;
 
-    // Initializes the list of player controllers in the scene
+    private bool canMoveTarget = true; // 타겟 변경 가능 여부
+    public float targetSwitchDelay = 0.5f; // 딜레이 시간 (초)
+
     private void InitializePlayerControllers()
     {
         playerControllers = FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID);
@@ -23,16 +27,16 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    // Sets a new target for the camera
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
     }
 
-    // Moves the camera to the next or previous target based on direction
     public void MoveNextTarget(float direction)
     {
-        if (playerControllers.Length <= 0)
+        if (!canMoveTarget) return; // 딜레이 중이면 실행하지 않음
+
+        if (playerControllers == null || playerControllers.Length <= 0)
         {
             InitializePlayerControllers();
         }
@@ -41,9 +45,17 @@ public class CameraController : MonoBehaviour
         int nextIndex = GetNextTargetIndex(currentIndex, direction);
 
         target = playerControllers[nextIndex].transform;
+
+        StartCoroutine(DelayTargetSwitch()); // 딜레이 시작
     }
 
-    // Calculates the next target index in a circular manner
+    private IEnumerator DelayTargetSwitch()
+    {
+        canMoveTarget = false; // 타겟 변경 불가
+        yield return new WaitForSeconds(targetSwitchDelay); // 딜레이
+        canMoveTarget = true; // 타겟 변경 가능
+    }
+
     private int GetNextTargetIndex(int currentIndex, float direction)
     {
         if (direction > 0)
@@ -67,15 +79,11 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    // Smoothly moves the camera to the target's position with offset
     private void MoveCameraToTarget()
     {
         Vector3 desiredPosition = target.position + offset;
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-
-        // Fix the Z position
+        Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothSpeed);
         smoothedPosition.z = FixedZ;
-
         transform.position = smoothedPosition;
     }
 }
