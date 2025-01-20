@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 707175733187646125}
   - component: {fileID: 1065919227800551094}
   - component: {fileID: 7976255811934733671}
+  - component: {fileID: 4397932873473055326}
   m_Layer: 5
   m_Name: ExitPanel
   m_TagString: Untagged
@@ -229,6 +230,18 @@ MonoBehaviour:
   - {fileID: 3253003789632021230}
   - {fileID: 5035678565467214251}
   inputDelay: 0.2
+--- !u!114 &4397932873473055326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764813663944960371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 569a437abb39c7644b00ff304cc8b50c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7142977625051274858
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,8 +363,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 4397932873473055326}
+        m_TargetAssemblyTypeName: ExitPanel, Assembly-CSharp
         m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:

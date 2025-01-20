@@ -259,6 +259,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  offsetApply: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 3520

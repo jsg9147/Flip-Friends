@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class RaycastController : NetworkBehaviour
 {
+    public bool offsetApply;
     public LayerMask collisionMask;
 
     public const float skinWidth = .02f;
@@ -25,31 +26,36 @@ public class RaycastController : NetworkBehaviour
 
     public RaycastOrigins holdObjectRaycast;
 
+    Vector2 offset = Vector2.zero;
+
     public virtual void Awake()
     {
         boxCollider = GetComponent<BoxCollider2D>();
+        if(offsetApply)
+            offset = boxCollider.offset;
     }
 
     public virtual void Start()
     {
         CalculateRaySpacing();
     }
-
     public void UpdateRaycastOrigins()
     {
         Bounds bounds = boxCollider.bounds; // 오브젝트를 감싼 콜라이더
         bounds.Expand(skinWidth * -2); // 스킨보다 약간 안쪽부터 생성
 
-        raycastOrigins.bottomLeft = new Vector2(bounds.min.x, bounds.min.y);
-        raycastOrigins.bottomRight = new Vector2(bounds.max.x, bounds.min.y);
-        raycastOrigins.topLeft = new Vector2(bounds.min.x, bounds.max.y);
-        raycastOrigins.topRight = new Vector2(bounds.max.x, bounds.max.y);
+        // offset 값을 bounds에 반영
+        raycastOrigins.bottomLeft = new Vector2(bounds.min.x + offset.x, bounds.min.y + offset.y);
+        raycastOrigins.bottomRight = new Vector2(bounds.max.x + offset.x, bounds.min.y + offset.y);
+        raycastOrigins.topLeft = new Vector2(bounds.min.x + offset.x, bounds.max.y + offset.y);
+        raycastOrigins.topRight = new Vector2(bounds.max.x + offset.x, bounds.max.y + offset.y);
 
-        holdObjectRaycast.bottomLeft = new Vector2(bounds.min.x, bounds.min.y + 1f);
-        holdObjectRaycast.bottomRight = new Vector2(bounds.max.x, bounds.min.y + 1f);
-        holdObjectRaycast.topLeft = new Vector2(bounds.min.x, bounds.max.y + 1f);
-        holdObjectRaycast.topRight = new Vector2(bounds.max.x, bounds.max.y + 1f);
+        holdObjectRaycast.bottomLeft = new Vector2(bounds.min.x + offset.x, bounds.min.y + 1f + offset.y);
+        holdObjectRaycast.bottomRight = new Vector2(bounds.max.x + offset.x, bounds.min.y + 1f + offset.y);
+        holdObjectRaycast.topLeft = new Vector2(bounds.min.x + offset.x, bounds.max.y + 1f + offset.y);
+        holdObjectRaycast.topRight = new Vector2(bounds.max.x + offset.x, bounds.max.y + 1f + offset.y);
     }
+
 
     void CalculateRaySpacing()
     {

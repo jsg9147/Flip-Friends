@@ -461,12 +461,12 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   stageMapPrefabs:
-  - {fileID: 5813359405025824721, guid: ad9315da8fd1dd541a633d812e99d518, type: 3}
-  - {fileID: 6749148591891718062, guid: c32f8b20d50c61a4da1c6980e6a7adf5, type: 3}
-  - {fileID: 4839135096584866826, guid: 05ea356a9062863458d87495d4f2f6d5, type: 3}
-  - {fileID: 6602192240865908714, guid: 1015012a2d8ec1443a696cc205c9ce89, type: 3}
-  - {fileID: 5779526636097850817, guid: bb5932516d2ee3946843f694bc0bc807, type: 3}
-  - {fileID: 7694952657952096941, guid: 2202653edc01ddf4c9d33b45d3a3bc71, type: 3}
+  - {fileID: 3846973216450071382, guid: cbb8dff5a10f3cd478c0d032c5580306, type: 3}
+  - {fileID: 3846973216450071382, guid: 5cdc071363935d54b93f39a9253b9336, type: 3}
+  - {fileID: 3846973216450071382, guid: 6ac71404db08f10439e5f276eaff82a7, type: 3}
+  - {fileID: 3846973216450071382, guid: ccb2dd7d1c21ac143ad0c1bde01daa13, type: 3}
+  - {fileID: 3846973216450071382, guid: 9eea45ecbb6985046adbec65613ec196, type: 3}
+  - {fileID: 3846973216450071382, guid: 336dbf72a10fc7d48a6e496ddc7da3f1, type: 3}
 --- !u!4 &750259705
 Transform:
   m_ObjectHideFlags: 0

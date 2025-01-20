@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class MainUIManager : MonoBehaviour
 {
+    public bool mouseLock;
+
     public static MainUIManager instance;
 
     public GameObject mainUI;
@@ -38,8 +40,11 @@ public class MainUIManager : MonoBehaviour
         {
             SoundManager.Instance.PlayBGM(0);
         }
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (mouseLock)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         Application.targetFrameRate = targetFrameRate;
     }
 

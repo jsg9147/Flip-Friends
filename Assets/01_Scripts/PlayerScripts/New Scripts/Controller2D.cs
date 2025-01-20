@@ -9,7 +9,6 @@ public class Controller2D : RaycastController
     public float coyoteTimeDuration = 0.2f; // 코요태 타임 지속 시간
     private float coyoteTimeCounter = 0f;
     public CollisionInfo collisions;
-    private Vector2 playerInput;
     public Collider2D objCollider;
 
     private GameObject heldObj;
@@ -33,7 +32,6 @@ public class Controller2D : RaycastController
         UpdateRaycastOrigins();
         collisions.Reset();
         collisions.moveAmountOld = moveAmount;
-        playerInput = input;
 
         if (moveAmount.y < 0)
             DescendSlope(ref moveAmount);
@@ -41,7 +39,8 @@ public class Controller2D : RaycastController
         if (moveAmount.x != 0)
             collisions.faceDir = (int)Mathf.Sign(moveAmount.x);
 
-        ProcessCollisions(ref moveAmount);
+        if(!standingOnPlatform)
+            ProcessCollisions(ref moveAmount);
 
         movementVector = moveAmount;
         transform.Translate(moveAmount);
@@ -167,7 +166,7 @@ public class Controller2D : RaycastController
     {
         foreach (var hit in hits)
         {
-            if (!IsValidHit(hit, moveAmount)) continue;
+            if (!IsValidHit(hit, moveAmount, true)) continue;
 
             moveAmount.y = (hit.distance - skinWidth) * directionY;
 
@@ -332,12 +331,16 @@ public class Controller2D : RaycastController
             }
         }
     }
-    private bool IsValidHit(RaycastHit2D hit, Vector2 moveAmount)
+    private bool IsValidHit(RaycastHit2D hit, Vector2 moveAmount, bool isVertical = false)
     {
         if (hit.collider == null || hit.collider == GetComponent<Collider2D>())
             return false;
 
-        if (hit.collider.CompareTag("Through") && Mathf.Sign(moveAmount.y) == 1)
+        //if (hit.collider.CompareTag("Through") && Mathf.Sign(moveAmount.y) == 1)
+        if (!isVertical && hit.collider.CompareTag("Through"))
+            return false;
+
+        if (isVertical && hit.collider.CompareTag("Through") && Mathf.Sign(moveAmount.y) == 1)
             return false;
 
         if (hit.collider.gameObject == objCollider.gameObject)
@@ -354,7 +357,7 @@ public class Controller2D : RaycastController
     public struct CollisionInfo
     {
         public bool above, below, left, right;
-        public bool climbingSlope, descendingSlope, slidingDownMaxSlope;
+        public bool climbingSlope, descendingSlope, slidingDownMaxSlope, isSlide;
         public float slopeAngle, slopeAngleOld;
         public Vector2 slopeNormal, moveAmountOld;
         public int faceDir;

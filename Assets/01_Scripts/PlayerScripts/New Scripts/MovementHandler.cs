@@ -143,11 +143,12 @@ public class MovementHandler : NetworkBehaviour
 
     private void CalculateMovement()
     {
-        if (wallSliding)
-            HandleWallSliding();
+        //if (wallSliding)
+        //    HandleWallSliding();
 
         float targetVelocityX = directionalInput.x * currentMoveSpeed;
         float smoothTime = 0.4f;
+
         if (Mathf.Sign(directionalInput.x) != Mathf.Sign(velocity.x))
         {
             smoothTime = smoothTime * 0.7f;

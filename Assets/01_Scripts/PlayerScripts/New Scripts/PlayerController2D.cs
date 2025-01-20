@@ -17,6 +17,8 @@ public class PlayerController2D : NetworkBehaviour
     private CameraController cameraController;
     private PlayerSound soundController;
 
+    private SavePoint savePoint;
+
     [SyncVar]private int ropeCollisionCount;
 
     [SyncVar(hook = nameof(OnFlipChanged))] private bool flipSprite;
@@ -196,10 +198,22 @@ public class PlayerController2D : NetworkBehaviour
         movementHandler.OnJumpInputUp();
     }
 
+    public void SetSavePoint(SavePoint nextPoint)
+    {
+        if (savePoint == null)
+            savePoint = nextPoint;
+
+        if(nextPoint.savePointID > savePoint.savePointID)
+            savePoint = nextPoint;
+    }
+
     [Command]
     private void CmdPositionReset()
     {
-        transform.position = Vector3.zero;
+        Vector2 resetPos = Vector2.zero;
+        if(savePoint != null)
+            resetPos = savePoint.transform.position;
+        transform.position = resetPos;
         movementHandler.RpcVelocityReset();
     }
 
@@ -340,9 +354,12 @@ public class PlayerController2D : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isOwned && collision.CompareTag("Rope"))
+        if (isOwned)
         {
-            CmdEnterRope();
+            if(collision.CompareTag("Rope"))
+                CmdEnterRope();
+            if (collision.CompareTag("Reset"))
+                CmdPositionReset();
         }
     }
 
