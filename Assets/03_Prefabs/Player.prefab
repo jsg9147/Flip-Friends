@@ -507,9 +507,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  offsetApply: 0
   collisionMask:
     serializedVersion: 2
-    m_Bits: 43456
+    m_Bits: 108992
   horizontalRayCount: 0
   verticalRayCount: 0
   horizontalRaySpacing: 0
@@ -518,6 +519,7 @@ MonoBehaviour:
   maxSlopeAngle: 30
   coyoteTimeDuration: 0.2
   objCollider: {fileID: 7033983210011931201}
+  onConveyor: {fileID: 0}
 --- !u!114 &2354184399810437624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -558,6 +560,8 @@ MonoBehaviour:
   timeToJumpApex: 0.3
   moveSpeed: 4
   runSpeed: 5.5
+  conveyorSpeed: 1
+  conveyorAccelerationSpeed: 1
   wallJumpClimb: {x: 10, y: 25}
   wallJumpOff: {x: 13, y: 27}
   wallLeap: {x: 16, y: 25}
@@ -565,6 +569,7 @@ MonoBehaviour:
   wallStickTime: 0.25
   wallSlideTime: 0
   bounceForce: 20
+  springJumpForce: 50
   damagedMove: {x: 20, y: 20}
   invincibilityDuration: 1
 --- !u!114 &-4825162380361807202

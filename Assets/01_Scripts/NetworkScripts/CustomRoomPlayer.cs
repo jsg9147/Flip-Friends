@@ -156,40 +156,38 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     public void StageSelectionUISetAcitve(bool isActive)
     {
         gameStart = isActive;
-        FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(isActive);
+        FindAnyObjectByType<MapSelectionManager>().MapSelectScreenSetActive(isActive);
         RpcStageSelectUIOn(isActive);
     }
 
     [ClientRpc]
     private void RpcStageSelectUIOn(bool isActive)
     {
-        FindAnyObjectByType<StageSelectUI>().StageSelectionUISetActive(isActive);
+        FindAnyObjectByType<MapSelectionManager>().MapSelectScreenSetActive(isActive);
         if(isOwned)
             playerController.gameObject.SetActive(!isActive);
     }
 
     [Command]
-    public void CmdStageSelect(int chapter, int stage)
+    public void CmdStageSelect(int stage)
     {
         this.stage = stage;
 
         SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
         if (slimeRoomManager != null)
         {
-            slimeRoomManager.currentChapter = chapter;
             slimeRoomManager.currentStage = stage;
         }
 
-        CmdChangeScene(chapter);
+        CmdChangeScene();
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdChangeScene(int chapter)
+    public void CmdChangeScene()
     {
         if (isServer)
         {
-            chapter = chapter + 1;
-            NetworkManager.singleton.ServerChangeScene($"Chapter_{chapter}");
+            NetworkManager.singleton.ServerChangeScene($"GamePlay");
         }
     }
 }

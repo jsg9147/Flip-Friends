@@ -21,7 +21,6 @@ public class PlayerController2D : NetworkBehaviour
 
     [SyncVar]private int ropeCollisionCount;
 
-    [SyncVar(hook = nameof(OnFlipChanged))] private bool flipSprite;
     [SyncVar(hook = nameof(PlayerNameUpdate))] public string playerName = "No Name";
     [SyncVar(hook = nameof(FinishCheck))] public bool isFinish;
     [SyncVar(hook = nameof(SetPlayerReady))] private bool isReady;
@@ -161,7 +160,7 @@ public class PlayerController2D : NetworkBehaviour
             CmdJumpInputUp();
         }
     }
-    public void TargetFunction()
+    public void OnSteppedByOtherPlayer()
     {
         UpdatePlayerStateAndAnimation(PlayerState.Shrink);
         movementHandler.BlockJump(0.15f);

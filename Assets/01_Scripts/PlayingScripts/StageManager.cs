@@ -44,7 +44,7 @@ public class StageManager : NetworkBehaviour
         if (slimeRoomManager == null)
             return;
 
-        int stage = slimeRoomManager.currentStage - 1;
+        int stage = slimeRoomManager.currentStage;
 
         GameObject stageObject = Instantiate(stageMapPrefabs[stage]);
 

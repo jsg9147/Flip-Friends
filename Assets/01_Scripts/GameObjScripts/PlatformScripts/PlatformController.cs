@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PlatformController : RaycastController
 {
+    public Color previewColor = Color.red;
     [Header("Platform Settings")]
     public LayerMask passengerMask;
     public Vector3[] localWaypoints;
@@ -224,7 +225,7 @@ public class PlatformController : RaycastController
     {
         if (localWaypoints == null) return;
 
-        Gizmos.color = Color.red;
+        Gizmos.color = previewColor;
         float size = 0.3f;
 
         foreach (Vector3 waypoint in localWaypoints)

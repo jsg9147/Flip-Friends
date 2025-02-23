@@ -14,6 +14,8 @@ public class Controller2D : RaycastController
     private GameObject heldObj;
     public bool isHold => heldObj != null;
 
+    public Conveyor onConveyor;
+
     public NetworkIdentity underPlayer { get; private set; }
     private Vector2 movementVector;
 
@@ -125,6 +127,8 @@ public class Controller2D : RaycastController
         float directionY = Mathf.Sign(moveAmount.y);
         float rayLength = Mathf.Abs(moveAmount.y) + skinWidth;
 
+        onConveyor = null;
+
         for (int i = 0; i < verticalRayCount; i++)
         {
             Vector2 rayOrigin = GetVerticalRayOrigin(directionY, moveAmount.x, i);
@@ -176,6 +180,8 @@ public class Controller2D : RaycastController
             collisions.below = directionY == -1;
             collisions.above = directionY == 1;
 
+            SearchConveyor(hit);
+
             if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f)  < transform.position.y)
             {
                 // 네트워크 객체의 NetId를 가져오기
@@ -187,6 +193,12 @@ public class Controller2D : RaycastController
                 }
             }
         }
+    }
+
+    private void SearchConveyor(RaycastHit2D hit)
+    {
+        Conveyor conveyor = hit.transform.GetComponent<Conveyor>();
+        onConveyor = conveyor;
     }
 
     private void ProcessVerticalHitsPlayer(RaycastHit2D[] hits, Vector2 dir, float directionY)

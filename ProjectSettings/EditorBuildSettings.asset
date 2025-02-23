@@ -13,9 +13,6 @@ EditorBuildSettings:
     guid: 07f335c2aa768ce42a3566b7b7f26f6f
   - enabled: 1
     path: Assets/00_Scenes/GamePlay.unity
-    guid: e2f84285ea30f7848979e65c16308bc6
-  - enabled: 1
-    path: Assets/00_Scenes/Chapter_1.unity
     guid: e673f87570c46534daaf0bbeed5ab10d
   - enabled: 1
     path: Assets/00_Scenes/Chapter_2.unity

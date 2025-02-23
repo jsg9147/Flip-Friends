@@ -5,51 +5,52 @@ using System.Collections;
 public class CannonShooter : NetworkBehaviour
 {
     [SerializeField] private GameObject projectilePrefab;
-    [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireInterval = 2.0f;
+    [SerializeField] private float firstShootDelay = 0f;
+    [SerializeField] private float shootInterval = 2.0f;
     [SerializeField] private float projectileSpeed = 10.0f;
-    [SerializeField] private float projectileLifetime = 5.0f;
-    [SerializeField] private Vector2 fireDirection = Vector2.right;
+    [SerializeField] private float maxProjectileDistance = 20.0f;
+    [SerializeField] private Vector2 shootDirection = Vector2.right;
 
     private void Start()
     {
         if (isServer)
         {
-            InvokeRepeating(nameof(FireProjectile), 1.0f, fireInterval);
+            InvokeRepeating(nameof(ShootProjectile), firstShootDelay, shootInterval);
         }
     }
 
     [Server]
-    private void FireProjectile()
+    private void ShootProjectile()
     {
-        GameObject projectileInstance = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        Vector3 shootPosition = transform.position + (Vector3)(shootDirection.normalized * 1f);
+        GameObject projectileInstance = Instantiate(projectilePrefab, shootPosition, Quaternion.identity);
         NetworkServer.Spawn(projectileInstance);
-        RpcLaunchProjectile(projectileInstance);
-        StartCoroutine(DestroyAfterTime(projectileInstance, projectileLifetime));
+        RpcSetProjectileVelocity(projectileInstance, shootDirection.normalized * projectileSpeed);
+        StartCoroutine(DestroyIfOutOfRange(projectileInstance, shootPosition));
     }
 
     [ClientRpc]
-    private void RpcLaunchProjectile(GameObject projectile)
+    private void RpcSetProjectileVelocity(GameObject projectile, Vector2 velocity)
     {
-        if (projectile != null)
+        if (projectile.TryGetComponent(out Rigidbody2D rb))
         {
-            Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.linearVelocity = fireDirection.normalized * projectileSpeed;
-            }
+            rb.linearVelocity = velocity;
         }
     }
 
-    private IEnumerator DestroyAfterTime(GameObject projectile, float delay)
+    private IEnumerator DestroyIfOutOfRange(GameObject projectile, Vector3 startPosition)
     {
-        yield return new WaitForSeconds(delay);
-        if (projectile != null && projectile.GetComponent<NetworkIdentity>().isServer)
+        while (projectile != null)
         {
-            NetworkServer.Destroy(projectile);
+            if (Vector3.Distance(startPosition, projectile.transform.position) > maxProjectileDistance)
+            {
+                if (projectile.GetComponent<NetworkIdentity>().isServer)
+                {
+                    NetworkServer.Destroy(projectile);
+                }
+                yield break;
+            }
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }
-
-// Note: Attach this script to a child object that has a NetworkIdentity component.
-// Make sure the 'projectilePrefab' has a NetworkIdentity and Rigidbody2D attached to it.

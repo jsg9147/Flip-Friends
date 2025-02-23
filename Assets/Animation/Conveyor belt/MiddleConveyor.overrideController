@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MiddleConveyor
+  m_Controller: {fileID: 9100000, guid: 6c6563085fe8e42489289403c4eeec91, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: cf24575270d25ad4699b1b29d860b1f1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a6585ddcb99661740a8801ac3ec22caf, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 1bfff1f42b7f0934d841c1466548bfb1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: e8e0f1611217bf74eb20c178c4a5e085, type: 2}

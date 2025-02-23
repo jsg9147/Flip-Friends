@@ -13,6 +13,8 @@ public class MovementHandler : NetworkBehaviour
     public float timeToJumpApex;
     public float moveSpeed;
     public float runSpeed;
+    public float conveyorSpeed;
+    public float conveyorAccelerationSpeed;
 
     [Header("Wall Interaction")]
     public Vector2 wallJumpClimb;
@@ -22,6 +24,7 @@ public class MovementHandler : NetworkBehaviour
     public float wallStickTime = 0.25f;
     public float wallSlideTime;
     public float bounceForce = 30f;
+    public float springJumpForce = 50f;
 
     [Header("Damage")]
     public Vector2 damagedMove;
@@ -35,6 +38,7 @@ public class MovementHandler : NetworkBehaviour
     private float timeToWallUnstick;
 
     private Vector2 velocity;
+    private Vector2 externalVelocity;
     private Vector2 directionalInput;
     private bool isRunPressed;
     private bool wallSliding;
@@ -161,6 +165,17 @@ public class MovementHandler : NetworkBehaviour
 
         velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, smoothTime);
         velocity.y += gravity * Time.deltaTime;
+        
+        if(controller.onConveyor != null)
+            ConveyorAcceleration(controller.onConveyor);
+        else
+        {
+            float deceleration = Time.deltaTime;
+            if (controller.collisions.below)
+                externalVelocity.x = Mathf.Lerp(externalVelocity.x, 0, deceleration * 5f);
+            else
+                externalVelocity.x = Mathf.Lerp(externalVelocity.x, 0, deceleration);
+        }
 
         if (velocity.y < -wallSlideSpeedMax && wallSliding)
             velocity.y = -wallSlideSpeedMax;
@@ -252,7 +267,7 @@ public class MovementHandler : NetworkBehaviour
 
         if (controller.underPlayer != null && !jumpBlock)
         {
-            controller.underPlayer.GetComponent<PlayerController2D>().TargetFunction();
+            controller.underPlayer.GetComponent<PlayerController2D>().OnSteppedByOtherPlayer();
 
             DisableClimbTemporarily(0.3f);
             //점프 구현
@@ -270,6 +285,31 @@ public class MovementHandler : NetworkBehaviour
         velocity = dir.normalized * bounceForce;
     }
 
+    private void SpringJump(Vector3 targetPosition)
+    {
+        Vector3 dir = transform.position - targetPosition;
+
+        velocity = dir.normalized * bounceForce;
+    }
+
+    private void ConveyorAcceleration(Conveyor conveyor)
+    {
+        if (conveyor == null)
+            return;
+
+        float acceleration = conveyorSpeed; // 가속도 값 (원하는 값으로 조정 가능)
+
+        if (conveyor.isClockwise)
+        {
+            externalVelocity.x -= acceleration * Time.deltaTime * conveyorAccelerationSpeed;
+        }
+        else
+        {
+            externalVelocity.x += acceleration * Time.deltaTime * conveyorAccelerationSpeed;
+        }
+        externalVelocity.x = Mathf.Clamp(externalVelocity.x, -conveyorSpeed, conveyorSpeed);
+    }
+
     private void ApplyMovement()
     {
         if (isClimbed && !uncontrollable)
@@ -277,6 +317,7 @@ public class MovementHandler : NetworkBehaviour
             velocity = directionalInput * moveSpeed;
         }
 
+        velocity += externalVelocity;
         controller.Move(velocity * Time.deltaTime, directionalInput);
 
         if (controller.collisions.above || controller.collisions.below)
@@ -326,6 +367,9 @@ public class MovementHandler : NetworkBehaviour
 
             if (collision.CompareTag("Bounce"))
                 BounceMovement(collision.transform.position);
+
+            if(collision.CompareTag("Spring"))
+                SpringJump(collision.transform.position);
         }
     }
 

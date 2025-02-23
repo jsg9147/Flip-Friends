@@ -7,7 +7,7 @@ public class PlayerAnimationController : NetworkBehaviour
     private Animator animator;
 
     // Cached animation parameters
-    private static readonly int IsWalking = Animator.StringToHash("isWalking");
+    private static readonly int IsMoving = Animator.StringToHash("isMoving");
     private static readonly int JumpTrigger = Animator.StringToHash("jumpTrigger");
     private static readonly int AttackTrigger = Animator.StringToHash("attackTrigger");
     private static readonly int IsLifting = Animator.StringToHash("isLifting");
@@ -34,10 +34,10 @@ public class PlayerAnimationController : NetworkBehaviour
         switch (state)
         {
             case PlayerState.Idle:
-                animator.SetBool(IsWalking, false);
+                animator.SetBool(IsMoving, false);
                 break;
             case PlayerState.Walk:
-                animator.SetBool(IsWalking, true);
+                animator.SetBool(IsMoving, true);
                 break;
             case PlayerState.Jump:
                 animator.SetTrigger(JumpTrigger);
@@ -68,7 +68,7 @@ public class PlayerAnimationController : NetworkBehaviour
         animator.ResetTrigger(DamagedTrigger);
         animator.ResetTrigger(IsShrinkTrigger);
 
-        animator.SetBool(IsWalking, false);
+        animator.SetBool(IsMoving, false);
         animator.SetBool(IsLifting, false);
         animator.SetBool(IsFalling, false);
         animator.SetBool(IsGround, true); // Default state as ground

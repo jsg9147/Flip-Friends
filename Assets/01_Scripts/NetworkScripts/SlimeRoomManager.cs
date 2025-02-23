@@ -6,7 +6,6 @@ public class SlimeRoomManager : NetworkRoomManager
 {
     private List<GameObject> lobbyPlayerList;
 
-    public int currentChapter = 0;
     public int currentStage = 0;
 
     private bool shouldReconnectPlayers = false; // 씬 변경 후 재실행 플래그
@@ -28,11 +27,11 @@ public class SlimeRoomManager : NetworkRoomManager
 
     public override void OnRoomServerPlayersReady()
     {
-        StageSelectUI stageSelectUI = FindAnyObjectByType<StageSelectUI>();
+        MapSelectionManager stageSelectUI = FindAnyObjectByType<MapSelectionManager>();
 
         if (stageSelectUI != null)
         {
-            stageSelectUI.StageSelectionUISetActive(true);
+            stageSelectUI.MapSelectScreenSetActive(true);
         }
 
         foreach (var player in roomSlots)

@@ -7,9 +7,6 @@ public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
 
-    [SerializeField] private int maxStageNum = 5;
-    [SerializeField] private int maxChapterNum = 5;
-
     public GameObject menuScreen;
 
     private PlayerController2D[] playerControllers;
@@ -62,25 +59,7 @@ public class GameManager : NetworkBehaviour
 
         if(slimeRoomManager != null)
         {
-            if (slimeRoomManager.currentStage < maxStageNum)
-            {
-                slimeRoomManager.currentStage++;
-                CmdChangeScene(slimeRoomManager.currentChapter);
-            }
-            else
-            {
-                if (slimeRoomManager.currentChapter < maxChapterNum)
-                {
-                    slimeRoomManager.currentChapter++;
-                    slimeRoomManager.currentStage = 0;
-
-                    CmdChangeScene(slimeRoomManager.currentChapter);
-                }
-                else
-                {
-                    print("최조 엔딩 구현");
-                }
-            }
+            CmdChangeScene();
         }
         else
         {
@@ -89,7 +68,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdChangeScene(int chapter)
+    public void CmdChangeScene()
     {
         if (isServer)
         {
