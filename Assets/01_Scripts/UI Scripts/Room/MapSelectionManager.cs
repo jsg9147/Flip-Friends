@@ -9,7 +9,6 @@ public class MapSelectionManager : NetworkBehaviour
     public GameObject mapSelectScreen;
     public StageSelectBtnEvent stageSelectBtnEvent;
 
-    public TextMeshProUGUI stageTitleText; // 선택된 스테이지 제목
     public Button[] mapButtons; // 맵 버튼
 
     public CustomRoomPlayer roomPlayer;

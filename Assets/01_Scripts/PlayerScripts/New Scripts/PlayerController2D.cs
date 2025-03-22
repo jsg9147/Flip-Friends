@@ -17,6 +17,8 @@ public class PlayerController2D : NetworkBehaviour
     private CameraController cameraController;
     private PlayerSound soundController;
 
+    public bool isCarried { get; private set; } 
+
     private SavePoint savePoint;
 
     [SyncVar]private int ropeCollisionCount;
@@ -426,6 +428,36 @@ public class PlayerController2D : NetworkBehaviour
         {
             cameraController.SetTarget(transform);
             isFinish = false;
+        }
+    }
+
+    public void SetCarriedState(bool carried, Transform carrier = null)
+    {
+        isCarried = carried;
+
+        if (carried)
+        {
+            // 플레이어가 잡힌 상태이므로 움직임, 입력 등을 막아주기
+            movementHandler.enabled = false;
+            stateController.ChangeState(PlayerState.Carried);
+
+            // 부모를 잡는 캐릭터 transform으로 설정해서 따라다니게 할 수도 있음
+            transform.SetParent(carrier);
+
+            // 혹은 collider를 약간 무시처리 해줄 수도 있음(필요시)
+            // GetComponent<Collider2D>().enabled = false;
+        }
+        else
+        {
+            // 다시 조작 가능
+            movementHandler.enabled = true;
+            stateController.ChangeState(PlayerState.Idle);
+
+            // 부모 해제
+            transform.SetParent(null);
+
+            // Collider 복구(필요시)
+            // GetComponent<Collider2D>().enabled = true;
         }
     }
 }
