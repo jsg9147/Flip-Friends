@@ -70,6 +70,37 @@ After all players enter the finish trigger (`isFinish = true`), `GameManager.Sta
 - **Universal Render Pipeline (URP)** — 2D rendering
 - **New Input System** — Modern input handling
 
+## 코드 작성 원칙
+
+### SOLID 원칙 준수
+- **단일 책임 원칙 (SRP)**: 클래스 하나는 하나의 역할만 담당. 예) `MovementHandler`는 이동만, `PlayerInteraction`은 상호작용만 처리
+- **개방-폐쇄 원칙 (OCP)**: 기존 코드 수정 없이 확장 가능하도록 설계. 예) 새 장애물은 `BasicTrap`을 상속, 새 스위치는 `Switch`를 상속
+- **리스코프 치환 원칙 (LSP)**: 자식 클래스는 부모 클래스를 대체할 수 있어야 함. `RotatingObstacle`은 `BasicTrap`을 완전히 대체 가능해야 함
+- **인터페이스 분리 원칙 (ISP)**: 불필요한 의존성을 강제하지 않도록 인터페이스를 작게 유지
+- **의존성 역전 원칙 (DIP)**: 구체 구현이 아닌 추상(인터페이스/추상클래스)에 의존. 예) `Switch`의 `OnSwitchStateChanged`는 추상 메서드로 정의
+
+### 클린 코드 원칙 준수
+- 메서드는 하나의 일만 수행하고, 20줄을 넘지 않도록 유지
+- 매직 넘버 사용 금지 — 상수 또는 Inspector 공개 필드로 정의
+- 의미 있는 이름 사용: 약어나 단일 문자 변수 지양 (`i` 같은 루프 인덱스 제외)
+- 중복 코드 제거 — 동일한 로직이 두 곳 이상이면 공통 메서드로 추출
+- 네트워크 코드에서 `isServer` / `isOwned` 조건 분기는 메서드 진입부에서 조기 반환(early return)으로 처리
+
+### 네이밍 컨벤션
+- **클래스 / 메서드**: PascalCase — `MovementHandler`, `OnJumpInputDown`
+- **private 필드**: camelCase — `heldObject`, `currentDelay`
+- **public 프로퍼티**: PascalCase — `IsCarried`, `CurrentVelocity`
+- **`[Command]`**: `Cmd` 접두사 — `CmdJumpInputDown`, `CmdObjectInteraction`
+- **`[ClientRpc]`**: `Rpc` 접두사 — `RpcFlipChanged`, `RpcVelocityReset`
+- **`[SyncVar]` hook**: `On + 변수명 + Changed` 형태 권장 — `OnNameChanged`, `OnColorChange`
+- **추상 이벤트 메서드**: `On` 접두사 — `OnSwitchStateChanged`, `OnStartServer`
+- **bool 변수**: `is` / `has` / `can` 접두사 — `isServer`, `isCarried`, `canJump`
+
+### 주석 규칙
+- **주석은 반드시 한글로 작성**
+- WHY(왜 이렇게 했는지)만 주석으로 달고, WHAT(무엇을 하는지)은 코드 자체가 설명하도록 작성
+- 자명한 코드에는 주석 생략
+
 ## Development Patterns
 
 ### Adding New Features
