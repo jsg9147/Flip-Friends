@@ -51,6 +51,8 @@ public class ClientMover : NetworkBehaviour
         }
 
         InputPayload input = BuildInputPayload();
+        // 읽은 즉시 클리어 — FixedUpdate는 Input 콜백보다 먼저 실행되므로 LateUpdate 리셋에 의존하면 항상 누락됨
+        inputManager.ClearJumpOneShots();
 
         int bufferIndex = (int)(currentSequenceNumber % BUFFER_SIZE);
         inputBuffer[bufferIndex] = input;

@@ -19,9 +19,10 @@ public class PlayerInputManager : NetworkBehaviour
     public bool IsNextPressed { get; private set; }
     public bool IsPreviousPressed { get; private set; }
 
-    private void LateUpdate()
+    // ClientMover.FixedUpdate가 읽은 직후 호출 — LateUpdate 리셋은 FixedUpdate보다 늦게 실행되므로
+    // 입력을 항상 놓치는 문제를 방지하기 위해 소비 시점에 직접 클리어
+    public void ClearJumpOneShots()
     {
-        // 이벤트성 플래그는 한 프레임만 true — Update에서 소비된 후 리셋
         IsJumpPressed = false;
         IsJumpUp = false;
     }
