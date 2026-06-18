@@ -11,8 +11,8 @@ public class ClientMover : NetworkBehaviour
     // 핑 300ms 환경에서 최대 약 128프레임 분량 보관
     private const int BUFFER_SIZE = 128;
 
-    // 서버와 예측값의 위치 오차가 이 값 이하면 보정 생략
-    private const float RECONCILE_THRESHOLD = 0.05f;
+    // 서버와 예측값의 위치 오차가 이 값 이하면 보정 생략 (부동소수점 드리프트 허용치)
+    private const float RECONCILE_THRESHOLD = 0.15f;
 
     private MovementHandler movementHandler;
     private PlayerInputManager inputManager;
@@ -32,6 +32,8 @@ public class ClientMover : NetworkBehaviour
     {
         movementHandler = GetComponent<MovementHandler>();
         inputManager = GetComponent<PlayerInputManager>();
+        // Awake 시점 위치로 초기화 — 첫 LateUpdate에서 원점으로 순간이동하는 버그 방지
+        predictedPosition = transform.position;
     }
 
     private void FixedUpdate()
@@ -102,8 +104,21 @@ public class ClientMover : NetworkBehaviour
         if (hasPendingServerState && serverState.sequenceNumber <= pendingServerState.sequenceNumber)
             return;
 
+        // 버퍼 범위를 벗어난 너무 오래된 상태는 재시뮬레이션 불가 — 무시
+        if (currentSequenceNumber > BUFFER_SIZE && serverState.sequenceNumber < currentSequenceNumber - BUFFER_SIZE)
+            return;
+
         pendingServerState = serverState;
         hasPendingServerState = true;
+    }
+
+    // 포지션 리셋처럼 순간 이동이 필요한 경우 예측 위치를 강제 동기화
+    [ClientRpc]
+    public void RpcForcePositionSync(Vector3 position)
+    {
+        if (!isOwned) return;
+        predictedPosition = position;
+        transform.position = position;
     }
 
     private void Reconcile(StatePayload serverState)
@@ -119,6 +134,9 @@ public class ClientMover : NetworkBehaviour
         // 서버 상태로 복원 후 이후 입력들을 순서대로 재시뮬레이션
         movementHandler.SetState(serverState);
 
+        // 재시뮬레이션 중임을 표시 — 점프 사운드 등 부작용 있는 이벤트 억제
+        movementHandler.isReconciling = true;
+
         uint replaySeq = serverState.sequenceNumber + 1;
         while (replaySeq < currentSequenceNumber)
         {
@@ -132,6 +150,7 @@ public class ClientMover : NetworkBehaviour
             replaySeq++;
         }
 
+        movementHandler.isReconciling = false;
         predictedPosition = transform.position;
     }
 }

@@ -58,6 +58,9 @@ public class MovementHandler : NetworkBehaviour
     // ServerMover가 Simulate를 직접 호출하는 경우 true — FixedUpdate 중복 실행 방지용
     [System.NonSerialized] public bool managedExternally = false;
 
+    // ClientMover가 재시뮬레이션(Reconcile) 중일 때 true — 사운드 등 부작용 억제
+    [System.NonSerialized] public bool isReconciling = false;
+
     private void Awake()
     {
         Initialize();
@@ -246,7 +249,9 @@ public class MovementHandler : NetworkBehaviour
             }
         }
 
-        GetComponent<PlayerSound>().RpcPlayJumpSound();
+        // 재시뮬레이션 중에는 사운드 재생 생략 — 보정 때마다 이중 재생 방지
+        if (!isReconciling)
+            GetComponent<PlayerSound>().RpcPlayJumpSound();
     }
 
     private void HandleRopeJump()

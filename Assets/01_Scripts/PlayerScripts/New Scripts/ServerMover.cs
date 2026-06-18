@@ -39,6 +39,12 @@ public class ServerMover : NetworkBehaviour
         movementHandler.managedExternally = true;
     }
 
+    // 포지션 리셋 등 순간 이동 시 큐에 쌓인 오래된 입력 전부 제거
+    public void ClearInputQueue()
+    {
+        inputQueue.Clear();
+    }
+
     // ClientMover.CmdSendInput에서 서버 측으로 호출됨
     public void ReceiveInput(InputPayload input)
     {

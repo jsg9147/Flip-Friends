@@ -165,6 +165,9 @@ public class PlayerController2D : NetworkBehaviour
             resetPos = savePoint.transform.position;
         transform.position = resetPos;
         movementHandler.RpcVelocityReset();
+        // ClientMover의 predictedPosition도 동기화 — 리셋 후 LateUpdate가 이전 위치로 덮어쓰는 현상 방지
+        GetComponent<ClientMover>().RpcForcePositionSync(resetPos);
+        GetComponent<ServerMover>().ClearInputQueue();
     }
 
     private void UpdatePlayerState()
