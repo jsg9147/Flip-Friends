@@ -1,12 +1,11 @@
 using System.Collections;
 using UnityEngine;
 using Mirror;
-using UnityEngine.InputSystem.XR;
 
 [RequireComponent(typeof(Controller2D))]
 public class MovementHandler : NetworkBehaviour
 {
-    [Header("Movement Settings")]
+    [Header("이동 설정")]
     public float maxJumpHeight;
     public float minJumpHeight;
     public float runJumpHeight;
@@ -16,7 +15,7 @@ public class MovementHandler : NetworkBehaviour
     public float conveyorSpeed;
     public float conveyorAccelerationSpeed;
 
-    [Header("Wall Interaction")]
+    [Header("벽 상호작용")]
     public Vector2 wallJumpClimb;
     public Vector2 wallJumpOff;
     public Vector2 wallLeap;
@@ -26,7 +25,7 @@ public class MovementHandler : NetworkBehaviour
     public float bounceForce = 30f;
     public float springJumpForce = 50f;
 
-    [Header("Damage")]
+    [Header("피격")]
     public Vector2 damagedMove;
     public float invincibilityDuration = 1f;
 
@@ -35,7 +34,6 @@ public class MovementHandler : NetworkBehaviour
     private float maxJumpVelocity;
     private float minJumpVelocity;
     private float velocityXSmoothing;
-    private float timeToWallUnstick;
 
     private Vector2 velocity;
     private Vector2 externalVelocity;
@@ -64,12 +62,9 @@ public class MovementHandler : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        // 2단계에서 ClientMover가 로컬 예측으로 대체할 예정 — 현재는 서버 전용 유지
         if (!isServer) return;
-
-        CalculateMovement();
-
-        PlayerMovementInteract();
-        ApplyMovement();
+        Simulate(Time.fixedDeltaTime);
     }
 
     private void Initialize()
@@ -81,26 +76,61 @@ public class MovementHandler : NetworkBehaviour
         currentMoveSpeed = moveSpeed;
     }
 
-    public void SetDirectionalInput(Vector2 input, bool isRunPressed)
+    // 한 물리 스텝을 실행 — ClientMover와 ServerMover가 동일한 코드를 공유하기 위해 분리
+    public void Simulate(float deltaTime)
+    {
+        CalculateMovement(deltaTime);
+        PlayerMovementInteract();
+        ApplyMovement(deltaTime);
+    }
+
+    // InputPayload를 받아 내부 입력 상태를 설정한 뒤 시뮬레이션
+    public void ApplyInput(InputPayload input)
+    {
+        SetDirectionalInput(input.movement, input.run);
+        JumpHold(input.jumpHeld);
+
+        if (input.jump) OnJumpInputDown();
+        if (input.jumpUp) OnJumpInputUp();
+    }
+
+    // 현재 물리 상태를 StatePayload로 반환 — 서버가 클라이언트에게 보낼 때 사용
+    public StatePayload GetState(uint sequenceNumber = 0)
+    {
+        return new StatePayload
+        {
+            sequenceNumber = sequenceNumber,
+            position = transform.position,
+            velocity = velocity,
+            isGrounded = isGrounded,
+        };
+    }
+
+    // 서버 보정값으로 상태를 강제 복원 — Reconciliation 시 사용
+    public void SetState(StatePayload state)
+    {
+        transform.position = state.position;
+        velocity = state.velocity;
+    }
+
+    public void SetDirectionalInput(Vector2 input, bool run)
     {
         directionalInput = input;
-        this.isRunPressed = isRunPressed;
-        currentMoveSpeed = isRunPressed ? runSpeed : moveSpeed;
+        isRunPressed = run;
+        currentMoveSpeed = run ? runSpeed : moveSpeed;
     }
+
     public void SetClimbState(bool isClimb)
     {
-        if (climbBlock)
-            return;
-
-        this.isClimbed = isClimb;
+        if (climbBlock) return;
+        isClimbed = isClimb;
     }
 
     public void BlockJump(float delay) => StartCoroutine(EnableJumpAfterDelay(delay));
 
     public void DisableClimbTemporarily(float duration)
     {
-        SetClimbState(false); // isClimbed�� ��Ȱ��ȭ
-        
+        SetClimbState(false);
         StartCoroutine(EnableClimbAfterDelay(duration));
     }
 
@@ -110,6 +140,7 @@ public class MovementHandler : NetworkBehaviour
         yield return new WaitForSeconds(duration);
         climbBlock = false;
     }
+
     private IEnumerator EnableJumpAfterDelay(float duration)
     {
         jumpBlock = true;
@@ -117,64 +148,49 @@ public class MovementHandler : NetworkBehaviour
         jumpBlock = false;
     }
 
-    public void JumpHold(bool inputJumpHold)
+    public void JumpHold(bool hold)
     {
-        isJumpHold = inputJumpHold;
+        isJumpHold = hold;
     }
-
 
     public void OnJumpInputDown()
     {
         if (wallSliding)
-        {
             HandleWallJump();
-        }
-        else if(isClimbed)
-        {
+        else if (isClimbed)
             HandleRopeJump();
-        }
         else if (controller.collisions.below)
-        {
             HandleGroundJump();
-        }
     }
 
     public void OnJumpInputUp()
     {
+        // 짧게 눌렀을 때 최소 높이로 컷 — 가변 점프 높이 구현
         if (velocity.y > minJumpVelocity)
             velocity.y = minJumpVelocity;
     }
 
-    private void CalculateMovement()
+    private void CalculateMovement(float deltaTime)
     {
-        //if (wallSliding)
-        //    HandleWallSliding();
-
         float targetVelocityX = directionalInput.x * currentMoveSpeed;
         float smoothTime = 0.4f;
 
         if (Mathf.Sign(directionalInput.x) != Mathf.Sign(velocity.x))
-        {
-            smoothTime = smoothTime * 0.7f;
-        }
+            smoothTime *= 0.7f;
 
         if (uncontrollable)
-        {
             smoothTime = 1f;
-        }
 
-        velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, smoothTime);
-        velocity.y += gravity * Time.deltaTime;
-        
-        if(controller.onConveyor != null)
-            ConveyorAcceleration(controller.onConveyor);
+        // deltaTime 명시 전달 — 서버/클라이언트가 동일한 결과를 내도록 보장
+        velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, smoothTime, Mathf.Infinity, deltaTime);
+        velocity.y += gravity * deltaTime;
+
+        if (controller.onConveyor != null)
+            ConveyorAcceleration(controller.onConveyor, deltaTime);
         else
         {
-            float deceleration = Time.deltaTime;
-            if (controller.collisions.below)
-                externalVelocity.x = Mathf.Lerp(externalVelocity.x, 0, deceleration * 5f);
-            else
-                externalVelocity.x = Mathf.Lerp(externalVelocity.x, 0, deceleration);
+            float decel = controller.collisions.below ? deltaTime * 5f : deltaTime;
+            externalVelocity.x = Mathf.Lerp(externalVelocity.x, 0, decel);
         }
 
         if (velocity.y < -wallSlideSpeedMax && wallSliding)
@@ -184,26 +200,9 @@ public class MovementHandler : NetworkBehaviour
             velocity.y = -maxGravity;
     }
 
-    private void HandleWallSliding()
-    {
-        wallDirX = controller.collisions.left ? -1 : 1;
-        if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below && velocity.y < 0)
-        {
-            wallSliding = true;
-            timeToWallUnstick = wallStickTime;
-
-            if (directionalInput.x != wallDirX && directionalInput.x != 0)
-                timeToWallUnstick -= Time.deltaTime;
-        }
-        else
-        {
-            wallSliding = false;
-        }
-    }
-
     private void HandleWallJump()
     {
-        if (wallDirX == directionalInput.x)
+        if (wallDirX == (int)directionalInput.x)
         {
             velocity.x = -wallDirX * wallJumpClimb.x;
             velocity.y = wallJumpClimb.y;
@@ -218,14 +217,12 @@ public class MovementHandler : NetworkBehaviour
             velocity.x = -wallDirX * wallLeap.x;
             velocity.y = wallLeap.y;
         }
-
         wallSliding = false;
     }
 
     private void HandleGroundJump()
     {
-        if (!controller.CanJump())
-            return;
+        if (!controller.CanJump()) return;
 
         if (controller.collisions.slidingDownMaxSlope)
         {
@@ -251,9 +248,7 @@ public class MovementHandler : NetworkBehaviour
 
     private void HandleRopeJump()
     {
-        if (uncontrollable)
-            return;
-
+        if (uncontrollable) return;
         velocity.y = maxJumpVelocity;
         DisableClimbTemporarily(0.3f);
     }
@@ -261,83 +256,61 @@ public class MovementHandler : NetworkBehaviour
     private void PlayerMovementInteract()
     {
         if (isClimbed)
-        {
             controller.VerticalCollisionsDetect(Vector2.down);
-        }
 
         if (controller.underPlayer != null && !jumpBlock)
         {
             controller.underPlayer.GetComponent<PlayerController2D>().OnSteppedByOtherPlayer();
-
             DisableClimbTemporarily(0.3f);
-            //���� ����
             velocity.y = isJumpHold ? maxJumpVelocity * 1.2f : maxJumpVelocity;
             BlockJump(0.3f);
-            velocity.x = velocity.x + ((transform.position.x - controller.underPlayer.transform.position.x) * 0.5f);
+            velocity.x += (transform.position.x - controller.underPlayer.transform.position.x) * 0.5f;
             controller.UnderPlayerReset();
         }
     }
 
     private void BounceMovement(Vector3 targetPosition)
     {
-        Vector3 dir = transform.position - targetPosition;
-
-        velocity = dir.normalized * bounceForce;
+        velocity = (transform.position - targetPosition).normalized * bounceForce;
     }
 
     private void SpringJump(Vector3 targetPosition)
     {
-        Vector3 dir = transform.position - targetPosition;
-
-        velocity = dir.normalized * bounceForce;
+        velocity = (transform.position - targetPosition).normalized * bounceForce;
     }
 
-    private void ConveyorAcceleration(Conveyor conveyor)
+    private void ConveyorAcceleration(Conveyor conveyor, float deltaTime)
     {
-        if (conveyor == null)
-            return;
-
-        float acceleration = conveyorSpeed; // ���ӵ� �� (���ϴ� ������ ���� ����)
+        if (conveyor == null) return;
 
         if (conveyor.isClockwise)
-        {
-            externalVelocity.x -= acceleration * Time.deltaTime * conveyorAccelerationSpeed;
-        }
+            externalVelocity.x -= conveyorSpeed * deltaTime * conveyorAccelerationSpeed;
         else
-        {
-            externalVelocity.x += acceleration * Time.deltaTime * conveyorAccelerationSpeed;
-        }
+            externalVelocity.x += conveyorSpeed * deltaTime * conveyorAccelerationSpeed;
+
         externalVelocity.x = Mathf.Clamp(externalVelocity.x, -conveyorSpeed, conveyorSpeed);
     }
 
-    private void ApplyMovement()
+    private void ApplyMovement(float deltaTime)
     {
         if (isClimbed && !uncontrollable)
-        {
             velocity = directionalInput * moveSpeed;
-        }
 
         velocity += externalVelocity;
-        controller.Move(velocity * Time.deltaTime, directionalInput);
+        controller.Move(velocity * deltaTime, directionalInput);
 
         if (controller.collisions.above || controller.collisions.below)
         {
             if (controller.collisions.slidingDownMaxSlope)
-            {
-                velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
-            }
+                velocity.y += controller.collisions.slopeNormal.y * -gravity * deltaTime;
             else
-            {
                 velocity.y = 0;
-            }
         }
     }
-
 
     public void OnDamaged(Vector2 knockbackDirection)
     {
         if (invincible) return;
-
         velocity = knockbackDirection * damagedMove;
         DisableClimbTemporarily(1f);
         StartCoroutine(ActivateInvincibility());
@@ -360,22 +333,19 @@ public class MovementHandler : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isServer)
-        {
-            if (collision.CompareTag("Reset"))
-                RpcVelocityReset();
+        if (!isServer) return;
 
-            if (collision.CompareTag("Bounce"))
-                BounceMovement(collision.transform.position);
-
-            if(collision.CompareTag("Spring"))
-                SpringJump(collision.transform.position);
-        }
+        if (collision.CompareTag("Reset"))
+            RpcVelocityReset();
+        else if (collision.CompareTag("Bounce"))
+            BounceMovement(collision.transform.position);
+        else if (collision.CompareTag("Spring"))
+            SpringJump(collision.transform.position);
     }
 
     [ClientRpc]
     public void RpcVelocityReset()
     {
-        velocity = Vector3.zero;
+        velocity = Vector2.zero;
     }
 }

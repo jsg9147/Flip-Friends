@@ -6,33 +6,30 @@ public class PlayerInputManager : NetworkBehaviour
 {
     public PlayerController2D controller;
     public Vector2 MovementInput { get; private set; }
+
+    // 이벤트성 플래그 — 누른 순간 / 뗀 순간만 true, LateUpdate에서 자동 리셋
     public bool IsJumpPressed { get; private set; }
-    public bool IsJumpHold { get; private set; }
     public bool IsJumpUp { get; private set; }
+
+    // 상태성 플래그 — 누르는 동안 계속 true
+    public bool IsJumpHold { get; private set; }
     public bool IsRunPressed { get; private set; }
     public bool IsPickUpPressed { get; private set; }
-    public bool MovementInputPressed { get; private set; }
     public bool ResetPressed { get; private set; }
     public bool IsNextPressed { get; private set; }
     public bool IsPreviousPressed { get; private set; }
 
+    private void LateUpdate()
+    {
+        // 이벤트성 플래그는 한 프레임만 true — Update에서 소비된 후 리셋
+        IsJumpPressed = false;
+        IsJumpUp = false;
+    }
+
     public void OnMove(InputAction.CallbackContext context)
     {
         if (!isOwned) return;
-
         MovementInput = context.ReadValue<Vector2>();
-        if (context.started)
-        {
-            MovementInputPressed = true;
-        }
-        else if (context.performed)
-        {
-            MovementInputPressed = false;
-        }
-        else if (context.canceled)
-        {
-            MovementInputPressed = false;
-        }
     }
 
     public void OnJump(InputAction.CallbackContext context)
@@ -49,8 +46,8 @@ public class PlayerInputManager : NetworkBehaviour
         }
         else if (context.canceled)
         {
-            IsJumpPressed = false;
             IsJumpHold = false;
+            IsJumpUp = true;
         }
     }
 
@@ -59,17 +56,9 @@ public class PlayerInputManager : NetworkBehaviour
         if (!isOwned) return;
 
         if (context.started)
-        {
             IsPickUpPressed = true;
-        }
-        else if (context.performed)
-        {
-
-        }
         else if (context.canceled)
-        {
             IsPickUpPressed = false;
-        }
     }
 
     public void OnRun(InputAction.CallbackContext context)
@@ -77,17 +66,9 @@ public class PlayerInputManager : NetworkBehaviour
         if (!isOwned) return;
 
         if (context.started)
-        {
             IsRunPressed = true;
-        }
-        else if (context.performed)
-        {
-
-        }
         else if (context.canceled)
-        {
             IsRunPressed = false;
-        }
     }
 
     public void OnReset(InputAction.CallbackContext context)
@@ -95,40 +76,24 @@ public class PlayerInputManager : NetworkBehaviour
         if (!isOwned) return;
 
         if (context.started)
-        {
             ResetPressed = true;
-        }
-        else if (context.performed)
-        {
-            //ResetPressed = false;
-        }
         else if (context.canceled)
-        {
             ResetPressed = false;
-        }
     }
 
     public void OnNext(InputAction.CallbackContext context)
     {
         if (context.started)
-        {
             IsNextPressed = true;
-        }
         else if (context.canceled)
-        {
             IsNextPressed = false;
-        }
     }
 
     public void OnPrevious(InputAction.CallbackContext context)
     {
         if (context.started)
-        {
             IsPreviousPressed = true;
-        }
         else if (context.canceled)
-        {
             IsPreviousPressed = false;
-        }
     }
 }
