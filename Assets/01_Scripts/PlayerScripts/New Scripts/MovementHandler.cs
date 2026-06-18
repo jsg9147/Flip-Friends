@@ -55,6 +55,9 @@ public class MovementHandler : NetworkBehaviour
     public bool isGrounded => controller.collisions.below;
     public Vector2 CurrentVelocity => velocity;
 
+    // ServerMover가 Simulate를 직접 호출하는 경우 true — FixedUpdate 중복 실행 방지용
+    [System.NonSerialized] public bool managedExternally = false;
+
     private void Awake()
     {
         Initialize();
@@ -62,8 +65,8 @@ public class MovementHandler : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        // isOwned 플레이어는 ClientMover가 로컬에서 담당 — 서버에서도 중복 실행 방지
-        if (!isServer || isOwned) return;
+        // ClientMover(isOwned)와 ServerMover(managedExternally)가 각각 Simulate를 호출
+        if (!isServer || isOwned || managedExternally) return;
         Simulate(Time.fixedDeltaTime);
     }
 

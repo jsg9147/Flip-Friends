@@ -87,13 +87,11 @@ public class ClientMover : NetworkBehaviour
         };
     }
 
-    // 서버에 입력 전달 — 서버는 이 입력으로 물리를 실행하고 다른 클라이언트에게 브로드캐스트
+    // 서버에 입력 전달 — ServerMover가 물리를 실행하고 주기적으로 보정값을 돌려보냄
     [Command]
     private void CmdSendInput(InputPayload input)
     {
-        movementHandler.ApplyInput(input);
-        // 서버의 MovementHandler.FixedUpdate가 Simulate()를 실행
-        // 3단계(ServerMover)에서: 검증 후 오차가 크면 TargetSendState 호출
+        GetComponent<ServerMover>().ReceiveInput(input);
     }
 
     // 3단계(ServerMover)에서 서버 보정값을 전송할 때 호출
