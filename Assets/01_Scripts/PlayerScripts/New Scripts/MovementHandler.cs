@@ -62,8 +62,8 @@ public class MovementHandler : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        // 2단계에서 ClientMover가 로컬 예측으로 대체할 예정 — 현재는 서버 전용 유지
-        if (!isServer) return;
+        // isOwned 플레이어는 ClientMover가 로컬에서 담당 — 서버에서도 중복 실행 방지
+        if (!isServer || isOwned) return;
         Simulate(Time.fixedDeltaTime);
     }
 
