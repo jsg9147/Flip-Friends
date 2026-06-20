@@ -284,7 +284,7 @@ public class MovementHandler : NetworkBehaviour
 
     private void SpringJump(Vector3 targetPosition)
     {
-        velocity = (transform.position - targetPosition).normalized * bounceForce;
+        velocity = (transform.position - targetPosition).normalized * springJumpForce;
     }
 
     private void ConveyorAcceleration(Conveyor conveyor, float deltaTime)

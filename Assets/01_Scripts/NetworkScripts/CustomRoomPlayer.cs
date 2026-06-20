@@ -56,7 +56,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
             }
 
             CmdSetPlayerColor(new Vector4(PlayerPrefs.GetFloat("Red", 0.3f), PlayerPrefs.GetFloat("Green", 1.0f), PlayerPrefs.GetFloat("Blue", 1.0f), 1f));
-            notReadyText = GameObject.Find("NotReadyText").GetComponent<GameObject>();
+            notReadyText = GameObject.Find("NotReadyText");
 
             MapSelectionManager mapSelectionManager = FindAnyObjectByType<MapSelectionManager>();
             if(mapSelectionManager != null)
@@ -75,7 +75,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     [Command]
     void CmdSetPlayerName(string newName)
     {
-        playerName = newName; // ¼­¹ö¿¡¼­ ÇÃ·¹ÀÌ¾î ÀÌ¸§ ¼³Á¤
+        playerName = newName; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     [Command]

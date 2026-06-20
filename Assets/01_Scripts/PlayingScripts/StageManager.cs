@@ -1,5 +1,4 @@
 using Mirror;
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -48,17 +47,17 @@ public class StageManager : NetworkBehaviour
 
         GameObject stageObject = Instantiate(stageMapPrefabs[stage]);
 
-        // NetworkIdentity ÄÄÆ÷³ÍÆ® °¡Á®¿À±â
+        // NetworkIdentity ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         NetworkIdentity stageIdentity = stageObject.GetComponent<NetworkIdentity>();
 
         if (stageIdentity != null)
         {
-            // ¼­¹ö°¡ ±ÇÇÑÀ» °¡Áö°Ô ÇÏ±â À§ÇØ Spawn
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ Spawn
             NetworkServer.Spawn(stageObject);
         }
         else
         {
-            Debug.LogError("½ºÅ×ÀÌÁö ¿ÀºêÁ§Æ®¿¡ NetworkIdentity ÄÄÆ÷³ÍÆ®°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogError("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ NetworkIdentity ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
 

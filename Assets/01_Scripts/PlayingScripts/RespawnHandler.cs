@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class RespawnHandler : NetworkBehaviour
 {
-    public LayerMask targetLayers; // °¨ÁöÇÒ ·¹ÀÌ¾î
-    public Transform resetPoint;  // ¸®¼Â Æ÷ÀÎÆ® À§Ä¡
+    public LayerMask targetLayers; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½
+    public Transform resetPoint;  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Ä¡
 
     public bool onlyBoxReset;
 
@@ -13,10 +13,10 @@ public class RespawnHandler : NetworkBehaviour
         if (!isServer)
             return;
 
-        // ´êÀº ¹°Ã¼ÀÇ ·¹ÀÌ¾î°¡ targetLayers¿¡ Æ÷ÇÔµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾î°¡ targetLayersï¿½ï¿½ ï¿½ï¿½ï¿½ÔµÇ¾ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (((1 << collision.gameObject.layer) & targetLayers) != 0)
         {
-            // ¼­¹ö¿¡¼­¸¸ À§Ä¡¸¦ ¸®¼ÂÇÏµµ·Ï È£Ãâ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ È£ï¿½ï¿½
             RpcPositionReset(collision.gameObject);
         }
     }
@@ -26,22 +26,22 @@ public class RespawnHandler : NetworkBehaviour
         if (!isServer)
             return;
 
-        // ´êÀº ¹°Ã¼ÀÇ ·¹ÀÌ¾î°¡ targetLayers¿¡ Æ÷ÇÔµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾î°¡ targetLayersï¿½ï¿½ ï¿½ï¿½ï¿½ÔµÇ¾ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (((1 << collision.gameObject.layer) & targetLayers) != 0)
         {
-            // ¼­¹ö¿¡¼­¸¸ À§Ä¡¸¦ ¸®¼ÂÇÏµµ·Ï È£Ãâ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ È£ï¿½ï¿½
             RpcPositionReset(collision.gameObject);
         }
     }
 
-    [ClientRpc] // ¼­¹ö¿¡¼­¸¸ ½ÇÇà
+    [ClientRpc] // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private void RpcPositionReset(GameObject target)
     {
         if(target == null) return;
         if (onlyBoxReset)
         {
             PlayerInteraction targetPlayer = target.GetComponent<PlayerInteraction>();
-            if(targetPlayer != null && !targetPlayer.IsCarried)
+            if(targetPlayer != null && !targetPlayer.IsHoldingObject)
             {
                 return;
             }

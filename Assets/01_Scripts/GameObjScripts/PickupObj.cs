@@ -39,17 +39,24 @@ public class PickupObj : RaycastController
         }
     }
 
+    [SyncVar]
+    private Vector2 syncedPosition;
+
     private void FixedUpdate()
     {
         if (isServer)
         {
-            if(!isCarried)
+            if (!isCarried)
             {
                 CalculateMovement();
                 ApplyMovement();
             }
 
-            RpcUpdatePosition(transform.position);
+            syncedPosition = transform.position;
+        }
+        else
+        {
+            transform.position = syncedPosition;
         }
     }
 
@@ -357,12 +364,6 @@ public class PickupObj : RaycastController
         isCarried = false;
         if (isServer)
             RpcSetVisible(true);
-    }
-
-    [ClientRpc] // 모든 클라이언트에서 실행되는 함수
-    void RpcUpdatePosition(Vector3 newPosition)
-    {
-        transform.position = newPosition;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

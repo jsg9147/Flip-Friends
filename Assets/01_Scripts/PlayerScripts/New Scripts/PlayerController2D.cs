@@ -230,14 +230,6 @@ public class PlayerController2D : NetworkBehaviour
         }
     }
 
-    private void OnFlipChanged(bool oldFlip, bool newFlip)
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.flipX = newFlip;
-        }
-    }
-
     private void HandleDamage(Collider2D collision)
     {
         if (!collision.CompareTag("Trap") && !collision.CompareTag("Enemy")) return;
@@ -263,7 +255,7 @@ public class PlayerController2D : NetworkBehaviour
     [Command]
     private void CmdHandleClimbing()
     {
-        if (interactionController.IsCarried) return;
+        if (interactionController.IsHoldingObject) return;
 
         movementHandler.SetClimbState(true);
 
@@ -337,7 +329,8 @@ public class PlayerController2D : NetworkBehaviour
     {
         PlayerSetActive(newValue);
 
-        if (newValue)
+        // 씬 전환 판정은 서버 한 곳에서만 — 클라이언트마다 중복 호출 방지
+        if (newValue && isServer)
         {
             GameManager.Instance.FinishCheck();
         }
@@ -355,23 +348,12 @@ public class PlayerController2D : NetworkBehaviour
     private void CmdSetFinishState(bool isFinish)
     {
         this.isFinish = isFinish;
-        RpcEnterFinish(isFinish);
+        // SyncVar hook(FinishCheck)이 자동으로 모든 클라이언트에 PlayerSetActive를 호출 — 별도 RPC 불필요
 
         if (isFinish)
-        {
             GetComponent<PlayerSound>().RpcPlayEnterSound();
-        }
         else
-        {
             GetComponent<PlayerSound>().RpcPlayExitSound();
-        }
-    }
-
-    [ClientRpc]
-    private void RpcEnterFinish(bool isFinish)
-    {
-        this.isFinish = isFinish;
-        PlayerSetActive(isFinish);
     }
 
     private void PlayerSetActive(bool isActive)
@@ -395,44 +377,15 @@ public class PlayerController2D : NetworkBehaviour
     public void SetCarriedState(bool carried, Transform carrier = null)
     {
         isCarried = carried;
-
-        if (carried)
-        {
-            // �÷��̾ ���� �����̹Ƿ� ������, �Է� ���� �����ֱ�
-            movementHandler.enabled = false;
-            stateController.ChangeState(PlayerState.Carried);
-
-            // �θ� ��� ĳ���� transform���� �����ؼ� ����ٴϰ� �� ���� ����
-            transform.SetParent(carrier);
-
-            // Ȥ�� collider�� �ణ ����ó�� ���� ���� ����(�ʿ��)
-            // GetComponent<Collider2D>().enabled = false;
-        }
-        else
-        {
-            // �ٽ� ���� ����
-            movementHandler.enabled = true;
-            stateController.ChangeState(PlayerState.Idle);
-
-            // �θ� ����
-            transform.SetParent(null);
-
-            // Collider ����(�ʿ��)
-            // GetComponent<Collider2D>().enabled = true;
-        }
+        NetworkIdentity carrierIdentity = carrier != null ? carrier.GetComponent<NetworkIdentity>() : null;
+        RpcSetCarriedState(carried, carrierIdentity);
     }
-}
 
-public enum PlayerState
-{
-    Idle,
-    Walk,
-    Jump,
-    Damaged,
-    Attack,
-    Climb,
-    ClimbIdle,
-    Shrink,
-    Carried,
-    Throw
+    [ClientRpc]
+    private void RpcSetCarriedState(bool carried, NetworkIdentity carrierIdentity)
+    {
+        movementHandler.enabled = !carried;
+        stateController.ChangeState(carried ? PlayerState.Carried : PlayerState.Idle);
+        transform.SetParent(carried && carrierIdentity != null ? carrierIdentity.transform : null);
+    }
 }

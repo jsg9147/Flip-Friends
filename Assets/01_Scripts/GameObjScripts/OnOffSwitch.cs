@@ -5,9 +5,8 @@ public class OnOffSwitch : Switch
 {
     [SerializeField] private OnOffManager onOffManager;
 
-    private bool isStateSyncing = false; // ¹«ÇÑ ·çÇÁ ¹æÁö ÇÃ·¡±×
-    private float lastSwitchToggleTime = 0f; // ¸¶Áö¸·À¸·Î ½ºÀ§Ä¡¸¦ ÀÛµ¿ÇÑ ½Ã°£
-    [SerializeField] private float toggleCooldown = 0.5f; // ½ºÀ§Ä¡ Àç»ç¿ë ´ë±â ½Ã°£ (ÃÊ)
+    private float lastSwitchToggleTime = 0f;
+    [SerializeField] private float toggleCooldown = 0.5f;
 
     protected override void OnSwitchStateChanged(bool newState)
     {
@@ -16,13 +15,14 @@ public class OnOffSwitch : Switch
 
     private void Update()
     {
+        // í”Œë ˆì´ì–´ ê°ì§€ ë° í† ê¸€ì€ ì„œë²„ì—ì„œë§Œ â€” í´ë¼ì´ì–¸íŠ¸ê°€ ë…ë¦½ì ìœ¼ë¡œ SyncVarë¥¼ ë³€ê²½í•˜ë©´ ì„œë²„ ìƒíƒœì™€ ë¶ˆì¼ì¹˜ ë°œìƒ
+        if (!isServer) return;
         if (Time.time - lastSwitchToggleTime < toggleCooldown) return;
         DetectPlayer();
     }
 
     public override void ToggleSwitch()
     {
-        if (isStateSyncing) return;
         lastSwitchToggleTime = Time.time;
         base.ToggleSwitch();
         NotifyOnOffManager();
@@ -33,19 +33,13 @@ public class OnOffSwitch : Switch
         if (!isServer) return;
 
         onOffManager.ToggleOnOffState(IsActivated);
+        // SyncVar(isActivated)ëŠ” ì„œë²„ê°€ ìë™ ì „íŒŒ â€” RPCëŠ” ìŠ¤í”„ë¼ì´íŠ¸ ê°±ì‹ ë§Œ ë‹´ë‹¹
         RpcToggleSwitch(IsActivated);
     }
 
     [ClientRpc]
     public void RpcToggleSwitch(bool newState)
     {
-        if (isStateSyncing) return;
-
-        isStateSyncing = true;
-        if (IsActivated != newState)
-        {
-            base.ToggleSwitch();
-        }
-        isStateSyncing = false;
+        GetComponent<SpriteRenderer>().sprite = newState ? onSwitchSprite : offSwitchSprite;
     }
 }

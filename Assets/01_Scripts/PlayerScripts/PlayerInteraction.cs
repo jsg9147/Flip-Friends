@@ -5,13 +5,13 @@ public class PlayerInteraction : NetworkBehaviour
 {
     public float throwForce = 3f;
     public BoxCollider2D catchedCollider;
-    public LayerMask detectionLayer; // Å½ÁöÇÒ ·¹ÀÌ¾î
+    public LayerMask detectionLayer; // Å½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½
 
     private BoxCollider2D boxCollider;
 
     private PickupObj heldObject;
 
-    private PlayerController2D heldPlayer;  // ÇÃ·¹ÀÌ¾î¸¦ µé°í ÀÖÀ» ¶§ ÀúÀå
+    private PlayerController2D heldPlayer;  // ï¿½Ã·ï¿½ï¿½Ì¾î¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public bool IsCarriedPlayer => heldPlayer != null;
 
     [SerializeField] private Vector3 heldPos;
@@ -19,7 +19,7 @@ public class PlayerInteraction : NetworkBehaviour
     private float throwDealy = 0.5f;
     private float currentDelay = 0f;
 
-    public bool IsCarried => heldObject != null;
+    public bool IsHoldingObject => heldObject != null;
 
     private void Start()
     {
@@ -37,46 +37,24 @@ public class PlayerInteraction : NetworkBehaviour
         }
     }
 
-    //public void TryIntractive(Vector2 dir, bool inputDown)
-    //{
-    //    if (heldObject == null)
-    //    {
-    //        if (!CheckObjectAbove())
-    //        {
-    //            var obj = SearchObject<PickupObj>(dir);
-    //            if (obj != null)
-    //            {
-    //                PickUpObj(obj);
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if(currentDelay <= 0)
-    //        {
-    //            ThrowObject(dir, inputDown);
-    //        }
-    //    }
-    //}
-
     public void TryIntractive(Vector2 dir, bool inputDown)
     {
-        // ÇöÀç ¾Æ¹«°Íµµ µé°í ÀÖÁö ¾ÊÀº °æ¿ì
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         if (heldObject == null && heldPlayer == null)
         {
-            // 1) ¸Ó¸® À§¿¡ ´Ù¸¥ ¿ÀºêÁ§Æ®³ª ÇÃ·¹ÀÌ¾î°¡ ÀÖ´ÂÁö È®ÀÎ (CheckObjectAbove())
+            // 1) ï¿½Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ (CheckObjectAbove())
             if (!CheckObjectAbove())
             {
-                // 2) ¸ÕÀú ÇÃ·¹ÀÌ¾î Å½»ö
+                // 2) ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Å½ï¿½ï¿½
                 PlayerController2D targetPlayer = SearchPlayer(dir);
                 if (targetPlayer != null && !targetPlayer.isCarried)
                 {
-                    // ÇÃ·¹ÀÌ¾î¸¦ Àâ´Â ·ÎÁ÷
+                    // ï¿½Ã·ï¿½ï¿½Ì¾î¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                     PickUpPlayer(targetPlayer);
                     return;
                 }
 
-                // 3) ÇÃ·¹ÀÌ¾î°¡ ¾øÀ¸¸é ±âÁ¸¿¡ ÇÏ´ø´ë·Î PickupObj Å½»ö
+                // 3) ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ PickupObj Å½ï¿½ï¿½
                 var obj = SearchObject<PickupObj>(dir);
                 if (obj != null)
                 {
@@ -86,7 +64,7 @@ public class PlayerInteraction : NetworkBehaviour
         }
         else
         {
-            // ¹«¾ğ°¡¸¦ µé°í ÀÖ´Ù¸é ¡æ ´øÁö±â Ã³¸®
+            // ï¿½ï¿½ï¿½ğ°¡¸ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
             if (currentDelay <= 0)
             {
                 ThrowCarried(dir, inputDown);
@@ -105,7 +83,7 @@ public class PlayerInteraction : NetworkBehaviour
         {
             Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing) - raySpacing);
             RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.2f, LayerMask.GetMask("Player"));
-            // ¡è "Player" ·¹ÀÌ¾î¸¦ »ç¿ëÇÑ´Ù¸é ¿©±â ÁöÁ¤
+            // ï¿½ï¿½ "Player" ï¿½ï¿½ï¿½Ì¾î¸¦ ï¿½ï¿½ï¿½ï¿½Ñ´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
             foreach (RaycastHit2D hit in hits)
             {
@@ -127,16 +105,10 @@ public class PlayerInteraction : NetworkBehaviour
         currentDelay = throwDealy;
         heldPlayer = targetPlayer;
 
-        // ÇÇÀâÈù ÂÊ PlayerController2D¿¡ "SetCarriedState(true, transform)" È£Ãâ
         heldPlayer.SetCarriedState(true, transform);
 
-        // Ãæµ¹ ¹«½Ã Ã³¸® (¼­·Î °ãÃÄµµ Æ¨±âÁö ¾Êµµ·Ï)
-        Collider2D heldCollider = targetPlayer.GetComponent<Collider2D>();
-        Physics2D.IgnoreCollision(boxCollider, heldCollider, true);
-        Physics2D.IgnoreCollision(catchedCollider, heldCollider, true);
-
-        // ÇÊ¿äÇÏ¸é ÀâÀº ÂÊ(º»ÀÎ)µµ ¾Ö´Ï¸ŞÀÌ¼Ç º¯°æ
-        // ex) GetComponent<PlayerAnimationController>().PlayLiftingAnimation(true);
+        // ì¶©ëŒ ë¬´ì‹œë¥¼ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— ì „íŒŒ â€” ì„œë²„ì—ì„œë§Œ ì„¤ì •í•˜ë©´ í´ë¼ì´ì–¸íŠ¸ì—ì„œ ë“¤ë ¤ìˆëŠ” í”Œë ˆì´ì–´ì™€ ì¶©ëŒ ë°œìƒ
+        RpcSetPlayerCollision(targetPlayer.netIdentity, true);
     }
     private void ThrowCarried(Vector2 dir, bool isPutDown)
     {
@@ -152,51 +124,13 @@ public class PlayerInteraction : NetworkBehaviour
 
     private void ThrowPlayer(Vector2 dir, bool isPutDown)
     {
-        // heldPlayer¸¦ ÀÚÀ¯·Ó°Ô º¹±¸
-        if (heldPlayer != null)
-        {
-            // ÀâÈù ÇÃ·¹ÀÌ¾î ÇØÁ¦
-            heldPlayer.SetCarriedState(false, null);
+        if (heldPlayer == null) return;
 
-            // Àû´çÇÑ ´øÁö´Â ÈûÀ» ÁØ´Ù
-            // MovementHandler°¡ ´Ù½Ã È°¼ºÈ­µÇ¹Ç·Î, ±×ÂÊ¿¡¼­ velocity Á÷Á¢ ¼¼ÆÃÇØÁÙ ¼öµµ ÀÖ°í,
-            // ¿©±â¼­ Rigidbody2D°¡ ÀÖ´Ù¸é AddForce·Î Ã³¸® °¡´É.
-            // ¿¹: heldPlayer.GetComponent<Rigidbody2D>().AddForce(new Vector2(dir.x * throwForce, throwForce), ForceMode2D.Impulse);
-
-            // Ãæµ¹ ¹«½Ã ÇØÁ¦
-            Collider2D heldCollider = heldPlayer.GetComponent<Collider2D>();
-            Physics2D.IgnoreCollision(boxCollider, heldCollider, false);
-            Physics2D.IgnoreCollision(catchedCollider, heldCollider, false);
-
-            // º»ÀÎ Ãø Ã³¸®
-            heldPlayer = null;
-
-            // ¾Ö´Ï¸ŞÀÌ¼Ç, »ç¿îµå Ã³¸®
-            // GetComponent<PlayerAnimationController>().PlayThrowAnimation();
-        }
+        RpcSetPlayerCollision(heldPlayer.netIdentity, false);
+        heldPlayer.SetCarriedState(false, null);
+        heldPlayer = null;
     }
 
-
-    [Command]
-    private void CmdPickUpObj(PickupObj pickableObj)
-    {
-        if (pickableObj != null)
-        {
-            if (!pickableObj.GetComponent<PickupObj>().IsCarried)
-            {
-                PickUpObj(pickableObj);
-                RpcPickUpObj(pickableObj);
-            }
-        }
-    }
-    [ClientRpc]
-    private void RpcPickUpObj(PickupObj pickableObj)
-    {
-        if (pickableObj.GetComponent<PickupObj>() != null)
-        {
-            PickUpObj(pickableObj);
-        }
-    }
 
     private void PickUpObj(PickupObj pickableObj)
     {
@@ -218,19 +152,6 @@ public class PlayerInteraction : NetworkBehaviour
     {
         catchedCollider.enabled = visible;
         catchedCollider.GetComponent<SpriteRenderer>().enabled = visible;
-    }
-
-    [Command]
-    private void CmdThrowObj(Vector2 dir, bool isPutDown)
-    {
-        ThrowObject(dir, isPutDown);
-        RpcThrowObj(dir, isPutDown);
-    }
-
-    [ClientRpc]
-    private void RpcThrowObj(Vector2 dir, bool isPutDown)
-    {
-        ThrowObject(dir, isPutDown);
     }
 
     void ThrowObject(Vector2 dir, bool isPutDown)
@@ -271,30 +192,30 @@ public class PlayerInteraction : NetworkBehaviour
 
     private bool CheckObjectAbove()
     {
-        // ¹Ú½ºÀÇ Áß½É °è»ê (ÇÃ·¹ÀÌ¾îÀÇ À§ÂÊ)
+        // ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ß½ï¿½ ï¿½ï¿½ï¿½ (ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         Vector2 boxCenter = catchedCollider.transform.position;
 
-        // ¹Ú½º ³»ºÎÀÇ ¸ğµç Ãæµ¹ °¨Áö
+        // ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½
         Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, catchedCollider.size, 0f, detectionLayer);
 
-        // µğ¹ö±×¿ë ½Ã°¢È­ (Scene Ã¢¿¡¼­ È®ÀÎ °¡´É)
+        // ï¿½ï¿½ï¿½ï¿½×¿ï¿½ ï¿½Ã°ï¿½È­ (Scene Ã¢ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         Debug.DrawLine(boxCenter - new Vector2(catchedCollider.size.x / 2, catchedCollider.size.y / 2),
                        boxCenter + new Vector2(catchedCollider.size.x / 2, catchedCollider.size.y / 2),
                        Color.red, 0.1f);
 
-        return hits.Length > 0; // ¹Ú½º ¾È¿¡ ¹°Ã¼°¡ ÀÖÀ¸¸é true ¹İÈ¯
+        return hits.Length > 0; // ï¿½Ú½ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½È¯
     }
     private T SearchObject<T>(Vector2 dir) where T : Component
     {
         Vector2 boxSize = boxCollider.size;
         Vector2 boxCenter = (Vector2)transform.position + boxCollider.offset;
-        float raySpacing = boxSize.x / 8f; // ¹Ú½ºÀÇ °¡·Î Å©±â¸¦ ±âÁØÀ¸·Î ¿©·¯ °³ÀÇ ·¹ÀÌ¸¦ »ı¼º
-        int rayCount = 10; // ÃÑ 5°³ÀÇ Raycast »ç¿ë
+        float raySpacing = boxSize.x / 8f; // ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å©ï¿½â¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+        int rayCount = 10; // ï¿½ï¿½ 5ï¿½ï¿½ï¿½ï¿½ Raycast ï¿½ï¿½ï¿½
         float xPos = (dir.x > 0) ? boxCollider.bounds.max.x : boxCollider.bounds.min.x;
 
         for (int i = 0; i < rayCount; i++)
         {
-            // ·¹ÀÌ ½ÃÀÛ À§Ä¡¸¦ ¿ŞÂÊ¿¡¼­ ÀÏÁ¤ °£°İÀ¸·Î ¼³Á¤
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing) - raySpacing);
 
             RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.2f, LayerMask.GetMask("Pickable"));
@@ -313,6 +234,15 @@ public class PlayerInteraction : NetworkBehaviour
             }
         }
         return null;
+    }
+
+    [ClientRpc]
+    private void RpcSetPlayerCollision(NetworkIdentity targetPlayer, bool ignore)
+    {
+        Collider2D heldCollider = targetPlayer.GetComponent<Collider2D>();
+        if (heldCollider == null) return;
+        Physics2D.IgnoreCollision(boxCollider, heldCollider, ignore);
+        Physics2D.IgnoreCollision(catchedCollider, heldCollider, ignore);
     }
 
     void DisableCollisionWithHeldObject(PickupObj objectToPickUp)
