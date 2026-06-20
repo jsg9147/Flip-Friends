@@ -187,7 +187,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     {
         if (isServer)
         {
-            NetworkManager.singleton.ServerChangeScene($"GamePlay_{stage}");
+            NetworkManager.singleton.ServerChangeScene($"GamePlay");
         }
     }
 }

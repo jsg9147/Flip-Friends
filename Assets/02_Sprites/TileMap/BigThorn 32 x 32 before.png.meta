@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      BigThorn 32 x 32 before_0: 6357450594520955348
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

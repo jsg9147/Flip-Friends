@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 64059cbe4d9653047b05c6198cd01972
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 129321
+  packageName: Mirror
+  packageVersion: 96.0.1
+  assetPath: Assets/Mirror/Examples/PickupsDropsChilds/Prefabs/Player.prefab
+  uploadId: 736421

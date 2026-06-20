@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(gh auth *)",
+      "PowerShell(cmdkey *)",
+      "Bash(xargs grep -l \"bad55930\\\\|be564131\\\\|62899f85\\\\|db0c1ef7\\\\|9541d86e\")"
+    ]
+  }
+}
