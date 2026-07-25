@@ -31,15 +31,26 @@ public class MapEditorManager : MonoBehaviour
             instance = null;
     }
 
-    public void NewMap(string mapName)
+    public bool NewMap(string mapName)
     {
-        CurrentMapData = new MapData(mapName, GetAuthorName());
+        if (!TrySetMapName(mapName, out string normalizedName)) return false;
+
+        ObjectPlacer.instance?.ResetTransientState();
+        CurrentMapData = new MapData(normalizedName, GetAuthorName());
+        return true;
     }
 
-    public void SetMapName(string mapName)
+    public bool SetMapName(string mapName)
     {
-        if (CurrentMapData != null)
-            CurrentMapData.mapName = mapName;
+        if (!TrySetMapName(mapName, out string normalizedName)) return false;
+        if (CurrentMapData == null)
+        {
+            Debug.LogWarning("이름을 변경할 현재 맵 데이터가 없습니다.", this);
+            return false;
+        }
+
+        CurrentMapData.mapName = normalizedName;
+        return true;
     }
 
     public void SelectPrefab(string prefabID)
@@ -57,15 +68,18 @@ public class MapEditorManager : MonoBehaviour
         CurrentMapData?.objects.Remove(data);
     }
 
-    public void SaveMap()
+    public bool SaveMap()
     {
-        if (CurrentMapData == null || string.IsNullOrEmpty(CurrentMapData.mapName))
+        if (CurrentMapData == null)
         {
-            Debug.LogWarning("맵 이름이 없습니다. 저장할 수 없습니다.");
-            return;
+            Debug.LogWarning("저장할 현재 맵 데이터가 없습니다.", this);
+            return false;
         }
-        MapDataRepository.Save(CurrentMapData);
+
+        if (!MapDataRepository.Save(CurrentMapData)) return false;
+
         Debug.Log($"맵 저장 완료: {CurrentMapData.mapName}");
+        return true;
     }
 
     public void LoadMap(string mapName)
@@ -73,12 +87,14 @@ public class MapEditorManager : MonoBehaviour
         MapData loaded = MapDataRepository.Load(mapName);
         if (loaded == null) return;
 
+        ObjectPlacer.instance?.ResetTransientState();
         CurrentMapData = loaded;
         ObjectPlacer.instance?.RebuildFromMapData(loaded);
     }
 
     public void ReturnToMain()
     {
+        ObjectPlacer.instance?.ResetTransientState();
         if (!Application.CanStreamedLevelBeLoaded(MainSceneName))
         {
             Debug.LogError($"메인 씬을 불러올 수 없습니다. Build Settings에서 '{MainSceneName}' 씬이 활성화되어 있는지 확인하세요.", this);
@@ -94,5 +110,17 @@ public class MapEditorManager : MonoBehaviour
         if (SteamRoomManager.Instance != null)
             return SteamRoomManager.Instance.playerName;
         return "Unknown";
+    }
+
+    private bool TrySetMapName(string mapName, out string normalizedName)
+    {
+        if (MapDataRepository.TryNormalizeMapName(
+                mapName,
+                out normalizedName,
+                out string error))
+            return true;
+
+        Debug.LogWarning($"맵 이름을 사용할 수 없습니다: {error}", this);
+        return false;
     }
 }

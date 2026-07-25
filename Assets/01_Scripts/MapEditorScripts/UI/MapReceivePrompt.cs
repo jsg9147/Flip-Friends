@@ -47,7 +47,8 @@ public class MapReceivePrompt : MonoBehaviour
     {
         if (pendingMapData == null) return;
 
-        MapDataRepository.Save(pendingMapData);
+        if (!MapDataRepository.Save(pendingMapData)) return;
+
         promptPanel.SetActive(false);
         pendingMapData = null;
     }

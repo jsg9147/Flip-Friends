@@ -2,6 +2,13 @@ using UnityEngine;
 
 public class MapEditorCamera : MonoBehaviour
 {
+    private const float MinimumZoomDifference = 0.01f;
+
+    [Header("이동")]
+    [SerializeField] private Vector2 minimumPosition = new(-50f, -30f);
+    [SerializeField] private Vector2 maximumPosition = new(50f, 30f);
+
+    [Header("줌")]
     [SerializeField] private float zoomSpeed = 3f;
     [SerializeField] private float minZoom = 3f;
     [SerializeField] private float maxZoom = 25f;
@@ -36,6 +43,7 @@ public class MapEditorCamera : MonoBehaviour
             // 클릭한 월드 좌표가 마우스 위치에 고정되도록 카메라 이동
             Vector3 delta = panOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
             cam.transform.position += delta;
+            ClampPosition();
         }
     }
 
@@ -48,5 +56,25 @@ public class MapEditorCamera : MonoBehaviour
             cam.orthographicSize - scroll * zoomSpeed,
             minZoom, maxZoom
         );
+    }
+
+    private void ClampPosition()
+    {
+        Vector3 position = cam.transform.position;
+        position.x = Mathf.Clamp(position.x, minimumPosition.x, maximumPosition.x);
+        position.y = Mathf.Clamp(position.y, minimumPosition.y, maximumPosition.y);
+        cam.transform.position = position;
+    }
+
+    private void OnValidate()
+    {
+        if (minimumPosition.x > maximumPosition.x)
+            (minimumPosition.x, maximumPosition.x) = (maximumPosition.x, minimumPosition.x);
+        if (minimumPosition.y > maximumPosition.y)
+            (minimumPosition.y, maximumPosition.y) = (maximumPosition.y, minimumPosition.y);
+
+        minZoom = Mathf.Max(MinimumZoomDifference, minZoom);
+        maxZoom = Mathf.Max(minZoom + MinimumZoomDifference, maxZoom);
+        zoomSpeed = Mathf.Max(MinimumZoomDifference, zoomSpeed);
     }
 }

@@ -46,6 +46,8 @@ public class MapListUI : MonoBehaviour
         if (mapData == null) return;
 
         string json = MapDataRepository.ToJson(mapData);
+        if (string.IsNullOrEmpty(json)) return;
+
         mapSelectionManager.CustomMapLoad(json);
         panel.SetActive(false);
     }

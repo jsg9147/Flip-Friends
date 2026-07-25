@@ -3,13 +3,18 @@ using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
+    private const float MinimumGridSize = 0.01f;
+
     public static ObjectPlacer instance;
 
     [SerializeField] private float gridSize = 1f;
+    [SerializeField] private ObjectTransformEditor transformEditor;
 
-    private readonly List<(PlacedObjectData data, GameObject obj)> placedObjects = new();
+    private readonly List<PlacedObjectView> placedObjects = new();
     private GameObject ghost;
     private string currentPrefabID;
+    private float previewRotation;
+    private Vector3 previewScale = Vector3.one;
 
     private void Awake()
     {
@@ -32,6 +37,11 @@ public class ObjectPlacer : MonoBehaviour
             return;
         }
 
+        if (transformEditor == null)
+            transformEditor = GetComponent<ObjectTransformEditor>();
+        if (transformEditor == null)
+            Debug.LogError("ObjectPlacer와 함께 사용할 ObjectTransformEditor가 없습니다.", this);
+
         MapEditorPalette palette = MapEditorManager.instance?.palette;
         if (palette != null && palette.entries.Count > 0)
             OnPaletteChanged(palette.entries[0].id);
@@ -46,18 +56,19 @@ public class ObjectPlacer : MonoBehaviour
     private void Update()
     {
         UpdateGhostPosition();
-        HandlePlaceInput();
-        HandleRemoveInput();
     }
 
     public void OnPaletteChanged(string prefabID)
     {
+        transformEditor?.ExitDeleteMode();
         currentPrefabID = prefabID;
+        ResetPlacementTransform();
         RecreateGhost(prefabID);
     }
 
     public void RebuildFromMapData(MapData mapData)
     {
+        ResetTransientState();
         ClearDisplayObjects();
         if (mapData?.objects == null)
         {
@@ -71,48 +82,138 @@ public class ObjectPlacer : MonoBehaviour
 
     public void ClearDisplayObjects()
     {
-        foreach (var (_, obj) in placedObjects)
-            Destroy(obj);
+        transformEditor?.ClearSelection();
+        foreach (PlacedObjectView view in placedObjects)
+        {
+            if (view != null)
+                Destroy(view.gameObject);
+        }
 
         placedObjects.Clear();
     }
 
-    private void UpdateGhostPosition()
+    public void ResetTransientState()
     {
-        if (ghost == null) return;
-        ghost.transform.position = GetSnappedWorldPosition();
+        transformEditor?.ClearSelection();
+        ResetPlacementTransform();
+        RecreateGhost(currentPrefabID);
     }
 
-    private void HandlePlaceInput()
+    public void SetGhostVisible(bool isVisible)
     {
-        if (!Input.GetMouseButtonDown(0)) return;
-        if (IsPointerOverUI()) return;
+        if (ghost != null)
+            ghost.SetActive(isVisible);
+    }
+
+    public void TryPlaceCurrent()
+    {
+        TryPlaceCurrent(GetSnappedWorldPosition());
+    }
+
+    public void TryPlaceCurrent(Vector3 position)
+    {
         if (string.IsNullOrWhiteSpace(currentPrefabID)) return;
 
-        Vector3 pos = GetSnappedWorldPosition();
-        PlacedObjectData data = new PlacedObjectData(currentPrefabID, pos, 0f, Vector3.one);
+        RemoveObjectsAt(position);
+        PlacedObjectData data = new PlacedObjectData(
+            currentPrefabID,
+            position,
+            previewRotation,
+            previewScale);
         SpawnDisplayObject(data);
         MapEditorManager.instance?.AddObject(data);
     }
 
-    private void HandleRemoveInput()
+    private void RemoveObjectsAt(Vector3 position)
     {
-        if (!Input.GetMouseButtonDown(1)) return;
-
-        Vector3 worldPos = GetWorldMousePosition();
-
         for (int i = placedObjects.Count - 1; i >= 0; i--)
         {
-            var (data, obj) = placedObjects[i];
-            SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-            if (sr != null && sr.bounds.Contains(worldPos))
+            PlacedObjectView view = placedObjects[i];
+            if (view == null)
             {
-                Destroy(obj);
-                MapEditorManager.instance?.RemoveObject(data);
                 placedObjects.RemoveAt(i);
-                return;
+                continue;
             }
+
+            Vector3 placedPosition = view.Data?.position?.ToVector3() ?? view.transform.position;
+            if (!IsSameGridPosition(placedPosition, position)) continue;
+
+            transformEditor?.ClearSelection();
+            placedObjects.RemoveAt(i);
+            MapEditorManager.instance?.RemoveObject(view.Data);
+            Destroy(view.gameObject);
         }
+    }
+
+    private bool IsSameGridPosition(Vector3 first, Vector3 second)
+    {
+        float validGridSize = Mathf.Max(gridSize, MinimumGridSize);
+        return Mathf.RoundToInt(first.x / validGridSize) ==
+               Mathf.RoundToInt(second.x / validGridSize) &&
+               Mathf.RoundToInt(first.y / validGridSize) ==
+               Mathf.RoundToInt(second.y / validGridSize);
+    }
+
+    public void RotatePreview(float rotationStep)
+    {
+        previewRotation = Mathf.Repeat(previewRotation + rotationStep, 360f);
+        ApplyPreviewTransform();
+    }
+
+    public void FlipPreview()
+    {
+        previewScale.x *= -1f;
+        ApplyPreviewTransform();
+    }
+
+    public void Remove(PlacedObjectView view)
+    {
+        if (view == null || !placedObjects.Remove(view))
+        {
+            Debug.LogWarning("삭제할 화면 오브젝트를 배치 목록에서 찾지 못했습니다.", this);
+            return;
+        }
+
+        MapEditorManager.instance?.RemoveObject(view.Data);
+        Destroy(view.gameObject);
+    }
+
+    public PlacedObjectView FindTopViewAt(Vector3 worldPosition)
+    {
+        for (int i = placedObjects.Count - 1; i >= 0; i--)
+        {
+            PlacedObjectView view = placedObjects[i];
+            if (view != null && view.SpriteRenderer != null &&
+                view.SpriteRenderer.bounds.Contains(worldPosition))
+                return view;
+        }
+
+        return null;
+    }
+
+    public Vector3 GetSnappedWorldPosition()
+    {
+        Vector3 worldPos = GetWorldMousePosition();
+        float validGridSize = Mathf.Max(gridSize, MinimumGridSize);
+        return new Vector3(
+            Mathf.Round(worldPos.x / validGridSize) * validGridSize,
+            Mathf.Round(worldPos.y / validGridSize) * validGridSize,
+            0f
+        );
+    }
+
+    public Vector3 GetWorldMousePosition()
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            Debug.LogError("마우스 월드 좌표 변환에 필요한 MainCamera가 없습니다.", this);
+            return Vector3.zero;
+        }
+
+        Vector3 pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        pos.z = 0f;
+        return pos;
     }
 
     private void SpawnDisplayObject(PlacedObjectData data)
@@ -128,7 +229,9 @@ public class ObjectPlacer : MonoBehaviour
         }
 
         GameObject obj = CreateSpriteObject(thumbnail, data);
-        placedObjects.Add((data, obj));
+        PlacedObjectView view = obj.AddComponent<PlacedObjectView>();
+        view.Initialize(data);
+        placedObjects.Add(view);
     }
 
     private bool CanDisplay(
@@ -156,7 +259,11 @@ public class ObjectPlacer : MonoBehaviour
         Sprite thumbnail = entry.thumbnail;
         if (thumbnail == null) return;
 
-        ghost = CreateSpriteObject(thumbnail, GetSnappedWorldPosition(), 0f, Vector3.one);
+        ghost = CreateSpriteObject(
+            thumbnail,
+            GetSnappedWorldPosition(),
+            previewRotation,
+            previewScale);
         ghost.name = "Ghost";
 
         SpriteRenderer sr = ghost.GetComponent<SpriteRenderer>();
@@ -189,26 +296,35 @@ public class ObjectPlacer : MonoBehaviour
         return obj;
     }
 
-    private Vector3 GetSnappedWorldPosition()
+    private void UpdateGhostPosition()
     {
-        Vector3 worldPos = GetWorldMousePosition();
-        return new Vector3(
-            Mathf.Round(worldPos.x / gridSize) * gridSize,
-            Mathf.Round(worldPos.y / gridSize) * gridSize,
-            0f
-        );
+        if (ghost == null) return;
+        ghost.transform.position = GetSnappedWorldPosition();
     }
 
-    private Vector3 GetWorldMousePosition()
+    private void ApplyPreviewTransform()
     {
-        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        pos.z = 0f;
-        return pos;
+        if (ghost == null)
+        {
+            Debug.LogWarning("회전 또는 반전을 표시할 배치 고스트가 없습니다.", this);
+            return;
+        }
+
+        ghost.transform.SetPositionAndRotation(
+            ghost.transform.position,
+            Quaternion.Euler(0f, 0f, previewRotation));
+        ghost.transform.localScale = previewScale;
     }
 
-    private bool IsPointerOverUI()
+    private void ResetPlacementTransform()
     {
-        return UnityEngine.EventSystems.EventSystem.current != null &&
-               UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+        previewRotation = 0f;
+        previewScale = Vector3.one;
+    }
+
+    private void OnValidate()
+    {
+        if (gridSize < MinimumGridSize)
+            gridSize = 1f;
     }
 }

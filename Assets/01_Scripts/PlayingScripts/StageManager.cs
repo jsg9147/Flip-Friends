@@ -80,7 +80,14 @@ public class StageManager : NetworkBehaviour
             return;
         }
 
-        SpawnMapDataSync(MapDataRepository.ToJson(mapData));
+        string json = MapDataRepository.ToJson(mapData);
+        if (string.IsNullOrEmpty(json))
+        {
+            Debug.LogError("커스텀 맵 데이터를 동기화용 JSON으로 변환할 수 없습니다.");
+            return;
+        }
+
+        SpawnMapDataSync(json);
 
         foreach (PlacedObjectData objData in mapData.objects)
         {
