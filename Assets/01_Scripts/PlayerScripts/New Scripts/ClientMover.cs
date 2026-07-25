@@ -40,6 +40,10 @@ public class ClientMover : NetworkBehaviour
     {
         if (!isOwned) return;
 
+        // 활성 클라이언트가 없으면 Command를 보낼 수 없음 — 예측 자체가 무의미하므로 건너뜀
+        // (연결 종료·씬 전환 시점에 isOwned가 아직 true인 채 FixedUpdate가 실행되는 경우 방지)
+        if (!NetworkClient.active) return;
+
         // 캐리 상태처럼 MovementHandler가 비활성화된 경우 예측 건너뜀
         if (!movementHandler.enabled) return;
 

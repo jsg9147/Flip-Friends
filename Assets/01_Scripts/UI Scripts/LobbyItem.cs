@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -5,12 +6,13 @@ using UnityEngine.UI;
 public class LobbyItem : MonoBehaviour
 {
     private SteamLobbyInfo lobbyInfo;
+    private Action<SteamLobbyInfo> joinAction;
 
     public TMP_Text ownerNameText;
     public TMP_Text currentMemberText;
     public TMP_Text lobbyStateText;
 
-    private void Start()
+    private void Awake()
     {
         GetComponent<Button>().onClick.AddListener(JoinLobby);
     }
@@ -24,9 +26,24 @@ public class LobbyItem : MonoBehaviour
         lobbyStateText.text = lobbyInfo.IsInGame ? "Playing" : "Waiting";
     }
 
+    public void SetJoinAction(Action<SteamLobbyInfo> action)
+    {
+        joinAction = action;
+    }
+
     private void JoinLobby()
     {
-        if (lobbyInfo != null)
-            SteamRoomManager.Instance.JoinLobby(lobbyInfo.LobbyID);
+        if (lobbyInfo == null)
+        {
+            return;
+        }
+
+        if (joinAction != null)
+        {
+            joinAction.Invoke(lobbyInfo);
+            return;
+        }
+
+        SteamRoomManager.Instance.JoinLobby(lobbyInfo.LobbyID);
     }
 }

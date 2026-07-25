@@ -6,7 +6,7 @@ using UnityEngine;
 public class Controller2D : RaycastController
 {
     public float maxSlopeAngle = 45f;
-    public float coyoteTimeDuration = 0.2f; // ÄÚ¿äÅÂ Å¸ÀÓ Áö¼Ó ½Ã°£
+    public float coyoteTimeDuration = 0.2f; // ï¿½Ú¿ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
     private float coyoteTimeCounter = 0f;
     public CollisionInfo collisions;
     public Collider2D objCollider;
@@ -15,6 +15,7 @@ public class Controller2D : RaycastController
     public bool isHold => heldObj != null;
 
     public Conveyor onConveyor;
+    public MovingPlatform onMovingPlatform { get; private set; }
 
     public NetworkIdentity underPlayer { get; private set; }
     private Vector2 movementVector;
@@ -50,7 +51,7 @@ public class Controller2D : RaycastController
         if (standingOnPlatform)
             collisions.below = true;
 
-        // ÄÚ¿äÅÂ Å¸ÀÓ Ä«¿îÅÍ ¾÷µ¥ÀÌÆ®
+        // ï¿½Ú¿ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         if (collisions.below)
         {
             coyoteTimeCounter = coyoteTimeDuration;
@@ -62,7 +63,7 @@ public class Controller2D : RaycastController
     }
     public bool CanJump()
     {
-        // ÄÚ¿äÅÂ Å¸ÀÓ ³»¿¡ ÀÖ´ÂÁö È®ÀÎ
+        // ï¿½Ú¿ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         return collisions.below || coyoteTimeCounter > 0f;
     }
 
@@ -128,6 +129,7 @@ public class Controller2D : RaycastController
         float rayLength = Mathf.Abs(moveAmount.y) + skinWidth;
 
         onConveyor = null;
+        onMovingPlatform = null;
 
         for (int i = 0; i < verticalRayCount; i++)
         {
@@ -181,10 +183,11 @@ public class Controller2D : RaycastController
             collisions.above = directionY == 1;
 
             SearchConveyor(hit);
+            SearchMovingPlatform(hit, directionY);
 
             if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f)  < transform.position.y)
             {
-                // ³×Æ®¿öÅ© °´Ã¼ÀÇ NetId¸¦ °¡Á®¿À±â
+                // ï¿½ï¿½Æ®ï¿½ï¿½Å© ï¿½ï¿½Ã¼ï¿½ï¿½ NetIdï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 NetworkIdentity networkIdentity = hit.transform.GetComponent<NetworkIdentity>();
 
                 if (networkIdentity != null)
@@ -201,6 +204,14 @@ public class Controller2D : RaycastController
         onConveyor = conveyor;
     }
 
+    private void SearchMovingPlatform(RaycastHit2D hit, float directionY)
+    {
+        if (directionY != -1) return;
+        MovingPlatform platform = hit.transform.GetComponent<MovingPlatform>();
+        if (platform != null)
+            onMovingPlatform = platform;
+    }
+
     private void ProcessVerticalHitsPlayer(RaycastHit2D[] hits, Vector2 dir, float directionY)
     {
         foreach (var hit in hits)
@@ -209,7 +220,7 @@ public class Controller2D : RaycastController
 
             if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f) < transform.position.y)
             {
-                // ³×Æ®¿öÅ© °´Ã¼ÀÇ NetId¸¦ °¡Á®¿À±â
+                // ï¿½ï¿½Æ®ï¿½ï¿½Å© ï¿½ï¿½Ã¼ï¿½ï¿½ NetIdï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 NetworkIdentity networkIdentity = hit.transform.GetComponent<NetworkIdentity>();
 
                 if (networkIdentity != null)

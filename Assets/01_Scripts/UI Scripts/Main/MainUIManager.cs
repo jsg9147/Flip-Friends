@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 public class MainUIManager : MonoBehaviour
 {
+    private const string MainMenuScreenId = "main-menu";
+    private const string ModeSelectScreenId = "mode-select";
+    private const string HostRoomScreenId = "host-room";
+    private const string PublicLobbyScreenId = "public-lobby";
+    private const string PrivateJoinScreenId = "private-join";
     public bool mouseLock;
 
     public static MainUIManager instance;
@@ -22,16 +27,19 @@ public class MainUIManager : MonoBehaviour
 
     public int targetFrameRate = 60;
 
+    private ScreenNavigator screenNavigator;
+
     private void Awake()
     {
         if(instance == null)
             instance = this;
+
+        screenNavigator = GetComponent<ScreenNavigator>();
     }
 
     void Start()
     {
         Init();
-        MainUIOpen();
     }
 
     void Init()
@@ -50,7 +58,7 @@ public class MainUIManager : MonoBehaviour
 
     void UIReset()
     {
-        // uiList¸¦ »ç¿ëÇÏÁö ¾Ê°í Á÷Á¢ ¸ðµç UI¸¦ ºñÈ°¼ºÈ­
+        // uiListï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         mainUI.SetActive(false);
         gameModeUI.SetActive(false);
         hostUI.SetActive(false);
@@ -67,32 +75,57 @@ public class MainUIManager : MonoBehaviour
         keySettingUI.SetActive(false);
     }
 
-    public void MainUIOpen()
+public void MainUIOpen()
     {
+        if (TryOpenScreen(MainMenuScreenId, false))
+        {
+            return;
+        }
+
         UIReset();
         mainUI.SetActive(true);
     }
 
-    public void GameModeUIOpen()
+public void GameModeUIOpen()
     {
+        if (TryOpenScreen(ModeSelectScreenId))
+        {
+            return;
+        }
+
         UIReset();
         gameModeUI.SetActive(true);
     }
 
-    public void HostUIOpen()
+public void HostUIOpen()
     {
+        if (TryOpenScreen(HostRoomScreenId))
+        {
+            return;
+        }
+
         UIReset();
         hostUI.SetActive(true);
     }
 
-    public void PublicUIOpen()
+public void PublicUIOpen()
     {
+        if (TryOpenScreen(PublicLobbyScreenId))
+        {
+            return;
+        }
+
         UIReset();
         publicGameUI.gameObject.SetActive(true);
     }
 
-    public void PrivateUIOpen()
+public void PrivateUIOpen()
     {
+        if (TryOpenScreen(PrivateJoinScreenId))
+        {
+            return;
+        }
+
         UIReset();
         privateJoinUI.gameObject.SetActive(true);
     }
@@ -120,7 +153,24 @@ public class MainUIManager : MonoBehaviour
         gamepadSetting.SetActive(true);
     }
 
-    public void GameQuit()
+    
+
+    private bool TryOpenScreen(string screenId, bool rememberCurrent = true)
+    {
+        if (screenNavigator == null)
+        {
+            screenNavigator = GetComponent<ScreenNavigator>();
+        }
+
+        if (screenNavigator == null)
+        {
+            return false;
+        }
+
+        screenNavigator.Open(screenId, rememberCurrent);
+        return true;
+    }
+public void GameQuit()
     {
         Application.Quit();
     }

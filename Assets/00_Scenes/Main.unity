@@ -1275,10 +1275,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 85923874}
-  - component: {fileID: 85923875}
   - component: {fileID: 85923878}
   - component: {fileID: 85923877}
   - component: {fileID: 85923876}
+  - component: {fileID: 85923880}
+  - component: {fileID: 85923879}
   m_Layer: 5
   m_Name: Private Join UI
   m_TagString: Untagged
@@ -1310,30 +1311,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &85923875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 85923873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53ef55104b5599d4ba5aa0c7a5853102, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  digitControls:
-  - {fileID: 1718692963}
-  - {fileID: 649739205}
-  - {fileID: 1310799335}
-  - {fileID: 849494038}
-  - {fileID: 1144006149}
-  - {fileID: 333054226}
-  - {fileID: 1640558296}
-  - {fileID: 1520971394}
-  joinButton: {fileID: 622336767}
-  inputDelay: 0.2
-  inputMode: 0
 --- !u!114 &85923876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1389,6 +1366,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 85923873}
   m_CullTransparentMesh: 1
+--- !u!114 &85923879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85923873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdf534ed4f1319548b2e5862f2a2dec8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrivateJoinScreen
+  screenId: private-join
+  firstSelectedObject: {fileID: 1309359021}
+  canvasGroup: {fileID: 85923880}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
+  joinCodeInput: {fileID: 0}
+  joinButton: {fileID: 622336767}
+  backButton: {fileID: 936682231}
+  legacyDigitInputRoot: {fileID: 447199005}
+  legacyInputButton: {fileID: 1309359021}
+  legacyDigitControls:
+  - {fileID: 1718692963}
+  - {fileID: 649739205}
+  - {fileID: 1310799335}
+  - {fileID: 849494038}
+  - {fileID: 1144006149}
+  - {fileID: 333054226}
+  - {fileID: 1640558296}
+  - {fileID: 1520971394}
+  legacyInputDelay: 0.2
+  requiredCodeLength: 8
+--- !u!225 &85923880
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85923873}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &94780798
 GameObject:
   m_ObjectHideFlags: 0
@@ -1644,6 +1666,7 @@ GameObject:
   - component: {fileID: 110928755}
   - component: {fileID: 110928754}
   - component: {fileID: 110928753}
+  - component: {fileID: 110928756}
   m_Layer: 5
   m_Name: Start Button
   m_TagString: Untagged
@@ -1714,19 +1737,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 110928754}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: GameModeUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &110928754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1765,6 +1776,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110928751}
   m_CullTransparentMesh: 1
+--- !u!114 &110928756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110928751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 0
+  targetScreenId: mode-select
+  rememberCurrent: 1
 --- !u!1 &111960015
 GameObject:
   m_ObjectHideFlags: 0
@@ -3007,8 +3034,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1214857751}
-        m_TargetAssemblyTypeName: PublicLobbyUI, Assembly-CSharp
+      - m_Target: {fileID: 1214857756}
+        m_TargetAssemblyTypeName: PublicLobbyScreen, Assembly-CSharp
         m_MethodName: OnLobbyListUpdateButtonClicked
         m_Mode: 1
         m_Arguments:
@@ -4680,9 +4707,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: SetGameModeUIOpen
+      - m_Target: {fileID: 889852303}
+        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
+        m_MethodName: HandleBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7733,6 +7760,7 @@ GameObject:
   - component: {fileID: 530801299}
   - component: {fileID: 530801298}
   - component: {fileID: 530801297}
+  - component: {fileID: 530801300}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -7803,19 +7831,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 530801298}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: MainUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &530801298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7854,6 +7870,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530801295}
   m_CullTransparentMesh: 1
+--- !u!114 &530801300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 530801295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &537933720
 GameObject:
   m_ObjectHideFlags: 0
@@ -8979,8 +9011,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 85923875}
-        m_TargetAssemblyTypeName: PrivateJoinUI, Assembly-CSharp
+      - m_Target: {fileID: 85923879}
+        m_TargetAssemblyTypeName: PrivateJoinScreen, Assembly-CSharp
         m_MethodName: JoinSteamLobby
         m_Mode: 1
         m_Arguments:
@@ -9179,6 +9211,8 @@ GameObject:
   - component: {fileID: 629872059}
   - component: {fileID: 629872061}
   - component: {fileID: 629872062}
+  - component: {fileID: 629872064}
+  - component: {fileID: 629872063}
   m_Layer: 5
   m_Name: Key Rebinding UI
   m_TagString: Untagged
@@ -9233,6 +9267,34 @@ MonoBehaviour:
   - {fileID: 2139316622}
   - {fileID: 421175062}
   inputDelay: 0.2
+--- !u!114 &629872063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 629872058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f676917103492c44f8295e4df0885995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIScreen
+  screenId: key-binding
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 629872064}
+  hideOnAwake: 0
+--- !u!225 &629872064
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 629872058}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &632145356
 GameObject:
   m_ObjectHideFlags: 0
@@ -9245,6 +9307,7 @@ GameObject:
   - component: {fileID: 632145360}
   - component: {fileID: 632145359}
   - component: {fileID: 632145358}
+  - component: {fileID: 632145361}
   m_Layer: 5
   m_Name: Public Button
   m_TagString: Untagged
@@ -9315,19 +9378,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 632145359}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: PublicUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &632145359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9366,6 +9417,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 632145356}
   m_CullTransparentMesh: 1
+--- !u!114 &632145361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632145356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 0
+  targetScreenId: public-lobby
+  rememberCurrent: 1
 --- !u!1 &645668584
 GameObject:
   m_ObjectHideFlags: 0
@@ -12432,6 +12499,8 @@ GameObject:
   - component: {fileID: 889852299}
   - component: {fileID: 889852301}
   - component: {fileID: 889852302}
+  - component: {fileID: 889852304}
+  - component: {fileID: 889852303}
   m_Layer: 5
   m_Name: Host UI
   m_TagString: Untagged
@@ -12504,7 +12573,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 889852297}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4c114e297000424c8eba37f5dd85e04, type: 3}
   m_Name: 
@@ -12530,6 +12599,44 @@ MonoBehaviour:
   - {fileID: 1431026929}
   - {fileID: 325408746}
   inputDelay: 0.2
+--- !u!114 &889852303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889852297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5af5432213271c446996eae38769c1f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HostRoomScreen
+  screenId: host-room
+  firstSelectedObject: {fileID: 129207658}
+  canvasGroup: {fileID: 889852304}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
+  roomTypeButton: {fileID: 129207660}
+  maxPlayerCountButton: {fileID: 1577862496}
+  createButton: {fileID: 1431026929}
+  cancelButton: {fileID: 325408746}
+  roomType: 1
+  minPlayerCount: 2
+  maxPlayerLimit: 4
+  maxPlayerCount: 4
+  horizontalInputCooldown: 0.2
+--- !u!225 &889852304
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889852297}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &900101752
 GameObject:
   m_ObjectHideFlags: 0
@@ -13048,9 +13155,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: GameModeUIOpen
+      - m_Target: {fileID: 85923879}
+        m_TargetAssemblyTypeName: PrivateJoinScreen, Assembly-CSharp
+        m_MethodName: HandleBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13717,6 +13824,12 @@ MonoBehaviour:
   - {fileID: 3829263911076010992, guid: a1b34728f0cef82428ca985486f2ac89, type: 3}
   - {fileID: 888922463325178406, guid: 0ff82ab7fec8dcd44a1f411e6d8f13f7, type: 3}
   - {fileID: 7947001633615829510, guid: 171a9cc59df94364993ddcc1f4b55357, type: 3}
+  - {fileID: 1000000000000000002, guid: 11a9ad740c1e47a0a3563a294fe6151f, type: 3}
+  - {fileID: 1000000000000000003, guid: 9371a49f74b04dcc844764b5d7d46a51, type: 3}
+  - {fileID: 1000000000000000001, guid: 7dcf352c87e445d38d96d86aca3f9773, type: 3}
+  - {fileID: 959400136612832559, guid: 2b023eab7f727a1488eda19b60c54f64, type: 3}
+  - {fileID: 901802072978258720, guid: 34b497c337dc5ea43a4f63987950ac70, type: 3}
+  - {fileID: 2945471622916600022, guid: b14757c1186d91641a43363f31081669, type: 3}
   - {fileID: 5813359405025824721, guid: ad9315da8fd1dd541a633d812e99d518, type: 3}
   - {fileID: 6749148591891718062, guid: c32f8b20d50c61a4da1c6980e6a7adf5, type: 3}
   - {fileID: 4839135096584866826, guid: 05ea356a9062863458d87495d4f2f6d5, type: 3}
@@ -13754,6 +13867,7 @@ MonoBehaviour:
   _allPlayersReady: 0
   clientIndex: 0
   currentStage: 0
+  currentMapData: 
   lobbyInfos: []
 --- !u!4 &1011734842
 Transform:
@@ -14141,6 +14255,7 @@ GameObject:
   - component: {fileID: 1046766189}
   - component: {fileID: 1046766188}
   - component: {fileID: 1046766187}
+  - component: {fileID: 1046766190}
   m_Layer: 5
   m_Name: Exit Button
   m_TagString: Untagged
@@ -14211,19 +14326,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1046766188}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: GameQuit
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1046766188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14262,6 +14365,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1046766185}
   m_CullTransparentMesh: 1
+--- !u!114 &1046766190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046766185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 2
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &1051298754
 GameObject:
   m_ObjectHideFlags: 0
@@ -14274,6 +14393,7 @@ GameObject:
   - component: {fileID: 1051298758}
   - component: {fileID: 1051298757}
   - component: {fileID: 1051298756}
+  - component: {fileID: 1051298759}
   m_Layer: 5
   m_Name: Private Button
   m_TagString: Untagged
@@ -14344,19 +14464,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1051298757}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: PrivateUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1051298757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14395,6 +14503,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1051298754}
   m_CullTransparentMesh: 1
+--- !u!114 &1051298759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051298754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 0
+  targetScreenId: private-join
+  rememberCurrent: 1
 --- !u!1 &1056947960
 GameObject:
   m_ObjectHideFlags: 0
@@ -14651,8 +14775,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 889852301}
-        m_TargetAssemblyTypeName: HostSetting, Assembly-CSharp
+      - m_Target: {fileID: 889852303}
+        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
         m_MethodName: ChangeMaxPlayerCount
         m_Mode: 3
         m_Arguments:
@@ -15347,8 +15471,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 889852301}
-        m_TargetAssemblyTypeName: HostSetting, Assembly-CSharp
+      - m_Target: {fileID: 889852303}
+        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
         m_MethodName: ChangeMaxPlayerCount
         m_Mode: 3
         m_Arguments:
@@ -16150,6 +16274,8 @@ GameObject:
   - component: {fileID: 1214857752}
   - component: {fileID: 1214857754}
   - component: {fileID: 1214857755}
+  - component: {fileID: 1214857757}
+  - component: {fileID: 1214857756}
   m_Layer: 5
   m_Name: Public Lobby UI
   m_TagString: Untagged
@@ -16186,7 +16312,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1214857749}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac44adf7d85a42c4b902d052ee21959c, type: 3}
   m_Name: 
@@ -16265,6 +16391,45 @@ MonoBehaviour:
   - {fileID: 179388070}
   - {fileID: 1243510093}
   inputDelay: 0.2
+--- !u!114 &1214857756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214857749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38a48c1ad86a3040bd7954568ea7e35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PublicLobbyScreen
+  screenId: public-lobby
+  firstSelectedObject: {fileID: 179388068}
+  canvasGroup: {fileID: 1214857757}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
+  lobbyItemPrefab: {fileID: 7117433388730551034, guid: 561d8cd41788593458597634f8937537, type: 3}
+  lobbyItemContent: {fileID: 1304428230}
+  refreshButton: {fileID: 179388070}
+  backButton: {fileID: 1243510093}
+  listRoot: {fileID: 0}
+  statusText: {fileID: 0}
+  loadingStateRoot: {fileID: 0}
+  emptyStateRoot: {fileID: 0}
+  errorStateRoot: {fileID: 0}
+  joiningStateRoot: {fileID: 0}
+--- !u!225 &1214857757
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214857749}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1243510091
 GameObject:
   m_ObjectHideFlags: 0
@@ -16348,9 +16513,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: GameModeUIOpen
+      - m_Target: {fileID: 1214857756}
+        m_TargetAssemblyTypeName: PublicLobbyScreen, Assembly-CSharp
+        m_MethodName: HandleBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16625,6 +16790,7 @@ GameObject:
   - component: {fileID: 1271528987}
   - component: {fileID: 1271528986}
   - component: {fileID: 1271528985}
+  - component: {fileID: 1271528988}
   m_Layer: 5
   m_Name: Setting Button
   m_TagString: Untagged
@@ -16695,19 +16861,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1271528986}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: SettingUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1271528986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16746,6 +16900,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1271528983}
   m_CullTransparentMesh: 1
+--- !u!114 &1271528988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271528983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 0
+  targetScreenId: settings
+  rememberCurrent: 1
 --- !u!1 &1283468291
 GameObject:
   m_ObjectHideFlags: 0
@@ -17168,8 +17338,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 85923875}
-        m_TargetAssemblyTypeName: PrivateJoinUI, Assembly-CSharp
+      - m_Target: {fileID: 85923879}
+        m_TargetAssemblyTypeName: PrivateJoinScreen, Assembly-CSharp
         m_MethodName: CodeInputBtn
         m_Mode: 1
         m_Arguments:
@@ -17549,6 +17719,7 @@ GameObject:
   - component: {fileID: 1327421175}
   - component: {fileID: 1327421174}
   - component: {fileID: 1327421173}
+  - component: {fileID: 1327421176}
   m_Layer: 5
   m_Name: Host Button
   m_TagString: Untagged
@@ -17619,19 +17790,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1327421174}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: HostUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1327421174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17670,6 +17829,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1327421171}
   m_CullTransparentMesh: 1
+--- !u!114 &1327421176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1327421171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 0}
+  action: 0
+  targetScreenId: host-room
+  rememberCurrent: 1
 --- !u!1 &1337678999
 GameObject:
   m_ObjectHideFlags: 0
@@ -18093,6 +18268,7 @@ GameObject:
   - component: {fileID: 1360355055}
   - component: {fileID: 1360355054}
   - component: {fileID: 1360355053}
+  - component: {fileID: 1360355057}
   m_Layer: 0
   m_Name: SlimeRoomManager
   m_TagString: Untagged
@@ -18181,6 +18357,12 @@ MonoBehaviour:
   - {fileID: 3829263911076010992, guid: a1b34728f0cef82428ca985486f2ac89, type: 3}
   - {fileID: 888922463325178406, guid: 0ff82ab7fec8dcd44a1f411e6d8f13f7, type: 3}
   - {fileID: 7947001633615829510, guid: 171a9cc59df94364993ddcc1f4b55357, type: 3}
+  - {fileID: 1000000000000000002, guid: 11a9ad740c1e47a0a3563a294fe6151f, type: 3}
+  - {fileID: 1000000000000000003, guid: 9371a49f74b04dcc844764b5d7d46a51, type: 3}
+  - {fileID: 1000000000000000001, guid: 7dcf352c87e445d38d96d86aca3f9773, type: 3}
+  - {fileID: 959400136612832559, guid: 2b023eab7f727a1488eda19b60c54f64, type: 3}
+  - {fileID: 901802072978258720, guid: 34b497c337dc5ea43a4f63987950ac70, type: 3}
+  - {fileID: 2945471622916600022, guid: b14757c1186d91641a43363f31081669, type: 3}
   - {fileID: 5813359405025824721, guid: ad9315da8fd1dd541a633d812e99d518, type: 3}
   - {fileID: 6749148591891718062, guid: c32f8b20d50c61a4da1c6980e6a7adf5, type: 3}
   - {fileID: 4839135096584866826, guid: 05ea356a9062863458d87495d4f2f6d5, type: 3}
@@ -18211,6 +18393,7 @@ MonoBehaviour:
   _allPlayersReady: 0
   clientIndex: 0
   currentStage: 0
+  currentMapData: 
 --- !u!4 &1360355056
 Transform:
   m_ObjectHideFlags: 0
@@ -18226,6 +18409,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1360355057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360355052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkManager
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  headlessStartMode: 0
+  editorAutoStart: 0
+  sendRate: 60
+  offlineScene: 
+  onlineScene: 
+  offlineSceneLoadDelay: 0
+  transport: {fileID: 0}
+  networkAddress: localhost
+  maxConnections: 100
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 0}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  exceptionsDisconnect: 1
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    bufferLimit: 32
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  evaluationMethod: 0
+  evaluationInterval: 3
+  timeInterpolationGui: 0
 --- !u!1 &1370446021
 GameObject:
   m_ObjectHideFlags: 0
@@ -19502,8 +19730,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 889852301}
-        m_TargetAssemblyTypeName: HostSetting, Assembly-CSharp
+      - m_Target: {fileID: 889852303}
+        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
         m_MethodName: CreateRoom
         m_Mode: 1
         m_Arguments:
@@ -20539,6 +20767,8 @@ GameObject:
   - component: {fileID: 1532248758}
   - component: {fileID: 1532248760}
   - component: {fileID: 1532248761}
+  - component: {fileID: 1532248763}
+  - component: {fileID: 1532248762}
   m_Layer: 5
   m_Name: Setting UI
   m_TagString: Untagged
@@ -20593,6 +20823,34 @@ MonoBehaviour:
   - {fileID: 711859047}
   - {fileID: 1768681340}
   inputDelay: 0.3
+--- !u!114 &1532248762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532248757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f676917103492c44f8295e4df0885995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIScreen
+  screenId: settings
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 1532248763}
+  hideOnAwake: 0
+--- !u!225 &1532248763
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532248757}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1569866537
 GameObject:
   m_ObjectHideFlags: 0
@@ -20683,6 +20941,8 @@ GameObject:
   - component: {fileID: 1570893454}
   - component: {fileID: 1570893455}
   - component: {fileID: 1570893456}
+  - component: {fileID: 1570893458}
+  - component: {fileID: 1570893459}
   m_Layer: 5
   m_Name: GameMode UI
   m_TagString: Untagged
@@ -20768,6 +21028,35 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &1570893458
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570893451}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1570893459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570893451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c489eb5dfff00640a7e37e1ed4bba70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ModeSelectScreen
+  screenId: mode-select
+  firstSelectedObject: {fileID: 1327421171}
+  canvasGroup: {fileID: 1570893458}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
 --- !u!1 &1577862494
 GameObject:
   m_ObjectHideFlags: 0
@@ -21783,6 +22072,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1661966417}
   - component: {fileID: 1661966418}
+  - component: {fileID: 1661966419}
   m_Layer: 0
   m_Name: MainUIManager
   m_TagString: Untagged
@@ -21817,7 +22107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 931bacc436f4a31488163610d978f3e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseLock: 1
+  mouseLock: 0
   mainUI: {fileID: 1726713394}
   gameModeUI: {fileID: 1570893451}
   hostUI: {fileID: 889852297}
@@ -21828,6 +22118,28 @@ MonoBehaviour:
   keyboardSetting: {fileID: 841304901}
   gamepadSetting: {fileID: 2097853337}
   targetFrameRate: 60
+--- !u!114 &1661966419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661966415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66e11ffbf3370e742a0934b3b5b92f82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigator
+  initialScreen: {fileID: 1726713399}
+  screens:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  autoDiscoverScreens: 1
 --- !u!1 &1690377300
 GameObject:
   m_ObjectHideFlags: 0
@@ -22430,6 +22742,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1726713395}
   - component: {fileID: 1726713396}
+  - component: {fileID: 1726713398}
+  - component: {fileID: 1726713399}
   m_Layer: 5
   m_Name: Main UI
   m_TagString: Untagged
@@ -22474,6 +22788,34 @@ MonoBehaviour:
   - {fileID: 1271528985}
   - {fileID: 1046766187}
   inputDelay: 0.2
+--- !u!225 &1726713398
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726713394}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1726713399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726713394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e331971114778f544bc05219e9fe980b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenuScreen
+  screenId: main-menu
+  firstSelectedObject: {fileID: 110928751}
+  canvasGroup: {fileID: 1726713398}
+  hideOnAwake: 0
 --- !u!1 &1768681338
 GameObject:
   m_ObjectHideFlags: 0
@@ -23713,8 +24055,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 889852301}
-        m_TargetAssemblyTypeName: HostSetting, Assembly-CSharp
+      - m_Target: {fileID: 889852303}
+        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
         m_MethodName: ToggleRoomType
         m_Mode: 1
         m_Arguments:
@@ -23972,8 +24314,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 889852301}
-        m_TargetAssemblyTypeName: HostSetting, Assembly-CSharp
+      - m_Target: {fileID: 889852303}
+        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
         m_MethodName: ToggleRoomType
         m_Mode: 1
         m_Arguments:

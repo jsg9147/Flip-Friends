@@ -21,6 +21,7 @@ public class SteamRoomManager : SlimeRoomManager
 
     private const string HostAddressKey = "FlipFriends";
     private const string PrivateLobbyKey = "FlipFriendsLobbyKey";
+    private const string RoomTypeKey = "FlipFriendsRoomType";
 
     Callback<LobbyCreated_t> lobbyCreated;
     Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
@@ -36,7 +37,7 @@ public class SteamRoomManager : SlimeRoomManager
     {
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("Áßº¹µÈ SteamRoomManager°¡ °¨ÁöµÇ¾î ÆÄ±«µË´Ï´Ù.");
+            Debug.LogWarning("ï¿½ßºï¿½ï¿½ï¿½ SteamRoomManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ä±ï¿½ï¿½Ë´Ï´ï¿½.");
             Destroy(gameObject);
             return;
         }
@@ -46,7 +47,7 @@ public class SteamRoomManager : SlimeRoomManager
 
         if (!SteamAPI.Init())
         {
-            Debug.LogError("SteamAPI ÃÊ±âÈ­ ½ÇÆĞ");
+            Debug.LogError("SteamAPI ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½");
             Application.Quit();
             return;
         }
@@ -78,22 +79,33 @@ public class SteamRoomManager : SlimeRoomManager
 
     public void HostLobby(RoomType roomType, int maxPlayer)
     {
-        StartHost();
+        if (NetworkServer.active || NetworkClient.active)
+        {
+            Debug.LogWarning("ì´ë¯¸ ì„œë²„ ë˜ëŠ” í´ë¼ì´ì–¸íŠ¸ê°€ ì‹¤í–‰ ì¤‘ì…ë‹ˆë‹¤. ë¡œë¹„ ìƒì„±ì„ ê±´ë„ˆëœë‹ˆë‹¤.");
+            return;
+        }
+
         this.roomType = roomType;
         this.maxPlayer = maxPlayer;
 
+        StartHost();
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxPlayer);
     }
 
     public void JoinPrivateLobby(string joinCode)
     {
         SteamMatchmaking.RequestLobbyList();
-        lobbyMatchList = Callback<LobbyMatchList_t>.Create((LobbyMatchList_t callback) =>
+
+        // í´ë˜ìŠ¤ ë ˆë²¨ ì½œë°±ì„ ë®ì–´ì“°ì§€ ì•Šë„ë¡ ë¡œì»¬ ë³€ìˆ˜ ì‚¬ìš© í›„ ì¦‰ì‹œ í•´ì œ
+        Callback<LobbyMatchList_t> joinCallback = null;
+        joinCallback = Callback<LobbyMatchList_t>.Create((LobbyMatchList_t callback) =>
         {
+            joinCallback?.Dispose();
+
             for (int i = 0; i < callback.m_nLobbiesMatching; i++)
             {
                 CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
-                string existingKey = SteamMatchmaking.GetLobbyData(lobbyID, HostAddressKey);
+                string existingKey = SteamMatchmaking.GetLobbyData(lobbyID, PrivateLobbyKey);
 
                 if (existingKey == joinCode)
                 {
@@ -102,7 +114,7 @@ public class SteamRoomManager : SlimeRoomManager
                     return;
                 }
             }
-            Debug.LogWarning("ÀÏÄ¡ÇÏ´Â ·Îºñ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ë§¤ì¹­ë˜ëŠ” ë¡œë¹„ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         });
     }
 
@@ -113,9 +125,10 @@ public class SteamRoomManager : SlimeRoomManager
         currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
 
         string playerSteamName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
-        if(roomType == RoomType.Public)
-            SteamMatchmaking.SetLobbyData(currentLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
-        
+
+        // í´ë¼ì´ì–¸íŠ¸ê°€ OnLobbyEnteredì—ì„œ ì—°ê²°í•˜ë ¤ë©´ í•­ìƒ í˜¸ìŠ¤íŠ¸ ì£¼ì†Œê°€ í•„ìš”
+        SteamMatchmaking.SetLobbyData(currentLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
+        SteamMatchmaking.SetLobbyData(currentLobbyID, RoomTypeKey, roomType.ToString());
         SteamMatchmaking.SetLobbyData(currentLobbyID, PrivateLobbyKey, lobbyKeyStr);
         SteamMatchmaking.SetLobbyData(currentLobbyID, "Name", playerSteamName);
     }
@@ -134,7 +147,7 @@ public class SteamRoomManager : SlimeRoomManager
 
         if (string.IsNullOrEmpty(hostAddress) || !ulong.TryParse(hostAddress, out _))
         {
-            Debug.LogError("À¯È¿ÇÏÁö ¾ÊÀº È£½ºÆ® ÁÖ¼ÒÀÔ´Ï´Ù. Steam ID¸¦ È®ÀÎÇÏ¼¼¿ä.");
+            Debug.LogError("ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Æ® ï¿½Ö¼ï¿½ï¿½Ô´Ï´ï¿½. Steam IDï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.");
             return;
         }
 
@@ -174,12 +187,12 @@ public class SteamRoomManager : SlimeRoomManager
         {
             StopHost();
             SteamMatchmaking.LeaveLobby(currentLobbyID);
-            Debug.Log("·Îºñ¸¦ ³ª°¬½À´Ï´Ù: " + currentLobbyID);
+            Debug.Log("ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½: " + currentLobbyID);
             currentLobbyID = CSteamID.Nil;
         }
         else
         {
-            Debug.LogWarning("ÇöÀç Âü°¡ ÁßÀÎ ·Îºñ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
 
@@ -198,8 +211,8 @@ public class SteamRoomManager : SlimeRoomManager
                 for (int i = 0; i < callback.m_nLobbiesMatching; i++)
                 {
                     SteamLobbyInfo lobbyInfo = new SteamLobbyInfo(SteamMatchmaking.GetLobbyByIndex(i));
-                    string existingKey = SteamMatchmaking.GetLobbyData(lobbyInfo.LobbyID, HostAddressKey);
-                    if (existingKey != "")
+                    string roomTypeValue = SteamMatchmaking.GetLobbyData(lobbyInfo.LobbyID, RoomTypeKey);
+                    if (roomTypeValue == RoomType.Public.ToString())
                     {
                         lobbyInfos.Add(lobbyInfo);
                     }
@@ -228,7 +241,7 @@ public class SteamRoomManager : SlimeRoomManager
 
     public void JoinLobby(CSteamID joinID)
     {
-        // ¸ğµç ·Îºñ¸¦ ¿äÃ»
+        // ï¿½ï¿½ï¿½ ï¿½Îºï¿½ ï¿½ï¿½Ã»
         SteamMatchmaking.RequestLobbyList();
         SteamMatchmaking.JoinLobby(joinID);
     }

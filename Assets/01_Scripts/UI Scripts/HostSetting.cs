@@ -17,16 +17,16 @@ public class HostSetting : MonoBehaviour
     private int minPlayerLimit = 2;
     private int maxPlayerLimit = 4;
 
-    private bool canNavigate = true; // ÀÔ·Â Á¦ÇÑ ÇÃ·¡±×
-    private float inputCooldown = 0.2f; // ÀÔ·Â °£ ÃÖ¼Ò ´ë±â ½Ã°£
-    private float lastInputTime; // ¸¶Áö¸· ÀÔ·Â ½Ã°£ ±â·Ï
+    private bool canNavigate = true; // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private float inputCooldown = 0.2f; // ï¿½Ô·ï¿½ ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    private float lastInputTime; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½
 
     private void Awake()
     {
-        // ÃÊ±â UI ¼³Á¤
+        // ï¿½Ê±ï¿½ UI ï¿½ï¿½ï¿½ï¿½
         UpdateButtonText();
 
-        // ¹öÆ° Å¬¸¯ ÀÌº¥Æ® µî·Ï
+        // ï¿½ï¿½Æ° Å¬ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½
         createButton.onClick.AddListener(CreateRoom);
         cancelButton.onClick.AddListener(Cancel);
     }
@@ -68,21 +68,21 @@ public class HostSetting : MonoBehaviour
                     EventSystem.current.SetSelectedGameObject(createButton.gameObject);
                 }
 
-                lastInputTime = Time.time; // ¸¶Áö¸· ÀÔ·Â ½Ã°£ °»½Å
-                canNavigate = false; // ÀÔ·Â Á¦ÇÑ
+                lastInputTime = Time.time; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
+                canNavigate = false; // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
         }
 
-        // ÀÔ·ÂÀÌ ¸±¸®ÁîµÇ¾ú´ÂÁö È®ÀÎ
+        // ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (InputManager.instance.dir.x == 0)
         {
-            canNavigate = true; // ÀÔ·Â Á¦ÇÑ ÇØÁ¦
+            canNavigate = true; // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
 
     private void UpdateButtonText()
     {
-        // °¢ ¹öÆ°ÀÇ ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+        // ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         roomTypeButton.GetComponentInChildren<TMP_Text>().text = $"{roomType}";
         maxPlayerCountButton.GetComponentInChildren<TMP_Text>().text = $"{maxPlayerCount}";
     }
@@ -104,16 +104,17 @@ public class HostSetting : MonoBehaviour
     private void CreateRoom()
     {
         Debug.Log($"Room Created: Type={roomType}, MaxPlayers={maxPlayerCount}");
-        // ¿©±â¿¡ ¹æ »ý¼º ·ÎÁ÷ Ãß°¡
         SteamRoomManager roomManager = NetworkManager.singleton as SteamRoomManager;
         if (roomManager != null)
         {
+            createButton.interactable = false;
             roomManager.HostLobby(roomType, maxPlayerCount);
         }
     }
 
     private void Cancel()
     {
+        createButton.interactable = true;
         MainUIManager.instance.GameModeUIOpen();
     }
 }

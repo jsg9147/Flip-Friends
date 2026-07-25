@@ -1,14 +1,17 @@
 using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
-// ±âº»ÀûÀÎ Mirror ³×Æ®¿öÅ© ±â´ÉÀ» Ã³¸®ÇÏ´Â RoomManager
+// ê¸°ë³¸ì ì¸ Mirror ë„¤íŠ¸ì›Œí¬ íë¦„ì„ ì²˜ë¦¬í•˜ëŠ” RoomManager
 public class SlimeRoomManager : NetworkRoomManager
 {
     private List<GameObject> lobbyPlayerList;
 
     public int currentStage = 0;
 
-    private bool shouldReconnectPlayers = false; // ¾À º¯°æ ÈÄ Àç½ÇÇà ÇÃ·¡±×
+    // ì»¤ìŠ¤í…€ ë§µ JSON ë°ì´í„° â€” ë¹„ì–´ ìˆìœ¼ë©´ ê¸°ë³¸ stageMapPrefabs ì‚¬ìš©
+    public string currentMapData = string.Empty;
+
+    private bool shouldReconnectPlayers = false; // ì”¬ ì „í™˜ í›„ í”Œë ˆì´ì–´ ì¬ì—°ê²° í”Œë˜ê·¸
     public override void OnStartHost()
     {
         base.OnStartHost();
@@ -50,6 +53,7 @@ public class SlimeRoomManager : NetworkRoomManager
     public virtual void ReturnRoomScene()
     {
         shouldReconnectPlayers = true;
+        currentMapData = string.Empty;
         ServerChangeScene(RoomScene);
     }
 

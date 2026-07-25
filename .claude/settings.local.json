@@ -4,7 +4,15 @@
       "Bash(git *)",
       "Bash(gh auth *)",
       "PowerShell(cmdkey *)",
-      "Bash(xargs grep -l \"bad55930\\\\|be564131\\\\|62899f85\\\\|db0c1ef7\\\\|9541d86e\")"
+      "Bash(xargs grep -l \"bad55930\\\\|be564131\\\\|62899f85\\\\|db0c1ef7\\\\|9541d86e\")",
+      "mcp__UnityMCP__read_console",
+      "Bash(Remove-Item \"C:\\\\Unity Project\\\\Flip Friends\\\\Assets\\\\01_Scripts\\\\UI Scripts\\\\PrivateJoinUI.cs\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Unity Project\\\\Flip Friends\\\\Assets\\\\01_Scripts\\\\UI Scripts\\\\PrivateJoinUI.cs.meta\" -Force -ErrorAction SilentlyContinue)",
+      "mcp__UnityMCP__batch_execute",
+      "mcp__UnityMCP__find_gameobjects",
+      "mcp__UnityMCP__execute_code",
+      "mcp__UnityMCP__refresh_unity",
+      "mcp__UnityMCP__manage_camera"
     ]
   }
 }

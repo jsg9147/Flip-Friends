@@ -9,7 +9,7 @@ public class MapSelectionManager : NetworkBehaviour
     public GameObject mapSelectScreen;
     public StageSelectBtnEvent stageSelectBtnEvent;
 
-    public Button[] mapButtons; // ¸Ê ¹öÆ°
+    public Button[] mapButtons; // ï¿½ï¿½ ï¿½ï¿½Æ°
 
     public CustomRoomPlayer roomPlayer;
     private int currentChapter;
@@ -27,22 +27,26 @@ public class MapSelectionManager : NetworkBehaviour
 
     public void StageLoad(int stage)
     {
-        if (isServer)
-        {
-            Debug.Log($"½ºÅ×ÀÌÁö{stage} ·Îµå Áß...");
-            roomPlayer.CmdStageSelect(stage);
-        }
-        else
-        {
-            Debug.Log("¹æÀå¸¸ ¸ÊÀ» ¼±ÅÃÇÒ ¼ö ÀÖ½À´Ï´Ù.");
-        }
+        if (!isServer)
+            return;
+
+        roomPlayer.CmdStageSelect(stage);
+    }
+
+    // ë°©ì¥ì´ ì»¤ìŠ¤í…€ ë§µì„ ì„ íƒí–ˆì„ ë•Œ í˜¸ì¶œ â€” mapJsonì€ MapDataRepository.ToJson() ê²°ê³¼
+    public void CustomMapLoad(string mapJson)
+    {
+        if (!isServer)
+            return;
+
+        roomPlayer.CmdCustomMapSelect(mapJson);
     }
 
     private void AddButtonEvent()
     {
         for (int i = 0; i < mapButtons.Length; i++)
         {
-            int index = i; // »õ·Î¿î ·ÎÄÃ º¯¼ö·Î i °ªÀ» ÀúÀå
+            int index = i; // ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ i ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             mapButtons[i].onClick.AddListener(() => StageLoad(index));
         }
     }

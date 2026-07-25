@@ -177,6 +177,19 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         if (slimeRoomManager != null)
         {
             slimeRoomManager.currentStage = stage;
+            slimeRoomManager.currentMapData = string.Empty;
+        }
+
+        CmdChangeScene();
+    }
+
+    [Command]
+    public void CmdCustomMapSelect(string mapJson)
+    {
+        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
+        if (slimeRoomManager != null)
+        {
+            slimeRoomManager.currentMapData = mapJson;
         }
 
         CmdChangeScene();

@@ -3,6 +3,20 @@ using UnityEngine.InputSystem;
 using Mirror;
 using TMPro;
 
+public enum PlayerState
+{
+    Idle,
+    Walk,
+    Jump,
+    Damaged,
+    Attack,
+    Climb,
+    ClimbIdle,
+    Shrink,
+    Carried,
+    Throw
+}
+
 public class PlayerController2D : NetworkBehaviour
 {
     public TMP_Text nameText;
@@ -42,13 +56,13 @@ public class PlayerController2D : NetworkBehaviour
     private void SetPlayerReady(bool oldValue, bool newValue)
     {
         readySprite.SetActive(newValue);
-        Debug.Log($"{playerName}�� �غ���°� {oldValue} ���� {newValue} �Ǿ����ϴ�");
+        Debug.Log($"{playerName} is ready: {oldValue} -> {newValue}");
     }
 
     private void PlayerNameUpdate(string oldName, string newName)
     {
         nameText.text = newName;
-        Debug.Log($"�÷��̾� �̸��� {oldName}���� {newName}���� ����Ǿ����ϴ�.");
+        Debug.Log($"Player Name changed from {oldName} to {newName}.");
     }
 
     private void PlayerColorUpdate(Vector4 oldValue, Vector4 newValue)
