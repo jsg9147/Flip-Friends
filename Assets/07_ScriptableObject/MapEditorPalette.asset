@@ -12,34 +12,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f8700c28fed5bc47adeb1eb34fb05b7, type: 3}
   m_Name: MapEditorPalette
   m_EditorClassIdentifier: Assembly-CSharp::MapEditorPalette
+  validationSettings:
+    minimumPlayerSpawnCount: 1
+    minimumMapPosition: {x: -50, y: -30}
+    maximumMapPosition: {x: 50, y: 30}
+    overlapPositionTolerance: 0.01
   entries:
   - id: essential.player_spawn
     displayName: 플레이어 시작 지점
     category: 0
     prefab: {fileID: 1000000000000000002, guid: 11a9ad740c1e47a0a3563a294fe6151f, type: 3}
     thumbnail: {fileID: 21300000, guid: e8e34133732eb474db79f939cb15f950, type: 3}
+    validationRule:
+      minimumCount: 1
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 1
   - id: essential.finish
     displayName: 도착 지점
     category: 0
     prefab: {fileID: 1000000000000000003, guid: 9371a49f74b04dcc844764b5d7d46a51, type: 3}
     thumbnail: {fileID: 21300000, guid: 40a17abce6d888446bb40f26eedd5d25, type: 3}
+    validationRule:
+      minimumCount: 1
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 1
   - id: terrain.ground.basic
     displayName: 기본 바닥
     category: 1
     prefab: {fileID: 1000000000000000001, guid: 7dcf352c87e445d38d96d86aca3f9773, type: 3}
     thumbnail: {fileID: 1931142719, guid: 3e22bb20af2a89846ab4ef32208ace48, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
   - id: terrain.rope
     displayName: 로프
     category: 1
     prefab: {fileID: 7947001633615829510, guid: 171a9cc59df94364993ddcc1f4b55357, type: 3}
     thumbnail: {fileID: 321559554, guid: dbda552731c496942b04e67a85b733e2, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
   - id: interactive.box
     displayName: 상자
     category: 3
     prefab: {fileID: 959400136612832559, guid: 2b023eab7f727a1488eda19b60c54f64, type: 3}
     thumbnail: {fileID: 21300000, guid: 6f420fdc6d6f0144d8a2b46a2fb00a6f, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
   - id: obstacle.cannon
     displayName: 대포
     category: 2
     prefab: {fileID: 901802072978258720, guid: 34b497c337dc5ea43a4f63987950ac70, type: 3}
     thumbnail: {fileID: 21300000, guid: 73d84cbed98011845993eae6ebbbb6ef, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0

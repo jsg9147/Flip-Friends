@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
@@ -7,10 +7,9 @@ public class SettingManager : MonoBehaviour
     public GameObject graphicAndSoundWindow;
 
     [Header("Adjusters")]
-    public ResolutionAdjuster resolutionAdjuster; // ÇØ»óµµ Á¶Á¤
-
-    public ValueAdjuster bgmAdjuster; // BGM º¼·ı Á¶Á¤
-    public ValueAdjuster sfxAdjuster; // SFX º¼·ı Á¶Á¤
+    public ResolutionAdjuster resolutionAdjuster;
+    public ValueAdjuster bgmAdjuster;
+    public ValueAdjuster sfxAdjuster;
 
     public GameObject keyRebindingWindow;
     public GameObject keyboardRebindWindow;
@@ -19,12 +18,13 @@ public class SettingManager : MonoBehaviour
     public GameObject colorSettingWindow;
 
     public Image playerImage;
-    public ValueAdjuster redAdjuster; // È­¸é »¡°£»ö Á¶Á¤
-    public ValueAdjuster greenAdjuster; // È­¸é ÃÊ·Ï»ö Á¶Á¤
-    public ValueAdjuster blueAdjuster; // È­¸é ÆÄ¶õ»ö Á¶Á¤
+    public ValueAdjuster redAdjuster;
+    public ValueAdjuster greenAdjuster;
+    public ValueAdjuster blueAdjuster;
 
     private void OnEnable()
     {
+        // Cancel ì…ë ¥ì„ ì„¤ì • UI ë’¤ë¡œê°€ê¸°ë¡œ ì“°ê¸° ìœ„í•´ êµ¬ë…
         if (InputManager.instance != null)
             InputManager.instance.OnCancelEvent += CancelBtnEvent;
     }
@@ -35,30 +35,26 @@ public class SettingManager : MonoBehaviour
             InputManager.instance.OnCancelEvent -= CancelBtnEvent;
     }
 
-
     void Start()
     {
-        // ¸ğµç ¼³Á¤ ºÒ·¯¿À±â
+        // ì´ì „ ì„¸ì…˜ì—ì„œ ì €ì¥í•œ ê°’ì´ ìˆìœ¼ë©´ UIì— ë°˜ì˜
         LoadSettings();
     }
 
     private void Update()
     {
+        // ìŠ¬ë¼ì´ë” ì¡°ì‘ ì¤‘ì—ë„ ë¯¸ë¦¬ë³´ê¸°ê°€ ë°”ë¡œ ë³´ì´ë„ë¡ ë§¤ í”„ë ˆì„ ë°˜ì˜
         playerImage.color = new(redAdjuster.value / 255f, greenAdjuster.value / 255f, blueAdjuster.value / 255f);
     }
 
     public void ApplySettings()
     {
-        // °¢ ¼³Á¤À» Àû¿ë
         resolutionAdjuster.ApplyResolution();
-
-        // ¸ğµç ¼³Á¤ ÀúÀå
         SaveSettings();
     }
 
     public void LoadSettings()
     {
-        // °¢ ¼³Á¤ ºÒ·¯¿À±â
         resolutionAdjuster.LoadResolution();
 
         bgmAdjuster.value = PlayerPrefs.GetInt("BGMVolume", bgmAdjuster.defaultValue);
@@ -79,7 +75,6 @@ public class SettingManager : MonoBehaviour
 
     public void SaveSettings()
     {
-        // °¢ ¼³Á¤ ÀúÀå
         PlayerPrefs.SetInt("BGMVolume", bgmAdjuster.value);
         PlayerPrefs.SetInt("SFXVolume", sfxAdjuster.value);
 
@@ -92,7 +87,6 @@ public class SettingManager : MonoBehaviour
 
     public void ResetSettings()
     {
-        // ±âº»°ªÀ¸·Î ¼³Á¤
         bgmAdjuster.value = bgmAdjuster.defaultValue;
         bgmAdjuster.UpdateValueText();
 
@@ -108,11 +102,13 @@ public class SettingManager : MonoBehaviour
         blueAdjuster.value = blueAdjuster.defaultValue;
         blueAdjuster.UpdateValueText();
 
-        //resolutionAdjuster.ResetToDefault(); // ÇØ»óµµ ±âº»°ªÀ¸·Î ¼³Á¤
+        // í•´ìƒë„ëŠ” OS/ëª¨ë‹ˆí„° ì˜ì¡´ì„±ì´ ì»¤ì„œ ê¸°ë³¸ê°’ ê°•ì œ ë¦¬ì…‹ì„ ë³´ë¥˜
+        // resolutionAdjuster.ResetToDefault();
 
-        // º¯°æ»çÇ× Àû¿ë
+        // UI ê¸°ë³¸ê°’ë§Œ ë°”ê¾¸ë©´ ì‹¤ì œ ì ìš©Â·ì €ì¥ì´ ì•ˆ ë˜ë¯€ë¡œ Applyê¹Œì§€ í˜¸ì¶œ
         ApplySettings();
     }
+
     public void OpenSettingWindow()
     {
         WindowReset();
@@ -130,16 +126,19 @@ public class SettingManager : MonoBehaviour
         WindowReset();
         keyRebindingWindow.SetActive(true);
     }
+
     public void OepnColorSettingWindow()
     {
         WindowReset();
         colorSettingWindow.SetActive(true);
     }
+
     public void OpenKeyboardRebindWindow()
     {
         WindowReset();
         keyboardRebindWindow.SetActive(true);
     }
+
     public void OpenGamepadRebindWindow()
     {
         WindowReset();
@@ -148,6 +147,7 @@ public class SettingManager : MonoBehaviour
 
     public void WindowReset()
     {
+        // í•˜ìœ„ ì°½ì´ ê²¹ì¹˜ì§€ ì•Šë„ë¡ ì „í™˜ ì „ì— ì „ë¶€ ë‹«ìŒ
         keyRebindingWindow.SetActive(false);
         colorSettingWindow.SetActive(false);
         keyboardRebindWindow.SetActive(false);
@@ -159,7 +159,7 @@ public class SettingManager : MonoBehaviour
     bool SettingActive()
     {
         bool isActive = false;
-        if(keyRebindingWindow.activeSelf)
+        if (keyRebindingWindow.activeSelf)
             isActive = true;
         if (colorSettingWindow.activeSelf)
             isActive = true;
@@ -177,12 +177,13 @@ public class SettingManager : MonoBehaviour
 
     private void CancelBtnEvent()
     {
-        if(settingWindow.activeSelf)
+        // ë£¨íŠ¸ ì„¤ì • ì°½ì´ë©´ ë©”ì¸ UIë¡œ, í•˜ìœ„ ì°½ì´ë©´ ì„¤ì • ë£¨íŠ¸ë¡œ í•œ ë‹¨ê³„ë§Œ ë˜ëŒë¦¼
+        if (settingWindow.activeSelf)
         {
             WindowReset();
             MainUIManager.instance.MainUIOpen();
-        }        
-        else if(SettingActive())
+        }
+        else if (SettingActive())
         {
             OpenSettingWindow();
         }

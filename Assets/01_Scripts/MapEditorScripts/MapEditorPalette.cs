@@ -7,6 +7,7 @@ using UnityEngine;
 public class MapEditorPalette : ScriptableObject
 {
     public List<PaletteEntry> entries = new List<PaletteEntry>();
+    public MapValidationSettings validationSettings = new();
 
     public bool TryGetEntry(string prefabID, out PaletteEntry entry)
     {
@@ -34,6 +35,7 @@ public class MapEditorPalette : ScriptableObject
 
     private void OnValidate()
     {
+        ValidateSettings();
         var registeredIDs = new HashSet<string>();
         foreach (PaletteEntry entry in entries)
         {
@@ -65,6 +67,17 @@ public class MapEditorPalette : ScriptableObject
                 Debug.LogError($"NetworkIdentity가 없는 팔레트 프리팹입니다: {entry.id}", entry.prefab);
         }
     }
+
+    private void ValidateSettings()
+    {
+        validationSettings ??= new MapValidationSettings();
+        validationSettings.minimumPlayerSpawnCount = Mathf.Max(
+            1,
+            validationSettings.minimumPlayerSpawnCount);
+        validationSettings.overlapPositionTolerance = Mathf.Max(
+            0f,
+            validationSettings.overlapPositionTolerance);
+    }
 }
 
 public enum MapObjectCategory
@@ -84,4 +97,23 @@ public class PaletteEntry
     public MapObjectCategory category;
     public GameObject prefab;
     public Sprite thumbnail;
+    public MapObjectValidationRule validationRule = new();
+}
+
+[Serializable]
+public class MapValidationSettings
+{
+    public int minimumPlayerSpawnCount = 1;
+    public Vector2 minimumMapPosition = new(-50f, -30f);
+    public Vector2 maximumMapPosition = new(50f, 30f);
+    public float overlapPositionTolerance = 0.01f;
+}
+
+[Serializable]
+public class MapObjectValidationRule
+{
+    public int minimumCount;
+    public int maximumCount;
+    public bool disallowPositionOverlap = true;
+    public bool overlapIsCritical;
 }

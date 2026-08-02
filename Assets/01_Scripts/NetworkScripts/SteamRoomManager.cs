@@ -1,10 +1,6 @@
 using Mirror;
-using Mirror.FizzySteam;
 using Steamworks;
-using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,32 +8,19 @@ public class SteamRoomManager : SlimeRoomManager
 {
     public static SteamRoomManager Instance { get; private set; }
 
-    public List<SteamLobbyInfo> lobbyInfos = new List<SteamLobbyInfo>();
-    public string lobbyKeyStr { get; private set; }
+    private readonly SteamLobbyMatchmaking matchmaking = new SteamLobbyMatchmaking();
 
-    private CSteamID mySteamID;
-    public CSteamID currentLobbyID { get; private set; }
-    private List<CSteamID> lobbyIDs = new List<CSteamID>();
-
-    private const string HostAddressKey = "FlipFriends";
-    private const string PrivateLobbyKey = "FlipFriendsLobbyKey";
-    private const string RoomTypeKey = "FlipFriendsRoomType";
-
-    Callback<LobbyCreated_t> lobbyCreated;
-    Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
-    Callback<LobbyEnter_t> lobbyEntered;
-    Callback<LobbyMatchList_t> lobbyMatchList;
+    public List<SteamLobbyInfo> lobbyInfos => matchmaking.LobbyInfos;
+    public string lobbyKeyStr => matchmaking.LobbyKey;
+    public CSteamID currentLobbyID => matchmaking.CurrentLobbyId;
 
     public string playerName { get; private set; }
-
-    private RoomType roomType;
-    private int maxPlayer;
 
     public override void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("�ߺ��� SteamRoomManager�� �����Ǿ� �ı��˴ϴ�.");
+            Debug.LogWarning("중복된 SteamRoomManager가 존재하여 파괴됩니다.");
             Destroy(gameObject);
             return;
         }
@@ -47,7 +30,7 @@ public class SteamRoomManager : SlimeRoomManager
 
         if (!SteamAPI.Init())
         {
-            Debug.LogError("SteamAPI �ʱ�ȭ ����");
+            Debug.LogError("SteamAPI 초기화 실패");
             Application.Quit();
             return;
         }
@@ -58,17 +41,15 @@ public class SteamRoomManager : SlimeRoomManager
     public override void Start()
     {
         base.Start();
-        InitializeSteamCallbacks();
-        mySteamID = SteamUser.GetSteamID();
+        BindMatchmakingEvents();
+        matchmaking.Initialize();
         playerName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
     }
 
-    private void InitializeSteamCallbacks()
+    private void BindMatchmakingEvents()
     {
-        lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
-        gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
-        lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
-        lobbyMatchList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
+        matchmaking.LobbyCreateFailed += HandleLobbyCreateFailed;
+        matchmaking.LobbyEntered += HandleLobbyEntered;
     }
 
     public override void OnApplicationQuit()
@@ -85,69 +66,50 @@ public class SteamRoomManager : SlimeRoomManager
             return;
         }
 
-        this.roomType = roomType;
-        this.maxPlayer = maxPlayer;
-
         StartHost();
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxPlayer);
+        matchmaking.CreateLobby(roomType, maxPlayer);
     }
 
     public void JoinPrivateLobby(string joinCode)
     {
-        SteamMatchmaking.RequestLobbyList();
+        matchmaking.JoinPrivateLobby(joinCode);
+    }
 
-        // 클래스 레벨 콜백을 덮어쓰지 않도록 로컬 변수 사용 후 즉시 해제
-        Callback<LobbyMatchList_t> joinCallback = null;
-        joinCallback = Callback<LobbyMatchList_t>.Create((LobbyMatchList_t callback) =>
+    public void JoinLobby(CSteamID joinId)
+    {
+        matchmaking.JoinLobby(joinId);
+    }
+
+    public Task<List<SteamLobbyInfo>> GetLobbyListAsync()
+    {
+        return matchmaking.GetLobbyListAsync();
+    }
+
+    public void LeaveLobby()
+    {
+        matchmaking.LeaveLobby();
+        StopNetworkSession();
+    }
+
+    private void HandleLobbyCreateFailed()
+    {
+        // StartHost 이후 CreateLobby 실패 시 고아 호스트 세션을 정리
+        if (NetworkServer.active)
         {
-            joinCallback?.Dispose();
-
-            for (int i = 0; i < callback.m_nLobbiesMatching; i++)
-            {
-                CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
-                string existingKey = SteamMatchmaking.GetLobbyData(lobbyID, PrivateLobbyKey);
-
-                if (existingKey == joinCode)
-                {
-                    SteamMatchmaking.JoinLobby(lobbyID);
-                    lobbyKeyStr = joinCode;
-                    return;
-                }
-            }
-            Debug.LogWarning("매칭되는 로비를 찾을 수 없습니다.");
-        });
+            StopHost();
+        }
     }
 
-    private void OnLobbyCreated(LobbyCreated_t callback)
+    private void HandleLobbyEntered(CSteamID lobbyId, string hostAddress)
     {
-        if (callback.m_eResult != EResult.k_EResultOK) { return; }
-        lobbyKeyStr = GenerateUniqueLobbyKey();
-        currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
-
-        string playerSteamName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
-
-        // 클라이언트가 OnLobbyEntered에서 연결하려면 항상 호스트 주소가 필요
-        SteamMatchmaking.SetLobbyData(currentLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
-        SteamMatchmaking.SetLobbyData(currentLobbyID, RoomTypeKey, roomType.ToString());
-        SteamMatchmaking.SetLobbyData(currentLobbyID, PrivateLobbyKey, lobbyKeyStr);
-        SteamMatchmaking.SetLobbyData(currentLobbyID, "Name", playerSteamName);
-    }
-
-    private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
-    {
-        SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
-    }
-
-    private void OnLobbyEntered(LobbyEnter_t callback)
-    {
-        if (NetworkServer.active) { return; }
-
-        currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
-        string hostAddress = SteamMatchmaking.GetLobbyData(currentLobbyID, HostAddressKey);
-
-        if (string.IsNullOrEmpty(hostAddress) || !ulong.TryParse(hostAddress, out _))
+        if (NetworkServer.active)
         {
-            Debug.LogError("��ȿ���� ���� ȣ��Ʈ �ּ��Դϴ�. Steam ID�� Ȯ���ϼ���.");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(hostAddress) || !ulong.TryParse(hostAddress, out ulong _))
+        {
+            Debug.LogError("유효하지 않은 호스트 주소입니다. Steam ID를 확인하세요.");
             return;
         }
 
@@ -155,105 +117,25 @@ public class SteamRoomManager : SlimeRoomManager
         StartClient();
     }
 
-    private string GenerateUniqueLobbyKey(int length = 8)
+    private void StopNetworkSession()
     {
-        const string chars = "0123456789";
-        using (var rng = new RNGCryptoServiceProvider())
-        {
-            byte[] data = new byte[length];
-            rng.GetBytes(data);
-            StringBuilder result = new StringBuilder(length);
-            foreach (byte b in data)
-            {
-                result.Append(chars[b % chars.Length]);
-            }
-            return result.ToString();
-        }
-    }
-
-    private void OnLobbyMatchList(LobbyMatchList_t callback)
-    {
-        lobbyIDs.Clear();
-        for (int i = 0; i < callback.m_nLobbiesMatching; i++)
-        {
-            CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
-            lobbyIDs.Add(lobbyID);
-        }
-    }
-
-    public void LeaveLobby()
-    {
-        if (currentLobbyID != CSteamID.Nil)
+        if (NetworkServer.active)
         {
             StopHost();
-            SteamMatchmaking.LeaveLobby(currentLobbyID);
-            Debug.Log("�κ� �������ϴ�: " + currentLobbyID);
-            currentLobbyID = CSteamID.Nil;
+            return;
         }
-        else
+
+        if (NetworkClient.active)
         {
-            Debug.LogWarning("���� ���� ���� �κ� �����ϴ�.");
+            StopClient();
         }
-    }
-
-    public async Task<List<SteamLobbyInfo>> GetLobbyListAsync()
-    {
-        lobbyInfos.Clear();
-        var tcs = new TaskCompletionSource<List<SteamLobbyInfo>>();
-
-        SteamMatchmaking.RequestLobbyList();
-
-        Callback<LobbyMatchList_t> lobbyMatchList = null;
-        lobbyMatchList = Callback<LobbyMatchList_t>.Create((LobbyMatchList_t callback) =>
-        {
-            try
-            {
-                for (int i = 0; i < callback.m_nLobbiesMatching; i++)
-                {
-                    SteamLobbyInfo lobbyInfo = new SteamLobbyInfo(SteamMatchmaking.GetLobbyByIndex(i));
-                    string roomTypeValue = SteamMatchmaking.GetLobbyData(lobbyInfo.LobbyID, RoomTypeKey);
-                    if (roomTypeValue == RoomType.Public.ToString())
-                    {
-                        lobbyInfos.Add(lobbyInfo);
-                    }
-                }
-
-                if (!tcs.Task.IsCompleted)
-                {
-                    tcs.SetResult(lobbyInfos);
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!tcs.Task.IsCompleted)
-                {
-                    tcs.SetException(ex);
-                }
-            }
-            finally
-            {
-                lobbyMatchList?.Dispose();
-            }
-        });
-
-        return await tcs.Task;
-    }
-
-    public void JoinLobby(CSteamID joinID)
-    {
-        // ��� �κ� ��û
-        SteamMatchmaking.RequestLobbyList();
-        SteamMatchmaking.JoinLobby(joinID);
     }
 
     public override void OnDestroy()
     {
+        matchmaking.LobbyCreateFailed -= HandleLobbyCreateFailed;
+        matchmaking.LobbyEntered -= HandleLobbyEntered;
         base.OnDestroy();
         Instance = null;
-    }
-
-    public override void ReturnRoomScene()
-    {
-        base.ReturnRoomScene();
     }
 }

@@ -34,6 +34,9 @@ public class MapReceivePrompt : MonoBehaviour
             yield break;
 
         MapDataNetworkSync.instance.OnMapDataReceived += ShowPrompt;
+        MapData cachedMap = MapDataNetworkSync.instance.GetMapData();
+        if (cachedMap != null)
+            ShowPrompt(cachedMap);
     }
 
     private void ShowPrompt(MapData mapData)
@@ -47,7 +50,41 @@ public class MapReceivePrompt : MonoBehaviour
     {
         if (pendingMapData == null) return;
 
-        if (!MapDataRepository.Save(pendingMapData)) return;
+        if (MapDataRepository.TryLoadById(
+                pendingMapData.mapId,
+                out string existingFileName,
+                out MapData _,
+                out string _,
+                out MapRepositoryFailure lookupFailure))
+        {
+            promptText.text = $"같은 MapId의 맵이 이미 저장되어 있습니다: {existingFileName}";
+            Debug.LogWarning($"수신 맵 저장을 건너뛰었습니다. 같은 MapId가 이미 있습니다: {pendingMapData.mapId}");
+            return;
+        }
+
+        if (lookupFailure.Kind == MapRepositoryFailureKind.DuplicateMapId)
+        {
+            promptText.text = "같은 MapId의 로컬 파일이 여러 개라 저장할 수 없습니다.";
+            Debug.LogWarning(lookupFailure.Message);
+            return;
+        }
+
+        if (!MapDataRepository.TryExists(pendingMapData.mapName, out bool nameExists))
+            return;
+        if (nameExists)
+        {
+            promptText.text = "같은 이름의 다른 맵이 있어 자동으로 덮어쓸 수 없습니다.";
+            Debug.LogWarning($"수신 맵 이름 충돌로 저장을 중단했습니다: {pendingMapData.mapName}");
+            return;
+        }
+
+        if (!MapDataRepository.TryImport(
+                pendingMapData,
+                out MapSaveResult saveResult))
+        {
+            promptText.text = saveResult.Message;
+            return;
+        }
 
         promptPanel.SetActive(false);
         pendingMapData = null;

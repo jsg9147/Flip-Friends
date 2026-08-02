@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,9 @@ public class MapEditorManager : MonoBehaviour
 
     public MapData CurrentMapData { get; private set; }
     public string SelectedPrefabID { get; private set; }
+    public event Action MapDataChanged;
+
+    private string currentFileName;
 
     private void Awake()
     {
@@ -37,6 +41,9 @@ public class MapEditorManager : MonoBehaviour
 
         ObjectPlacer.instance?.ResetTransientState();
         CurrentMapData = new MapData(normalizedName, GetAuthorName());
+        CurrentMapData.mapId = MapDataRepository.CreateUniqueMapId();
+        currentFileName = null;
+        MapDataChanged?.Invoke();
         return true;
     }
 
@@ -60,26 +67,58 @@ public class MapEditorManager : MonoBehaviour
 
     public void AddObject(PlacedObjectData data)
     {
-        CurrentMapData?.objects.Add(data);
+        if (CurrentMapData?.objects == null || data == null) return;
+
+        CurrentMapData.objects.Add(data);
+        MapDataChanged?.Invoke();
     }
 
     public void RemoveObject(PlacedObjectData data)
     {
-        CurrentMapData?.objects.Remove(data);
+        if (CurrentMapData?.objects?.Remove(data) != true) return;
+
+        MapDataChanged?.Invoke();
     }
 
-    public bool SaveMap()
+    public bool SaveMap(
+        bool replaceExistingFile,
+        out MapSaveResult result)
     {
         if (CurrentMapData == null)
         {
             Debug.LogWarning("저장할 현재 맵 데이터가 없습니다.", this);
+            result = MapSaveResult.Failure(
+                MapSaveFailureKind.MissingData,
+                "저장할 현재 맵 데이터가 없습니다.");
             return false;
         }
 
-        if (!MapDataRepository.Save(CurrentMapData)) return false;
+        bool saved = currentFileName == null
+            ? MapDataRepository.TryCreate(
+                CurrentMapData,
+                replaceExistingFile,
+                out result)
+            : MapDataRepository.TryUpdate(
+                currentFileName,
+                CurrentMapData,
+                out result);
+        if (!saved) return false;
 
+        currentFileName = CurrentMapData.mapName;
         Debug.Log($"맵 저장 완료: {CurrentMapData.mapName}");
         return true;
+    }
+
+    public MapValidationReport ValidateCurrentMap()
+    {
+        var validator = new MapDataValidator(palette);
+        return validator.Validate(CurrentMapData);
+    }
+
+    public bool CanStartTestPlay(out MapValidationReport report)
+    {
+        report = ValidateCurrentMap();
+        return report.CanStartPlay;
     }
 
     public void LoadMap(string mapName)
@@ -89,7 +128,9 @@ public class MapEditorManager : MonoBehaviour
 
         ObjectPlacer.instance?.ResetTransientState();
         CurrentMapData = loaded;
+        currentFileName = mapName;
         ObjectPlacer.instance?.RebuildFromMapData(loaded);
+        MapDataChanged?.Invoke();
     }
 
     public void ReturnToMain()

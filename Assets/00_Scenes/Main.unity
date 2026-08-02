@@ -13867,8 +13867,8 @@ MonoBehaviour:
   _allPlayersReady: 0
   clientIndex: 0
   currentStage: 0
-  currentMapData: 
-  lobbyInfos: []
+  currentMapId: 
+  currentMapContentHash: 
 --- !u!4 &1011734842
 Transform:
   m_ObjectHideFlags: 0
@@ -18393,7 +18393,8 @@ MonoBehaviour:
   _allPlayersReady: 0
   clientIndex: 0
   currentStage: 0
-  currentMapData: 
+  currentMapId: 
+  currentMapContentHash: 
 --- !u!4 &1360355056
 Transform:
   m_ObjectHideFlags: 0

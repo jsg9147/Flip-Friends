@@ -2,40 +2,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Mirror;
 
-public class StageSelectBtnEvent : NetworkBehaviour
+public class StageSelectBtnEvent : MonoBehaviour
 {
-    public List<Selectable> uiElements = new(); // 버튼, 드롭다운, 슬라이더 등을 포함한 UI 요소 리스트
-    private GameObject lastSelectedObj;
-
-    private void Update()
-    {
-        if (!isServer)
-            return;
-
-        if (EventSystem.current.currentSelectedGameObject == null)
-        {
-            RpcSelectUIElement(0);
-        }
-
-        if (EventSystem.current.currentSelectedGameObject != lastSelectedObj)
-        {
-            lastSelectedObj = EventSystem.current.currentSelectedGameObject;
-            int index = uiElements.FindIndex(x => x.gameObject == lastSelectedObj);
-            RpcSelectUIElement(index);
-        }
-    }
+    [SerializeField] private List<Selectable> uiElements = new();
 
     public void ButtonInit()
     {
-        RpcSelectUIElement(0);
+        SelectFirstValid(uiElements);
     }
 
-    [ClientRpc]
-
-    public void RpcSelectUIElement(int index)
+    public void SelectFirstValidIn(Transform root)
     {
-        EventSystem.current.SetSelectedGameObject(uiElements[index].gameObject);
+        if (root == null) return;
+
+        SelectFirstValid(root.GetComponentsInChildren<Selectable>(false));
     }
+
+    private void SelectFirstValid(IEnumerable<Selectable> selectables)
+    {
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem == null) return;
+
+        foreach (Selectable selectable in selectables)
+        {
+            if (!IsValid(selectable)) continue;
+
+            eventSystem.SetSelectedGameObject(selectable.gameObject);
+            return;
+        }
+    }
+
+    private bool IsValid(Selectable selectable) =>
+        selectable != null &&
+        selectable.gameObject.activeInHierarchy &&
+        selectable.IsActive() &&
+        selectable.IsInteractable();
 }

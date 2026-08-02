@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,7 @@ public class MapEditorHUD : MonoBehaviour
 
     private ObjectTransformEditor transformEditor;
     private TMP_Text deleteModeLabel;
+    private TMP_Text validationText;
     private GameObject loadPopupBlocker;
     private GameObject overwritePopup;
     private TMP_Text overwriteMessage;
@@ -37,9 +39,11 @@ public class MapEditorHUD : MonoBehaviour
         if (!ValidateReferences()) return;
 
         InitializeStatusText();
+        InitializeValidationText();
         InitializeLoadPopupBlocker();
         InitializeOverwritePopup();
         MapDataRepository.OperationFailed += ShowError;
+        SubscribeToMapChanges();
         InitializeDeleteModeUI();
         mapNameInput.onEndEdit.AddListener(OnMapNameChanged);
         mapNameInput.text = MapEditorManager.instance?.CurrentMapData?.mapName ?? "새 맵";
@@ -78,7 +82,7 @@ public class MapEditorHUD : MonoBehaviour
             return;
         }
 
-        SaveCurrentMap();
+        SaveCurrentMap(false);
     }
 
     public void OnNewMapButtonClicked()
@@ -92,6 +96,7 @@ public class MapEditorHUD : MonoBehaviour
 
         ObjectPlacer.instance?.ClearDisplayObjects();
         mapNameInput.text = manager.CurrentMapData.mapName;
+        ShowValidation(manager.ValidateCurrentMap());
         ShowStatus($"새 맵 생성: {manager.CurrentMapData.mapName}", Color.white);
     }
 
@@ -158,6 +163,7 @@ public class MapEditorHUD : MonoBehaviour
         {
             MapEditorManager.instance?.LoadMap(mapName);
             mapNameInput.text = mapName;
+            ShowCurrentValidation();
             SetLoadPopupVisible(false);
         });
     }
@@ -228,8 +234,21 @@ public class MapEditorHUD : MonoBehaviour
     private void OnDestroy()
     {
         MapDataRepository.OperationFailed -= ShowError;
+        UnsubscribeFromMapChanges();
         if (transformEditor != null)
             transformEditor.DeleteModeChanged -= OnDeleteModeChanged;
+    }
+
+    private void SubscribeToMapChanges()
+    {
+        if (MapEditorManager.instance != null)
+            MapEditorManager.instance.MapDataChanged += ShowCurrentValidation;
+    }
+
+    private void UnsubscribeFromMapChanges()
+    {
+        if (MapEditorManager.instance != null)
+            MapEditorManager.instance.MapDataChanged -= ShowCurrentValidation;
     }
 
     private void InitializeStatusText()
@@ -238,6 +257,12 @@ public class MapEditorHUD : MonoBehaviour
             statusText = CreateStatusText();
 
         statusText.text = string.Empty;
+    }
+
+    private void InitializeValidationText()
+    {
+        validationText = CreateValidationText();
+        ShowCurrentValidation();
     }
 
     private void InitializeOverwritePopup()
@@ -282,6 +307,26 @@ public class MapEditorHUD : MonoBehaviour
         text.font = mapNameInput.textComponent.font;
         text.fontSize = 24f;
         text.alignment = TextAlignmentOptions.Center;
+        text.raycastTarget = false;
+        return text;
+    }
+
+    private TMP_Text CreateValidationText()
+    {
+        GameObject validationObject = new("ValidationText", typeof(RectTransform), typeof(CanvasRenderer));
+        validationObject.layer = gameObject.layer;
+        RectTransform rectTransform = validationObject.GetComponent<RectTransform>();
+        rectTransform.SetParent(transform.parent, false);
+        rectTransform.anchorMin = new Vector2(0.5f, 1f);
+        rectTransform.anchorMax = new Vector2(0.5f, 1f);
+        rectTransform.pivot = new Vector2(0.5f, 1f);
+        rectTransform.anchoredPosition = new Vector2(0f, -110f);
+        rectTransform.sizeDelta = new Vector2(1100f, 220f);
+
+        TextMeshProUGUI text = validationObject.AddComponent<TextMeshProUGUI>();
+        text.font = mapNameInput.textComponent.font;
+        text.fontSize = 20f;
+        text.alignment = TextAlignmentOptions.TopLeft;
         text.raycastTarget = false;
         return text;
     }
@@ -388,7 +433,7 @@ public class MapEditorHUD : MonoBehaviour
     {
         overwritePopup.SetActive(false);
         if (pendingConfirmation == ConfirmationAction.Overwrite)
-            SaveCurrentMap();
+            SaveCurrentMap(true);
         else if (pendingConfirmation == ConfirmationAction.Delete)
             DeletePendingMap();
 
@@ -405,11 +450,60 @@ public class MapEditorHUD : MonoBehaviour
         ShowStatus(message, Color.white);
     }
 
-    private void SaveCurrentMap()
+    private void SaveCurrentMap(bool replaceExistingFile)
     {
         MapEditorManager manager = MapEditorManager.instance;
-        if (manager != null && manager.SaveMap())
+        if (manager == null) return;
+
+        MapValidationReport report = manager.ValidateCurrentMap();
+        ShowValidation(report);
+        if (manager.SaveMap(replaceExistingFile, out MapSaveResult _))
             ShowStatus($"저장 완료: {manager.CurrentMapData.mapName}", Color.white);
+    }
+
+    private void ShowCurrentValidation()
+    {
+        MapEditorManager manager = MapEditorManager.instance;
+        if (manager != null)
+            ShowValidation(manager.ValidateCurrentMap());
+    }
+
+    private void ShowValidation(MapValidationReport report)
+    {
+        if (validationText == null || report == null) return;
+        if (report.Issues.Count == 0)
+        {
+            validationText.text = "플레이 가능성 검증 통과";
+            validationText.color = new Color(0.35f, 1f, 0.55f);
+            return;
+        }
+
+        validationText.text = BuildValidationMessage(report);
+        validationText.color = report.HasErrors
+            ? new Color(1f, 0.35f, 0.35f)
+            : new Color(1f, 0.8f, 0.25f);
+    }
+
+    private string BuildValidationMessage(MapValidationReport report)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine(report.CanStartPlay
+            ? "플레이 가능(경고 확인 권장)"
+            : "저장 가능 / 테스트 플레이 불가");
+        foreach (MapValidationIssue issue in report.Issues)
+            builder.AppendLine($"[{GetSeverityLabel(issue.Severity)}] {issue.Message}");
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string GetSeverityLabel(MapValidationSeverity severity)
+    {
+        return severity switch
+        {
+            MapValidationSeverity.Error => "오류",
+            MapValidationSeverity.Warning => "경고",
+            _ => "정보"
+        };
     }
 
     private void DeletePendingMap()

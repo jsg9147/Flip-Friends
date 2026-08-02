@@ -2,6 +2,10 @@
 
 이 문서는 Flip Friends 저장소에서 작업할 때 따를 가이드라인입니다. 모든 소스 파일은 **UTF-8** 인코딩으로 저장합니다.
 
+## Documentation Entry Point
+
+작업을 시작하기 전에 [`PROJECT_DOCUMENTATION.md`](PROJECT_DOCUMENTATION.md)의 작업별 문서 경로를 확인하고, 해당 기능 문서만 추가로 읽습니다. 프로젝트의 현재 진행 상태와 다음 작업은 이 파일에 중복 기록하지 않습니다.
+
 ## Project Overview
 
 **Flip Friends** is a 2D multiplayer co-op platformer built with Unity and Mirror Networking. Up to 4 players work together to climb levels, solve puzzles, carry objects/players, and reach finish points. Uses Steam (FizzySteamworks) for lobby management.
@@ -191,7 +195,7 @@ Uses raycast-based collision detection (`Controller2D` / `RaycastController`) ra
 
 ## Testing Guidelines
 
-`com.unity.test-framework` is installed, but there is no dedicated project test assembly yet. Add new tests under `Assets/Tests/EditMode` or `Assets/Tests/PlayMode` with matching `.asmdef` files when you introduce test coverage. Name test files after the subject under test, such as `ScreenNavigatorTests.cs`.
+`com.unity.test-framework` is installed. Existing Edit Mode tests are under `Assets/Tests/EditMode`; add new Edit Mode or Play Mode tests with matching `.asmdef` files. Name test files after the subject under test, such as `ScreenNavigatorTests.cs`.
 
 ## Commit & Pull Request Guidelines
 

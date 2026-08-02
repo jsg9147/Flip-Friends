@@ -44,9 +44,20 @@ public class StageManager : NetworkBehaviour
         if (slimeRoomManager == null)
             return;
 
-        if (!string.IsNullOrEmpty(slimeRoomManager.currentMapData))
+        if (!string.IsNullOrEmpty(slimeRoomManager.currentMapId))
         {
-            MapData mapData = MapDataRepository.FromJson(slimeRoomManager.currentMapData);
+            if (!slimeRoomManager.ServerMapSession.TryGet(
+                    slimeRoomManager.currentMapId,
+                    slimeRoomManager.currentMapContentHash,
+                    out MapData mapData))
+            {
+                Debug.LogError(
+                    $"서버 세션 맵을 찾을 수 없습니다: " +
+                    $"mapId={slimeRoomManager.currentMapId}, " +
+                    $"contentHash={slimeRoomManager.currentMapContentHash}");
+                return;
+            }
+
             LoadFromMapData(mapData);
         }
         else
@@ -87,7 +98,10 @@ public class StageManager : NetworkBehaviour
             return;
         }
 
-        SpawnMapDataSync(json);
+        SlimeRoomManager roomManager = (SlimeRoomManager)NetworkManager.singleton;
+        SpawnMapDataSync(
+            roomManager.currentMapId,
+            roomManager.currentMapContentHash);
 
         foreach (PlacedObjectData objData in mapData.objects)
         {
@@ -96,7 +110,7 @@ public class StageManager : NetworkBehaviour
     }
 
     [Server]
-    private void SpawnMapDataSync(string json)
+    private void SpawnMapDataSync(string mapId, string contentHash)
     {
         if (mapDataSyncPrefab == null)
         {
@@ -112,16 +126,16 @@ public class StageManager : NetworkBehaviour
             return;
         }
 
-        NetworkServer.Spawn(syncObj);
         MapDataNetworkSync mapDataSync = syncObj.GetComponent<MapDataNetworkSync>();
         if (mapDataSync == null)
         {
             Debug.LogError("MapDataNetworkSync 컴포넌트가 프리팹에 없습니다.", syncObj);
-            NetworkServer.Destroy(syncObj);
+            Destroy(syncObj);
             return;
         }
 
-        mapDataSync.SetMapData(json);
+        mapDataSync.SetManifest(mapId, contentHash);
+        NetworkServer.Spawn(syncObj);
     }
 
     [Server]
