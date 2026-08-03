@@ -17,6 +17,7 @@
 | 작업 종류 | 필수 문서 | 선택적으로 확인할 항목 |
 |---|---|---|
 | 저장소 공통 규칙, 코딩 스타일, 빌드 | `AGENTS.md` | 없음 |
+| 맵 선택 UI, 방 맵 종류, 공식맵 ID, 최소 인원, 클리어 기록과 공개방 자격 | `Docs/MAP_SELECTION_SYSTEM.md` | 커스텀 맵 전송은 `Docs/CUSTOM_MAP_NETWORK.md`, Main 방 생성 UI는 `Docs/UI_REBUILD.md` |
 | 맵 에디터, 저장소, 팔레트, 검증 | `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
 | Main 메뉴, 화면 이동, 로비 목록, 설정 UI | `Docs/UI_REBUILD.md` | Steam/Mirror 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
@@ -30,6 +31,7 @@
 | 문서 | 상태 | 책임 |
 |---|---|---|
 | `AGENTS.md` | Active | 변하지 않는 저장소 규칙과 기본 아키텍처 |
+| `Docs/MAP_SELECTION_SYSTEM.md` | Active | 방 맵 정책, 공식·커스텀 목록, 최소 인원, 클리어 기록과 공개방 자격 |
 | `Docs/MAP_EDITOR.md` | Active | 맵 제작·저장·검증의 현재 상태 |
 | `Docs/CUSTOM_MAP_NETWORK.md` | Active | 커스텀 맵 로비 선택·자동 공유·런타임 생성 |
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |

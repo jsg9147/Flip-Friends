@@ -19,6 +19,7 @@ public sealed class MapDataValidator
     {
         var issues = new List<MapValidationIssue>();
         ValidateMapId(mapData, issues);
+        ValidatePlayRequirements(mapData, issues);
         if (!TryGetObjects(mapData, issues, out List<PlacedObjectData> objects))
             return new MapValidationReport(issues);
 
@@ -26,6 +27,19 @@ public sealed class MapDataValidator
         ValidateEntries(objects, issues);
         ValidateOverlaps(objects, issues);
         return new MapValidationReport(issues);
+    }
+
+    private void ValidatePlayRequirements(
+        MapData mapData,
+        List<MapValidationIssue> issues)
+    {
+        if (mapData != null && MapPlayRequirements.IsValidMinimumPlayers(
+                mapData.minimumPlayersToClear))
+            return;
+
+        issues.Add(new MapValidationIssue(
+            MapValidationSeverity.Error,
+            "최소 클리어 인원은 1~4명이어야 합니다."));
     }
 
     private void ValidateMapId(

@@ -2,16 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-
-public enum LobbyMapKind
-{
-    None,
-    BuiltIn,
-    Custom
-}
 
 public enum LobbyMapAvailabilityState
 {
@@ -43,9 +34,7 @@ public class MapSelectionManager : NetworkBehaviour
     [SerializeField] private GameObject mapSelectScreen;
     [SerializeField] private StageSelectBtnEvent stageSelectBtnEvent;
     [SerializeField] private MapEditorPalette mapEditorPalette;
-    [SerializeField] private TMP_Text selectedMapText;
-    [SerializeField] private TMP_Text selectionStatusText;
-    [SerializeField] private Button[] mapButtons;
+    [SerializeField] private OfficialMapCatalog officialMapCatalog;
     [SerializeField, Min(1f)]
     private float availabilityTimeoutSeconds = DefaultAvailabilityTimeoutSeconds;
     [SerializeField, Min(1f)]
@@ -63,8 +52,6 @@ public class MapSelectionManager : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnMapKindChanged))]
     private LobbyMapKind selectedMapKind;
-    [SyncVar(hook = nameof(OnStageChanged))]
-    private int selectedStage = -1;
     [SyncVar(hook = nameof(OnMapIdChanged))]
     private string selectedMapId = string.Empty;
     [SyncVar(hook = nameof(OnMapNameChanged))]
@@ -77,10 +64,13 @@ public class MapSelectionManager : NetworkBehaviour
     private bool selectedMapHasWarnings;
     [SyncVar(hook = nameof(OnByteCountChanged))]
     private int selectedMapByteCount;
+    [SyncVar(hook = nameof(OnMinimumPlayersChanged))]
+    private int selectedMinimumPlayersToClear;
     [SyncVar(hook = nameof(OnAvailabilityStateChanged))]
     private LobbyMapAvailabilityState availabilityState;
     [SyncVar(hook = nameof(OnAvailabilityMessageChanged))]
     private string availabilityMessage = string.Empty;
+    [SyncVar] private bool selectionLocked;
 
     public event Action SelectionChanged;
     public CustomRoomPlayer RoomPlayer { get; private set; }
@@ -88,8 +78,15 @@ public class MapSelectionManager : NetworkBehaviour
     public bool IsLocalHost =>
         RoomPlayer != null && RoomPlayer.isLocalPlayer && RoomPlayer.index == 0;
     public LobbyMapKind SelectedMapKind => selectedMapKind;
-    public string SelectionSummary => BuildSelectedMapText();
-    public string SelectionStatus => BuildStatusText();
+    public string SelectedMapName => selectedMapName;
+    public string SelectedAuthorName => selectedAuthorName;
+    public string SelectedVersion => selectedVersion;
+    public bool SelectedMapHasWarnings => selectedMapHasWarnings;
+    public int SelectedMapByteCount => selectedMapByteCount;
+    public int SelectedMinimumPlayersToClear => selectedMinimumPlayersToClear;
+    public LobbyMapAvailabilityState AvailabilityState => availabilityState;
+    public string AvailabilityMessage => availabilityMessage;
+    public bool IsSelectionLocked => selectionLocked;
 
     private readonly Dictionary<NetworkConnectionToClient, ParticipantTransferState>
         availabilityResponses = new();
@@ -109,8 +106,13 @@ public class MapSelectionManager : NetworkBehaviour
 
     private void Start()
     {
-        AddButtonEvents();
         RefreshSelectionUI();
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        ServerApplyPendingRoomSelection();
     }
 
     public override void OnStartClient()
@@ -137,18 +139,11 @@ public class MapSelectionManager : NetworkBehaviour
         RefreshSelectionUI();
     }
 
-    public void SelectFirstLocalMapListItem(Transform listContainer)
-    {
-        if (stageSelectBtnEvent == null) return;
-
-        stageSelectBtnEvent.SelectFirstValidIn(listContainer);
-    }
-
-    public void StageLoad(int stage)
+    public void SelectOfficialMap(string officialMapId)
     {
         if (!CanLocalPlayerChangeSelection()) return;
 
-        RoomPlayer.CmdSelectBuiltInMap(stage);
+        RoomPlayer.CmdSelectOfficialMap(officialMapId);
     }
 
     public void SelectCustomMap(SavedMapListEntry entry)
@@ -173,21 +168,28 @@ public class MapSelectionManager : NetworkBehaviour
     }
 
     [Server]
-    public void ServerSelectBuiltIn(int stage)
+    public void ServerSelectOfficial(string officialMapId)
     {
-        if (!IsValidBuiltInStage(stage)) return;
+        if (selectionLocked) return;
+        if (!TryGetOfficialMap(officialMapId, out OfficialMapEntry entry)) return;
+        if (!TryValidateConfiguredSelection(
+                LobbyMapKind.Official,
+                entry.MapId,
+                entry.MinimumPlayersToClear))
+            return;
 
-        ServerInvalidateAvailabilityCheck("기본 맵 선택으로 변경되었습니다.");
+        ServerInvalidateAvailabilityCheck("공식맵 선택으로 변경되었습니다.");
         SetAvailabilityStatus(LobbyMapAvailabilityState.Idle, string.Empty);
         sessionSnapshot = null;
-        selectedMapKind = LobbyMapKind.BuiltIn;
-        selectedStage = stage;
-        selectedMapId = string.Empty;
-        selectedMapName = $"기본 스테이지 {stage + 1}";
-        selectedAuthorName = "Flip Friends";
-        selectedVersion = string.Empty;
+        ClearServerMapSession();
+        selectedMapKind = LobbyMapKind.Official;
+        selectedMapId = entry.MapId;
+        selectedMapName = entry.DisplayName;
+        selectedAuthorName = entry.AuthorName;
+        selectedVersion = entry.Version;
         selectedMapHasWarnings = false;
         selectedMapByteCount = 0;
+        selectedMinimumPlayersToClear = entry.MinimumPlayersToClear;
         ApplySelectionToRoomManager();
     }
 
@@ -201,6 +203,7 @@ public class MapSelectionManager : NetworkBehaviour
         bool hasWarnings,
         string json)
     {
+        if (selectionLocked) return;
         if (!MapData.TryNormalizeMapId(mapId, out string normalizedMapId))
         {
             Debug.LogWarning("형식이 올바르지 않은 MapId의 선택 요청을 거부했습니다.");
@@ -213,6 +216,11 @@ public class MapSelectionManager : NetworkBehaviour
             Debug.LogWarning("MapId와 JSON 데이터가 일치하지 않는 선택 요청을 거부했습니다.");
             return;
         }
+        if (!TryValidateConfiguredSelection(
+                LobbyMapKind.Custom,
+                normalizedMapId,
+                mapData.minimumPlayersToClear))
+            return;
 
         ServerInvalidateAvailabilityCheck("커스텀 맵 선택이 변경되었습니다.");
         sessionSnapshot = null;
@@ -229,9 +237,9 @@ public class MapSelectionManager : NetworkBehaviour
         }
 
         sessionSnapshot = snapshot;
+        ClearServerMapSession();
         SetAvailabilityStatus(LobbyMapAvailabilityState.Idle, string.Empty);
         selectedMapKind = LobbyMapKind.Custom;
-        selectedStage = -1;
         selectedMapId = normalizedMapId;
         selectedMapName = mapData.mapName;
         selectedAuthorName = string.IsNullOrWhiteSpace(mapData.authorName)
@@ -240,6 +248,7 @@ public class MapSelectionManager : NetworkBehaviour
         selectedVersion = mapData.version;
         selectedMapHasWarnings = hasWarnings;
         selectedMapByteCount = byteCount;
+        selectedMinimumPlayersToClear = mapData.minimumPlayersToClear;
         ApplySelectionToRoomManager();
     }
 
@@ -254,7 +263,8 @@ public class MapSelectionManager : NetworkBehaviour
         bool hasWarnings)
     {
         ClearSelectionUpload();
-        if (requester == null || !requester.ServerIsRoomHost() ||
+        if (!ServerAllowsCustomMapTransfer() ||
+            requester == null || !requester.ServerIsRoomHost() ||
             requester.connectionToClient == null ||
             !MapData.TryNormalizeMapId(mapId, out string normalizedMapId) ||
             normalizedMapId != mapId ||
@@ -287,7 +297,8 @@ public class MapSelectionManager : NetworkBehaviour
         int chunkIndex,
         byte[] payload)
     {
-        if (requester == null ||
+        if (!ServerAllowsCustomMapTransfer() ||
+            requester == null ||
             requester.connectionToClient != selectionUploadConnection ||
             selectionUploadAssembler == null ||
             !selectionUploadLease.Matches(transferId, mapId, contentHash) ||
@@ -354,18 +365,73 @@ public class MapSelectionManager : NetworkBehaviour
     [Server]
     public void ServerClearSelection()
     {
+        if (selectionLocked) return;
         ServerInvalidateAvailabilityCheck("맵 선택이 해제되었습니다.");
         SetAvailabilityStatus(LobbyMapAvailabilityState.Idle, string.Empty);
         sessionSnapshot = null;
+        ClearServerMapSession();
         selectedMapKind = LobbyMapKind.None;
-        selectedStage = -1;
         selectedMapId = string.Empty;
         selectedMapName = string.Empty;
         selectedAuthorName = string.Empty;
         selectedVersion = string.Empty;
         selectedMapHasWarnings = false;
         selectedMapByteCount = 0;
+        selectedMinimumPlayersToClear = 0;
         ApplySelectionToRoomManager();
+    }
+
+    [Server]
+    private void ServerApplyPendingRoomSelection()
+    {
+        if (NetworkManager.singleton is not SteamRoomManager roomManager ||
+            roomManager.PendingMapSelection == null)
+        {
+            Debug.LogError("방 생성 전에 선택한 맵 정보를 찾을 수 없습니다.");
+            return;
+        }
+
+        PendingRoomMapSelection pending = roomManager.PendingMapSelection;
+        if (pending.Kind == LobbyMapKind.Official)
+            ServerSelectOfficial(pending.MapId);
+        else if (pending.Kind == LobbyMapKind.Custom)
+            ServerSelectPendingCustom(pending.CustomMapJson);
+        else
+            Debug.LogError($"지원하지 않는 사전 선택 맵 종류입니다: {pending.Kind}");
+
+        selectionLocked = selectedMapKind == pending.Kind &&
+                          selectedMapId == pending.MapId &&
+                          selectedMinimumPlayersToClear == pending.MinimumPlayersToClear;
+        if (!selectionLocked)
+            Debug.LogError("방 생성 전 맵 선택을 GameRoom에 적용하지 못했습니다.");
+    }
+
+    [Server]
+    private void ServerSelectPendingCustom(string json)
+    {
+        MapData data = MapDataRepository.FromJson(json);
+        if (data == null)
+        {
+            Debug.LogError("방 생성 전에 선택한 커스텀맵을 다시 검증하지 못했습니다.");
+            return;
+        }
+
+        MapValidationReport report = new MapDataValidator(mapEditorPalette).Validate(data);
+        if (report.HasErrors)
+        {
+            Debug.LogError("방 생성 전에 선택한 커스텀맵의 플레이 가능성 검증에 실패했습니다.");
+            return;
+        }
+
+        int byteCount = System.Text.Encoding.UTF8.GetByteCount(json);
+        ServerSelectCustom(
+            data.mapId,
+            data.mapName,
+            data.authorName,
+            data.version,
+            byteCount,
+            report.HasWarnings,
+            json);
     }
 
     [Server]
@@ -377,7 +443,7 @@ public class MapSelectionManager : NetworkBehaviour
             return;
         }
 
-        if (selectedMapKind == LobbyMapKind.BuiltIn)
+        if (selectedMapKind == LobbyMapKind.Official)
         {
             ApplySelectionToRoomManager();
             StartGameplay();
@@ -396,7 +462,8 @@ public class MapSelectionManager : NetworkBehaviour
         string contentHash,
         MapContentAvailability availability)
     {
-        if (responder == null || sessionSnapshot == null ||
+        if (!ServerAllowsCustomMapTransfer() ||
+            responder == null || sessionSnapshot == null ||
             availabilityTimeoutCoroutine == null)
             return;
         if (generation != availabilityGeneration)
@@ -467,7 +534,8 @@ public class MapSelectionManager : NetworkBehaviour
         string contentHash,
         MapTransferFailure failure)
     {
-        if (!MatchesCurrentTransfer(
+        if (!ServerAllowsCustomMapTransfer() ||
+            !MatchesCurrentTransfer(
                 responder, generation, transferId, mapId, contentHash,
                 out NetworkConnectionToClient connection))
             return;
@@ -512,16 +580,16 @@ public class MapSelectionManager : NetworkBehaviour
     {
         if (NetworkManager.singleton is not SlimeRoomManager roomManager) return;
 
-        roomManager.currentStage = selectedMapKind == LobbyMapKind.BuiltIn
-            ? selectedStage
-            : -1;
-        roomManager.currentMapId = selectedMapKind == LobbyMapKind.Custom
-            ? selectedMapId
+        string contentHash = selectedMapKind == LobbyMapKind.Custom && sessionSnapshot != null
+            ? sessionSnapshot.ContentHash
             : string.Empty;
-        roomManager.currentMapContentHash =
-            selectedMapKind == LobbyMapKind.Custom && sessionSnapshot != null
-                ? sessionSnapshot.ContentHash
-                : string.Empty;
+        roomManager.SetCurrentMap(selectedMapKind, selectedMapId, contentHash);
+    }
+
+    private void ClearServerMapSession()
+    {
+        if (NetworkManager.singleton is SlimeRoomManager roomManager)
+            roomManager.ServerMapSession.Clear();
     }
 
     [Server]
@@ -535,16 +603,15 @@ public class MapSelectionManager : NetworkBehaviour
             return false;
         }
 
-        if (NetworkManager.singleton is not SlimeRoomManager roomManager ||
-            !roomManager.AreAllRoomPlayersReady())
+        if (!TryValidateServerStartState(out error))
         {
-            error = "모든 참여자가 준비된 상태에서만 게임을 시작할 수 있습니다.";
             return false;
         }
 
-        if (selectedMapKind == LobbyMapKind.None)
+        if (selectedMapKind == LobbyMapKind.Official &&
+            !TryGetOfficialMap(selectedMapId, out _))
         {
-            error = "플레이할 맵을 먼저 선택하세요.";
+            error = "선택된 공식맵 상태가 올바르지 않습니다. 맵을 다시 선택하세요.";
             return false;
         }
 
@@ -558,13 +625,18 @@ public class MapSelectionManager : NetworkBehaviour
             return false;
         }
 
-        error = null;
         return true;
     }
 
     [Server]
     private void BeginAvailabilityCheck(CustomRoomPlayer requester)
     {
+        if (!ServerAllowsCustomMapTransfer())
+        {
+            requester?.TargetShowMapSelectionError(
+                "커스텀맵 전송은 CustomOnly 방에서만 허용됩니다.");
+            return;
+        }
         ServerInvalidateAvailabilityCheck("새 게임 시작 검사를 시작합니다.");
         startRequester = requester;
         availabilityMapId = selectedMapId;
@@ -613,6 +685,7 @@ public class MapSelectionManager : NetworkBehaviour
     [Server]
     private void RequestManifestFromParticipants()
     {
+        if (!ServerAllowsCustomMapTransfer()) return;
         foreach (NetworkConnectionToClient connection in availabilityResponses.Keys)
         {
             if (connection.identity == null ||
@@ -683,6 +756,7 @@ public class MapSelectionManager : NetworkBehaviour
     [Server]
     private void SendSnapshotToPendingParticipants()
     {
+        if (!ServerAllowsCustomMapTransfer()) return;
         int chunkCount = GetChunkCount();
         foreach (KeyValuePair<NetworkConnectionToClient, ParticipantTransferState> pair
                  in availabilityResponses)
@@ -897,6 +971,17 @@ public class MapSelectionManager : NetworkBehaviour
     private void StartGameplay()
     {
         if (NetworkManager.singleton is not SlimeRoomManager roomManager) return;
+        if (!TryValidateServerStartState(out string error))
+        {
+            Debug.LogWarning($"게임 시작 직전 서버 검증에 실패했습니다: {error}");
+            return;
+        }
+        if (!roomManager.TryBeginGameplayCompletionSession(out error))
+        {
+            Debug.LogError($"완료 판정용 서버 세션을 확정하지 못했습니다: {error}");
+            startRequester?.TargetShowMapSelectionError(error);
+            return;
+        }
 
         ServerInvalidateAvailabilityCheck("게임 씬으로 전환합니다.");
         roomManager.ServerChangeScene(roomManager.GameplayScene);
@@ -956,13 +1041,77 @@ public class MapSelectionManager : NetworkBehaviour
         };
     }
 
-    private bool IsValidBuiltInStage(int stage)
+    private bool TryGetOfficialMap(string officialMapId, out OfficialMapEntry entry)
     {
-        if (mapButtons != null && stage >= 0 && stage < mapButtons.Length)
+        entry = null;
+        if (officialMapCatalog == null)
+        {
+            Debug.LogError("OfficialMapCatalog가 MapSelectionManager에 연결되지 않았습니다.");
+            return false;
+        }
+        if (officialMapCatalog.TryGet(officialMapId, out entry)) return true;
+
+        Debug.LogWarning($"유효하지 않은 공식 MapId 선택 요청을 거부했습니다: {officialMapId}");
+        return false;
+    }
+
+    [Server]
+    private bool TryValidateConfiguredSelection(
+        LobbyMapKind mapKind,
+        string mapId,
+        int minimumPlayersToClear)
+    {
+        if (NetworkManager.singleton is SlimeRoomManager roomManager &&
+            roomManager.IsConfiguredMapSelection(
+                mapKind, mapId, minimumPlayersToClear))
             return true;
 
-        Debug.LogWarning($"범위를 벗어난 기본 맵 선택 요청을 거부했습니다: stage={stage}");
+        Debug.LogWarning(
+            $"방 정책과 일치하지 않는 맵 선택을 거부했습니다: " +
+            $"kind={mapKind}, mapId={mapId}, minimumPlayers={minimumPlayersToClear}");
         return false;
+    }
+
+    [Server]
+    private bool TryValidateServerStartState(out string error)
+    {
+        if (NetworkManager.singleton is not SlimeRoomManager roomManager ||
+            !roomManager.AreAllRoomPlayersReady())
+        {
+            error = "모든 참여자가 준비된 상태에서만 게임을 시작할 수 있습니다.";
+            return false;
+        }
+        if (selectedMapKind == LobbyMapKind.None)
+        {
+            error = "플레이할 맵을 먼저 선택하세요.";
+            return false;
+        }
+
+        int readyPlayerCount = roomManager.CountReadyRoomPlayers();
+        if (!RoomMapSessionRules.CanStart(
+                roomManager.RoomMapMetadata,
+                selectedMapKind,
+                selectedMapId,
+                selectedMinimumPlayersToClear,
+                readyPlayerCount))
+        {
+            error =
+                $"선택 맵은 준비 완료 참가자 {selectedMinimumPlayersToClear}명 이상이 필요합니다. " +
+                $"현재 준비 인원: {readyPlayerCount}명";
+            return false;
+        }
+
+        error = null;
+        return true;
+    }
+
+    private bool ServerAllowsCustomMapTransfer()
+    {
+        bool allowed = NetworkManager.singleton is SlimeRoomManager roomManager &&
+                       roomManager.AllowsCustomMapTransfer();
+        if (!allowed)
+            Debug.LogWarning("CustomOnly 방이 아닌 세션의 커스텀맵 전송 요청을 거부했습니다.");
+        return allowed;
     }
 
     private bool CanLocalPlayerChangeSelection()
@@ -973,68 +1122,12 @@ public class MapSelectionManager : NetworkBehaviour
         return false;
     }
 
-    private void AddButtonEvents()
-    {
-        if (mapButtons == null) return;
-
-        for (int index = 0; index < mapButtons.Length; index++)
-        {
-            int stageIndex = index;
-            mapButtons[index].onClick.AddListener(() => StageLoad(stageIndex));
-        }
-    }
-
     private void RefreshSelectionUI()
     {
-        if (selectedMapText != null)
-            selectedMapText.text = BuildSelectedMapText();
-        if (selectionStatusText != null)
-            selectionStatusText.text = BuildStatusText();
-        SetMapButtonsInteractable(IsLocalHost);
         SelectionChanged?.Invoke();
     }
 
-    private string BuildSelectedMapText()
-    {
-        if (selectedMapKind == LobbyMapKind.None)
-            return "선택된 맵 없음";
-
-        string version = string.IsNullOrEmpty(selectedVersion)
-            ? string.Empty
-            : $" / v{selectedVersion}";
-        return $"{selectedMapName}\n제작자: {selectedAuthorName}{version}";
-    }
-
-    private string BuildStatusText()
-    {
-        if (availabilityState != LobbyMapAvailabilityState.Idle &&
-            !string.IsNullOrEmpty(availabilityMessage))
-            return availabilityMessage;
-        if (!IsLocalHost)
-            return "방장만 맵 선택을 변경할 수 있습니다.";
-        if (selectedMapKind == LobbyMapKind.None)
-            return "기본 스테이지 또는 커스텀 맵을 선택하세요.";
-        if (selectedMapKind == LobbyMapKind.Custom && selectedMapHasWarnings)
-            return $"경고가 있는 맵입니다. 선택 가능 / {selectedMapByteCount} bytes";
-
-        return "게임을 시작할 수 있습니다.";
-    }
-
-    private void SetMapButtonsInteractable(bool interactable)
-    {
-        if (mapButtons == null) return;
-
-        foreach (Button button in mapButtons)
-        {
-            if (button != null)
-                button.interactable = interactable;
-        }
-    }
-
     private void OnMapKindChanged(LobbyMapKind oldValue, LobbyMapKind newValue) =>
-        RefreshSelectionUI();
-
-    private void OnStageChanged(int oldValue, int newValue) =>
         RefreshSelectionUI();
 
     private void OnMapIdChanged(string oldValue, string newValue) =>
@@ -1053,6 +1146,9 @@ public class MapSelectionManager : NetworkBehaviour
         RefreshSelectionUI();
 
     private void OnByteCountChanged(int oldValue, int newValue) =>
+        RefreshSelectionUI();
+
+    private void OnMinimumPlayersChanged(int oldValue, int newValue) =>
         RefreshSelectionUI();
 
     private void OnAvailabilityStateChanged(

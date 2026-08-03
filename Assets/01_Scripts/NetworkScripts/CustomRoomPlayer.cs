@@ -172,16 +172,18 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     }
 
     [Command]
-    public void CmdSelectBuiltInMap(int stage)
+    public void CmdSelectOfficialMap(string officialMapId)
     {
         if (!ServerIsRoomHost()) return;
 
-        FindAnyObjectByType<MapSelectionManager>()?.ServerSelectBuiltIn(stage);
+        FindAnyObjectByType<MapSelectionManager>()?.ServerSelectOfficial(officialMapId);
     }
 
     public void UploadCustomMapSelection(SavedMapListEntry entry)
     {
-        if (!isOwned || entry == null || string.IsNullOrEmpty(entry.Json)) return;
+        if (!isOwned || !AllowsCustomMapTransfer() ||
+            entry == null || string.IsNullOrEmpty(entry.Json))
+            return;
 
         MapData data = MapDataRepository.FromJson(entry.Json);
         if (data == null || data.mapId != entry.MapId)
@@ -279,6 +281,12 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         int byteLength,
         int chunkCount)
     {
+        if (!AllowsCustomMapTransfer())
+        {
+            Debug.LogWarning("CustomOnly 방이 아닌 세션의 맵 manifest를 거부했습니다.");
+            return;
+        }
+
         chunkAssembler = null;
         MapContentAvailability availability = InspectLocalContent(
             mapId, contentHash, byteLength);
@@ -310,6 +318,12 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         int chunkIndex,
         byte[] payload)
     {
+        if (!AllowsCustomMapTransfer())
+        {
+            Debug.LogWarning("CustomOnly 방이 아닌 세션의 맵 청크를 거부했습니다.");
+            return;
+        }
+
         if (!TryAcceptChunkHeader(
                 generation, transferId, mapId, contentHash,
                 byteLength, chunkCount, chunkIndex, payload))
@@ -460,6 +474,12 @@ public class CustomRoomPlayer : NetworkRoomPlayer
             $"transferId={transferId}, reason={reason}");
         CmdReportMapTransfer(
             generation, transferId, mapId, contentHash, failure);
+    }
+
+    private static bool AllowsCustomMapTransfer()
+    {
+        return NetworkManager.singleton is SlimeRoomManager roomManager &&
+               roomManager.AllowsCustomMapTransfer();
     }
 
     [TargetRpc]

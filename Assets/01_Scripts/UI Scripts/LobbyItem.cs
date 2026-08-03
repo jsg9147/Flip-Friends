@@ -23,8 +23,20 @@ public class LobbyItem : MonoBehaviour
 
         ownerNameText.text = lobbyInfo.LobbyName;
         currentMemberText.text = $"{lobbyInfo.CurrentMemberCount} / {lobbyInfo.MaxMembers}";
-        lobbyStateText.text = lobbyInfo.IsInGame ? "Playing" : "Waiting";
+        LobbyMapMetadata map = lobbyInfo.MapMetadata;
+        string state = lobbyInfo.IsInGame ? "Playing" : "Waiting";
+        lobbyStateText.text = map == null
+            ? $"{state} · Map info unavailable"
+            : $"{state} · {GetMapKindLabel(map.MapKey.Kind)} · " +
+              $"{map.DisplayName} · Min {map.MinimumPlayersToClear}";
     }
+
+    private static string GetMapKindLabel(LobbyMapKind kind) => kind switch
+    {
+        LobbyMapKind.Official => "Official",
+        LobbyMapKind.Custom => "Custom",
+        _ => "Unknown"
+    };
 
     public void SetJoinAction(Action<SteamLobbyInfo> action)
     {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MapListUI : MonoBehaviour
@@ -8,61 +9,71 @@ public class MapListUI : MonoBehaviour
     [SerializeField] private GameObject panel;
     [SerializeField] private Transform listContainer;
     [SerializeField] private GameObject listItemPrefab;
+    [SerializeField] private OfficialMapCatalog officialMapCatalog;
+    [SerializeField] private MapEditorPalette mapEditorPalette;
     [SerializeField] private MapSelectionManager mapSelectionManager;
+    [SerializeField] private HostRoomScreen hostRoomScreen;
     [SerializeField] private TMP_Text messageText;
-    [SerializeField] private Button openButton;
+    [SerializeField] private Button officialMapsButton;
+    [SerializeField] private Button customMapsButton;
     [SerializeField] private Button startButton;
-    [SerializeField] private Button clearSelectionButton;
 
     private readonly List<GameObject> createdItems = new();
-    private SavedMapCatalog catalog;
+    private SavedMapCatalog customMapCatalog;
+    private MapListView currentView = MapListView.All;
+    private bool IsHostCreationContext => hostRoomScreen != null;
+    private bool CanChangeSelection => IsHostCreationContext ||
+        mapSelectionManager != null && mapSelectionManager.IsLocalHost &&
+        !mapSelectionManager.IsSelectionLocked;
 
     private void Start()
     {
         if (!ValidateReferences()) return;
 
-        catalog = new SavedMapCatalog(mapSelectionManager.Palette);
-        CreateMissingControls();
-        panel.SetActive(false);
+        customMapCatalog = new SavedMapCatalog(mapEditorPalette);
         BindButtons();
-        RefreshAuthorityState();
+        ShowAllMaps();
+        RefreshState();
     }
 
     private void OnEnable()
     {
         if (mapSelectionManager != null)
-            mapSelectionManager.SelectionChanged += RefreshAuthorityState;
+            mapSelectionManager.SelectionChanged += RefreshState;
+        MapCompletionProgress.Changed += RefreshVisibleList;
     }
 
     private void OnDisable()
     {
         if (mapSelectionManager != null)
-            mapSelectionManager.SelectionChanged -= RefreshAuthorityState;
+            mapSelectionManager.SelectionChanged -= RefreshState;
+        MapCompletionProgress.Changed -= RefreshVisibleList;
     }
 
-    public void TogglePanel()
+    public void ShowOfficialMaps()
     {
-        if (!mapSelectionManager.IsLocalHost)
-        {
-            ShowSelectionMessage("방장만 커스텀 맵을 선택할 수 있습니다.", true);
-            return;
-        }
+        currentView = MapListView.Official;
+        PopulateOfficialMaps();
+    }
 
-        bool isOpen = !panel.activeSelf;
-        panel.SetActive(isOpen);
-        if (isOpen)
-            PopulateList();
+    public void ShowCustomMaps()
+    {
+        currentView = MapListView.Custom;
+        PopulateCustomMaps();
+    }
+
+    public void ShowAllMaps()
+    {
+        currentView = MapListView.All;
+        ClearList();
+        AppendOfficialMaps();
+        AppendCustomMaps();
+        SelectFirstItem();
     }
 
     public void StartSelectedMap()
     {
-        mapSelectionManager.StartSelectedMap();
-    }
-
-    public void ClearSelection()
-    {
-        mapSelectionManager.ClearCustomMapSelection();
-        ShowSelectionMessage("커스텀 맵 선택을 해제했습니다.", false);
+        mapSelectionManager?.StartSelectedMap();
     }
 
     public void ShowSelectionMessage(string message, bool isError)
@@ -75,156 +86,228 @@ public class MapListUI : MonoBehaviour
             : Color.white;
     }
 
-    private void PopulateList()
+    private void PopulateOfficialMaps()
     {
         ClearList();
-        IReadOnlyList<SavedMapListEntry> entries = catalog.GetEntries();
+        AppendOfficialMaps();
+        SelectFirstItem();
+    }
+
+    private void AppendOfficialMaps()
+    {
+        if (officialMapCatalog == null)
+        {
+            ShowSelectionMessage("공식맵 카탈로그가 연결되지 않았습니다.", true);
+            return;
+        }
+
+        foreach (OfficialMapEntry entry in officialMapCatalog.Entries)
+        {
+            if (entry != null)
+                CreateOfficialItem(entry);
+        }
+    }
+
+    private void PopulateCustomMaps()
+    {
+        ClearList();
+        AppendCustomMaps();
+        SelectFirstItem();
+    }
+
+    private void AppendCustomMaps()
+    {
+        IReadOnlyList<SavedMapListEntry> entries = customMapCatalog.GetEntries();
         if (entries.Count == 0)
         {
-            ShowSelectionMessage("로컬에 저장된 커스텀 맵이 없습니다.", false);
+            ShowSelectionMessage("로컬에 저장된 커스텀맵이 없습니다.", false);
             return;
         }
 
         foreach (SavedMapListEntry entry in entries)
-            CreateListItem(entry);
-
-        mapSelectionManager.SelectFirstLocalMapListItem(listContainer);
+            CreateCustomItem(entry);
     }
 
-    private void CreateListItem(SavedMapListEntry entry)
+    private void CreateOfficialItem(OfficialMapEntry entry)
+    {
+        string completion = GetOfficialCompletionLabel(entry);
+        Button button = CreateItem(
+            $"{entry.DisplayName}\n제작자: {entry.AuthorName} / v{entry.Version}\n" +
+            $"최소 인원: {entry.MinimumPlayersToClear}명 · {completion}");
+        if (button == null) return;
+
+        button.interactable = CanChangeSelection;
+        button.onClick.AddListener(() => SelectOfficial(entry));
+    }
+
+    private void CreateCustomItem(SavedMapListEntry entry)
+    {
+        string state = entry.CanSelect ? "선택 가능" : $"선택 불가 · {entry.Message}";
+        string completion = GetCustomCompletionLabel(entry);
+        Button button = CreateItem(
+            $"{entry.MapName}\n제작자: {entry.AuthorName} / v{entry.Version}\n" +
+            $"최소 인원: {entry.MinimumPlayersToClear}명 · {state} · {completion}");
+        if (button == null) return;
+
+        button.interactable = CanChangeSelection && entry.CanSelect;
+        button.onClick.AddListener(() => SelectCustom(entry));
+    }
+
+    private Button CreateItem(string labelText)
     {
         GameObject item = Instantiate(listItemPrefab, listContainer);
         Button button = item.GetComponent<Button>();
-        TMP_Text label = item.GetComponentInChildren<TMP_Text>();
+        TMP_Text label = item.GetComponentInChildren<TMP_Text>(true);
         if (button == null || label == null)
         {
             Debug.LogError($"맵 목록 아이템 프리팹 구성이 올바르지 않습니다: {item.name}");
             Destroy(item);
-            return;
+            return null;
         }
 
         createdItems.Add(item);
-        PositionListItem(item.GetComponent<RectTransform>(), createdItems.Count - 1);
-        label.text = BuildItemLabel(entry);
-        button.interactable = mapSelectionManager.IsLocalHost && entry.CanSelect;
+        label.text = labelText;
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => OnMapSelected(entry));
+        return button;
     }
 
-    private void PositionListItem(RectTransform rectTransform, int index)
+    private void SelectOfficial(OfficialMapEntry entry)
     {
-        if (rectTransform == null) return;
-
-        rectTransform.anchorMin = new Vector2(0.5f, 1f);
-        rectTransform.anchorMax = new Vector2(0.5f, 1f);
-        rectTransform.pivot = new Vector2(0.5f, 1f);
-        rectTransform.anchoredPosition = new Vector2(0f, -20f - index * 125f);
-        rectTransform.sizeDelta = new Vector2(760f, 110f);
+        if (IsHostCreationContext)
+            hostRoomScreen.SelectOfficialMap(entry);
+        else
+            mapSelectionManager.SelectOfficialMap(entry.MapId);
+        RefreshState();
     }
 
-    private string BuildItemLabel(SavedMapListEntry entry)
+    private void SelectCustom(SavedMapListEntry entry)
     {
-        string state = entry.CanSelect
-            ? entry.Availability == SavedMapAvailability.PlayableWithWarnings
-                ? "선택 가능 · 경고 있음"
-                : "선택 가능"
-            : $"선택 불가 · {entry.Message}";
-        return $"{entry.MapName}\n제작자: {entry.AuthorName} / v{entry.Version}\n{state}";
-    }
-
-    private void OnMapSelected(SavedMapListEntry entry)
-    {
-        SavedMapListEntry refreshed = catalog.Refresh(entry);
+        SavedMapListEntry refreshed = customMapCatalog.Refresh(entry);
         if (refreshed == null || !refreshed.CanSelect)
         {
             ShowSelectionMessage(
                 refreshed?.Message ?? "선택한 MapId의 맵을 다시 찾을 수 없습니다.",
                 true);
-            PopulateList();
+            ShowCustomMaps();
             return;
         }
 
-        mapSelectionManager.SelectCustomMap(refreshed);
-        ShowSelectionMessage(refreshed.Message, false);
-        panel.SetActive(false);
+        if (IsHostCreationContext)
+            hostRoomScreen.SelectCustomMap(refreshed);
+        else
+            mapSelectionManager.SelectCustomMap(refreshed);
+        RefreshState();
     }
 
-    private void RefreshAuthorityState()
+    private void RefreshState()
     {
-        bool isHost = mapSelectionManager != null && mapSelectionManager.IsLocalHost;
-        if (openButton != null)
-            openButton.interactable = isHost;
         if (startButton != null)
-            startButton.interactable =
-                isHost && mapSelectionManager.SelectedMapKind != LobbyMapKind.None;
-        if (clearSelectionButton != null)
-            clearSelectionButton.interactable =
-                isHost && mapSelectionManager.SelectedMapKind == LobbyMapKind.Custom;
-        if (!isHost && panel != null)
-            panel.SetActive(false);
-        if (messageText != null)
+        {
+            startButton.gameObject.SetActive(!IsHostCreationContext);
+            startButton.interactable = mapSelectionManager != null &&
+                                       mapSelectionManager.IsLocalHost &&
+                                       mapSelectionManager.SelectedMapKind != LobbyMapKind.None;
+        }
+        if (!IsHostCreationContext && mapSelectionManager != null)
+        {
             ShowSelectionMessage(
-                $"{mapSelectionManager.SelectionSummary}\n" +
-                mapSelectionManager.SelectionStatus,
+                $"{BuildSelectionSummary()}\n{BuildSelectionStatus()}",
                 false);
+        }
+        else if (IsHostCreationContext)
+        {
+            ShowSelectionMessage("방 종류, 맵, 최대 인원을 확인한 뒤 방을 생성하세요.", false);
+        }
+    }
+
+    private void RefreshVisibleList()
+    {
+        if (!isActiveAndEnabled || customMapCatalog == null) return;
+
+        switch (currentView)
+        {
+            case MapListView.Official:
+                PopulateOfficialMaps();
+                break;
+            case MapListView.Custom:
+                PopulateCustomMaps();
+                break;
+            default:
+                ClearList();
+                AppendOfficialMaps();
+                AppendCustomMaps();
+                SelectFirstItem();
+                break;
+        }
+        RefreshState();
+    }
+
+    private static string GetOfficialCompletionLabel(OfficialMapEntry entry)
+    {
+        if (entry == null ||
+            !MapCompletionTarget.TryCreateOfficial(
+                entry.MapId, entry.CompletionRevision, out MapCompletionTarget target))
+            return "완료 상태 확인 불가";
+
+        return MapCompletionDisplay.GetLabel(MapCompletionProgress.GetState(target));
+    }
+
+    private static string GetCustomCompletionLabel(SavedMapListEntry entry)
+    {
+        if (entry == null ||
+            !MapCompletionTarget.TryCreateCustom(
+                entry.MapId, entry.ContentHash, out MapCompletionTarget target))
+            return "완료 상태 확인 불가";
+
+        return MapCompletionDisplay.GetLabel(MapCompletionProgress.GetState(target));
+    }
+
+    private string BuildSelectionSummary()
+    {
+        if (mapSelectionManager.SelectedMapKind == LobbyMapKind.None)
+            return "선택된 맵 없음";
+
+        string version = string.IsNullOrEmpty(mapSelectionManager.SelectedVersion)
+            ? string.Empty
+            : $" / v{mapSelectionManager.SelectedVersion}";
+        return
+            $"{mapSelectionManager.SelectedMapName}\n" +
+            $"제작자: {mapSelectionManager.SelectedAuthorName}{version}\n" +
+            $"최소 인원: {mapSelectionManager.SelectedMinimumPlayersToClear}명";
+    }
+
+    private string BuildSelectionStatus()
+    {
+        if (mapSelectionManager.AvailabilityState != LobbyMapAvailabilityState.Idle &&
+            !string.IsNullOrEmpty(mapSelectionManager.AvailabilityMessage))
+            return mapSelectionManager.AvailabilityMessage;
+        if (!mapSelectionManager.IsLocalHost)
+            return "방장만 맵 선택을 변경할 수 있습니다.";
+        if (mapSelectionManager.SelectedMapKind == LobbyMapKind.None)
+            return "공식맵 또는 커스텀맵을 선택하세요.";
+        if (mapSelectionManager.SelectedMapKind == LobbyMapKind.Custom &&
+            mapSelectionManager.SelectedMapHasWarnings)
+        {
+            return
+                $"경고가 있는 맵입니다. 선택 가능 / " +
+                $"{mapSelectionManager.SelectedMapByteCount} bytes";
+        }
+
+        return "게임을 시작할 수 있습니다.";
     }
 
     private void BindButtons()
     {
-        openButton?.onClick.AddListener(TogglePanel);
+        officialMapsButton?.onClick.AddListener(ShowOfficialMaps);
+        customMapsButton?.onClick.AddListener(ShowCustomMaps);
         startButton?.onClick.AddListener(StartSelectedMap);
-        clearSelectionButton?.onClick.AddListener(ClearSelection);
     }
 
-    private void CreateMissingControls()
+    private void SelectFirstItem()
     {
-        Transform controlParent = panel.transform.parent;
-        openButton = openButton != null
-            ? openButton
-            : CreateControlButton(controlParent, "커스텀 맵", new Vector2(-360f, -80f));
-        startButton = startButton != null
-            ? startButton
-            : CreateControlButton(controlParent, "선택 맵 시작", new Vector2(0f, -80f));
-        clearSelectionButton = clearSelectionButton != null
-            ? clearSelectionButton
-            : CreateControlButton(controlParent, "커스텀 해제", new Vector2(360f, -80f));
-        if (messageText == null)
-            messageText = CreateMessageText(controlParent);
-    }
+        if (createdItems.Count == 0 || EventSystem.current == null) return;
 
-    private Button CreateControlButton(
-        Transform parent,
-        string label,
-        Vector2 anchoredPosition)
-    {
-        GameObject item = Instantiate(listItemPrefab, parent);
-        item.name = label;
-        RectTransform rectTransform = item.GetComponent<RectTransform>();
-        rectTransform.anchorMin = new Vector2(0.5f, 0f);
-        rectTransform.anchorMax = new Vector2(0.5f, 0f);
-        rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = new Vector2(260f, 70f);
-        TMP_Text text = item.GetComponentInChildren<TMP_Text>();
-        if (text != null)
-            text.text = label;
-        Button button = item.GetComponent<Button>();
-        button.onClick.RemoveAllListeners();
-        return button;
-    }
-
-    private TMP_Text CreateMessageText(Transform parent)
-    {
-        TMP_Text template = listItemPrefab.GetComponentInChildren<TMP_Text>();
-        TMP_Text text = Instantiate(template, parent);
-        text.name = "Custom Map Message";
-        RectTransform rectTransform = text.rectTransform;
-        rectTransform.anchorMin = new Vector2(0.5f, 0f);
-        rectTransform.anchorMax = new Vector2(0.5f, 0f);
-        rectTransform.anchoredPosition = new Vector2(0f, 20f);
-        rectTransform.sizeDelta = new Vector2(1200f, 60f);
-        text.alignment = TextAlignmentOptions.Center;
-        text.fontSize = 28f;
-        return text;
+        EventSystem.current.SetSelectedGameObject(createdItems[0]);
     }
 
     private void ClearList()
@@ -234,27 +317,25 @@ public class MapListUI : MonoBehaviour
             if (item != null)
                 Destroy(item);
         }
-
         createdItems.Clear();
     }
 
     private bool ValidateReferences()
     {
-        if (panel != null &&
-            listContainer != null &&
-            mapSelectionManager != null &&
-            IsValidListItemPrefab())
-            return true;
+        bool hasContext = hostRoomScreen != null || mapSelectionManager != null;
+        bool valid = panel != null && listContainer != null && listItemPrefab != null &&
+                     officialMapCatalog != null && mapEditorPalette != null && hasContext;
+        if (valid) return true;
 
-        Debug.LogError("MapListUI의 패널, 목록 컨테이너, 아이템 프리팹 또는 선택 관리자 참조가 없습니다.");
+        Debug.LogError("MapListUI의 목록, 카탈로그, 팔레트 또는 사용 화면 참조가 없습니다.");
         enabled = false;
         return false;
     }
 
-    private bool IsValidListItemPrefab()
+    private enum MapListView
     {
-        return listItemPrefab != null &&
-               listItemPrefab.GetComponent<Button>() != null &&
-               listItemPrefab.GetComponentInChildren<TMP_Text>(true) != null;
+        All,
+        Official,
+        Custom
     }
 }
