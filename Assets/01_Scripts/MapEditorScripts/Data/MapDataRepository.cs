@@ -109,6 +109,11 @@ public static class MapDataRepository
                 MapSaveFailureKind.InvalidName,
                 $"맵을 저장할 수 없습니다: {error}",
                 out result);
+        if (!MapPlayRequirements.IsValidMinimumPlayers(data.minimumPlayersToClear))
+            return FailSave(
+                MapSaveFailureKind.InvalidRequirements,
+                "맵을 저장할 수 없습니다: 최소 클리어 인원은 1~4명이어야 합니다.",
+                out result);
         if (!TryPrepareForSave(data, out error))
             return FailSave(
                 MapSaveFailureKind.InvalidMapId,
@@ -652,9 +657,7 @@ public static class MapDataRepository
                     out failure);
             if (!TryMigrate(source, out mapData, out string error, out wasMigrated))
                 return FailLoad(
-                    source.version == MapData.CurrentVersion
-                        ? MapRepositoryFailureKind.InvalidMapId
-                        : MapRepositoryFailureKind.UnsupportedVersion,
+                    GetMigrationFailureKind(source),
                     $"{context}을(를) 불러올 수 없습니다: {error}",
                     out failure);
 
@@ -678,6 +681,19 @@ public static class MapDataRepository
         ReportFailure(message);
         failure = new MapRepositoryFailure(kind, message);
         return false;
+    }
+
+    private static MapRepositoryFailureKind GetMigrationFailureKind(MapData source)
+    {
+        if (source.version != MapData.CurrentVersion &&
+            source.version != MapData.PreviousVersion &&
+            source.version != MapData.LegacyVersion)
+            return MapRepositoryFailureKind.UnsupportedVersion;
+        if (!MapData.TryNormalizeMapId(source.mapId, out _) &&
+            source.version != MapData.LegacyVersion)
+            return MapRepositoryFailureKind.InvalidMapId;
+
+        return MapRepositoryFailureKind.InvalidRequirements;
     }
 
     private static void ReportFailure(string message)
@@ -711,11 +727,32 @@ public static class MapDataRepository
 
                 wasMigrated = source.mapId != normalizedMapId;
                 source.mapId = normalizedMapId;
+                if (!MapPlayRequirements.IsValidMinimumPlayers(
+                        source.minimumPlayersToClear))
+                {
+                    error = "최소 클리어 인원은 1~4명이어야 합니다.";
+                    return false;
+                }
                 migratedData = source;
                 error = null;
                 return true;
             case MapData.PreviousVersion:
+                if (!MapData.TryNormalizeMapId(source.mapId, out normalizedMapId))
+                {
+                    error = "MapId가 없거나 형식이 올바르지 않습니다.";
+                    return false;
+                }
+
+                source.mapId = normalizedMapId;
+                source.minimumPlayersToClear = 1;
+                source.version = MapData.CurrentVersion;
+                migratedData = source;
+                error = null;
+                wasMigrated = true;
+                return true;
+            case MapData.LegacyVersion:
                 source.mapId = MapData.CreateMapId();
+                source.minimumPlayersToClear = 1;
                 source.version = MapData.CurrentVersion;
                 migratedData = source;
                 error = null;
@@ -737,6 +774,11 @@ public static class MapDataRepository
         }
 
         data.mapId = normalizedMapId;
+        if (!MapPlayRequirements.IsValidMinimumPlayers(data.minimumPlayersToClear))
+        {
+            error = "최소 클리어 인원은 1~4명이어야 합니다.";
+            return false;
+        }
         data.version = MapData.CurrentVersion;
         error = null;
         return true;
@@ -756,6 +798,7 @@ public enum MapSaveFailureKind
     MissingData,
     InvalidName,
     InvalidMapId,
+    InvalidRequirements,
     DuplicateMapId,
     NameConflict,
     MissingTarget,
@@ -793,6 +836,7 @@ public enum MapRepositoryFailureKind
 {
     InvalidName,
     InvalidMapId,
+    InvalidRequirements,
     DuplicateMapId,
     MissingFile,
     InvalidJson,
@@ -830,7 +874,9 @@ public sealed class SavedMapListEntry
     public string MapName { get; }
     public string AuthorName { get; }
     public string Version { get; }
+    public int MinimumPlayersToClear { get; }
     public string Json { get; }
+    public string ContentHash { get; }
     public int JsonByteCount { get; }
     public SavedMapAvailability Availability { get; }
     public MapValidationReport ValidationReport { get; }
@@ -845,18 +891,26 @@ public sealed class SavedMapListEntry
         string mapName,
         string authorName,
         string version,
+        int minimumPlayersToClear,
         string json,
         int jsonByteCount,
         SavedMapAvailability availability,
         MapValidationReport validationReport,
-        string message)
+        string message,
+        string contentHash = null)
     {
         MapId = mapId;
         FileName = fileName;
         MapName = mapName;
         AuthorName = authorName;
         Version = version;
+        MinimumPlayersToClear = minimumPlayersToClear;
         Json = json;
+        ContentHash = !string.IsNullOrEmpty(contentHash)
+            ? contentHash
+            : string.IsNullOrEmpty(json)
+            ? string.Empty
+            : MapContentHash.Compute(Encoding.UTF8.GetBytes(json));
         JsonByteCount = jsonByteCount;
         Availability = availability;
         ValidationReport = validationReport;
@@ -871,11 +925,13 @@ public sealed class SavedMapListEntry
             MapName,
             AuthorName,
             Version,
+            MinimumPlayersToClear,
             Json,
             JsonByteCount,
             SavedMapAvailability.DuplicateMapId,
             ValidationReport,
-            $"같은 MapId를 사용하는 파일이 둘 이상입니다: {MapId}");
+            $"같은 MapId를 사용하는 파일이 둘 이상입니다: {MapId}",
+            ContentHash);
     }
 }
 
@@ -957,6 +1013,7 @@ public sealed class SavedMapCatalog
             mapName,
             "-",
             "-",
+            1,
             null,
             0,
             availability,
@@ -1014,17 +1071,23 @@ public sealed class SavedMapCatalog
         MapValidationReport report,
         string message)
     {
+        string canonicalJson = MapDataRepository.ToJson(data);
+        string contentHash = string.IsNullOrEmpty(canonicalJson)
+            ? string.Empty
+            : MapContentHash.Compute(Encoding.UTF8.GetBytes(canonicalJson));
         return new SavedMapListEntry(
             data.mapId,
             fileName,
             data.mapName,
             string.IsNullOrWhiteSpace(data.authorName) ? "알 수 없음" : data.authorName,
             data.version,
+            data.minimumPlayersToClear,
             json,
             byteCount,
             availability,
             report,
-            message);
+            message,
+            contentHash);
     }
 
     private void MarkDuplicateMapIds(List<SavedMapListEntry> entries)

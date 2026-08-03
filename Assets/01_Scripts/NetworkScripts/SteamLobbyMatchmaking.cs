@@ -15,6 +15,13 @@ public sealed class SteamLobbyMatchmaking
     private const string PrivateLobbyKey = "FlipFriendsLobbyKey";
     private const string RoomTypeKey = "FlipFriendsRoomType";
     private const string LobbyNameKey = "Name";
+    public const string MapPolicyKey = "FFMapPolicy";
+    public const string MapKindKey = "FFMapKind";
+    public const string MapIdKey = "FFMapId";
+    public const string MapNameKey = "FFMapName";
+    public const string MapAuthorKey = "FFMapAuthor";
+    public const string MapVersionKey = "FFMapVersion";
+    public const string MapMinimumPlayersKey = "FFMapMinPlayers";
     private const float LobbyListTimeoutSeconds = 10f;
     private const int LobbyKeyLength = 8;
 
@@ -26,6 +33,8 @@ public sealed class SteamLobbyMatchmaking
     public event Action<CSteamID, string> LobbyEntered;
 
     private RoomType pendingRoomType;
+    private LobbyMapMetadata pendingMapMetadata;
+    private LobbyMapFilter pendingLobbyFilter = LobbyMapFilter.All;
     private Action<LobbyMatchList_t> pendingLobbyMatchHandler;
 
     private Callback<LobbyCreated_t> lobbyCreated;
@@ -41,10 +50,31 @@ public sealed class SteamLobbyMatchmaking
         lobbyMatchList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
     }
 
-    public void CreateLobby(RoomType roomType, int maxPlayer)
+    public bool CreateLobby(
+        RoomType roomType,
+        int maxPlayer,
+        LobbyMapMetadata mapMetadata,
+        MapCompletionTarget completionTarget)
     {
+        RoomCreationEligibility eligibility =
+            MapCompletionProgress.EvaluateRoomCreation(
+                roomType == RoomType.Public,
+                maxPlayer,
+                mapMetadata,
+                completionTarget);
+        if (!eligibility.CanCreate)
+        {
+            Debug.LogWarning(
+                $"Steam 로비 생성 진입점에서 요청을 거부했습니다: " +
+                $"reason={eligibility.BlockReason}, roomType={roomType}, " +
+                $"map={mapMetadata?.MapKey}");
+            return false;
+        }
+
         pendingRoomType = roomType;
+        pendingMapMetadata = mapMetadata;
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxPlayer);
+        return true;
     }
 
     public void JoinLobby(CSteamID joinId)
@@ -78,9 +108,11 @@ public sealed class SteamLobbyMatchmaking
         CurrentLobbyId = CSteamID.Nil;
     }
 
-    public async Task<List<SteamLobbyInfo>> GetLobbyListAsync()
+    public async Task<List<SteamLobbyInfo>> GetLobbyListAsync(
+        LobbyMapFilter? filter = null)
     {
         LobbyInfos.Clear();
+        pendingLobbyFilter = filter ?? LobbyMapFilter.All;
         var tcs = new TaskCompletionSource<List<SteamLobbyInfo>>();
         Action<LobbyMatchList_t> handler = CreateLobbyListHandler(tcs);
 
@@ -120,10 +152,22 @@ public sealed class SteamLobbyMatchmaking
         string playerSteamName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
 
         // 클라이언트가 LobbyEntered에서 연결하려면 항상 호스트 주소가 필요
-        SteamMatchmaking.SetLobbyData(CurrentLobbyId, HostAddressKey, SteamUser.GetSteamID().ToString());
-        SteamMatchmaking.SetLobbyData(CurrentLobbyId, RoomTypeKey, pendingRoomType.ToString());
-        SteamMatchmaking.SetLobbyData(CurrentLobbyId, PrivateLobbyKey, LobbyKey);
-        SteamMatchmaking.SetLobbyData(CurrentLobbyId, LobbyNameKey, playerSteamName);
+        bool stored =
+            SteamMatchmaking.SetLobbyData(
+                CurrentLobbyId, HostAddressKey, SteamUser.GetSteamID().ToString()) &
+            SteamMatchmaking.SetLobbyData(
+                CurrentLobbyId, RoomTypeKey, pendingRoomType.ToString()) &
+            SteamMatchmaking.SetLobbyData(
+                CurrentLobbyId, PrivateLobbyKey, LobbyKey) &
+            SteamMatchmaking.SetLobbyData(
+                CurrentLobbyId, LobbyNameKey, playerSteamName) &
+            TrySetMapLobbyData(CurrentLobbyId, pendingMapMetadata);
+        if (stored) return;
+
+        Debug.LogError("Steam 로비 필수 메타데이터 저장에 실패했습니다.");
+        SteamMatchmaking.LeaveLobby(CurrentLobbyId);
+        CurrentLobbyId = CSteamID.Nil;
+        LobbyCreateFailed?.Invoke();
     }
 
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
@@ -201,13 +245,47 @@ public sealed class SteamLobbyMatchmaking
             SteamLobbyInfo lobbyInfo = new SteamLobbyInfo(SteamMatchmaking.GetLobbyByIndex(i));
             string roomTypeValue = SteamMatchmaking.GetLobbyData(lobbyInfo.LobbyID, RoomTypeKey);
 
-            if (roomTypeValue == RoomType.Public.ToString())
+            if (roomTypeValue == RoomType.Public.ToString() &&
+                lobbyInfo.MapMetadata != null &&
+                RoomCreationRules.HasEnoughCapacity(
+                    lobbyInfo.MaxMembers,
+                    lobbyInfo.MapMetadata.MinimumPlayersToClear) &&
+                pendingLobbyFilter.Matches(lobbyInfo.MapMetadata))
             {
                 LobbyInfos.Add(lobbyInfo);
             }
         }
 
         return LobbyInfos;
+    }
+
+    private static bool TrySetMapLobbyData(
+        CSteamID lobbyId,
+        LobbyMapMetadata metadata)
+    {
+        if (metadata == null)
+        {
+            Debug.LogError("Steam 로비에 기록할 맵 메타데이터가 없습니다.");
+            return false;
+        }
+
+        return
+            SteamMatchmaking.SetLobbyData(
+                lobbyId, MapPolicyKey, metadata.Policy.ToString()) &
+            SteamMatchmaking.SetLobbyData(
+                lobbyId, MapKindKey, metadata.MapKey.Kind.ToString()) &
+            SteamMatchmaking.SetLobbyData(
+                lobbyId, MapIdKey, metadata.MapKey.MapId) &
+            SteamMatchmaking.SetLobbyData(
+                lobbyId, MapNameKey, metadata.DisplayName) &
+            SteamMatchmaking.SetLobbyData(
+                lobbyId, MapAuthorKey, metadata.AuthorName) &
+            SteamMatchmaking.SetLobbyData(
+                lobbyId, MapVersionKey, metadata.Version) &
+            SteamMatchmaking.SetLobbyData(
+                lobbyId,
+                MapMinimumPlayersKey,
+                metadata.MinimumPlayersToClear.ToString());
     }
 
     private void CancelPendingLobbyMatchHandler(Action<LobbyMatchList_t> handler)
