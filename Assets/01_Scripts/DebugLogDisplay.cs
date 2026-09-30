@@ -23,10 +23,10 @@ public class DebugLogDisplay : MonoBehaviour
 
         if (messageQueue.Count >= maxMessages)
         {
-            messageQueue.Dequeue(); // 가장 오래된 로그를 제거
+            messageQueue.Dequeue();
         }
 
-        messageQueue.Enqueue(message); // 새로운 로그 추가
+        messageQueue.Enqueue(message); 
     }
 
     private void OnGUI()

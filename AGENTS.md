@@ -12,7 +12,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is a Unity 6 project (`ProjectSettings/ProjectVersion.txt` shows `6000.5.0f1`). Game code lives primarily in `Assets/01_Scripts`, organized by feature such as `NetworkScripts`, `GameObjScripts`, `GameOption`, and `UI Scripts`. Reusable content is under `Assets/03_Prefabs`, sprites under `Assets/02_Sprites`, and shared fonts/settings at the `Assets` root. Package configuration is in `Packages/manifest.json`; project-wide editor and build settings live in `ProjectSettings/`.
+This repository is a Unity 6 project (`ProjectSettings/ProjectVersion.txt` shows `6000.6.3f1`). Game code lives primarily in `Assets/01_Scripts`, organized by feature such as `NetworkScripts`, `GameObjScripts`, `GameOption`, and `UI Scripts`. Reusable content is under `Assets/03_Prefabs`, sprites under `Assets/02_Sprites`, and shared fonts/settings at the `Assets` root. Package configuration is in `Packages/manifest.json`; project-wide editor and build settings live in `ProjectSettings/`.
 
 Third-party code is checked into `Assets`, especially `Assets/Mirror`, `Assets/Plugins/Demigiant`, and `Assets/com.rlabrecque.steamworks.net`. Treat those as vendor code unless a task explicitly requires patching them.
 
@@ -90,20 +90,26 @@ After all players enter the finish trigger (`isFinish = true`), `GameManager.Sta
 
 ## Build, Test, and Development Commands
 
-Open the project in Unity Hub with Unity `6000.5.0f1`.
+Open the project in Unity Hub with Unity `6000.6.3f1`.
 
 ```powershell
-start "" "C:\Program Files\Unity\Hub\Editor\6000.5.0f1\Editor\Unity.exe" -projectPath "C:\Unity Project\Flip Friends"
+start "" "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -projectPath "C:\Unity Project\Flip-Friends"
 ```
 
 Useful local checks:
 
 ```powershell
-dotnet build "Flip Friends.sln"
+dotnet build "Flip-Friends.sln"
 git status
 ```
 
 Use `dotnet build` for a quick C# compile sanity check outside the editor. Use the Unity Test Runner for Edit Mode or Play Mode tests when test assemblies are present.
+
+`dotnet`이 PATH에 없으면 에디터에 번들된 SDK를 직접 호출한다. 에디터가 프로젝트를 열고 있어도 동작하므로 배치 모드 없이 컴파일만 확인할 때 쓴다.
+
+```powershell
+& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\DotNetSdk\dotnet.exe" build Assembly-CSharp.csproj
+```
 
 ## Coding Style & Naming Conventions
 

@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Flip Friends.sln"
+    "dotnet.defaultSolution": "Flip-Friends.sln"
 }
