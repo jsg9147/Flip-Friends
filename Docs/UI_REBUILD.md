@@ -37,11 +37,11 @@ ScreenNavigationButton
 
 ## 남은 작업
 
-- Setting과 Key Rebinding 화면 구조 재구축. `settings`와 `key-binding`은 내비게이터로 정상 동작하지만 아직 베이스 `UIScreen`만 붙어 있어 화면별 로직을 담을 파생 클래스가 없다.
-- `MainUIManager`의 미사용 legacy 메서드 제거. `SettingUIOpen`, `KeySettingUIOpen`, `KeyboardSettingUIOpen`, `GamepadSettingUIOpen`은 씬·프리팹·코드 어디에서도 호출되지 않는 죽은 코드다. 이 중 `KeySettingUIOpen`은 `keySettingUI.SetActive(false)`를 호출해 여는 메서드가 끄고 있으나, 호출자가 없어 실제 동작에는 영향이 없다. 제거 시 `UIReset()`과 설정 계열 `GameObject` 필드도 같이 정리한다.
+- Setting과 Key Rebinding 화면 구조 재구축. `settings`와 `key-binding`은 내비게이터로 정상 동작하지만 아직 베이스 `UIScreen`만 붙어 있어 화면별 로직을 담을 파생 클래스가 없다. 기존 `SettingManager`, `KeyRebindingUI`, `Delete/SettingsMenu`와의 역할 분담을 먼저 정해야 한다.
 - Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
-- 새 흐름 확인 후에만 구형 메뉴 스크립트 제거
+- 새 흐름 확인 후에만 구형 메뉴 스크립트 제거. `UI Scripts/Delete/SettingsMenu.cs`가 후보다.
+- `MainUIManager`에 남은 legacy `SetActive` 대체 경로(`UIReset`과 화면별 `GameObject` 필드) 제거. 내비게이터가 항상 존재한다는 것이 확인된 뒤에 진행한다.
 
 ## 다음 작업
 
-`MainUIManager`에서 호출자가 없는 설정 계열 legacy 메서드와 그에만 쓰이는 `GameObject` 필드를 제거한다. 실제 호출되는 `MainUIOpen`(`SettingManager.cs`)과 `GameModeUIOpen`(Host·PublicLobby·PrivateJoin 화면)은 `TryOpenScreen` 브리지를 그대로 유지한다.
+`settings`와 `key-binding` 전용 `UIScreen` 파생 클래스를 만든다. 먼저 `SettingManager`, `KeyRebindingUI`, `Delete/SettingsMenu`에 흩어진 설정 화면 로직의 현재 책임을 정리하고, 새 화면 클래스가 가져갈 범위를 정한 뒤 옮긴다.
