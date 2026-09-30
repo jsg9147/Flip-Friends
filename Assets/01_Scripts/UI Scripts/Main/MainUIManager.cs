@@ -20,11 +20,6 @@ public class MainUIManager : MonoBehaviour
     public GameObject publicGameUI;
     public GameObject privateJoinUI;
 
-    public GameObject settingUI;
-    public GameObject keySettingUI;
-    public GameObject keyboardSetting;
-    public GameObject gamepadSetting;
-
     public int targetFrameRate = 60;
 
     private ScreenNavigator screenNavigator;
@@ -56,9 +51,9 @@ public class MainUIManager : MonoBehaviour
         Application.targetFrameRate = targetFrameRate;
     }
 
+    // ScreenNavigator가 없을 때만 쓰는 legacy 대체 경로다. 목록을 따로 두지 않고 개별 UI를 직접 끈다.
     void UIReset()
     {
-        // uiList�� ������� �ʰ� ���� ��� UI�� ��Ȱ��ȭ
         mainUI.SetActive(false);
         gameModeUI.SetActive(false);
         hostUI.SetActive(false);
@@ -68,14 +63,9 @@ public class MainUIManager : MonoBehaviour
 
         if (privateJoinUI != null)
             privateJoinUI.gameObject.SetActive(false);
-
-        settingUI.SetActive(false);
-        keyboardSetting.SetActive(false);
-        gamepadSetting.SetActive(false);
-        keySettingUI.SetActive(false);
     }
 
-public void MainUIOpen()
+    public void MainUIOpen()
     {
         if (TryOpenScreen(MainMenuScreenId, false))
         {
@@ -86,7 +76,7 @@ public void MainUIOpen()
         mainUI.SetActive(true);
     }
 
-public void GameModeUIOpen()
+    public void GameModeUIOpen()
     {
         if (TryOpenScreen(ModeSelectScreenId))
         {
@@ -97,7 +87,7 @@ public void GameModeUIOpen()
         gameModeUI.SetActive(true);
     }
 
-public void HostUIOpen()
+    public void HostUIOpen()
     {
         if (TryOpenScreen(HostRoomScreenId))
         {
@@ -108,7 +98,7 @@ public void HostUIOpen()
         hostUI.SetActive(true);
     }
 
-public void PublicUIOpen()
+    public void PublicUIOpen()
     {
         if (TryOpenScreen(PublicLobbyScreenId))
         {
@@ -119,7 +109,7 @@ public void PublicUIOpen()
         publicGameUI.gameObject.SetActive(true);
     }
 
-public void PrivateUIOpen()
+    public void PrivateUIOpen()
     {
         if (TryOpenScreen(PrivateJoinScreenId))
         {
@@ -129,31 +119,6 @@ public void PrivateUIOpen()
         UIReset();
         privateJoinUI.gameObject.SetActive(true);
     }
-
-    public void SettingUIOpen()
-    {
-        UIReset();
-        settingUI.SetActive(true);
-    }
-    public void KeySettingUIOpen()
-    {
-        UIReset();
-        keySettingUI.SetActive(false);
-    }
-
-    public void KeyboardSettingUIOpen()
-    {
-        UIReset();
-        keyboardSetting.SetActive(true);
-    }
-
-    public void GamepadSettingUIOpen()
-    {
-        UIReset();
-        gamepadSetting.SetActive(true);
-    }
-
-    
 
     private bool TryOpenScreen(string screenId, bool rememberCurrent = true)
     {
@@ -170,7 +135,8 @@ public void PrivateUIOpen()
         screenNavigator.Open(screenId, rememberCurrent);
         return true;
     }
-public void GameQuit()
+
+    public void GameQuit()
     {
         Application.Quit();
     }

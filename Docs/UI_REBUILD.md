@@ -15,7 +15,7 @@
 - `MainUIManager`는 `TryOpenScreen` 브리지로 동작한다. 내비게이터가 있으면 새 경로로 조기 반환하고, 없을 때만 legacy `UIReset()` + `SetActive` 경로를 쓴다.
 - Host 설정은 기존 `SteamRoomManager.HostLobby`에 연결되고, 공개 로비는 loading·empty·error·joining 상태를 구분한다.
 - 비공개 참가는 `TMP_InputField` 기반 코드 입력과 기존 참가 로직을 연결한다.
-- Setting과 Key Rebinding은 아직 새 흐름으로 옮기지 않았다. `MainUIManager`의 설정 계열 메서드는 `TryOpenScreen`을 거치지 않는다.
+- Setting과 Key Rebinding 화면 자체는 내비게이터 경로로 정상 동작한다. 다만 전용 파생 클래스가 없고, `MainUIManager`에 이 화면들을 열던 legacy 메서드가 호출자 없이 남아 있다.
 - 기존 UI를 한 번에 제거하지 않고 새 흐름이 확인된 화면부터 교체한다.
 
 ## 핵심 흐름
@@ -31,16 +31,17 @@ ScreenNavigationButton
 
 - 스크립트와 씬 연결의 컴파일 검증은 완료됐다. Unity `6000.6.3f1`에서 `Assembly-CSharp` 빌드가 오류 없이 통과한다.
 - 중복 legacy listener 감사는 완료했다. `Main.unity`에서 `MainUIManager`를 직접 호출하는 `onClick`은 `MainUIOpen` 1개뿐이고, 그 버튼에는 `ScreenNavigationButton`이 없어 중복 호출이 아니다.
-- 전체 마우스·키보드·게임패드 이동과 런타임 왕복은 수동 검증이 남아 있다.
+- 플레이 모드 내비게이션 왕복을 확인했다. 시작 시 `CurrentScreen`이 `main-menu`이고 나머지 6개 화면은 비활성·`alpha` 0이다. `mode-select` → `settings` → `key-binding` 순서로 열면 각각 활성·`alpha` 1이 되고, `Back()` 3회로 `main-menu`까지 역순 복귀한다.
+- Main, GameRoom, GamePlay, MapEditor 4개 씬 모두 오류 없이 로드된다.
+- 마우스·키보드·게임패드 실제 입력 이동과 Steam이 필요한 Host·공개 로비·비공개 참가 왕복은 수동 검증이 남아 있다.
 
 ## 남은 작업
 
-- Setting과 Key Rebinding 화면 구조 재구축. 지금은 경로가 이원화되어 있어 아래 두 문제가 함께 걸려 있다.
-  - 씬의 Setting 버튼은 `ScreenNavigationButton(targetScreenId: settings)`로 내비게이터를 타지만, `MainUIManager.SettingUIOpen`·`KeyboardSettingUIOpen`·`GamepadSettingUIOpen`은 legacy `UIReset()` + `SetActive`만 호출한다. `UIScreen.HideImmediate`가 `CanvasGroup.alpha`를 0으로 남기므로 legacy 경로로 열면 화면이 보이지 않거나 입력을 받지 못하고, 내비게이터의 `CurrentScreen`도 갱신되지 않아 상태가 어긋난다. 런타임 확인 필요.
-  - `MainUIManager.KeySettingUIOpen`이 `keySettingUI.SetActive(false)`를 호출한다. 여는 메서드가 끄고 있다.
-- Host, 공개 로비, 비공개 참가 화면의 전체 런타임 왕복 및 실패 상태 수동 검증
+- Setting과 Key Rebinding 화면 구조 재구축. `settings`와 `key-binding`은 내비게이터로 정상 동작하지만 아직 베이스 `UIScreen`만 붙어 있어 화면별 로직을 담을 파생 클래스가 없다.
+- `MainUIManager`의 미사용 legacy 메서드 제거. `SettingUIOpen`, `KeySettingUIOpen`, `KeyboardSettingUIOpen`, `GamepadSettingUIOpen`은 씬·프리팹·코드 어디에서도 호출되지 않는 죽은 코드다. 이 중 `KeySettingUIOpen`은 `keySettingUI.SetActive(false)`를 호출해 여는 메서드가 끄고 있으나, 호출자가 없어 실제 동작에는 영향이 없다. 제거 시 `UIReset()`과 설정 계열 `GameObject` 필드도 같이 정리한다.
+- Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
 - 새 흐름 확인 후에만 구형 메뉴 스크립트 제거
 
 ## 다음 작업
 
-Setting과 Key Rebinding을 `ScreenNavigator` 경로로 옮긴다. 전용 `UIScreen` 파생 클래스를 만들고 `MainUIManager`의 설정 계열 메서드도 `TryOpenScreen`을 쓰게 바꿔 legacy `SetActive` 경로를 없앤다.
+`MainUIManager`에서 호출자가 없는 설정 계열 legacy 메서드와 그에만 쓰이는 `GameObject` 필드를 제거한다. 실제 호출되는 `MainUIOpen`(`SettingManager.cs`)과 `GameModeUIOpen`(Host·PublicLobby·PrivateJoin 화면)은 `TryOpenScreen` 브리지를 그대로 유지한다.

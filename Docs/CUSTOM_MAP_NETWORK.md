@@ -40,7 +40,7 @@ MapListUI
 
 ## 검증
 
-- `FlipFriends.MapTransferCore.Tests` Edit Mode 테스트 9개가 통과했다. 단 이 결과는 Unity `6000.5.0f1` 기준이며, `6000.6.3f1`과 test-framework `1.8.0`에서 재실행은 아직 하지 않았다.
+- `FlipFriends.MapTransferCore.Tests` Edit Mode 테스트 9개가 통과했다. Unity `6000.6.3f1`과 test-framework `1.8.0`에서 재실행해 9개 전부 통과를 확인했다.
 - 역순 조립, 중복, 누락, 크기 초과, 이전 식별자, 라운드 로빈 순환·취소, 업로드 lease 무효화·교체를 검증한다.
 - Unity 컴파일과 `Assembly-CSharp` 빌드는 오류 없이 통과했다. `6000.6.3f1`에서도 테스트 어셈블리를 포함해 오류 없이 빌드된다.
 - 실제 Steam 2인 환경의 자동 수신, 지연, 전송 중 이탈·선택 변경, 타임아웃과 Host/원격 GamePlay 일치는 수동 검증 대기다.
