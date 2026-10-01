@@ -37,11 +37,13 @@ ScreenNavigationButton
 
 ## 남은 작업
 
-- Setting과 Key Rebinding 화면 구조 재구축. `settings`와 `key-binding`은 내비게이터로 정상 동작하지만 아직 베이스 `UIScreen`만 붙어 있어 화면별 로직을 담을 파생 클래스가 없다. 기존 `SettingManager`, `KeyRebindingUI`와의 역할 분담을 먼저 정해야 한다.
+- Setting과 Key Rebinding 화면 구조 재구축. `settings`와 `key-binding`은 내비게이터로 정상 동작하지만 아직 베이스 `UIScreen`만 붙어 있어 화면별 로직을 담을 파생 클래스가 없다.
+- `SettingManager`와 `ScreenNavigator`가 같은 `GameObject`를 이중으로 소유하는 문제 해결. `SettingManager.settingWindow`는 `settings` `UIScreen`과, `keyRebindingWindow`는 `key-binding` `UIScreen`과 동일한 오브젝트다(`Main.unity` fileID 1532248757, 629872058). `SettingManager`는 이들을 `SetActive`로 직접 켜는데, `UIScreen.Hide` 계열이 `CanvasGroup.alpha`를 0으로 남기므로 이 경로로 열면 활성 상태인데도 보이지 않고 내비게이터의 `CurrentScreen`도 어긋난다. `OpenSettingWindow`는 씬에서 버튼 5개에 연결되어 있다. 런타임 재현 확인이 필요하다.
+- `SettingManager`의 화면 전환 책임 분리. `WindowReset`과 `Open*Window` 6개는 `ScreenNavigator`가 하는 일을 중복 구현하고, `CancelBtnEvent`는 `ScreenNavigator.Back`을 자체 구현한 것이다. SRP 기준으로 `SettingManager`는 설정 값의 로드·저장·적용만 담당해야 한다.
 - Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
 - `UI Scripts/Delete`에 남은 `ButtonNav`, `ButtonNavigation` 정리. 둘 다 아직 씬에서 참조되므로 새 흐름이 대체한 뒤에 제거한다.
 - `MainUIManager`에 남은 legacy `SetActive` 대체 경로(`UIReset`과 화면별 `GameObject` 필드) 제거. 내비게이터가 항상 존재한다는 것이 확인된 뒤에 진행한다.
 
 ## 다음 작업
 
-`settings`와 `key-binding` 전용 `UIScreen` 파생 클래스를 만든다. 먼저 `SettingManager`와 `KeyRebindingUI`에 흩어진 설정 화면 로직의 현재 책임을 정리하고, 새 화면 클래스가 가져갈 범위를 정한 뒤 옮긴다.
+`SettingManager`와 `ScreenNavigator`의 이중 소유 문제부터 런타임으로 재현한 뒤, 설정 화면의 전환 책임을 `ScreenNavigator` 한 곳으로 모은다. 하위 창(graphicAndSound, colorSetting, keyboardRebind, gamepadRebind)을 같은 내비게이터의 `UIScreen`으로 올릴지, 설정 전용 중첩 내비게이터를 둘지 먼저 정한다.
