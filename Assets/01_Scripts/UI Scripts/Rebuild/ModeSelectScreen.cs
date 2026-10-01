@@ -1,41 +1,6 @@
 using UnityEngine;
 
-[DisallowMultipleComponent]
-public class ModeSelectScreen : UIScreen
+// 호스트·공개 로비·비공개 참가로 갈라지는 단계. Cancel은 NavigableScreen 기본 동작으로 메인 메뉴에 돌아간다.
+public class ModeSelectScreen : NavigableScreen
 {
-    [SerializeField] private ScreenNavigator navigator;
-
-    protected override void Awake()
-    {
-        base.Awake();
-
-        if (navigator == null)
-        {
-            navigator = FindFirstObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent += HandleCancel;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent -= HandleCancel;
-        }
-    }
-
-    private void HandleCancel()
-    {
-        if (navigator != null && IsVisible)
-        {
-            navigator.Back();
-        }
-    }
 }

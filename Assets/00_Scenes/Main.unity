@@ -2126,19 +2126,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 129207661}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &129207661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3033,19 +3021,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 179388071}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1214857756}
-        m_TargetAssemblyTypeName: PublicLobbyScreen, Assembly-CSharp
-        m_MethodName: OnLobbyListUpdateButtonClicked
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &179388071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4706,19 +4682,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 325408747}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 889852303}
-        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
-        m_MethodName: HandleBack
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &325408747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9027,19 +8991,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 622336768}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 85923879}
-        m_TargetAssemblyTypeName: PrivateJoinScreen, Assembly-CSharp
-        m_MethodName: JoinSteamLobby
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &622336768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12539,7 +12491,6 @@ GameObject:
   - component: {fileID: 889852298}
   - component: {fileID: 889852300}
   - component: {fileID: 889852299}
-  - component: {fileID: 889852301}
   - component: {fileID: 889852302}
   - component: {fileID: 889852304}
   - component: {fileID: 889852303}
@@ -12608,22 +12559,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 889852297}
   m_CullTransparentMesh: 1
---- !u!114 &889852301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 889852297}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4c114e297000424c8eba37f5dd85e04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roomTypeButton: {fileID: 129207660}
-  maxPlayerCountButton: {fileID: 1577862496}
-  createButton: {fileID: 1431026929}
-  cancelButton: {fileID: 325408746}
 --- !u!114 &889852302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13227,19 +13162,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 936682232}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 85923879}
-        m_TargetAssemblyTypeName: PrivateJoinScreen, Assembly-CSharp
-        m_MethodName: HandleBack
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &936682232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16378,7 +16301,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1214857750}
-  - component: {fileID: 1214857751}
   - component: {fileID: 1214857753}
   - component: {fileID: 1214857752}
   - component: {fileID: 1214857754}
@@ -16414,22 +16336,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1214857751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1214857749}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac44adf7d85a42c4b902d052ee21959c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputCodeBtns: []
-  lobbyItemPrefab: {fileID: 7117433388730551034, guid: 561d8cd41788593458597634f8937537, type: 3}
-  lobbyItemContent: {fileID: 1304428230}
-  gameModeUI: {fileID: 1570893451}
 --- !u!114 &1214857752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16621,19 +16527,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1243510094}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1214857756}
-        m_TargetAssemblyTypeName: PublicLobbyScreen, Assembly-CSharp
-        m_MethodName: HandleBack
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1243510094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19848,19 +19742,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1431026930}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 889852303}
-        m_TargetAssemblyTypeName: HostRoomScreen, Assembly-CSharp
-        m_MethodName: CreateRoom
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1431026930
 MonoBehaviour:
   m_ObjectHideFlags: 0

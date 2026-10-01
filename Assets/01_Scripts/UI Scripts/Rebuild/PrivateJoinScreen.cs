@@ -5,11 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public class PrivateJoinScreen : UIScreen
+public class PrivateJoinScreen : NavigableScreen
 {
-    [Header("Navigation")]
-    [SerializeField] private ScreenNavigator navigator;
-
     [Header("UI References")]
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private Button joinButton;
@@ -28,14 +25,11 @@ public class PrivateJoinScreen : UIScreen
     private bool legacyInputMode;
     private float lastLegacyInputTime;
 
+    protected override string FallbackScreenId => ScreenIds.ModeSelect;
+
     protected override void Awake()
     {
         base.Awake();
-
-        if (navigator == null)
-        {
-            navigator = FindFirstObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
-        }
 
         if (joinCodeInput != null)
         {
@@ -57,22 +51,6 @@ public class PrivateJoinScreen : UIScreen
 
         ApplyInputModeVisibility();
         RefreshJoinButtonState();
-    }
-
-    private void OnEnable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent += HandleCancel;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent -= HandleCancel;
-        }
     }
 
     private void Update()
@@ -117,11 +95,6 @@ public class PrivateJoinScreen : UIScreen
         SteamRoomManager.Instance.JoinPrivateLobby(joinCode);
     }
 
-    public void JoinSteamLobby()
-    {
-        JoinLobby();
-    }
-
     public void HandleBack()
     {
         if (legacyInputMode)
@@ -130,23 +103,12 @@ public class PrivateJoinScreen : UIScreen
             return;
         }
 
-        if (navigator != null && navigator.Back())
-        {
-            return;
-        }
-
-        if (MainUIManager.instance != null)
-        {
-            MainUIManager.instance.GameModeUIOpen();
-        }
+        NavigateBack();
     }
 
-    private void HandleCancel()
+    protected override void OnCancel()
     {
-        if (IsVisible)
-        {
-            HandleBack();
-        }
+        HandleBack();
     }
 
     public void CodeInputBtn()

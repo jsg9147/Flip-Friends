@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public class PublicLobbyScreen : UIScreen
+public class PublicLobbyScreen : NavigableScreen
 {
     private enum LobbyViewState
     {
@@ -16,9 +16,6 @@ public class PublicLobbyScreen : UIScreen
         Error,
         Joining
     }
-
-    [Header("Navigation")]
-    [SerializeField] private ScreenNavigator navigator;
 
     [Header("UI References")]
     [SerializeField] private LobbyItem lobbyItemPrefab;
@@ -36,14 +33,11 @@ public class PublicLobbyScreen : UIScreen
     private int refreshRequestVersion;
     private LobbyViewState currentState;
 
+    protected override string FallbackScreenId => ScreenIds.ModeSelect;
+
     protected override void Awake()
     {
         base.Awake();
-
-        if (navigator == null)
-        {
-            navigator = FindFirstObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
-        }
 
         if (refreshButton != null)
         {
@@ -53,22 +47,6 @@ public class PublicLobbyScreen : UIScreen
         if (backButton != null)
         {
             backButton.onClick.AddListener(HandleBack);
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent += HandleCancel;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent -= HandleCancel;
         }
     }
 
@@ -87,11 +65,6 @@ public class PublicLobbyScreen : UIScreen
     public void RequestRefresh()
     {
         _ = RefreshAsync();
-    }
-
-    public void OnLobbyListUpdateButtonClicked()
-    {
-        RequestRefresh();
     }
 
     public async Task RefreshAsync()
@@ -159,23 +132,12 @@ public class PublicLobbyScreen : UIScreen
 
     public void HandleBack()
     {
-        if (navigator != null && navigator.Back())
-        {
-            return;
-        }
-
-        if (MainUIManager.instance != null)
-        {
-            MainUIManager.instance.GameModeUIOpen();
-        }
+        NavigateBack();
     }
 
-    private void HandleCancel()
+    protected override void OnCancel()
     {
-        if (IsVisible)
-        {
-            HandleBack();
-        }
+        HandleBack();
     }
 
     private void ClearLobbyItems()

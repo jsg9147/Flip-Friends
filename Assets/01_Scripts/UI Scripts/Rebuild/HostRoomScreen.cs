@@ -4,11 +4,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public class HostRoomScreen : UIScreen
+public class HostRoomScreen : NavigableScreen
 {
-    [Header("Navigation")]
-    [SerializeField] private ScreenNavigator navigator;
-
     [Header("UI References")]
     [SerializeField] private Button roomTypeButton;
     [SerializeField] private Button maxPlayerCountButton;
@@ -25,14 +22,11 @@ public class HostRoomScreen : UIScreen
     private float lastHorizontalInputTime;
     private bool canReadHorizontalInput = true;
 
+    protected override string FallbackScreenId => ScreenIds.ModeSelect;
+
     protected override void Awake()
     {
         base.Awake();
-
-        if (navigator == null)
-        {
-            navigator = FindFirstObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
-        }
 
         if (roomTypeButton != null)
         {
@@ -56,22 +50,6 @@ public class HostRoomScreen : UIScreen
 
         maxPlayerCount = Mathf.Clamp(maxPlayerCount, minPlayerCount, maxPlayerLimit);
         RefreshLabels();
-    }
-
-    private void OnEnable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent += HandleCancel;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (InputManager.instance != null)
-        {
-            InputManager.instance.OnCancelEvent -= HandleCancel;
-        }
     }
 
     private void Update()
@@ -174,23 +152,12 @@ public class HostRoomScreen : UIScreen
             createButton.interactable = true;
         }
 
-        if (navigator != null && navigator.Back())
-        {
-            return;
-        }
-
-        if (MainUIManager.instance != null)
-        {
-            MainUIManager.instance.GameModeUIOpen();
-        }
+        NavigateBack();
     }
 
-    private void HandleCancel()
+    protected override void OnCancel()
     {
-        if (IsVisible)
-        {
-            HandleBack();
-        }
+        HandleBack();
     }
 
     private void RefreshLabels()
