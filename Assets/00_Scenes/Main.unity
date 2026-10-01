@@ -1079,14 +1079,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeFullscreenMode
-        m_Mode: 3
+      - m_Target: {fileID: 739309587}
+        m_TargetAssemblyTypeName: ScreenModeAdjuster, Assembly-CSharp
+        m_MethodName: NextScreenMode
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -11026,6 +11026,7 @@ GameObject:
   - component: {fileID: 739309584}
   - component: {fileID: 739309585}
   - component: {fileID: 739309586}
+  - component: {fileID: 739309587}
   m_Layer: 0
   m_Name: SettingManager
   m_TagString: Untagged
@@ -11061,6 +11062,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolutionAdjuster: {fileID: 739309586}
+  screenModeAdjuster: {fileID: 739309587}
   bgmAdjuster: {fileID: 1591576743}
   sfxAdjuster: {fileID: 1283893778}
   playerImage: {fileID: 790036471}
@@ -11081,6 +11083,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resolutionText: {fileID: 2023933587}
   targetUI: {fileID: 408335053}
+--- !u!114 &739309587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739309582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8219cfedafd24c24baaf7eea2b6229ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenModeAdjuster
+  screenModeText: {fileID: 1722599038}
+  targetUI: {fileID: 94780798}
 --- !u!1 &742299362
 GameObject:
   m_ObjectHideFlags: 0
@@ -12666,14 +12682,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeFullscreenMode
-        m_Mode: 3
+      - m_Target: {fileID: 739309587}
+        m_TargetAssemblyTypeName: ScreenModeAdjuster, Assembly-CSharp
+        m_MethodName: PreviousScreenMode
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

@@ -6,6 +6,7 @@ public class SettingManager : MonoBehaviour
 {
     [Header("Adjusters")]
     [SerializeField] private ResolutionAdjuster resolutionAdjuster;
+    [SerializeField] private ScreenModeAdjuster screenModeAdjuster;
     [SerializeField] private ValueAdjuster bgmAdjuster;
     [SerializeField] private ValueAdjuster sfxAdjuster;
 
@@ -35,7 +36,7 @@ public class SettingManager : MonoBehaviour
         Unsubscribe(blueAdjuster, HandleColorChanged);
     }
 
-    // 해상도는 ±를 누를 때마다 바꾸면 조작 중 창이 계속 흔들려서, 설정 화면을 벗어날 때 한 번만 확정한다
+    // 해상도와 화면 모드는 ±를 누를 때마다 바꾸면 조작 중 창이 계속 흔들려서, 설정 화면을 벗어날 때 한 번만 확정한다
     public void ApplySettings()
     {
         if (resolutionAdjuster == null)
@@ -44,7 +45,15 @@ public class SettingManager : MonoBehaviour
             return;
         }
 
-        resolutionAdjuster.ApplyResolution();
+        if (screenModeAdjuster == null)
+        {
+            Debug.LogWarning("ScreenModeAdjuster가 연결되지 않아 현재 화면 모드를 유지합니다.", this);
+            resolutionAdjuster.ApplyResolution(Screen.fullScreenMode);
+            return;
+        }
+
+        resolutionAdjuster.ApplyResolution(screenModeAdjuster.SelectedMode);
+        screenModeAdjuster.SaveScreenMode();
     }
 
     private void HandleBgmChanged(int value)

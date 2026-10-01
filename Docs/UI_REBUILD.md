@@ -13,10 +13,11 @@
 - 설정 트리의 창 6개는 모두 같은 내비게이터의 화면이다. 설정 루트는 `SettingsScreen`, 키 바인딩 단계는 `KeyBindingScreen`, 하위 창 4개는 공통 `NavigableScreen`을 쓴다.
 - `NavigableScreen`은 `InputManager.OnCancelEvent`를 받아 보이는 화면에서만 `OnCancel()`을 호출하고, 기본 구현은 `ScreenNavigator.Back()`이다. `ModeSelectScreen`·`HostRoomScreen`·`PublicLobbyScreen`·`PrivateJoinScreen`도 이 베이스를 쓴다. 뒤 세 화면은 `FallbackScreenId`를 `mode-select`로 두어 히스토리가 비어도 Cancel·Back이 `mode-select`로 간다(히스토리에 남기지 않음).
 - 코드에서 `AddListener`로 연결하는 버튼(Host의 Room Type·Create·Cancel, 공개 로비의 Refresh·Back, 비공개 참가의 Join·Back)은 Inspector `onClick`을 비워 둔다. 둘 다 있으면 한 번 클릭에 두 번 실행된다.
-- 설정 값의 ± 버튼은 `ValueAdjuster.Increase`/`Decrease`와 `ResolutionAdjuster.NextResolution`/`PreviousResolution`에 연결되어, 마우스 클릭과 키보드·게임패드 입력이 같은 증감 경로를 쓴다. `Screen Mode`만 아직 연결 대상이 없다.
-- 설정 값의 저장은 `ValueAdjuster`와 `ResolutionAdjuster`가 각자 맡고, `SettingManager`는 저장된 값을 게임에 적용하는 책임만 갖는다. 화면 전환용 `GameObject` 필드 6개와 `WindowReset`, `Open*Window` 6개, `SettingActive`, `CancelBtnEvent`는 제거됐다.
-- 음량과 색은 ± 조작마다 즉시 저장되고, 해상도는 `SettingsScreen`이 보이거나 숨을 때 `SettingManager.ApplySettings`가 확정한다. 조작 중에는 창 크기가 바뀌지 않고, 하위 창에서 바꾼 값은 설정 루트로 돌아오는 시점에 적용된다.
-- `PlayerPrefs` 저장 형식은 0~1 float으로 통일했다. 키는 `BGMVolume`, `SFXVolume`, `Red`, `Green`, `Blue`, `SavedResolution`이고, 값을 읽는 `SoundManager`·`PlayerSound`·`PlayerController2D`·`CustomRoomPlayer`와 형식이 같다. 이전 빌드가 같은 키에 정수로 저장한 값은 처음 불러올 때 변환해서 다시 쓴다.
+- 설정 값의 ± 버튼은 `ValueAdjuster.Increase`/`Decrease`와 `ResolutionAdjuster.NextResolution`/`PreviousResolution`, `ScreenModeAdjuster.NextScreenMode`/`PreviousScreenMode`에 연결되어, 마우스 클릭과 키보드·게임패드 입력이 같은 증감 경로를 쓴다.
+- 설정 값의 저장은 `ValueAdjuster`·`ResolutionAdjuster`·`ScreenModeAdjuster`가 각자 맡고, `SettingManager`는 저장된 값을 게임에 적용하는 책임만 갖는다. 화면 전환용 `GameObject` 필드 6개와 `WindowReset`, `Open*Window` 6개, `SettingActive`, `CancelBtnEvent`는 제거됐다.
+- 음량과 색은 ± 조작마다 즉시 저장되고, 해상도와 화면 모드는 `SettingsScreen`이 보이거나 숨을 때 `SettingManager.ApplySettings`가 확정한다. 둘은 `Screen.SetResolution` 한 번으로 같이 적용한다. 같은 프레임에 `Screen.fullScreenMode`를 따로 바꾸면 한쪽 요청이 다른 쪽을 덮을 수 있기 때문이다. 조작 중에는 창 크기가 바뀌지 않고, 하위 창에서 바꾼 값은 설정 루트로 돌아오는 시점에 적용된다.
+- 화면 모드는 `FullScreenWindow`(Fullscreen)와 `Windowed` 두 가지다. 삭제된 `SettingsMenu`와 같은 구성이다. 저장값이 없으면 현재 창의 모드를 따르고, `ScreenMode` 키에 enum 이름 문자열로 저장한다. 키보드·게임패드 좌우 입력은 누른 순간에만 한 번 바뀐다.
+- 수치 설정의 `PlayerPrefs` 저장 형식은 0~1 float으로 통일했다. 키는 `BGMVolume`, `SFXVolume`, `Red`, `Green`, `Blue`이고(`SavedResolution`·`ScreenMode`는 문자열), 값을 읽는 `SoundManager`·`PlayerSound`·`PlayerController2D`·`CustomRoomPlayer`와 형식이 같다. 이전 빌드가 같은 키에 정수로 저장한 값은 처음 불러올 때 변환해서 다시 쓴다.
 - `SoundManager`는 `ApplyBGMVolume`과 `ApplySFXVolume`로 적용만 하고 저장은 하지 않는다. `ValueAdjuster.ValueChanged`를 `SettingManager`가 받아 호출하며, UI 클릭음도 효과음 설정을 따른다.
 - `MainUIManager`는 화면 전환을 하지 않는다. Main 씬 진입 시 BGM 재생, 커서 잠금, 목표 프레임만 적용한다. `instance`, 화면별 `GameObject` 필드, `UIReset`, `*UIOpen`, `GameQuit`은 제거됐다.
 - 레거시 `HostSetting`·`PublicLobbyUI`는 씬 컴포넌트와 스크립트 모두 제거됐다. `RoomType` enum은 `NetworkScripts/RoomType.cs`로 옮겼다.
@@ -33,14 +34,15 @@ ScreenNavigationButton 또는 NavigableScreen의 Cancel 처리
   → UIScreen 파생 화면(MainMenu, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding, NavigableScreen)
   → 기존 SteamRoomManager 및 설정 서비스(SettingManager, KeyRebindingManager)
 
-ValueAdjuster, ResolutionAdjuster(값 증감과 저장)
+ValueAdjuster, ResolutionAdjuster, ScreenModeAdjuster(값 증감과 저장)
   → ValueAdjuster.ValueChanged
   → SettingManager(적용)
   → SoundManager 음량, 플레이어 색 미리보기
 
 SettingsScreen.OnShow 또는 OnHide
   → SettingManager.ApplySettings
-  → ResolutionAdjuster.ApplyResolution(해상도 확정과 저장)
+  → ResolutionAdjuster.ApplyResolution(ScreenModeAdjuster.SelectedMode)(해상도·화면 모드를 한 번에 적용)
+  → ScreenModeAdjuster.SaveScreenMode
 ```
 
 ## 검증
@@ -57,13 +59,15 @@ SettingsScreen.OnShow 또는 OnHide
 - 이전 정수 저장값의 변환도 확인했다. 정수로 저장돼 있던 BGM 50, SFX 50, 색 150/250/250이 각각 0.500, 0.500, 0.588/0.980/0.980 float으로 바뀌어 다시 저장되고, 색 미리보기 `Image.color`가 같은 값이 된다. `PlayerPrefs.GetFloat`은 `SetInt`로 쓰인 키에서 저장값이 아니라 기본값을 돌려주므로, 음수 표식으로 이전 형식을 구분한다.
 - 해상도 확정 시점도 검증했다. 하위 창에서 `1600 x 900` → `1600 x 1024`로 바꾸는 동안 `SavedResolution`은 그대로고, Back으로 설정 루트에 돌아오는 순간 `1600x1024`로 저장된다. 플레이 재진입 시 그 값이 유지된다. 검증으로 바꾼 값은 모두 원래대로 복원했다.
 - 플레이 모드와 컴파일 모두 `ScreenNavigator`·`UIScreen` 관련 경고·오류가 없다. 남은 콘솔 경고는 vendor `.meta` 버전 경고 등 기존 항목뿐이다.
+- 화면 모드를 플레이 모드에서 검증했다. 실제 `Left`/`Right Button` `onClick`으로 `Windowed` ↔ `Fullscreen`이 표시만 바뀌고, Back으로 설정 루트에 돌아오는 순간 `ScreenMode`가 저장된다. `Screen Mode Border`를 선택하고 오른쪽을 7프레임 누르고 있어도 한 번만 바뀌고, 뗐다가 다시 누르면 다시 한 번 바뀐다. 에디터에서는 `Screen.fullScreenMode`가 실제로 바뀌지 않아 창 전환은 빌드에서 수동 확인이 남아 있다. 검증으로 만든 `ScreenMode` 키는 지웠다.
 - 레거시 내비게이션 제거 후 플레이 모드에서 공개 로비의 Cancel 구독자가 3개에서 `PublicLobbyScreen` 1개로 줄었다. Cancel → `mode-select` → `main-menu`, 히스토리 없이 Cancel → `mode-select`, Back 클릭 → `mode-select`를 확인했고, 단계마다 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했다. 공개 로비 진입 시 Refresh가, `key-binding-gamepad` 진입 시 Close Btn이 선택된다.
 - Main, GameRoom, GamePlay, MapEditor 4개 씬 모두 오류 없이 로드된다.
 - 마우스·키보드·게임패드 실제 입력 이동과 Steam이 필요한 Host·공개 로비·비공개 참가 왕복은 수동 검증이 남아 있다.
 
 ## 남은 작업
 
-- 화면 모드(`Screen Mode`) 전환 기능 신규 구현. 삭제된 `SettingsMenu`의 `ChangeFullscreenMode`와 함께 기능 자체가 사라져 ± 버튼 2개가 아직 죽어 있고 키보드·게임패드 경로도 없다. `ResolutionAdjuster`와 같은 모양으로 표시 텍스트·`PlayerPrefs` 저장·`Screen.fullScreenMode` 적용을 담당하는 어댑터가 필요하다.
+- `ResolutionAdjuster`는 좌우를 누르고 있는 동안 매 프레임 해상도를 넘긴다. 플레이 모드에서 오른쪽을 4프레임 누르면 `1600 x 900` → `640 x 480`까지 돈다. `ScreenModeAdjuster`처럼 누른 순간에만 바뀌게 고친다. `ValueAdjuster`도 매 프레임 1씩 바뀌어 0→100이 2초 안에 끝나므로, 누름 유지 반복 속도를 정할지 함께 판단한다.
+- 빌드에서 화면 모드 전환과 해상도 동시 변경이 실제 창에 반영되는지 수동 확인.
 - 설정 기본값 복귀 수단이 없다. 호출하는 곳이 없던 `SettingManager.ResetSettings`는 제거했다. 기본값 버튼이 필요해지면 `ValueAdjuster`에 기본값 적용 경로를 다시 두고 화면에 연결한다.
 - CP949로 저장된 기존 스크립트의 UTF-8 변환. `ValueAdjuster`·`ResolutionAdjuster`·`SoundManager`는 변환했고 `Assets/01_Scripts`에 15개가 남아 있다.
 - Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
@@ -71,6 +75,6 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 다음 작업
 
-`Screen Mode` 전환 어댑터를 `ResolutionAdjuster`와 같은 모양으로 새로 만들고 ± 버튼 2개에 연결한다.
+`ResolutionAdjuster`의 좌우 입력을 누른 순간에만 반응하게 고친다.
 
 착수 순서와 각 항목에서 먼저 정할 결정은 `Docs/NEXT_SESSION.md`에 정리돼 있다.

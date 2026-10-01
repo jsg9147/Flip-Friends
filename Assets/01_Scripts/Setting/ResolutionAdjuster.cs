@@ -119,20 +119,21 @@ public class ResolutionAdjuster : MonoBehaviour
             if (savedIndex >= 0)
             {
                 currentIndex = savedIndex;
-                Screen.SetResolution(savedWidth, savedHeight, Screen.fullScreen);
+                Screen.SetResolution(savedWidth, savedHeight, Screen.fullScreenMode);
                 return;
             }
         }
 
         // 데이터가 없거나 유효하지 않은 경우 기본 해상도로 설정
-        Screen.SetResolution(DefaultWidth, DefaultHeight, Screen.fullScreen);
+        Screen.SetResolution(DefaultWidth, DefaultHeight, Screen.fullScreenMode);
 
         // 기본 해상도가 목록에 없으면 -1이 되어 표시·적용에서 터지므로 0으로 떨어뜨린다
         int defaultIndex = IndexOf(DefaultWidth, DefaultHeight);
         currentIndex = defaultIndex >= 0 ? defaultIndex : 0;
     }
 
-    public void ApplyResolution()
+    // 화면 모드도 여기서 같이 적용한다. 같은 프레임에 Screen.fullScreenMode를 따로 바꾸면 이전 해상도로 다시 요청되어 한쪽이 덮이기 때문이다
+    public void ApplyResolution(FullScreenMode screenMode)
     {
         if (!HasResolutions())
         {
@@ -143,12 +144,13 @@ public class ResolutionAdjuster : MonoBehaviour
         Resolution selectedResolution = filteredResolutions[currentIndex];
 
         // 설정 화면을 드나들 때마다 호출되므로 바뀐 게 없으면 아무것도 하지 않는다
-        if (selectedResolution.width == Screen.width && selectedResolution.height == Screen.height)
+        if (selectedResolution.width == Screen.width && selectedResolution.height == Screen.height
+            && screenMode == Screen.fullScreenMode)
         {
             return;
         }
 
-        Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreen);
+        Screen.SetResolution(selectedResolution.width, selectedResolution.height, screenMode);
 
         // 해상도를 PlayerPrefs에 저장
         PlayerPrefs.SetString(ResolutionKey, $"{selectedResolution.width}x{selectedResolution.height}");

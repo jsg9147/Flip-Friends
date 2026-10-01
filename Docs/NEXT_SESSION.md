@@ -19,11 +19,12 @@
 4. 커밋할 때 주의: 이 저장소에 git user 정보가 설정돼 있지 않아 그냥 `git commit`하면 실패한다. 기존 커밋과 같은 작성자를 쓰려면 `git -c user.name="JoSeunggeun" -c user.email="jsg9147@naver.com" commit ...` 형태로 지정한다.
 5. 화면 전환을 건드렸으면 플레이 모드에서 단계마다 `ScreenNavigator.CurrentScreen`과 모든 `UIScreen`의 `activeSelf`·`CanvasGroup.alpha`·`blocksRaycasts`·`IsVisible`이 서로 맞는지 교차 확인한다. 이중 소유 버그를 잡아낸 방법이 이것이고, 같은 종류의 버그는 `activeSelf`만 보면 놓친다.
 
-## 1. Screen Mode 전환 신규 구현
+## 1. Adjuster 누름 유지 반복 수정
 
-- `Graphics and Audio Window/Setting Groups/Screen Mode Group/Screen Mode Text (TMP)`의 `Left Button`·`Right Button` `onClick`이 삭제된 `SettingsMenu.ChangeFullscreenMode`를 가리켜 `m_Target: {fileID: 0}`으로 죽어 있다. 키보드·게임패드 경로도 없어 복구가 아니라 신규 구현이다.
-- `ResolutionAdjuster`와 같은 모양으로 표시 텍스트·`PlayerPrefs` 저장·`Screen.fullScreenMode` 적용을 담당하는 어댑터를 만들고 ± 버튼 2개를 연결한다.
-- 확정된 사실: 설정 값은 Adjuster가 직접 저장하고 `SettingManager`는 적용만 한다. 해상도처럼 즉시 적용이 위험한 값은 `SettingManager.ApplySettings`에 모아 `SettingsScreen`의 `OnShow`·`OnHide`에서 확정한다. 화면 모드도 같은 자리에 넣으면 된다.
+- `InputManager.dir`은 누르고 있는 동안 값이 남는다. `ResolutionAdjuster`·`ValueAdjuster`는 선택된 동안 매 프레임 `dir.x`를 보고 값을 바꿔서, 해상도는 한 번 누르면 여러 칸을 건너뛴다(플레이 모드 4프레임에 `1600 x 900` → `640 x 480`).
+- `ScreenModeAdjuster.HandleAdjustmentInput`이 이전 프레임 입력을 기억해 누른 순간에만 바꾸는 방식이다. 같은 모양을 해상도에 적용하고, 세 곳이 같아지면 공통 메서드로 뺀다.
+- 음량·색은 누르고 있으면 연속으로 바뀌는 편이 낫다. 첫 입력 후 지연과 반복 간격을 둘지 먼저 정한다.
+- 플레이 모드 검증: 일시정지 후 `EditorApplication.Step()`으로 프레임을 넘기고 `InputManager`의 `<dir>k__BackingField`를 리플렉션으로 바꾸면 누름 유지를 재현할 수 있다. 에디터가 포커스를 잃으면 프레임이 멈추므로 이 방법이 필요하다.
 
 ## 2. Steam 런타임 수동 검증
 
