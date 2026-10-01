@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -5,27 +6,36 @@ using TMPro;
 public class ValueAdjuster : MonoBehaviour
 {
     [Header("Settings")]
-    public string key = "DefaultKey"; // PlayerPrefs에 사용할 키
-    public int defaultValue = 50; // 기본값
-    public int minValue = 0; // 최소값
-    public int maxValue = 100; // 최대값
+    [SerializeField] private string key = "DefaultKey"; // PlayerPrefs에 사용할 키
+    [SerializeField] private int defaultValue = 50;
+    [SerializeField] private int minValue = 0;
+    [SerializeField] private int maxValue = 100;
 
     [Header("UI Elements")]
-    public TMP_Text valueText; // 수치 표시 Text
-    public GameObject targetUI; // 조정 후 돌아갈 버튼
+    [SerializeField] private TMP_Text valueText; // 수치 표시 Text
+    [SerializeField] private GameObject targetUI; // 조정 후 돌아갈 버튼
 
-    public int value;
+    private int currentValue;
+
+    // GetFloat이 int로 저장된 키에서 기본값을 돌려주는 것을 이용해 이전 저장 형식을 알아내는 표식
+    private const float LegacyFormatMark = -1f;
+
+    // 값을 실제로 쓰는 쪽이 구독한다. 저장은 이 클래스가, 적용은 구독자가 맡아 책임을 나눈다
+    public event Action<int> ValueChanged;
+
+    public int Value => currentValue;
+
+    // 저장과 노출은 0~1로 정규화한다. 값을 읽는 SoundManager·PlayerSound·PlayerController2D가 모두 GetFloat을 쓰기 때문이다
+    public float NormalizedValue => maxValue <= 0 ? 0f : (float)currentValue / maxValue;
 
     void Awake()
     {
-        // PlayerPrefs에서 저장된 값을 불러옴. 없으면 기본값 사용.
-        value = PlayerPrefs.GetInt(key, defaultValue);
-        UpdateValueText();
+        LoadValue();
     }
 
     void Update()
     {
-        if (EventSystem.current.currentSelectedGameObject == targetUI)
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == targetUI)
         {
             HandleAdjustmentInput();
         }
@@ -45,9 +55,7 @@ public class ValueAdjuster : MonoBehaviour
 
     private void ChangeValue(int delta)
     {
-        value = Mathf.Clamp(value + delta, minValue, maxValue);
-        UpdateValueText();
-        SaveValue();
+        SetValue(currentValue + delta);
     }
 
     // 마우스 클릭도 키보드·게임패드 입력과 같은 증감 경로를 쓰도록 공개
@@ -61,14 +69,74 @@ public class ValueAdjuster : MonoBehaviour
         ChangeValue(-1);
     }
 
-    public void UpdateValueText()
+    private void UpdateValueText()
     {
-        valueText.text = value.ToString();
+        if (valueText == null)
+        {
+            return;
+        }
+
+        valueText.text = currentValue.ToString();
+    }
+
+    private void SetValue(int newValue)
+    {
+        int clampedValue = Mathf.Clamp(newValue, minValue, maxValue);
+
+        if (clampedValue == currentValue)
+        {
+            return;
+        }
+
+        currentValue = clampedValue;
+        UpdateValueText();
+        SaveValue();
+        ValueChanged?.Invoke(currentValue);
+    }
+
+    private void LoadValue()
+    {
+        float normalizedValue = NormalizeDefault();
+        bool needsRewrite = true;
+
+        if (PlayerPrefs.HasKey(key))
+        {
+            // 정규화 값은 0~1이라 음수가 나올 수 없다. 음수면 키가 float이 아니라는 뜻이다
+            float savedValue = PlayerPrefs.GetFloat(key, LegacyFormatMark);
+
+            if (savedValue >= 0f)
+            {
+                normalizedValue = savedValue;
+                needsRewrite = false;
+            }
+            else if (maxValue > 0)
+            {
+                // 이전 빌드는 같은 키에 0~maxValue 정수를 저장했다. 그 값을 버리지 않고 옮긴다
+                normalizedValue = (float)PlayerPrefs.GetInt(key, defaultValue) / maxValue;
+            }
+        }
+
+        currentValue = Mathf.Clamp(Mathf.RoundToInt(normalizedValue * maxValue), minValue, maxValue);
+        UpdateValueText();
+
+        // 설정 UI는 화면을 처음 열 때 깨어난다. 그때 구독자가 저장된 값을 따라올 수 있게 알린다
+        ValueChanged?.Invoke(currentValue);
+
+        // 저장된 값이 없거나 이전 정수 형식이면 지금 형식으로 다시 적어 둔다
+        if (needsRewrite)
+        {
+            SaveValue();
+        }
+    }
+
+    private float NormalizeDefault()
+    {
+        return maxValue <= 0 ? 0f : (float)defaultValue / maxValue;
     }
 
     private void SaveValue()
     {
-        PlayerPrefs.SetInt(key, value);
+        PlayerPrefs.SetFloat(key, NormalizedValue);
         PlayerPrefs.Save();
     }
 }

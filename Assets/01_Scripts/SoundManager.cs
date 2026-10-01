@@ -9,18 +9,22 @@ public class SoundManager : MonoBehaviour
     public AudioSource uiSource;
 
     [Header("BGM Clips")]
-    public AudioClip[] bgmClips; // BGM ÆÄÀÏµéÀ» ¹è¿­·Î °ü¸®
+    public AudioClip[] bgmClips; // BGM íŒŒì¼ë“¤ì„ ë°°ì—´ë¡œ ê´€ë¦¬
 
     [Header("UI Sounds")]
     public AudioClip clickSound;
 
+    private const string BgmVolumeKey = "BGMVolume";
+    private const string SfxVolumeKey = "SFXVolume";
+    private const float DefaultVolume = 1.0f;
+
     private void Awake()
     {
-        // ½Ì±ÛÅæ ÆĞÅÏ ±¸Çö
+        // ì‹±ê¸€í†¤ íŒ¨í„´ êµ¬í˜„
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ¾À ÀüÈ¯ ½Ã ÆÄ±«µÇÁö ¾Êµµ·Ï ¼³Á¤
+            DontDestroyOnLoad(gameObject); // ì”¬ ì „í™˜ ì‹œ íŒŒê´´ë˜ì§€ ì•Šë„ë¡ ì„¤ì •
         }
         else
         {
@@ -30,18 +34,20 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        bgmSource.volume = PlayerPrefs.GetFloat("BGMVolume", 1.0f);
+        // ì„¤ì • í™”ë©´ì´ ì—†ëŠ” ì”¬ì—ì„œ ì‹œì‘í•´ë„ ì €ì¥ëœ ìŒëŸ‰ì„ ë”°ë¥¸ë‹¤. ê°’ ì €ì¥ì€ ValueAdjusterê°€ ë§¡ëŠ”ë‹¤
+        ApplyBGMVolume(PlayerPrefs.GetFloat(BgmVolumeKey, DefaultVolume));
+        ApplySFXVolume(PlayerPrefs.GetFloat(SfxVolumeKey, DefaultVolume));
     }
 
     /// <summary>
-    /// BGM Àç»ı
+    /// BGM ì¬ìƒ
     /// </summary>
-    /// <param name="clipIndex">Àç»ıÇÒ BGMÀÇ ÀÎµ¦½º</param>
+    /// <param name="clipIndex">ì¬ìƒí•  BGMì˜ ì¸ë±ìŠ¤</param>
     public void PlayBGM(int clipIndex)
     {
         if (clipIndex < 0 || clipIndex >= bgmClips.Length)
         {
-            Debug.LogError("Àß¸øµÈ BGM ÀÎµ¦½ºÀÔ´Ï´Ù.");
+            Debug.LogError("ì˜ëª»ëœ BGM ì¸ë±ìŠ¤ì…ë‹ˆë‹¤.");
             return;
         }
 
@@ -55,7 +61,7 @@ public class SoundManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÇöÀç BGM ÀÏ½ÃÁ¤Áö
+    /// í˜„ì¬ BGM ì¼ì‹œì •ì§€
     /// </summary>
     public void PauseBGM()
     {
@@ -66,7 +72,7 @@ public class SoundManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÏ½ÃÁ¤ÁöµÈ BGM Àç°³
+    /// ì¼ì‹œì •ì§€ëœ BGM ì¬ê°œ
     /// </summary>
     public void ResumeBGM()
     {
@@ -77,7 +83,7 @@ public class SoundManager : MonoBehaviour
     }
 
     /// <summary>
-    /// BGM Á¤Áö
+    /// BGM ì •ì§€
     /// </summary>
     public void StopBGM()
     {
@@ -91,35 +97,21 @@ public class SoundManager : MonoBehaviour
     }
 
     /// <summary>
-    /// BGM º¼·ı ¼³Á¤
+    /// BGM ë³¼ë¥¨ ì ìš©
     /// </summary>
-    /// <param name="volume">¼³Á¤ÇÒ º¼·ı (0.0f ~ 1.0f)</param>
-    public void SetBGMVolume(float volume)
+    /// <param name="volume">ì ìš©í•  ë³¼ë¥¨ (0.0f ~ 1.0f)</param>
+    public void ApplyBGMVolume(float volume)
     {
-        volume = Mathf.Clamp(volume, 0.0f, 1.0f); // º¼·ı ¹üÀ§ Á¦ÇÑ
-        bgmSource.volume = volume;
-        PlayerPrefs.SetFloat("BGMVolume", volume); // º¼·ı °ª ÀúÀå
-        PlayerPrefs.Save();
+        bgmSource.volume = Mathf.Clamp01(volume);
     }
 
     /// <summary>
-    /// BGM º¼·ı ¼³Á¤
+    /// íš¨ê³¼ìŒ ë³¼ë¥¨ ì ìš©
     /// </summary>
-    /// <param name="volume">¼³Á¤ÇÒ º¼·ı (0.0f ~ 1.0f)</param>
-    public void SetSFXVolume(float volume)
+    /// <param name="volume">ì ìš©í•  ë³¼ë¥¨ (0.0f ~ 1.0f)</param>
+    public void ApplySFXVolume(float volume)
     {
-        volume = Mathf.Clamp(volume, 0.0f, 1.0f); // º¼·ı ¹üÀ§ Á¦ÇÑ
-        //bgmSource.volume = volume;
-        PlayerPrefs.SetFloat("SFXVolume", volume); // º¼·ı °ª ÀúÀå
-        PlayerPrefs.Save();
-    }
-
-    /// <summary>
-    /// ÀúÀåµÈ º¼·ı ºÒ·¯¿À±â
-    /// </summary>
-    /// <returns>ÇöÀç ÀúÀåµÈ º¼·ı °ª</returns>
-    public float GetBGMVolume()
-    {
-        return PlayerPrefs.GetFloat("BGMVolume", 1.0f);
+        // UI í´ë¦­ìŒë„ íš¨ê³¼ìŒ ì„¤ì •ì„ ë”°ë¥¸ë‹¤
+        uiSource.volume = Mathf.Clamp01(volume);
     }
 }

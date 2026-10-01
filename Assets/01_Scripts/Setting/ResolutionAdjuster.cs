@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 public class ResolutionAdjuster : MonoBehaviour
 {
-    public TMP_Text resolutionText; // 해상도를 표시할 Text
-    public GameObject targetUI; // 조정 후 돌아갈 첫 버튼
+    [SerializeField] private TMP_Text resolutionText; // 해상도를 표시할 Text
+    [SerializeField] private GameObject targetUI; // 조정 후 돌아갈 첫 버튼
 
     private int currentIndex = 0; // 현재 선택된 해상도 인덱스
     private Resolution[] filteredResolutions; // 필터링된 해상도 목록
@@ -15,21 +15,18 @@ public class ResolutionAdjuster : MonoBehaviour
     private const int DefaultWidth = 1600; // 기본 해상도 너비
     private const int DefaultHeight = 900; // 기본 해상도 높이
 
-    void Start()
+    // Start가 아니라 Awake에서 목록을 만든다. 다른 스크립트가 Start에서 LoadResolution을 불러도 목록이 비어 있지 않게 하기 위함이다
+    void Awake()
     {
-        // 필터링된 해상도를 가져옴
         filteredResolutions = GetFilteredResolutions();
 
-        // PlayerPrefs에서 저장된 해상도 불러오기
         LoadResolution();
-
-        // 초기 해상도를 설정
         UpdateResolutionText();
     }
 
     void Update()
     {
-        if (EventSystem.current.currentSelectedGameObject == targetUI)
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == targetUI)
         {
             HandleAdjustmentInput();
         }
@@ -49,15 +46,20 @@ public class ResolutionAdjuster : MonoBehaviour
 
     private void ChangeResolution(int direction)
     {
+        if (!HasResolutions())
+        {
+            return;
+        }
+
         currentIndex += direction;
 
-        // 인덱스 범위를 초과하지 않도록 클램프
+        // 인덱스 범위를 초과하지 않도록 순환
         if (currentIndex < 0)
             currentIndex = filteredResolutions.Length - 1;
         else if (currentIndex >= filteredResolutions.Length)
             currentIndex = 0;
 
-        // 화면 텍스트 갱신
+        // 화면 텍스트 갱신. 실제 적용은 설정 화면을 벗어날 때 ApplyResolution이 맡는다
         UpdateResolutionText();
     }
 
@@ -74,6 +76,11 @@ public class ResolutionAdjuster : MonoBehaviour
 
     private void UpdateResolutionText()
     {
+        if (resolutionText == null || !HasResolutions())
+        {
+            return;
+        }
+
         Resolution res = filteredResolutions[currentIndex];
         resolutionText.text = $"{res.width} x {res.height}";
     }
@@ -97,46 +104,88 @@ public class ResolutionAdjuster : MonoBehaviour
         return filteredList.ToArray();
     }
 
-
     public void LoadResolution()
     {
-        // 저장된 해상도 불러오기
-        if (PlayerPrefs.HasKey(ResolutionKey))
+        if (filteredResolutions == null)
         {
-            string savedResolution = PlayerPrefs.GetString(ResolutionKey);
-            string[] resolutionParts = savedResolution.Split('x');
-            int savedWidth = int.Parse(resolutionParts[0]);
-            int savedHeight = int.Parse(resolutionParts[1]);
+            filteredResolutions = GetFilteredResolutions();
+        }
 
-            // 저장된 해상도가 필터링된 해상도 목록에 있는지 확인
-            for (int i = 0; i < filteredResolutions.Length; i++)
+        if (TryGetSavedResolution(out int savedWidth, out int savedHeight))
+        {
+            int savedIndex = IndexOf(savedWidth, savedHeight);
+
+            // 저장된 해상도가 현재 모니터 목록에 남아 있을 때만 그대로 쓴다
+            if (savedIndex >= 0)
             {
-                if (filteredResolutions[i].width == savedWidth &&
-                    filteredResolutions[i].height == savedHeight)
-                {
-                    currentIndex = i;
-                    Screen.SetResolution(savedWidth, savedHeight, Screen.fullScreen);
-                    return;
-                }
+                currentIndex = savedIndex;
+                Screen.SetResolution(savedWidth, savedHeight, Screen.fullScreen);
+                return;
             }
         }
 
         // 데이터가 없거나 유효하지 않은 경우 기본 해상도로 설정
         Screen.SetResolution(DefaultWidth, DefaultHeight, Screen.fullScreen);
-        if (filteredResolutions != null)
-        {
-            currentIndex = System.Array.FindIndex(filteredResolutions, res =>
-            res.width == DefaultWidth && res.height == DefaultHeight);
-        }
+
+        // 기본 해상도가 목록에 없으면 -1이 되어 표시·적용에서 터지므로 0으로 떨어뜨린다
+        int defaultIndex = IndexOf(DefaultWidth, DefaultHeight);
+        currentIndex = defaultIndex >= 0 ? defaultIndex : 0;
     }
 
     public void ApplyResolution()
     {
+        if (!HasResolutions())
+        {
+            Debug.LogWarning("사용할 수 있는 해상도 목록이 비어 있어 해상도를 적용하지 못했습니다.", this);
+            return;
+        }
+
         Resolution selectedResolution = filteredResolutions[currentIndex];
+
+        // 설정 화면을 드나들 때마다 호출되므로 바뀐 게 없으면 아무것도 하지 않는다
+        if (selectedResolution.width == Screen.width && selectedResolution.height == Screen.height)
+        {
+            return;
+        }
+
         Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreen);
 
         // 해상도를 PlayerPrefs에 저장
         PlayerPrefs.SetString(ResolutionKey, $"{selectedResolution.width}x{selectedResolution.height}");
         PlayerPrefs.Save();
+    }
+
+    private bool HasResolutions()
+    {
+        return filteredResolutions != null && filteredResolutions.Length > 0
+            && currentIndex >= 0 && currentIndex < filteredResolutions.Length;
+    }
+
+    private bool TryGetSavedResolution(out int width, out int height)
+    {
+        width = 0;
+        height = 0;
+
+        if (!PlayerPrefs.HasKey(ResolutionKey))
+        {
+            return false;
+        }
+
+        string[] resolutionParts = PlayerPrefs.GetString(ResolutionKey).Split('x');
+
+        if (resolutionParts.Length != 2
+            || !int.TryParse(resolutionParts[0], out width)
+            || !int.TryParse(resolutionParts[1], out height))
+        {
+            Debug.LogWarning($"저장된 해상도 '{PlayerPrefs.GetString(ResolutionKey)}'를 읽을 수 없어 기본 해상도를 씁니다.", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private int IndexOf(int width, int height)
+    {
+        return System.Array.FindIndex(filteredResolutions, res => res.width == width && res.height == height);
     }
 }

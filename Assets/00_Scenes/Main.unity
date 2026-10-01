@@ -8326,7 +8326,6 @@ MonoBehaviour:
   maxValue: 255
   valueText: {fileID: 956268412}
   targetUI: {fileID: 1994126165}
-  value: 0
 --- !u!1 &555641978
 GameObject:
   m_ObjectHideFlags: 0
@@ -17161,7 +17160,6 @@ MonoBehaviour:
   maxValue: 100
   valueText: {fileID: 35487798}
   targetUI: {fileID: 44291180}
-  value: 0
 --- !u!1 &1303072024
 GameObject:
   m_ObjectHideFlags: 0
@@ -20352,7 +20350,6 @@ MonoBehaviour:
   maxValue: 255
   valueText: {fileID: 2138242129}
   targetUI: {fileID: 1429817750}
-  value: 0
 --- !u!222 &1444355399
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20418,7 +20415,6 @@ MonoBehaviour:
   maxValue: 255
   valueText: {fileID: 486123225}
   targetUI: {fileID: 101901824}
-  value: 0
 --- !u!222 &1468806926
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20973,6 +20969,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 1532248763}
   hideOnAwake: 0
   navigator: {fileID: 1661966419}
+  settingManager: {fileID: 739309585}
 --- !u!1 &1569866537
 GameObject:
   m_ObjectHideFlags: 0
@@ -21356,7 +21353,6 @@ MonoBehaviour:
   maxValue: 100
   valueText: {fileID: 2021653591}
   targetUI: {fileID: 374662506}
-  value: 0
 --- !u!1 &1608310656
 GameObject:
   m_ObjectHideFlags: 0

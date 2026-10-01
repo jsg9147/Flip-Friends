@@ -1,89 +1,114 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+// 설정 값의 저장은 각 Adjuster가 직접 맡는다. 이 클래스는 저장된 값을 실제 게임에 적용하는 책임만 갖는다
 public class SettingManager : MonoBehaviour
 {
     [Header("Adjusters")]
-    public ResolutionAdjuster resolutionAdjuster;
-    public ValueAdjuster bgmAdjuster;
-    public ValueAdjuster sfxAdjuster;
+    [SerializeField] private ResolutionAdjuster resolutionAdjuster;
+    [SerializeField] private ValueAdjuster bgmAdjuster;
+    [SerializeField] private ValueAdjuster sfxAdjuster;
 
-    public Image playerImage;
-    public ValueAdjuster redAdjuster;
-    public ValueAdjuster greenAdjuster;
-    public ValueAdjuster blueAdjuster;
+    [Header("Player Color")]
+    [SerializeField] private Image playerImage;
+    [SerializeField] private ValueAdjuster redAdjuster;
+    [SerializeField] private ValueAdjuster greenAdjuster;
+    [SerializeField] private ValueAdjuster blueAdjuster;
 
-    void Start()
+    // 설정 창의 Adjuster는 화면을 처음 열 때 깨어난다. 그래서 Start에서 미리 적용하지 않고,
+    // Adjuster가 값을 불러오며 보내는 ValueChanged만으로 적용한다
+    private void OnEnable()
     {
-        // 이전 세션에서 저장한 값이 있으면 UI에 반영
-        LoadSettings();
+        Subscribe(bgmAdjuster, HandleBgmChanged);
+        Subscribe(sfxAdjuster, HandleSfxChanged);
+        Subscribe(redAdjuster, HandleColorChanged);
+        Subscribe(greenAdjuster, HandleColorChanged);
+        Subscribe(blueAdjuster, HandleColorChanged);
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        // 슬라이더 조작 중에도 미리보기가 바로 보이도록 매 프레임 반영
-        playerImage.color = new(redAdjuster.value / 255f, greenAdjuster.value / 255f, blueAdjuster.value / 255f);
+        Unsubscribe(bgmAdjuster, HandleBgmChanged);
+        Unsubscribe(sfxAdjuster, HandleSfxChanged);
+        Unsubscribe(redAdjuster, HandleColorChanged);
+        Unsubscribe(greenAdjuster, HandleColorChanged);
+        Unsubscribe(blueAdjuster, HandleColorChanged);
     }
 
+    // 해상도는 ±를 누를 때마다 바꾸면 조작 중 창이 계속 흔들려서, 설정 화면을 벗어날 때 한 번만 확정한다
     public void ApplySettings()
     {
+        if (resolutionAdjuster == null)
+        {
+            Debug.LogWarning("ResolutionAdjuster가 연결되지 않아 해상도를 적용하지 못했습니다.", this);
+            return;
+        }
+
         resolutionAdjuster.ApplyResolution();
-        SaveSettings();
     }
 
-    public void LoadSettings()
+    private void HandleBgmChanged(int value)
     {
-        resolutionAdjuster.LoadResolution();
-
-        bgmAdjuster.value = PlayerPrefs.GetInt("BGMVolume", bgmAdjuster.defaultValue);
-        bgmAdjuster.UpdateValueText();
-
-        sfxAdjuster.value = PlayerPrefs.GetInt("SFXVolume", sfxAdjuster.defaultValue);
-        sfxAdjuster.UpdateValueText();
-
-        redAdjuster.value = PlayerPrefs.GetInt("Red", redAdjuster.defaultValue);
-        redAdjuster.UpdateValueText();
-
-        greenAdjuster.value = PlayerPrefs.GetInt("Green", greenAdjuster.defaultValue);
-        greenAdjuster.UpdateValueText();
-
-        blueAdjuster.value = PlayerPrefs.GetInt("Blue", blueAdjuster.defaultValue);
-        blueAdjuster.UpdateValueText();
+        ApplyBgmVolume();
     }
 
-    public void SaveSettings()
+    private void HandleSfxChanged(int value)
     {
-        PlayerPrefs.SetInt("BGMVolume", bgmAdjuster.value);
-        PlayerPrefs.SetInt("SFXVolume", sfxAdjuster.value);
-
-        PlayerPrefs.SetInt("ScreenRed", redAdjuster.value);
-        PlayerPrefs.SetInt("ScreenGreen", greenAdjuster.value);
-        PlayerPrefs.SetInt("ScreenBlue", blueAdjuster.value);
-
-        PlayerPrefs.Save();
+        ApplySfxVolume();
     }
 
-    public void ResetSettings()
+    private void HandleColorChanged(int value)
     {
-        bgmAdjuster.value = bgmAdjuster.defaultValue;
-        bgmAdjuster.UpdateValueText();
+        ApplyPlayerColor();
+    }
 
-        sfxAdjuster.value = sfxAdjuster.defaultValue;
-        sfxAdjuster.UpdateValueText();
+    private void ApplyBgmVolume()
+    {
+        if (bgmAdjuster == null || SoundManager.Instance == null)
+        {
+            return;
+        }
 
-        redAdjuster.value = redAdjuster.defaultValue;
-        redAdjuster.UpdateValueText();
+        SoundManager.Instance.ApplyBGMVolume(bgmAdjuster.NormalizedValue);
+    }
 
-        greenAdjuster.value = greenAdjuster.defaultValue;
-        greenAdjuster.UpdateValueText();
+    private void ApplySfxVolume()
+    {
+        if (sfxAdjuster == null || SoundManager.Instance == null)
+        {
+            return;
+        }
 
-        blueAdjuster.value = blueAdjuster.defaultValue;
-        blueAdjuster.UpdateValueText();
+        SoundManager.Instance.ApplySFXVolume(sfxAdjuster.NormalizedValue);
+    }
 
-        // 해상도는 OS/모니터 의존성이 커서 기본값 강제 리셋을 보류
-        // resolutionAdjuster.ResetToDefault();
+    private void ApplyPlayerColor()
+    {
+        if (playerImage == null || redAdjuster == null || greenAdjuster == null || blueAdjuster == null)
+        {
+            return;
+        }
 
-        // UI 기본값만 바꾸면 실제 적용·저장이 안 되므로 Apply까지 호출
-        ApplySettings();
+        playerImage.color = new Color(redAdjuster.NormalizedValue, greenAdjuster.NormalizedValue, blueAdjuster.NormalizedValue);
+    }
+
+    private static void Subscribe(ValueAdjuster adjuster, System.Action<int> handler)
+    {
+        if (adjuster == null)
+        {
+            return;
+        }
+
+        adjuster.ValueChanged += handler;
+    }
+
+    private static void Unsubscribe(ValueAdjuster adjuster, System.Action<int> handler)
+    {
+        if (adjuster == null)
+        {
+            return;
+        }
+
+        adjuster.ValueChanged -= handler;
     }
 }
