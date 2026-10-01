@@ -20,6 +20,7 @@
 | 맵 에디터, 저장소, 팔레트, 검증 | `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
 | Main 메뉴, 화면 이동, 로비 목록, 설정 UI | `Docs/UI_REBUILD.md` | Steam/Mirror 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
+| 다음에 할 작업 고르기, 세션 인계 | `Docs/NEXT_SESSION.md` | 고른 항목이 속한 기능 문서 |
 | 플레이어, 장애물, 퍼즐, 일반 게임플레이 | `AGENTS.md`와 관련 코드 | 전용 기능 문서가 생길 때 이 표에 등록 |
 | 테스트 추가 또는 실패 조사 | 대상 기능 문서의 `검증` 절 | `Assets/Tests`와 Unity Console |
 
@@ -33,6 +34,7 @@
 | `Docs/MAP_EDITOR.md` | Active | 맵 제작·저장·검증의 현재 상태 |
 | `Docs/CUSTOM_MAP_NETWORK.md` | Active | 커스텀 맵 로비 선택·자동 공유·런타임 생성 |
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |
+| `Docs/NEXT_SESSION.md` | Active | 남은 작업의 착수 순서와 먼저 정할 결정. 큐가 비면 삭제한다 |
 
 ## 문서 갱신 형식
 

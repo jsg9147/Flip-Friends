@@ -31,7 +31,7 @@ ScreenNavigationButton 또는 NavigableScreen의 Cancel 처리
 ## 검증
 
 - 스크립트와 씬 연결의 컴파일 검증은 완료됐다. Unity `6000.6.3f1` 번들 dotnet으로 `Assembly-CSharp` 빌드가 오류 0건으로 통과한다.
-- 중복 legacy listener 감사는 완료했다. `Main.unity`에서 `MainUIManager`를 직접 호출하는 `onClick`은 `MainUIOpen` 1개뿐이고, 그 버튼에는 `ScreenNavigationButton`이 없어 중복 호출이 아니다. `SettingManager`를 호출하는 `onClick`은 남아 있지 않다.
+- 중복 legacy listener 감사는 완료했다. 씬에서 `MainUIManager`나 `SettingManager`를 직접 호출하는 `onClick`은 0개다. 마지막으로 남아 있던 `Setting UI/Frame/Close Button`의 `MainUIOpen`을 Back으로 교체했다. 코드에서는 `GameModeUIOpen`만 5곳에서 호출된다(`HostSetting`, `PublicLobbyUI`, `HostRoomScreen`, `PrivateJoinScreen`, `PublicLobbyScreen`).
 - 이중 소유 버그의 런타임 재현을 확인했다. 수정 전에는 `settings`가 Hide 상태일 때 `SettingManager.OpenSettingWindow()`를 호출하면 `activeSelf=true`, `CanvasGroup.alpha=0`, `CurrentScreen=main-menu`로 어긋났다. 씬의 `KeySetting Button` 경로에서는 `key-binding`이 `activeSelf=true`, `alpha=0`, `blocksRaycasts=false`로 열려 화면이 보이지 않고 입력도 받지 못했으며, `Setting UI`는 `activeSelf=false`인데 `IsVisible=true`로 남았다.
 - 수정 후 플레이 모드에서 설정 트리 전체를 실제 버튼 `onClick`과 Cancel 입력으로 왕복 검증했다. `main-menu` → `settings` → `key-binding` → `key-binding-keyboard` → (Close) → `key-binding-gamepad` → (Cancel) → `key-binding` → (Close) → `settings` → `settings-graphics-audio` → (Back) → `settings` → `settings-color` → (Cancel) → `settings` → (Cancel) → `main-menu` 13단계 전부에서 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했고, 나머지 화면은 모두 비활성·`alpha` 0이었다.
 - 설정 값 ± 버튼 12개를 플레이 모드에서 실제 `onClick`으로 검증했다. BGM 51, SFX 49로 증감되고 표시 텍스트와 `PlayerPrefs`가 함께 바뀌며, 해상도는 `1600 x 900` → `1600 x 1024` → `1600 x 900`으로 왕복하고, 색은 `150/250/250` → `149/251/251`로 바뀐다. 검증으로 바뀐 값은 원래대로 복원했다.
@@ -53,3 +53,5 @@ ScreenNavigationButton 또는 NavigableScreen의 Cancel 처리
 ## 다음 작업
 
 설정 저장 경로를 복구한다. `SaveSettings`와 `LoadSettings`의 색 키 불일치를 맞추고, `ApplySettings`를 호출할 지점(설정 화면을 벗어날 때 또는 Apply 버튼)을 정해 해상도 변경이 실제로 적용·저장되게 한다.
+
+착수 순서와 각 항목에서 먼저 정할 결정은 `Docs/NEXT_SESSION.md`에 정리돼 있다.
