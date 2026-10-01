@@ -5,25 +5,25 @@ using System.Collections.Generic;
 
 public class ResolutionAdjuster : MonoBehaviour
 {
-    public TMP_Text resolutionText; // ÇØ»óµµ¸¦ Ç¥½ÃÇÒ Text
-    public GameObject targetUI; // Á¶Á¤ ÈÄ µ¹¾Æ°¥ Ã¹ ¹öÆ°
+    public TMP_Text resolutionText; // í•´ìƒë„ë¥¼ í‘œì‹œí•  Text
+    public GameObject targetUI; // ì¡°ì • í›„ ëŒì•„ê°ˆ ì²« ë²„íŠ¼
 
-    private int currentIndex = 0; // ÇöÀç ¼±ÅÃµÈ ÇØ»óµµ ÀÎµ¦½º
-    private Resolution[] filteredResolutions; // ÇÊÅÍ¸µµÈ ÇØ»óµµ ¸ñ·Ï
+    private int currentIndex = 0; // í˜„ì¬ ì„ íƒëœ í•´ìƒë„ ì¸ë±ìŠ¤
+    private Resolution[] filteredResolutions; // í•„í„°ë§ëœ í•´ìƒë„ ëª©ë¡
 
-    private const string ResolutionKey = "SavedResolution"; // PlayerPrefs Å°
-    private const int DefaultWidth = 1600; // ±âº» ÇØ»óµµ ³Êºñ
-    private const int DefaultHeight = 900; // ±âº» ÇØ»óµµ ³ôÀÌ
+    private const string ResolutionKey = "SavedResolution"; // PlayerPrefs í‚¤
+    private const int DefaultWidth = 1600; // ê¸°ë³¸ í•´ìƒë„ ë„ˆë¹„
+    private const int DefaultHeight = 900; // ê¸°ë³¸ í•´ìƒë„ ë†’ì´
 
     void Start()
     {
-        // ÇÊÅÍ¸µµÈ ÇØ»óµµ¸¦ °¡Á®¿È
+        // í•„í„°ë§ëœ í•´ìƒë„ë¥¼ ê°€ì ¸ì˜´
         filteredResolutions = GetFilteredResolutions();
 
-        // PlayerPrefs¿¡¼­ ÀúÀåµÈ ÇØ»óµµ ºÒ·¯¿À±â
+        // PlayerPrefsì—ì„œ ì €ì¥ëœ í•´ìƒë„ ë¶ˆëŸ¬ì˜¤ê¸°
         LoadResolution();
 
-        // ÃÊ±â ÇØ»óµµ¸¦ ¼³Á¤
+        // ì´ˆê¸° í•´ìƒë„ë¥¼ ì„¤ì •
         UpdateResolutionText();
     }
 
@@ -39,11 +39,11 @@ public class ResolutionAdjuster : MonoBehaviour
     {
         if (InputManager.instance.dir.x > 0)
         {
-            ChangeResolution(1); // ¿À¸¥ÂÊ ÀÔ·ÂÀ¸·Î ´ÙÀ½ ÇØ»óµµ
+            ChangeResolution(1); // ì˜¤ë¥¸ìª½ ì…ë ¥ìœ¼ë¡œ ë‹¤ìŒ í•´ìƒë„
         }
         else if (InputManager.instance.dir.x < 0)
         {
-            ChangeResolution(-1); // ¿ŞÂÊ ÀÔ·ÂÀ¸·Î ÀÌÀü ÇØ»óµµ
+            ChangeResolution(-1); // ì™¼ìª½ ì…ë ¥ìœ¼ë¡œ ì´ì „ í•´ìƒë„
         }
     }
 
@@ -51,14 +51,25 @@ public class ResolutionAdjuster : MonoBehaviour
     {
         currentIndex += direction;
 
-        // ÀÎµ¦½º ¹üÀ§¸¦ ÃÊ°úÇÏÁö ¾Êµµ·Ï Å¬·¥ÇÁ
+        // ì¸ë±ìŠ¤ ë²”ìœ„ë¥¼ ì´ˆê³¼í•˜ì§€ ì•Šë„ë¡ í´ë¨í”„
         if (currentIndex < 0)
             currentIndex = filteredResolutions.Length - 1;
         else if (currentIndex >= filteredResolutions.Length)
             currentIndex = 0;
 
-        // È­¸é ÅØ½ºÆ® °»½Å
+        // í™”ë©´ í…ìŠ¤íŠ¸ ê°±ì‹ 
         UpdateResolutionText();
+    }
+
+    // ë§ˆìš°ìŠ¤ í´ë¦­ë„ í‚¤ë³´ë“œÂ·ê²Œì„íŒ¨ë“œ ì…ë ¥ê³¼ ê°™ì€ í•´ìƒë„ ì „í™˜ ê²½ë¡œë¥¼ ì“°ë„ë¡ ê³µê°œ
+    public void NextResolution()
+    {
+        ChangeResolution(1);
+    }
+
+    public void PreviousResolution()
+    {
+        ChangeResolution(-1);
     }
 
     private void UpdateResolutionText()
@@ -69,27 +80,27 @@ public class ResolutionAdjuster : MonoBehaviour
 
     private Resolution[] GetFilteredResolutions()
     {
-        // ÇØ»óµµ¸¦ Áßº¹ ¾øÀÌ ÀúÀåÇÒ HashSet »ı¼º
+        // í•´ìƒë„ë¥¼ ì¤‘ë³µ ì—†ì´ ì €ì¥í•  HashSet ìƒì„±
         HashSet<(int width, int height)> uniqueResolutions = new HashSet<(int, int)>();
         List<Resolution> filteredList = new List<Resolution>();
 
         foreach (var res in Screen.resolutions)
         {
-            // ÀÌ¹Ì µî·ÏµÈ ÇØ»óµµ°¡ ¾Æ´Ï¸é Ãß°¡
+            // ì´ë¯¸ ë“±ë¡ëœ í•´ìƒë„ê°€ ì•„ë‹ˆë©´ ì¶”ê°€
             if (uniqueResolutions.Add((res.width, res.height)))
             {
                 filteredList.Add(res);
             }
         }
 
-        // °á°ú¸¦ ¹è¿­·Î º¯È¯
+        // ê²°ê³¼ë¥¼ ë°°ì—´ë¡œ ë³€í™˜
         return filteredList.ToArray();
     }
 
 
     public void LoadResolution()
     {
-        // ÀúÀåµÈ ÇØ»óµµ ºÒ·¯¿À±â
+        // ì €ì¥ëœ í•´ìƒë„ ë¶ˆëŸ¬ì˜¤ê¸°
         if (PlayerPrefs.HasKey(ResolutionKey))
         {
             string savedResolution = PlayerPrefs.GetString(ResolutionKey);
@@ -97,7 +108,7 @@ public class ResolutionAdjuster : MonoBehaviour
             int savedWidth = int.Parse(resolutionParts[0]);
             int savedHeight = int.Parse(resolutionParts[1]);
 
-            // ÀúÀåµÈ ÇØ»óµµ°¡ ÇÊÅÍ¸µµÈ ÇØ»óµµ ¸ñ·Ï¿¡ ÀÖ´ÂÁö È®ÀÎ
+            // ì €ì¥ëœ í•´ìƒë„ê°€ í•„í„°ë§ëœ í•´ìƒë„ ëª©ë¡ì— ìˆëŠ”ì§€ í™•ì¸
             for (int i = 0; i < filteredResolutions.Length; i++)
             {
                 if (filteredResolutions[i].width == savedWidth &&
@@ -110,7 +121,7 @@ public class ResolutionAdjuster : MonoBehaviour
             }
         }
 
-        // µ¥ÀÌÅÍ°¡ ¾ø°Å³ª À¯È¿ÇÏÁö ¾ÊÀº °æ¿ì ±âº» ÇØ»óµµ·Î ¼³Á¤
+        // ë°ì´í„°ê°€ ì—†ê±°ë‚˜ ìœ íš¨í•˜ì§€ ì•Šì€ ê²½ìš° ê¸°ë³¸ í•´ìƒë„ë¡œ ì„¤ì •
         Screen.SetResolution(DefaultWidth, DefaultHeight, Screen.fullScreen);
         if (filteredResolutions != null)
         {
@@ -124,7 +135,7 @@ public class ResolutionAdjuster : MonoBehaviour
         Resolution selectedResolution = filteredResolutions[currentIndex];
         Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreen);
 
-        // ÇØ»óµµ¸¦ PlayerPrefs¿¡ ÀúÀå
+        // í•´ìƒë„ë¥¼ PlayerPrefsì— ì €ì¥
         PlayerPrefs.SetString(ResolutionKey, $"{selectedResolution.width}x{selectedResolution.height}");
         PlayerPrefs.Save();
     }

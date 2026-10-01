@@ -5,20 +5,20 @@ using TMPro;
 public class ValueAdjuster : MonoBehaviour
 {
     [Header("Settings")]
-    public string key = "DefaultKey"; // PlayerPrefs¿¡ »ç¿ëÇÒ Å°
-    public int defaultValue = 50; // ±âº»°ª
-    public int minValue = 0; // ÃÖ¼Ò°ª
-    public int maxValue = 100; // ÃÖ´ë°ª
+    public string key = "DefaultKey"; // PlayerPrefsì— ì‚¬ìš©í•  í‚¤
+    public int defaultValue = 50; // ê¸°ë³¸ê°’
+    public int minValue = 0; // ìµœì†Œê°’
+    public int maxValue = 100; // ìµœëŒ€ê°’
 
     [Header("UI Elements")]
-    public TMP_Text valueText; // ¼öÄ¡ Ç¥½Ã Text
-    public GameObject targetUI; // Á¶Á¤ ÈÄ µ¹¾Æ°¥ ¹öÆ°
+    public TMP_Text valueText; // ìˆ˜ì¹˜ í‘œì‹œ Text
+    public GameObject targetUI; // ì¡°ì • í›„ ëŒì•„ê°ˆ ë²„íŠ¼
 
     public int value;
 
     void Awake()
     {
-        // PlayerPrefs¿¡¼­ ÀúÀåµÈ °ªÀ» ºÒ·¯¿È. ¾øÀ¸¸é ±âº»°ª »ç¿ë.
+        // PlayerPrefsì—ì„œ ì €ì¥ëœ ê°’ì„ ë¶ˆëŸ¬ì˜´. ì—†ìœ¼ë©´ ê¸°ë³¸ê°’ ì‚¬ìš©.
         value = PlayerPrefs.GetInt(key, defaultValue);
         UpdateValueText();
     }
@@ -35,11 +35,11 @@ public class ValueAdjuster : MonoBehaviour
     {
         if (InputManager.instance.dir.x > 0)
         {
-            ChangeValue(1); // ¿À¸¥ÂÊ ÀÔ·ÂÀ¸·Î °ª Áõ°¡
+            ChangeValue(1); // ì˜¤ë¥¸ìª½ ì…ë ¥ìœ¼ë¡œ ê°’ ì¦ê°€
         }
         else if (InputManager.instance.dir.x < 0)
         {
-            ChangeValue(-1); // ¿ŞÂÊ ÀÔ·ÂÀ¸·Î °ª °¨¼Ò
+            ChangeValue(-1); // ì™¼ìª½ ì…ë ¥ìœ¼ë¡œ ê°’ ê°ì†Œ
         }
     }
 
@@ -48,6 +48,17 @@ public class ValueAdjuster : MonoBehaviour
         value = Mathf.Clamp(value + delta, minValue, maxValue);
         UpdateValueText();
         SaveValue();
+    }
+
+    // ë§ˆìš°ìŠ¤ í´ë¦­ë„ í‚¤ë³´ë“œÂ·ê²Œì„íŒ¨ë“œ ì…ë ¥ê³¼ ê°™ì€ ì¦ê° ê²½ë¡œë¥¼ ì“°ë„ë¡ ê³µê°œ
+    public void Increase()
+    {
+        ChangeValue(1);
+    }
+
+    public void Decrease()
+    {
+        ChangeValue(-1);
     }
 
     public void UpdateValueText()

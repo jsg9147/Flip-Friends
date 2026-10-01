@@ -810,14 +810,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeRedColor
-        m_Mode: 3
+      - m_Target: {fileID: 1468806925}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Increase
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1874,14 +1874,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetBGMVolume
-        m_Mode: 3
+      - m_Target: {fileID: 1591576743}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Decrease
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3348,14 +3348,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetSFXVolume
-        m_Mode: 3
+      - m_Target: {fileID: 1283893778}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Decrease
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3637,14 +3637,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetBGMVolume
-        m_Mode: 3
+      - m_Target: {fileID: 1591576743}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Increase
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -4222,14 +4222,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeRedColor
-        m_Mode: 3
+      - m_Target: {fileID: 545197637}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Decrease
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -5107,14 +5107,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeResolution
-        m_Mode: 3
+      - m_Target: {fileID: 739309586}
+        m_TargetAssemblyTypeName: ResolutionAdjuster, Assembly-CSharp
+        m_MethodName: NextResolution
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -5761,14 +5761,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeRedColor
-        m_Mode: 3
+      - m_Target: {fileID: 1444355398}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Decrease
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -6366,6 +6366,7 @@ GameObject:
   - component: {fileID: 421175064}
   - component: {fileID: 421175063}
   - component: {fileID: 421175062}
+  - component: {fileID: 421175065}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -6436,19 +6437,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 421175063}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenSettingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &421175063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6487,6 +6476,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 421175060}
   m_CullTransparentMesh: 1
+--- !u!114 &421175065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421175060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &436782365
 GameObject:
   m_ObjectHideFlags: 0
@@ -7333,6 +7338,7 @@ GameObject:
   - component: {fileID: 508923077}
   - component: {fileID: 508923076}
   - component: {fileID: 508923075}
+  - component: {fileID: 508923079}
   m_Layer: 5
   m_Name: Keyboard Button
   m_TagString: Untagged
@@ -7383,19 +7389,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 508923076}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenKeyboardRebindWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &508923076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7454,6 +7448,22 @@ RectTransform:
   m_AnchoredPosition: {x: 940, y: -191.875}
   m_SizeDelta: {x: 780, y: 183.75}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &508923079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508923074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 0
+  targetScreenId: key-binding-keyboard
+  rememberCurrent: 1
 --- !u!1 &518376103
 GameObject:
   m_ObjectHideFlags: 0
@@ -7536,14 +7546,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeResolution
-        m_Mode: 3
+      - m_Target: {fileID: 739309586}
+        m_TargetAssemblyTypeName: ResolutionAdjuster, Assembly-CSharp
+        m_MethodName: PreviousResolution
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -8586,6 +8596,7 @@ GameObject:
   - component: {fileID: 598205594}
   - component: {fileID: 598205593}
   - component: {fileID: 598205592}
+  - component: {fileID: 598205596}
   m_Layer: 5
   m_Name: Gamepad Button
   m_TagString: Untagged
@@ -8636,19 +8647,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 598205593}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenGamepadRebindWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &598205593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8707,6 +8706,22 @@ RectTransform:
   m_AnchoredPosition: {x: 940, y: -385.625}
   m_SizeDelta: {x: 780, y: 183.75}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &598205596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 598205591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 0
+  targetScreenId: key-binding-gamepad
+  rememberCurrent: 1
 --- !u!1 &603151606
 GameObject:
   m_ObjectHideFlags: 0
@@ -9215,7 +9230,7 @@ GameObject:
   - component: {fileID: 629872061}
   - component: {fileID: 629872062}
   - component: {fileID: 629872064}
-  - component: {fileID: 629872063}
+  - component: {fileID: 629872065}
   m_Layer: 5
   m_Name: Key Rebinding UI
   m_TagString: Untagged
@@ -9270,22 +9285,6 @@ MonoBehaviour:
   - {fileID: 2139316622}
   - {fileID: 421175062}
   inputDelay: 0.2
---- !u!114 &629872063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 629872058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f676917103492c44f8295e4df0885995, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIScreen
-  screenId: key-binding
-  firstSelectedObject: {fileID: 0}
-  canvasGroup: {fileID: 629872064}
-  hideOnAwake: 0
 --- !u!225 &629872064
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -9298,6 +9297,23 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &629872065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 629872058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639af11fa2a6b9b4e944207c95bb783c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeyBindingScreen
+  screenId: key-binding
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 629872064}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
 --- !u!1 &632145356
 GameObject:
   m_ObjectHideFlags: 0
@@ -9881,6 +9897,7 @@ GameObject:
   - component: {fileID: 675098860}
   - component: {fileID: 675098859}
   - component: {fileID: 675098858}
+  - component: {fileID: 675098861}
   m_Layer: 5
   m_Name: Graphics and audio
   m_TagString: Untagged
@@ -9953,19 +9970,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 675098859}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenGraphicsAndSoundWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &675098859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10004,6 +10009,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675098856}
   m_CullTransparentMesh: 1
+--- !u!114 &675098861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675098856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 0
+  targetScreenId: settings-graphics-audio
+  rememberCurrent: 1
 --- !u!1 &675537933
 GameObject:
   m_ObjectHideFlags: 0
@@ -10347,7 +10368,6 @@ GameObject:
   m_Component:
   - component: {fileID: 701542580}
   - component: {fileID: 701542579}
-  - component: {fileID: 701542581}
   m_Layer: 0
   m_Name: KeyRebindingManager
   m_TagString: Untagged
@@ -10388,21 +10408,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &701542581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 701542578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0df09d7fab967944b42a6a15cba764f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  settingUI: {fileID: 1532248757}
-  keyboardUI: {fileID: 841304901}
-  gamepadUI: {fileID: 2097853337}
 --- !u!1 &706853990
 GameObject:
   m_ObjectHideFlags: 0
@@ -10538,6 +10543,7 @@ GameObject:
   - component: {fileID: 711859049}
   - component: {fileID: 711859048}
   - component: {fileID: 711859047}
+  - component: {fileID: 711859050}
   m_Layer: 5
   m_Name: KeySetting Button
   m_TagString: Untagged
@@ -10608,19 +10614,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 711859048}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenKeyRebindingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &711859048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10659,6 +10653,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 711859045}
   m_CullTransparentMesh: 1
+--- !u!114 &711859050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711859045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 0
+  targetScreenId: key-binding
+  rememberCurrent: 1
 --- !u!1 &729854101
 GameObject:
   m_ObjectHideFlags: 0
@@ -10746,6 +10756,7 @@ GameObject:
   - component: {fileID: 730708938}
   - component: {fileID: 730708937}
   - component: {fileID: 730708936}
+  - component: {fileID: 730708939}
   m_Layer: 5
   m_Name: Close Btn
   m_TagString: Untagged
@@ -10816,19 +10827,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 730708937}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenSettingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &730708937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10867,6 +10866,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730708934}
   m_CullTransparentMesh: 1
+--- !u!114 &730708939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730708934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &732390091
 GameObject:
   m_ObjectHideFlags: 0
@@ -11124,15 +11139,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab0ac1d931b39b4399d3a1f97422502, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingWindow: {fileID: 1532248757}
-  graphicAndSoundWindow: {fileID: 1029459457}
   resolutionAdjuster: {fileID: 739309586}
   bgmAdjuster: {fileID: 1591576743}
   sfxAdjuster: {fileID: 1283893778}
-  keyRebindingWindow: {fileID: 629872058}
-  keyboardRebindWindow: {fileID: 841304901}
-  gamepadRebindWindow: {fileID: 2097853337}
-  colorSettingWindow: {fileID: 920420299}
   playerImage: {fileID: 790036471}
   redAdjuster: {fileID: 545197637}
   greenAdjuster: {fileID: 1468806925}
@@ -12122,6 +12131,8 @@ GameObject:
   - component: {fileID: 841304902}
   - component: {fileID: 841304903}
   - component: {fileID: 841304904}
+  - component: {fileID: 841304906}
+  - component: {fileID: 841304905}
   m_Layer: 5
   m_Name: KeyboardSetting
   m_TagString: Untagged
@@ -12182,6 +12193,35 @@ MonoBehaviour:
   tagetButtonList:
   - {fileID: 1344107635}
   inputDelay: 0.2
+--- !u!225 &841304905
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841304901}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &841304906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841304901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 829d748fb70e98e4094507522b53be54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigableScreen
+  screenId: key-binding-keyboard
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 841304905}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
 --- !u!1 &849494036
 GameObject:
   m_ObjectHideFlags: 0
@@ -12439,14 +12479,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeRedColor
-        m_Mode: 3
+      - m_Target: {fileID: 545197637}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Increase
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12860,6 +12900,8 @@ GameObject:
   m_Component:
   - component: {fileID: 920420300}
   - component: {fileID: 920420301}
+  - component: {fileID: 920420303}
+  - component: {fileID: 920420302}
   m_Layer: 5
   m_Name: ColorChangeUI
   m_TagString: Untagged
@@ -12908,6 +12950,35 @@ MonoBehaviour:
   - {fileID: 1429817752}
   - {fileID: 1690377302}
   inputDelay: 0.2
+--- !u!225 &920420302
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920420299}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &920420303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920420299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 829d748fb70e98e4094507522b53be54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigableScreen
+  screenId: settings-color
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 920420302}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
 --- !u!1 &930502493
 GameObject:
   m_ObjectHideFlags: 0
@@ -14052,6 +14123,8 @@ GameObject:
   - component: {fileID: 1029459460}
   - component: {fileID: 1029459459}
   - component: {fileID: 1029459461}
+  - component: {fileID: 1029459463}
+  - component: {fileID: 1029459462}
   m_Layer: 5
   m_Name: Graphics and Audio Window
   m_TagString: Untagged
@@ -14138,6 +14211,35 @@ MonoBehaviour:
   - {fileID: 44291182}
   - {fileID: 1425286754}
   inputDelay: 0.2
+--- !u!225 &1029459462
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029459457}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1029459463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029459457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 829d748fb70e98e4094507522b53be54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigableScreen
+  screenId: settings-graphics-audio
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 1029459462}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
 --- !u!1 &1042418937
 GameObject:
   m_ObjectHideFlags: 0
@@ -15673,6 +15775,7 @@ GameObject:
   - component: {fileID: 1171116655}
   - component: {fileID: 1171116654}
   - component: {fileID: 1171116653}
+  - component: {fileID: 1171116656}
   m_Layer: 5
   m_Name: Color Setting Button
   m_TagString: Untagged
@@ -15743,19 +15846,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1171116654}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OepnColorSettingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1171116654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15794,6 +15885,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1171116651}
   m_CullTransparentMesh: 1
+--- !u!114 &1171116656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171116651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 0
+  targetScreenId: settings-color
+  rememberCurrent: 1
 --- !u!1 &1172476655
 GameObject:
   m_ObjectHideFlags: 0
@@ -17137,14 +17244,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetSFXVolume
-        m_Mode: 3
+      - m_Target: {fileID: 1283893778}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Increase
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -18072,6 +18179,7 @@ GameObject:
   - component: {fileID: 1344107637}
   - component: {fileID: 1344107636}
   - component: {fileID: 1344107635}
+  - component: {fileID: 1344107638}
   m_Layer: 5
   m_Name: Close Btn
   m_TagString: Untagged
@@ -18142,19 +18250,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1344107636}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenSettingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1344107636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18193,6 +18289,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344107633}
   m_CullTransparentMesh: 1
+--- !u!114 &1344107638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344107633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &1356169162
 GameObject:
   m_ObjectHideFlags: 0
@@ -18934,14 +19046,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeRedColor
-        m_Mode: 3
+      - m_Target: {fileID: 1444355398}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Increase
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -19270,6 +19382,7 @@ GameObject:
   - component: {fileID: 1425286756}
   - component: {fileID: 1425286755}
   - component: {fileID: 1425286754}
+  - component: {fileID: 1425286757}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -19340,19 +19453,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1425286755}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenSettingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1425286755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19391,6 +19492,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1425286752}
   m_CullTransparentMesh: 1
+--- !u!114 &1425286757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425286752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &1426361667
 GameObject:
   m_ObjectHideFlags: 0
@@ -20772,7 +20889,7 @@ GameObject:
   - component: {fileID: 1532248760}
   - component: {fileID: 1532248761}
   - component: {fileID: 1532248763}
-  - component: {fileID: 1532248762}
+  - component: {fileID: 1532248764}
   m_Layer: 5
   m_Name: Setting UI
   m_TagString: Untagged
@@ -20827,22 +20944,6 @@ MonoBehaviour:
   - {fileID: 711859047}
   - {fileID: 1768681340}
   inputDelay: 0.3
---- !u!114 &1532248762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1532248757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f676917103492c44f8295e4df0885995, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIScreen
-  screenId: settings
-  firstSelectedObject: {fileID: 0}
-  canvasGroup: {fileID: 1532248763}
-  hideOnAwake: 0
 --- !u!225 &1532248763
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -20855,6 +20956,23 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1532248764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532248757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8553ba20d26284e4d8fdcad2fa9756a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingsScreen
+  screenId: settings
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 1532248763}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
 --- !u!1 &1569866537
 GameObject:
   m_ObjectHideFlags: 0
@@ -22132,13 +22250,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigator
   initialScreen: {fileID: 1726713399}
   screens:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1726713399}
+  - {fileID: 1570893459}
+  - {fileID: 889852303}
+  - {fileID: 1214857756}
+  - {fileID: 85923879}
+  - {fileID: 1532248764}
+  - {fileID: 1029459463}
+  - {fileID: 920420303}
+  - {fileID: 629872065}
+  - {fileID: 841304906}
+  - {fileID: 2097853341}
   autoDiscoverScreens: 1
 --- !u!1 &1690377300
 GameObject:
@@ -22152,6 +22274,7 @@ GameObject:
   - component: {fileID: 1690377304}
   - component: {fileID: 1690377303}
   - component: {fileID: 1690377302}
+  - component: {fileID: 1690377305}
   m_Layer: 5
   m_Name: Close Button
   m_TagString: Untagged
@@ -22222,19 +22345,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1690377303}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 739309585}
-        m_TargetAssemblyTypeName: SettingManager, Assembly-CSharp
-        m_MethodName: OpenSettingWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1690377303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22273,6 +22384,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1690377300}
   m_CullTransparentMesh: 1
+--- !u!114 &1690377305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690377300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &1707751054
 GameObject:
   m_ObjectHideFlags: 0
@@ -22828,6 +22955,7 @@ GameObject:
   - component: {fileID: 1768681342}
   - component: {fileID: 1768681341}
   - component: {fileID: 1768681340}
+  - component: {fileID: 1768681343}
   m_Layer: 5
   m_Name: Close Button
   m_TagString: Untagged
@@ -22898,19 +23026,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1768681341}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661966418}
-        m_TargetAssemblyTypeName: MainUIManager, Assembly-CSharp
-        m_MethodName: MainUIOpen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1768681341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22949,6 +23065,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1768681338}
   m_CullTransparentMesh: 1
+--- !u!114 &1768681343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768681338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4cd5470bfb140a482d79b8261bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenNavigationButton
+  navigator: {fileID: 1661966419}
+  action: 1
+  targetScreenId: 
+  rememberCurrent: 1
 --- !u!1 &1780246052
 GameObject:
   m_ObjectHideFlags: 0
@@ -23803,14 +23935,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: ChangeRedColor
-        m_Mode: 3
+      - m_Target: {fileID: 1468806925}
+        m_TargetAssemblyTypeName: ValueAdjuster, Assembly-CSharp
+        m_MethodName: Decrease
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -25981,6 +26113,8 @@ GameObject:
   - component: {fileID: 2097853338}
   - component: {fileID: 2097853339}
   - component: {fileID: 2097853340}
+  - component: {fileID: 2097853341}
+  - component: {fileID: 2097853342}
   m_Layer: 5
   m_Name: Gamepad Setting
   m_TagString: Untagged
@@ -26041,6 +26175,35 @@ MonoBehaviour:
   tagetButtonList:
   - {fileID: 730708936}
   inputDelay: 0.2
+--- !u!114 &2097853341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097853337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 829d748fb70e98e4094507522b53be54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigableScreen
+  screenId: key-binding-gamepad
+  firstSelectedObject: {fileID: 0}
+  canvasGroup: {fileID: 2097853342}
+  hideOnAwake: 0
+  navigator: {fileID: 1661966419}
+--- !u!225 &2097853342
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097853337}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2103628647
 GameObject:
   m_ObjectHideFlags: 0
