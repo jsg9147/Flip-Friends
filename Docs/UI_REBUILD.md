@@ -20,6 +20,7 @@
 - `SoundManager`는 `ApplyBGMVolume`과 `ApplySFXVolume`로 적용만 하고 저장은 하지 않는다. `ValueAdjuster.ValueChanged`를 `SettingManager`가 받아 호출하며, UI 클릭음도 효과음 설정을 따른다.
 - `MainUIManager`는 화면 전환을 하지 않는다. Main 씬 진입 시 BGM 재생, 커서 잠금, 목표 프레임만 적용한다. `instance`, 화면별 `GameObject` 필드, `UIReset`, `*UIOpen`, `GameQuit`은 제거됐다.
 - 레거시 `HostSetting`·`PublicLobbyUI`는 씬 컴포넌트와 스크립트 모두 제거됐다. `RoomType` enum은 `NetworkScripts/RoomType.cs`로 옮겼다.
+- 레거시 `ButtonNavigation`·`ButtonNav`도 씬과 스크립트에서 제거됐고 `UI Scripts/Delete` 폴더는 없다. 방향키·게임패드 선택은 각 화면의 `ButtonSelectController` 하나가 맡고, Cancel 처리는 `NavigableScreen`만 구독한다.
 - Host 설정은 기존 `SteamRoomManager.HostLobby`에 연결되고, 공개 로비는 loading·empty·error·joining 상태를 구분한다.
 - 비공개 참가는 `TMP_InputField` 기반 코드 입력과 기존 참가 로직을 연결한다.
 - 기존 UI를 한 번에 제거하지 않고 새 흐름이 확인된 화면부터 교체한다.
@@ -56,6 +57,7 @@ SettingsScreen.OnShow 또는 OnHide
 - 이전 정수 저장값의 변환도 확인했다. 정수로 저장돼 있던 BGM 50, SFX 50, 색 150/250/250이 각각 0.500, 0.500, 0.588/0.980/0.980 float으로 바뀌어 다시 저장되고, 색 미리보기 `Image.color`가 같은 값이 된다. `PlayerPrefs.GetFloat`은 `SetInt`로 쓰인 키에서 저장값이 아니라 기본값을 돌려주므로, 음수 표식으로 이전 형식을 구분한다.
 - 해상도 확정 시점도 검증했다. 하위 창에서 `1600 x 900` → `1600 x 1024`로 바꾸는 동안 `SavedResolution`은 그대로고, Back으로 설정 루트에 돌아오는 순간 `1600x1024`로 저장된다. 플레이 재진입 시 그 값이 유지된다. 검증으로 바꾼 값은 모두 원래대로 복원했다.
 - 플레이 모드와 컴파일 모두 `ScreenNavigator`·`UIScreen` 관련 경고·오류가 없다. 남은 콘솔 경고는 vendor `.meta` 버전 경고 등 기존 항목뿐이다.
+- 레거시 내비게이션 제거 후 플레이 모드에서 공개 로비의 Cancel 구독자가 3개에서 `PublicLobbyScreen` 1개로 줄었다. Cancel → `mode-select` → `main-menu`, 히스토리 없이 Cancel → `mode-select`, Back 클릭 → `mode-select`를 확인했고, 단계마다 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했다. 공개 로비 진입 시 Refresh가, `key-binding-gamepad` 진입 시 Close Btn이 선택된다.
 - Main, GameRoom, GamePlay, MapEditor 4개 씬 모두 오류 없이 로드된다.
 - 마우스·키보드·게임패드 실제 입력 이동과 Steam이 필요한 Host·공개 로비·비공개 참가 왕복은 수동 검증이 남아 있다.
 
@@ -63,12 +65,12 @@ SettingsScreen.OnShow 또는 OnHide
 
 - 화면 모드(`Screen Mode`) 전환 기능 신규 구현. 삭제된 `SettingsMenu`의 `ChangeFullscreenMode`와 함께 기능 자체가 사라져 ± 버튼 2개가 아직 죽어 있고 키보드·게임패드 경로도 없다. `ResolutionAdjuster`와 같은 모양으로 표시 텍스트·`PlayerPrefs` 저장·`Screen.fullScreenMode` 적용을 담당하는 어댑터가 필요하다.
 - 설정 기본값 복귀 수단이 없다. 호출하는 곳이 없던 `SettingManager.ResetSettings`는 제거했다. 기본값 버튼이 필요해지면 `ValueAdjuster`에 기본값 적용 경로를 다시 두고 화면에 연결한다.
-- CP949로 저장된 기존 스크립트의 UTF-8 변환. `ValueAdjuster`·`ResolutionAdjuster`·`SoundManager`는 변환했고 `Assets/01_Scripts`에 17개가 남아 있다.
+- CP949로 저장된 기존 스크립트의 UTF-8 변환. `ValueAdjuster`·`ResolutionAdjuster`·`SoundManager`는 변환했고 `Assets/01_Scripts`에 15개가 남아 있다.
 - Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
-- `UI Scripts/Delete`에 남은 `ButtonNav`, `ButtonNavigation` 정리. 둘 다 아직 씬에서 참조되고, 공개 로비의 `ButtonNavigation` 2개는 Cancel을 구독해 내비게이터를 우회한다.
+- 공개 로비 목록의 `LobbyItem` 참가 버튼은 어떤 선택 목록에도 들어가지 않아 게임패드로 고를 수 없다. 제거한 `ButtonNavigation`도 목록이 비어 있어 원래 없던 경로다. 필요하면 `PublicLobbyScreen`이 항목을 만들 때 `ButtonSelectController.tagetButtonList`에 넣는다.
 
 ## 다음 작업
 
-공개 로비의 `ButtonNavigation` 2개와 키 바인딩의 `ButtonNav`를 씬에서 걷어내고 `UI Scripts/Delete`를 비운다.
+`Screen Mode` 전환 어댑터를 `ResolutionAdjuster`와 같은 모양으로 새로 만들고 ± 버튼 2개에 연결한다.
 
 착수 순서와 각 항목에서 먼저 정할 결정은 `Docs/NEXT_SESSION.md`에 정리돼 있다.

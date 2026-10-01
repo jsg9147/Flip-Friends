@@ -7871,7 +7871,6 @@ GameObject:
   - component: {fileID: 537933721}
   - component: {fileID: 537933723}
   - component: {fileID: 537933722}
-  - component: {fileID: 537933724}
   m_Layer: 5
   m_Name: LobbyContent
   m_TagString: Untagged
@@ -7937,20 +7936,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 537933720}
   m_CullTransparentMesh: 1
---- !u!114 &537933724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 537933720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c28205911d5712478ad3085e6d0c1d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  beforeUI: {fileID: 0}
-  uiElements: []
 --- !u!1 &539458388
 GameObject:
   m_ObjectHideFlags: 0
@@ -10371,7 +10356,6 @@ GameObject:
   - component: {fileID: 706853994}
   - component: {fileID: 706853993}
   - component: {fileID: 706853992}
-  - component: {fileID: 706853995}
   m_Layer: 5
   m_Name: 'GamepadKey bind Scroll View '
   m_TagString: Untagged
@@ -10468,20 +10452,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 706853990}
   m_CullTransparentMesh: 1
---- !u!114 &706853995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 706853990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ce6c25c0fa8a9b43a7d65374394567b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiElements:
-  - {fileID: 730708936}
 --- !u!1 &711859045
 GameObject:
   m_ObjectHideFlags: 0
@@ -16303,7 +16273,6 @@ GameObject:
   - component: {fileID: 1214857750}
   - component: {fileID: 1214857753}
   - component: {fileID: 1214857752}
-  - component: {fileID: 1214857754}
   - component: {fileID: 1214857755}
   - component: {fileID: 1214857757}
   - component: {fileID: 1214857756}
@@ -16374,22 +16343,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1214857749}
   m_CullTransparentMesh: 1
---- !u!114 &1214857754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1214857749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c28205911d5712478ad3085e6d0c1d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  beforeUI: {fileID: 1570893451}
-  uiElements:
-  - {fileID: 179388070}
-  - {fileID: 1243510093}
 --- !u!114 &1214857755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22108,11 +22061,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseLock: 0
-  mainUI: {fileID: 1726713394}
-  gameModeUI: {fileID: 1570893451}
-  hostUI: {fileID: 889852297}
-  publicGameUI: {fileID: 1214857749}
-  privateJoinUI: {fileID: 85923873}
   targetFrameRate: 60
 --- !u!114 &1661966419
 MonoBehaviour:

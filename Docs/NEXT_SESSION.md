@@ -19,27 +19,20 @@
 4. 커밋할 때 주의: 이 저장소에 git user 정보가 설정돼 있지 않아 그냥 `git commit`하면 실패한다. 기존 커밋과 같은 작성자를 쓰려면 `git -c user.name="JoSeunggeun" -c user.email="jsg9147@naver.com" commit ...` 형태로 지정한다.
 5. 화면 전환을 건드렸으면 플레이 모드에서 단계마다 `ScreenNavigator.CurrentScreen`과 모든 `UIScreen`의 `activeSelf`·`CanvasGroup.alpha`·`blocksRaycasts`·`IsVisible`이 서로 맞는지 교차 확인한다. 이중 소유 버그를 잡아낸 방법이 이것이고, 같은 종류의 버그는 `activeSelf`만 보면 놓친다.
 
-## 1. 레거시 내비게이션 컴포넌트 정리
-
-- `HostSetting`·`PublicLobbyUI`는 제거됐다. 남은 것은 `ButtonNavigation` 2개(`Canvas/Public Lobby UI`의 `beforeUI`=GameMode UI, `Canvas/Public Lobby UI/LobbyContent`의 `beforeUI`=null)와 `ButtonNav` 1개(`Canvas/Gamepad Setting/GamepadKey bind Scroll View `)다.
-- `ButtonNavigation.ReturnUI`는 `beforeUI.SetActive(true)` + 자기 비활성으로 내비게이터를 우회한다. 지금 동작이 맞는 건 뒤이어 실행되는 `PublicLobbyScreen`의 Cancel이 `Back()`으로 상태를 덮어쓰기 때문이다. 구독 순서에 의존하므로 제거한다. 공개 로비의 Cancel 구독자는 현재 3개(`ButtonNavigation` 2 + `PublicLobbyScreen`)다.
-- 제거 전에 `uiElements` 기반 방향키 선택이 다른 컴포넌트(`ButtonSelectController` 등)로 대체되는지 확인한다. 대체가 없으면 공개 로비 목록의 게임패드 선택이 사라진다.
-- 컴포넌트 제거는 MCP `execute_code`에서 `Undo.DestroyObjectImmediate` 후 `EditorSceneManager.SaveScene`으로 하면 YAML을 직접 고치지 않아도 된다.
-
-## 2. Screen Mode 전환 신규 구현
+## 1. Screen Mode 전환 신규 구현
 
 - `Graphics and Audio Window/Setting Groups/Screen Mode Group/Screen Mode Text (TMP)`의 `Left Button`·`Right Button` `onClick`이 삭제된 `SettingsMenu.ChangeFullscreenMode`를 가리켜 `m_Target: {fileID: 0}`으로 죽어 있다. 키보드·게임패드 경로도 없어 복구가 아니라 신규 구현이다.
 - `ResolutionAdjuster`와 같은 모양으로 표시 텍스트·`PlayerPrefs` 저장·`Screen.fullScreenMode` 적용을 담당하는 어댑터를 만들고 ± 버튼 2개를 연결한다.
 - 확정된 사실: 설정 값은 Adjuster가 직접 저장하고 `SettingManager`는 적용만 한다. 해상도처럼 즉시 적용이 위험한 값은 `SettingManager.ApplySettings`에 모아 `SettingsScreen`의 `OnShow`·`OnHide`에서 확정한다. 화면 모드도 같은 자리에 넣으면 된다.
 
-## 3. Steam 런타임 수동 검증
+## 2. Steam 런타임 수동 검증
 
 - Host 생성, 공개 로비 목록의 loading·empty·error·joining, 비공개 코드 참가, 각 실패 상태. MCP로 자동화할 수 없어 수동이다.
 - 같이 확인할 것: Create·Join 클릭 한 번에 `HostLobby`·`JoinPrivateLobby`가 한 번만 호출되는지. Inspector 중복 리스너를 지워서 코드상으로는 1회다.
 
-## 4. CP949 스크립트 UTF-8 변환
+## 3. CP949 스크립트 UTF-8 변환
 
-- `Assets/01_Scripts`에 17개 남아 있다. `GameManager`, `RopeCreatorNetwork`, `InputManager`, `ScrollViewController`, `KeyRebindingManager`, `GameRoomUI`, `Switch`, `LayerBasedSwitch`, `SavePoint`, `CameraController`, `PlayerSound`, `SteamLobbyInfo`, `RotatingObstacle`, `ObjSummonSwitch`, `PlayerSummonSwitch`, `Delete/ButtonNav`, `Delete/ButtonNavigation`.
+- `Assets/01_Scripts`에 15개 남아 있다. `GameManager`, `RopeCreatorNetwork`, `InputManager`, `ScrollViewController`, `KeyRebindingManager`, `GameRoomUI`, `Switch`, `LayerBasedSwitch`, `SavePoint`, `CameraController`, `PlayerSound`, `SteamLobbyInfo`, `RotatingObstacle`, `ObjSummonSwitch`, `PlayerSummonSwitch`.
 - 목록은 다시 뽑을 수 있다.
 
   ```bash
