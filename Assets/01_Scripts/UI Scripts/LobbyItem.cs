@@ -12,9 +12,13 @@ public class LobbyItem : MonoBehaviour
     public TMP_Text currentMemberText;
     public TMP_Text lobbyStateText;
 
+    private Button joinButton;
+
+    public Button JoinButton => joinButton != null ? joinButton : joinButton = GetComponent<Button>();
+
     private void Awake()
     {
-        GetComponent<Button>().onClick.AddListener(JoinLobby);
+        JoinButton.onClick.AddListener(JoinLobby);
     }
 
     public void SetLobbyInfo(SteamLobbyInfo lobbyInfo)

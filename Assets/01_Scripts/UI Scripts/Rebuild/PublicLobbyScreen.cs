@@ -30,6 +30,7 @@ public class PublicLobbyScreen : NavigableScreen
     [SerializeField] private GameObject joiningStateRoot;
 
     private readonly List<LobbyItem> lobbyItems = new();
+    private ButtonSelectController selectController;
     private int refreshRequestVersion;
     private LobbyViewState currentState;
 
@@ -38,6 +39,8 @@ public class PublicLobbyScreen : NavigableScreen
     protected override void Awake()
     {
         base.Awake();
+
+        selectController = GetComponent<ButtonSelectController>();
 
         if (refreshButton != null)
         {
@@ -101,6 +104,7 @@ public class PublicLobbyScreen : NavigableScreen
                 item.SetLobbyInfo(info);
                 item.SetJoinAction(JoinLobby);
                 lobbyItems.Add(item);
+                RegisterSelectable(item);
             }
 
             SetState(LobbyViewState.Ready, string.Empty);
@@ -140,8 +144,32 @@ public class PublicLobbyScreen : NavigableScreen
         HandleBack();
     }
 
+    // 방향키·게임패드 순서가 Refresh → 로비 목록 → Back이 되도록 Back 앞에 넣는다
+    private void RegisterSelectable(LobbyItem item)
+    {
+        if (selectController == null)
+        {
+            return;
+        }
+
+        int backIndex = selectController.tagetButtonList.IndexOf(backButton);
+        int insertIndex = backIndex >= 0 ? backIndex : selectController.tagetButtonList.Count;
+        selectController.InsertSelectable(insertIndex, item.JoinButton);
+    }
+
     private void ClearLobbyItems()
     {
+        if (selectController != null)
+        {
+            foreach (LobbyItem item in lobbyItems)
+            {
+                if (item != null)
+                {
+                    selectController.RemoveSelectable(item.JoinButton);
+                }
+            }
+        }
+
         foreach (Transform child in lobbyItemContent)
         {
             if (child != null)

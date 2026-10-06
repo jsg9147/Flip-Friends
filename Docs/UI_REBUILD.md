@@ -24,6 +24,7 @@
 - 레거시 `HostSetting`·`PublicLobbyUI`는 씬 컴포넌트와 스크립트 모두 제거됐다. `RoomType` enum은 `NetworkScripts/RoomType.cs`로 옮겼다.
 - 레거시 `ButtonNavigation`·`ButtonNav`도 씬과 스크립트에서 제거됐고 `UI Scripts/Delete` 폴더는 없다. 방향키·게임패드 선택은 각 화면의 `ButtonSelectController` 하나가 맡고, Cancel 처리는 `NavigableScreen`만 구독한다.
 - Host 설정은 기존 `SteamRoomManager.HostLobby`에 연결되고, 공개 로비는 loading·empty·error·joining 상태를 구분한다.
+- 공개 로비의 `LobbyItem` 참가 버튼은 생성 시 `ButtonSelectController`의 Back 앞에 들어가고 목록을 비울 때 빠진다. 방향키·게임패드 순서는 Refresh → 로비 목록 → Back이다.
 - 비공개 참가는 `TMP_InputField` 기반 코드 입력과 기존 참가 로직을 연결한다.
 - 기존 UI를 한 번에 제거하지 않고 새 흐름이 확인된 화면부터 교체한다.
 
@@ -66,14 +67,15 @@ SettingsScreen.OnShow 또는 OnHide
 - 레거시 내비게이션 제거 후 플레이 모드에서 공개 로비의 Cancel 구독자가 3개에서 `PublicLobbyScreen` 1개로 줄었다. Cancel → `mode-select` → `main-menu`, 히스토리 없이 Cancel → `mode-select`, Back 클릭 → `mode-select`를 확인했고, 단계마다 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했다. 공개 로비 진입 시 Refresh가, `key-binding-gamepad` 진입 시 Close Btn이 선택된다.
 - Main, GameRoom, GamePlay, MapEditor 4개 씬 모두 오류 없이 로드된다.
 - Steam 런타임은 2026-10-06 사용자가 Steam 로그인 상태에서 수동 확인했고 정상 동작으로 보고했다. 대상은 Host 생성, 공개 로비 목록의 loading·empty·error·joining, 비공개 코드 참가와 실패 상태, Create·Join 1회 호출이다.
-- 마우스·키보드·게임패드 실제 입력 이동은 수동 검증이 남아 있다.
+- `LobbyItem` 선택 목록 등록을 플레이 모드에서 확인했다. Steam 없이 프리팹 3개를 직접 만들어 등록하면 목록이 Refresh, Lobby0~2, Back 순서가 되고, `SelectNextButton`이 Refresh → Lobby0 → Lobby1 → Back → Refresh로 돈다. 마지막 로비 항목을 선택한 채 목록을 비우면 Refresh, Back만 남고 인덱스가 1로 맞춰지며 콘솔 오류가 없다.
+- 마우스·키보드·게임패드 실제 입력 이동은 수동 검증이 남아 있다. 실제 Steam 로비 목록에서 게임패드로 항목을 골라 참가하는 것도 포함한다.
 
 ## 남은 작업
 
 - 빌드에서 화면 모드 전환과 해상도 동시 변경이 실제 창에 반영되는지 수동 확인.
 - 설정 기본값 복귀 수단이 없다. 호출하는 곳이 없던 `SettingManager.ResetSettings`는 제거했다. 기본값 버튼이 필요해지면 `ValueAdjuster`에 기본값 적용 경로를 다시 두고 화면에 연결한다.
-- 공개 로비 목록의 `LobbyItem` 참가 버튼은 어떤 선택 목록에도 들어가지 않아 게임패드로 고를 수 없다. 제거한 `ButtonNavigation`도 목록이 비어 있어 원래 없던 경로다. 필요하면 `PublicLobbyScreen`이 항목을 만들 때 `ButtonSelectController.tagetButtonList`에 넣는다.
+- 공개 로비 화면에는 `ScrollViewController`가 없어서, 게임패드로 보이는 영역 밖의 로비 항목을 고르면 스크롤이 따라가지 않는다.
 
 ## 다음 작업
 
-공개 로비의 `LobbyItem` 참가 버튼을 게임패드로 고를 수 있게 `ButtonSelectController` 선택 목록에 넣는다.
+공개 로비 목록에서 게임패드로 고른 항목이 보이도록 스크롤이 따라가게 한다.
