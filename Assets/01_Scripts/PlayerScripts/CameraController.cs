@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
 
     private void InitializePlayerControllers()
     {
-        playerControllers = FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID);
+        playerControllers = FindObjectsByType<PlayerController2D>();
         Debug.Log($"Found PlayerControllers: {playerControllers.Length}");
 
         foreach (var playerController in playerControllers)

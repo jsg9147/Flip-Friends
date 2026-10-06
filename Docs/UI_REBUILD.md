@@ -48,6 +48,7 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 검증
 
+- Unity `6000.6.3f1`에서 폐기된 오브젝트 검색 API를 현재 API로 교체한 뒤 번들 dotnet으로 `Assembly-CSharp`를 다시 빌드했고, 오류 0건이며 이번 작업 대상 경고 17건은 재발하지 않았다.
 - 스크립트와 씬 연결의 컴파일 검증은 완료됐다. Unity `6000.6.3f1` 번들 dotnet으로 `Assembly-CSharp` 빌드가 오류 0건으로 통과한다.
 - 중복 legacy listener 감사는 완료했다. 씬과 코드 모두 `MainUIManager`의 화면 전환을 호출하는 곳이 없다.
 - 버튼 중복 실행 버그를 플레이 모드에서 재현하고 고쳤다. 수정 전에는 Host·공개 로비·비공개 참가의 Back 클릭이 `HandleBack`을 두 번 실행해 `mode-select`를 건너뛰고 `main-menu`로 갔다. Create 버튼은 Inspector·`HostRoomScreen`·비활성 `HostSetting`의 `Awake`가 각각 등록해 `HostLobby`가 최대 3회, Join 버튼은 2회 호출되는 구조였다.

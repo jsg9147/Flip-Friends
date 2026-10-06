@@ -65,7 +65,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
             if(mapSelectionManager != null)
                 mapSelectionManager.BindRoomPlayer(this);
 
-            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID))
+            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>())
             {
                 if (lobbyPlayer.isOwned)
                 {
@@ -95,7 +95,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         }
         else
         {
-            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID))
+            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>())
             {
                 if (isLocalPlayer && lobbyPlayer.isOwned)
                 {
@@ -114,7 +114,7 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         }
         else
         {
-            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID))
+            foreach (var lobbyPlayer in FindObjectsByType<PlayerController2D>())
             {
                 if (isLocalPlayer && lobbyPlayer.isOwned)
                 {

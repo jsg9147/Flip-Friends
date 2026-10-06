@@ -7,7 +7,7 @@ public class PickupObj : RaycastController
 {
     public float maxSlopeAngle = 45f;
     public float gravity = 9.8f;
-    public CollisionInfo collisions;
+    [System.NonSerialized] public CollisionInfo collisions;
 
     [SyncVar] private bool isCarried = false;
     public bool IsCarried => isCarried;

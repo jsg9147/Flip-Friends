@@ -11,7 +11,7 @@ public class SettingsScreen : NavigableScreen
 
         if (settingManager == null)
         {
-            settingManager = FindFirstObjectByType<SettingManager>(FindObjectsInactive.Include);
+            settingManager = FindAnyObjectByType<SettingManager>(FindObjectsInactive.Include);
         }
     }
 

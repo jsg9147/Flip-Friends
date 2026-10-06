@@ -8,7 +8,7 @@ public class Controller2D : RaycastController
     public float maxSlopeAngle = 45f;
     public float coyoteTimeDuration = 0.2f; // �ڿ��� Ÿ�� ���� �ð�
     private float coyoteTimeCounter = 0f;
-    public CollisionInfo collisions;
+    [NonSerialized] public CollisionInfo collisions;
     public Collider2D objCollider;
 
     private GameObject heldObj;

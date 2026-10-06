@@ -17,7 +17,7 @@ public class NavigableScreen : UIScreen
 
         if (navigator == null)
         {
-            navigator = FindFirstObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
+            navigator = FindAnyObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
         }
     }
 

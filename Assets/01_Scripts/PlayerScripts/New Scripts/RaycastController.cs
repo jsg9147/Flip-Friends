@@ -22,9 +22,9 @@ public class RaycastController : NetworkBehaviour
 
     [HideInInspector]
     public BoxCollider2D boxCollider;
-    public RaycastOrigins raycastOrigins;
+    [System.NonSerialized] public RaycastOrigins raycastOrigins;
 
-    public RaycastOrigins holdObjectRaycast;
+    [System.NonSerialized] public RaycastOrigins holdObjectRaycast;
 
     Vector2 offset = Vector2.zero;
 

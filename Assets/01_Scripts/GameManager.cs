@@ -41,7 +41,7 @@ public class GameManager : NetworkBehaviour
     {
         if (playerControllers == null || playerControllers.Length == 0)
         {
-            this.playerControllers = FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID); ;
+            this.playerControllers = FindObjectsByType<PlayerController2D>();
         }
 
         bool allPlayersFinished = playerControllers.All(player => player.isFinish);

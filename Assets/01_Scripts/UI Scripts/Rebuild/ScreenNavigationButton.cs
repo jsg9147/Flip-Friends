@@ -25,7 +25,7 @@ public class ScreenNavigationButton : MonoBehaviour
 
         if (navigator == null)
         {
-            navigator = FindFirstObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
+            navigator = FindAnyObjectByType<ScreenNavigator>(FindObjectsInactive.Include);
         }
 
         button.onClick.AddListener(HandleClick);
