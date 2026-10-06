@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SavePoint : MonoBehaviour
 {
-    public int savePointID; // ¼¼ÀÌºê Æ÷ÀÎÆ® °íÀ¯ ID
+    public int savePointID; // ì„¸ì´ë¸Œ í¬ì¸íŠ¸ ê³ ìœ  ID
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

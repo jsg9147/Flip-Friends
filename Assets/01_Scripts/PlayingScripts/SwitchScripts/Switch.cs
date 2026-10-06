@@ -3,23 +3,23 @@ using UnityEngine;
 
 public abstract class Switch : RaycastController
 {
-    [SyncVar] // ³×Æ®¿öÅ© ½ÌÅ©¸¦ À§ÇÑ »óÅÂ º¯¼ö
+    [SyncVar] // ë„¤íŠ¸ì›Œí¬ ì‹±í¬ë¥¼ ìœ„í•œ ìƒíƒœ ë³€ìˆ˜
     private bool isActivated = false;
 
     public Sprite onSwitchSprite;
     public Sprite offSwitchSprite;
 
-    // ½ºÀ§Ä¡ È°¼ºÈ­ »óÅÂ Á¢±ÙÀÚ
+    // ìŠ¤ìœ„ì¹˜ í™œì„±í™” ìƒíƒœ ì ‘ê·¼ì
     public bool IsActivated => isActivated;
 
-    // ½ºÀ§Ä¡¸¦ È°¼ºÈ­ ¶Ç´Â ºñÈ°¼ºÈ­ÇÏ´Â ¸Ş¼­µå
+    // ìŠ¤ìœ„ì¹˜ë¥¼ í™œì„±í™” ë˜ëŠ” ë¹„í™œì„±í™”í•˜ëŠ” ë©”ì„œë“œ
     public virtual void ToggleSwitch()
     {
         isActivated = !isActivated;
         OnSwitchStateChanged(isActivated);
     }
 
-    // ½ºÀ§Ä¡ »óÅÂ º¯°æ ÀÌº¥Æ® (»ó¼Ó¹Ş¾Æ ÀçÁ¤ÀÇ ÇÊ¿ä)
+    // ìŠ¤ìœ„ì¹˜ ìƒíƒœ ë³€ê²½ ì´ë²¤íŠ¸ (ìƒì†ë°›ì•„ ì¬ì •ì˜ í•„ìš”)
     protected abstract void OnSwitchStateChanged(bool newState);
 
     public void DetectPlayer()

@@ -11,10 +11,10 @@ public class KeyRebindingManager : MonoBehaviour
     public InputActionAsset inputActions; // Input Action Asset
     public KeyBindItem rebindUIPrefab;     
 
-    public ButtonSelectController keyboardRebindUIContainer;  // ¸®¹ÙÀÎµù UI ÄÁÅ×ÀÌ³Ê
+    public ButtonSelectController keyboardRebindUIContainer;  // ë¦¬ë°”ì¸ë”© UI ì»¨í…Œì´ë„ˆ
     public GameObject keyboardContent;
 
-    public ButtonSelectController gamepadRebindUIContainer;  // ¸®¹ÙÀÎµù °ÔÀÓ ÆĞµå UI ÄÁÅ×ÀÌ³Ê
+    public ButtonSelectController gamepadRebindUIContainer;  // ë¦¬ë°”ì¸ë”© ê²Œì„ íŒ¨ë“œ UI ì»¨í…Œì´ë„ˆ
     public GameObject gamepadContent;
 
     private Gamepad gamepad;
@@ -23,7 +23,7 @@ public class KeyRebindingManager : MonoBehaviour
 
     private void Start()
     {
-        // Input Actions ÃÊ±âÈ­
+        // Input Actions ì´ˆê¸°í™”
         foreach (var map in inputActions.actionMaps)
         {
             if(map.name == "Player")
@@ -31,13 +31,13 @@ public class KeyRebindingManager : MonoBehaviour
                 foreach (var action in map.actions)
                 {
                     _actions[action.name] = action;
-                    // UI »ı¼º
+                    // UI ìƒì„±
                     CreateRebindUI(action);
                 }
             }
         }
 
-        // ÀúÀåµÈ Å° ¼³Á¤ ºÒ·¯¿À±â
+        // ì €ì¥ëœ í‚¤ ì„¤ì • ë¶ˆëŸ¬ì˜¤ê¸°
         LoadBindings();
     }
     private void CreateRebindUI(InputAction action)
@@ -56,10 +56,10 @@ public class KeyRebindingManager : MonoBehaviour
 
             if (binding.isComposite)
             {
-                // Composite binding Ã³¸®
+                // Composite binding ì²˜ë¦¬
                 foreach (var part in action.bindings)
                 {
-                    // isPartOfComposite¸¦ È®ÀÎÇÏ°í, ÇöÀç binding¿¡ ¼ÓÇÏ´ÂÁö Ã¼Å©
+                    // isPartOfCompositeë¥¼ í™•ì¸í•˜ê³ , í˜„ì¬ bindingì— ì†í•˜ëŠ”ì§€ ì²´í¬
                     if (part.isPartOfComposite && part.action == binding.action)
                     {
                         CreateCompositePartUI(action, part, container);
@@ -81,7 +81,7 @@ public class KeyRebindingManager : MonoBehaviour
         uiInstance.antionNameText.text = action.name;
         UpdateBindingText(action, uiInstance.keyBindText, binding);
 
-        // LINQ·Î ÀÎµ¦½º Ã£±â
+        // LINQë¡œ ì¸ë±ìŠ¤ ì°¾ê¸°
         int bindingIndex = action.bindings.ToList().FindIndex(b => b == binding);
         if (bindingIndex >= 0)
         {
@@ -98,7 +98,7 @@ public class KeyRebindingManager : MonoBehaviour
         keyBindItem.antionNameText.text = $"{action.name} - {partBinding.name}";
         UpdateBindingText(action, keyBindItem.keyBindText, partBinding);
 
-        // LINQ·Î ÀÎµ¦½º Ã£±â
+        // LINQë¡œ ì¸ë±ìŠ¤ ì°¾ê¸°
         int partBindingIndex = action.bindings.ToList().FindIndex(b => b == partBinding);
         if (partBindingIndex >= 0)
         {
@@ -208,7 +208,7 @@ public class KeyRebindingManager : MonoBehaviour
         {
             if (binding.isComposite)
             {
-                // Composite bindingÀÇ °¢ ±¸¼º ¿ä¼Ò Ãâ·Â
+                // Composite bindingì˜ ê° êµ¬ì„± ìš”ì†Œ ì¶œë ¥
                 bindingDisplay += $"{binding.name}:\n";
                 foreach (var part in action.bindings)
                 {
@@ -220,9 +220,9 @@ public class KeyRebindingManager : MonoBehaviour
             }
             else if (!binding.isPartOfComposite)
             {
-                // ´ÜÀÏ ÀÔ·Â
+                // ë‹¨ì¼ ì…ë ¥
                 bindingDisplay += InputControlPath.ToHumanReadableString(binding.effectivePath, InputControlPath.HumanReadableStringOptions.OmitDevice);
-                break; // ´ÜÀÏ ÀÔ·ÂÀº Ã¹ ¹øÂ°¸¸ Ç¥½Ã
+                break; // ë‹¨ì¼ ì…ë ¥ì€ ì²« ë²ˆì§¸ë§Œ í‘œì‹œ
             }
         }
 
@@ -255,7 +255,7 @@ public class KeyRebindingManager : MonoBehaviour
             catch (Exception ex)
             {
                 Debug.LogWarning($"Failed to load bindings: {ex.Message}");
-                ResetBindings(); // JSON ºÒÀÏÄ¡ ½Ã ÃÊ±âÈ­
+                ResetBindings(); // JSON ë¶ˆì¼ì¹˜ ì‹œ ì´ˆê¸°í™”
             }
         }
         else
@@ -263,7 +263,7 @@ public class KeyRebindingManager : MonoBehaviour
             Debug.Log("No saved bindings found, using default bindings.");
         }
 
-        // °¢ ¾×¼ÇÀÇ UI ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+        // ê° ì•¡ì…˜ì˜ UI í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
         foreach (var action in _actions.Values)
         {
             foreach (var binding in action.bindings)
@@ -320,8 +320,8 @@ public class KeyRebindingManager : MonoBehaviour
     }
     public void ResetBindings()
     {
-        inputActions.RemoveAllBindingOverrides(); // ¸ğµç ¹ÙÀÎµù ÃÊ±âÈ­
-        PlayerPrefs.DeleteKey("bindings");        // ÀúÀåµÈ Å° »èÁ¦
+        inputActions.RemoveAllBindingOverrides(); // ëª¨ë“  ë°”ì¸ë”© ì´ˆê¸°í™”
+        PlayerPrefs.DeleteKey("bindings");        // ì €ì¥ëœ í‚¤ ì‚­ì œ
         PlayerPrefs.Save();
 
         foreach (var action in _actions.Values)

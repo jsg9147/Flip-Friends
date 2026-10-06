@@ -4,7 +4,7 @@ using Mirror;
 public class RotatingObstacle : BasicTrap
 {
     public bool isCounterclockwise;
-    public float rotationSpeed = 120f; // ÃÊ´ç È¸Àü ¼Óµµ
+    public float rotationSpeed = 120f; // ì´ˆë‹¹ íšŒì „ ì†ë„
 
     public bool random;
     public float randomRange;
@@ -13,7 +13,7 @@ public class RotatingObstacle : BasicTrap
     {
         if (random)
         {
-            // randomRangeÀÇ ¡¾ ¹üÀ§ ³»¿¡¼­ ·£´ı °ª Ãß°¡
+            // randomRangeì˜ Â± ë²”ìœ„ ë‚´ì—ì„œ ëœë¤ ê°’ ì¶”ê°€
             float randomValue = Random.Range(-randomRange, randomRange);
             rotationSpeed += randomValue;
 
@@ -23,7 +23,7 @@ public class RotatingObstacle : BasicTrap
 
     void Update()
     {
-        // ¼­¹ö¿¡¼­¸¸ È¸Àü ·ÎÁ÷ ½ÇÇà
+        // ì„œë²„ì—ì„œë§Œ íšŒì „ ë¡œì§ ì‹¤í–‰
         if (isServer)
         {
             RotateObstacle();
@@ -35,7 +35,7 @@ public class RotatingObstacle : BasicTrap
     {
         Vector3 rotateDir = isCounterclockwise ? Vector3.back : Vector3.forward;
 
-        // Àå¾Ö¹° È¸Àü
+        // ì¥ì• ë¬¼ íšŒì „
         transform.Rotate(rotateDir, rotationSpeed * Time.deltaTime);
     }
 }

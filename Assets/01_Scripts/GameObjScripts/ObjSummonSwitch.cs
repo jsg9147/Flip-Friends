@@ -4,15 +4,15 @@ using System.Collections;
 
 public class ObjSummonSwitch : NetworkBehaviour
 {
-    public Transform summonLocation;   // ÇÃ·¹ÀÌ¾îµéÀÌ ¼ÒÈ¯µÉ ±âÁØ À§Ä¡
-    public float cooldownTime = 5f;    // ½ºÀ§Ä¡¸¦ ´©¸¥ ÈÄ Äğ´Ù¿î ½Ã°£ (ÃÊ)
+    public Transform summonLocation;   // í”Œë ˆì´ì–´ë“¤ì´ ì†Œí™˜ë  ê¸°ì¤€ ìœ„ì¹˜
+    public float cooldownTime = 5f;    // ìŠ¤ìœ„ì¹˜ë¥¼ ëˆ„ë¥¸ í›„ ì¿¨ë‹¤ìš´ ì‹œê°„ (ì´ˆ)
     public Transform targetObjTrans;
 
-    private bool isCooldown = false;   // Äğ´Ù¿î »óÅÂ È®ÀÎ
-    private NetworkIdentity triggeringPlayer; // ½ºÀ§Ä¡¸¦ ´©¸¥ ÇÃ·¹ÀÌ¾î
+    private bool isCooldown = false;   // ì¿¨ë‹¤ìš´ ìƒíƒœ í™•ì¸
+    private NetworkIdentity triggeringPlayer; // ìŠ¤ìœ„ì¹˜ë¥¼ ëˆ„ë¥¸ í”Œë ˆì´ì–´
 
-    public Sprite defaultSprite;       // ±âº» ½ºÇÁ¶óÀÌÆ®
-    public Sprite pressedSprite;       // ´­·¶À» ¶§ÀÇ ½ºÇÁ¶óÀÌÆ®
+    public Sprite defaultSprite;       // ê¸°ë³¸ ìŠ¤í”„ë¼ì´íŠ¸
+    public Sprite pressedSprite;       // ëˆŒë €ì„ ë•Œì˜ ìŠ¤í”„ë¼ì´íŠ¸
 
     private SpriteRenderer spriteRenderer;
 
@@ -27,7 +27,7 @@ public class ObjSummonSwitch : NetworkBehaviour
         {
             if (isServer && !isCooldown)
             {
-                triggeringPlayer = collision.GetComponent<NetworkIdentity>(); // ´©¸¥ ÇÃ·¹ÀÌ¾î ÀúÀå
+                triggeringPlayer = collision.GetComponent<NetworkIdentity>(); // ëˆ„ë¥¸ í”Œë ˆì´ì–´ ì €ì¥
                 StartCoroutine(SummonAllPlayersWithCooldown());
             }
         }
@@ -37,14 +37,14 @@ public class ObjSummonSwitch : NetworkBehaviour
     private IEnumerator SummonAllPlayersWithCooldown()
     {
         isCooldown = true;
-        spriteRenderer.sprite = pressedSprite; // ½ºÇÁ¶óÀÌÆ®¸¦ ´­¸° »óÅÂ·Î º¯°æ
+        spriteRenderer.sprite = pressedSprite; // ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ëˆŒë¦° ìƒíƒœë¡œ ë³€ê²½
         SummonTargetObject(); 
 
-        // Äğ´Ù¿î ´ë±â
+        // ì¿¨ë‹¤ìš´ ëŒ€ê¸°
         yield return new WaitForSeconds(cooldownTime);
 
-        spriteRenderer.sprite = defaultSprite; // ½ºÇÁ¶óÀÌÆ®¸¦ ¿ø·¡´ë·Î º¹¿ø
-        isCooldown = false; // Äğ´Ù¿î Á¾·á
+        spriteRenderer.sprite = defaultSprite; // ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ì›ë˜ëŒ€ë¡œ ë³µì›
+        isCooldown = false; // ì¿¨ë‹¤ìš´ ì¢…ë£Œ
     }
 
     [Server]

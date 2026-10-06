@@ -4,7 +4,7 @@ using UnityEngine;
 public class LayerBasedSwitch : Switch
 {
     [SerializeField]
-    private LayerMask activationLayer; // È°¼ºÈ­ÇÒ ·¹ÀÌ¾î ¼³Á¤
+    private LayerMask activationLayer; // í™œì„±í™”í•  ë ˆì´ì–´ ì„¤ì •
 
     public virtual void OnTriggerEnter2D(Collider2D other)
     {
@@ -16,20 +16,20 @@ public class LayerBasedSwitch : Switch
 
     public virtual void OnTriggerExit2D(Collider2D other)
     {
-        // Á¢ÃËÀÌ ²÷¾îÁ³À» ¶§µµ ·¹ÀÌ¾î°¡ ¸ÂÀ¸¸é ½ºÀ§Ä¡ ºñÈ°¼ºÈ­
+        // ì ‘ì´‰ì´ ëŠì–´ì¡Œì„ ë•Œë„ ë ˆì´ì–´ê°€ ë§ìœ¼ë©´ ìŠ¤ìœ„ì¹˜ ë¹„í™œì„±í™”
         if (IsLayerMatched(other.gameObject))
         {
             ToggleSwitch();
         }
     }
 
-    // ·¹ÀÌ¾î°¡ ¼³Á¤µÈ °ª°ú ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎÇÏ´Â ¸Ş¼­µå
+    // ë ˆì´ì–´ê°€ ì„¤ì •ëœ ê°’ê³¼ ì¼ì¹˜í•˜ëŠ”ì§€ í™•ì¸í•˜ëŠ” ë©”ì„œë“œ
     private bool IsLayerMatched(GameObject obj)
     {
         return (activationLayer.value & (1 << obj.layer)) > 0;
     }
 
-    // ½ºÀ§Ä¡ »óÅÂ°¡ º¯°æµÇ¾úÀ» ¶§ÀÇ µ¿ÀÛ Á¤ÀÇ
+    // ìŠ¤ìœ„ì¹˜ ìƒíƒœê°€ ë³€ê²½ë˜ì—ˆì„ ë•Œì˜ ë™ì‘ ì •ì˜
     protected override void OnSwitchStateChanged(bool newState)
     {
         if (!isServer)

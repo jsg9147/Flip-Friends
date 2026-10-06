@@ -4,9 +4,9 @@ using UnityEngine.EventSystems;
 
 public class ScrollViewController : MonoBehaviour
 {
-    public ScrollRect scrollRect; // ScrollRect ÄÄÆ÷³ÍÆ®
-    public RectTransform content; // ScrollViewÀÇ Content
-    public RectTransform selectedButton; // ¼±ÅÃµÈ ¹öÆ°ÀÇ RectTransform
+    public ScrollRect scrollRect; // ScrollRect ì»´í¬ë„ŒíŠ¸
+    public RectTransform content; // ScrollViewì˜ Content
+    public RectTransform selectedButton; // ì„ íƒëœ ë²„íŠ¼ì˜ RectTransform
 
     public ButtonSelectController buttonSelectController;
 
@@ -29,17 +29,17 @@ public class ScrollViewController : MonoBehaviour
 
     public void CenterOnButton()
     {
-        // Viewport ³ôÀÌ¿Í Content ³ôÀÌ °¡Á®¿À±â
+        // Viewport ë†’ì´ì™€ Content ë†’ì´ ê°€ì ¸ì˜¤ê¸°
         float viewportHeight = scrollRect.viewport.rect.height;
         float contentHeight = content.rect.height;
 
-        // ¼±ÅÃµÈ ¹öÆ°ÀÇ anchoredPosition.y »ç¿ë
-        float buttonCenterY = -selectedButton.anchoredPosition.y; // ½ºÅ©·Ñ ¹æÇâ¿¡ µû¶ó ¹İÀü ÇÊ¿ä
+        // ì„ íƒëœ ë²„íŠ¼ì˜ anchoredPosition.y ì‚¬ìš©
+        float buttonCenterY = -selectedButton.anchoredPosition.y; // ìŠ¤í¬ë¡¤ ë°©í–¥ì— ë”°ë¼ ë°˜ì „ í•„ìš”
 
-        // Content ³ôÀÌ¿¡¼­ ¹öÆ° À§Ä¡ ºñÀ² °è»ê
+        // Content ë†’ì´ì—ì„œ ë²„íŠ¼ ìœ„ì¹˜ ë¹„ìœ¨ ê³„ì‚°
         float normalizedPositionY = 1 - ((buttonCenterY - (viewportHeight / 2)) / (contentHeight - viewportHeight));
 
-        // ScrollRectÀÇ normalizedPosition ¼³Á¤
+        // ScrollRectì˜ normalizedPosition ì„¤ì •
         scrollRect.normalizedPosition = new Vector2(scrollRect.normalizedPosition.x, Mathf.Clamp01(normalizedPositionY));
     }
 

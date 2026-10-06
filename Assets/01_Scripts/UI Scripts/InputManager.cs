@@ -9,10 +9,10 @@ public class InputManager : MonoBehaviour
 
     public Vector2 dir { get; private set; }
 
-    public event Action OnCancelEvent; // OnCancel ÀÌº¥Æ®¸¦ ±¸µ¶ÇÒ ¼ö ÀÖµµ·Ï Á¤ÀÇ
-    public event Action OnSubmitEvent; // OnCancel ÀÌº¥Æ®¸¦ ±¸µ¶ÇÒ ¼ö ÀÖµµ·Ï Á¤ÀÇ
-    public event Action OnInteractEvent; // OnCancel ÀÌº¥Æ®¸¦ ±¸µ¶ÇÒ ¼ö ÀÖµµ·Ï Á¤ÀÇ
-    public event Action OnMenuEvent; // OnCancel ÀÌº¥Æ®¸¦ ±¸µ¶ÇÒ ¼ö ÀÖµµ·Ï Á¤ÀÇ
+    public event Action OnCancelEvent; // OnCancel ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•  ìˆ˜ ìˆë„ë¡ ì •ì˜
+    public event Action OnSubmitEvent; // OnCancel ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•  ìˆ˜ ìˆë„ë¡ ì •ì˜
+    public event Action OnInteractEvent; // OnCancel ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•  ìˆ˜ ìˆë„ë¡ ì •ì˜
+    public event Action OnMenuEvent; // OnCancel ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•  ìˆ˜ ìˆë„ë¡ ì •ì˜
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class InputManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject); // ÀÚ±â ÀÚ½ÅÀ» »èÁ¦
+            Destroy(gameObject); // ìê¸° ìì‹ ì„ ì‚­ì œ
             return;
         }
     }
@@ -35,7 +35,7 @@ public class InputManager : MonoBehaviour
 
     void OnCancel(InputValue value)
     {
-        // OnCancelEvent¿¡ ±¸µ¶ ÁßÀÎ ÇÔ¼ö°¡ ÀÖÀ¸¸é ¸ğµÎ È£Ãâ
+        // OnCancelEventì— êµ¬ë… ì¤‘ì¸ í•¨ìˆ˜ê°€ ìˆìœ¼ë©´ ëª¨ë‘ í˜¸ì¶œ
         OnCancelEvent?.Invoke();
     }
 

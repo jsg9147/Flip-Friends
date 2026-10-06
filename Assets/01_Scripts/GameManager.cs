@@ -48,7 +48,7 @@ public class GameManager : NetworkBehaviour
 
         if (allPlayersFinished)
         {
-            Debug.Log("Å¬¸®¾î");
+            Debug.Log("í´ë¦¬ì–´");
             StageClear();
         }
     }

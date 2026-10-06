@@ -13,8 +13,8 @@ public class CameraController : MonoBehaviour
     private PlayerController2D[] playerControllers;
     private Vector3 velocity = Vector3.zero;
 
-    private bool canMoveTarget = true; // Å¸°Ù º¯°æ °¡´É ¿©ºÎ
-    public float targetSwitchDelay = 0.5f; // µô·¹ÀÌ ½Ã°£ (ÃÊ)
+    private bool canMoveTarget = true; // íƒ€ê²Ÿ ë³€ê²½ ê°€ëŠ¥ ì—¬ë¶€
+    public float targetSwitchDelay = 0.5f; // ë”œë ˆì´ ì‹œê°„ (ì´ˆ)
 
     private void InitializePlayerControllers()
     {
@@ -34,7 +34,7 @@ public class CameraController : MonoBehaviour
 
     public void MoveNextTarget(float direction)
     {
-        if (!canMoveTarget) return; // µô·¹ÀÌ ÁßÀÌ¸é ½ÇÇàÇÏÁö ¾ÊÀ½
+        if (!canMoveTarget) return; // ë”œë ˆì´ ì¤‘ì´ë©´ ì‹¤í–‰í•˜ì§€ ì•ŠìŒ
 
         if (playerControllers == null || playerControllers.Length <= 0)
         {
@@ -46,14 +46,14 @@ public class CameraController : MonoBehaviour
 
         target = playerControllers[nextIndex].transform;
 
-        StartCoroutine(DelayTargetSwitch()); // µô·¹ÀÌ ½ÃÀÛ
+        StartCoroutine(DelayTargetSwitch()); // ë”œë ˆì´ ì‹œì‘
     }
 
     private IEnumerator DelayTargetSwitch()
     {
-        canMoveTarget = false; // Å¸°Ù º¯°æ ºÒ°¡
-        yield return new WaitForSeconds(targetSwitchDelay); // µô·¹ÀÌ
-        canMoveTarget = true; // Å¸°Ù º¯°æ °¡´É
+        canMoveTarget = false; // íƒ€ê²Ÿ ë³€ê²½ ë¶ˆê°€
+        yield return new WaitForSeconds(targetSwitchDelay); // ë”œë ˆì´
+        canMoveTarget = true; // íƒ€ê²Ÿ ë³€ê²½ ê°€ëŠ¥
     }
 
     private int GetNextTargetIndex(int currentIndex, float direction)

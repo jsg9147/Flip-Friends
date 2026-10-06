@@ -16,13 +16,13 @@ public class GameRoomUI : MonoBehaviour
 
     private void Start()
     {
-        // ±âº»ÀûÀ¸·Î Å° ¼û±â±â
+        // ê¸°ë³¸ì ìœ¼ë¡œ í‚¤ ìˆ¨ê¸°ê¸°
         lobbyKeyText.text = lobbyKeyHideStr;
 
-        // Submit ¹öÆ°ÀÇ Å° ÀÌ¸§ ¾÷µ¥ÀÌÆ®
+        // Submit ë²„íŠ¼ì˜ í‚¤ ì´ë¦„ ì—…ë°ì´íŠ¸
         UpdateSubmitKeyName();
 
-        // BGM Àç»ı
+        // BGM ì¬ìƒ
         if (SoundManager.Instance != null)
         {
             SoundManager.Instance.PlayBGM(1);
@@ -41,22 +41,22 @@ public class GameRoomUI : MonoBehaviour
         {
             foreach (var binding in submitAction.bindings)
             {
-                // Å°º¸µå ¶Ç´Â ÄÁÆ®·Ñ·¯ ¹ÙÀÎµùÀÎÁö È®ÀÎ
+                // í‚¤ë³´ë“œ ë˜ëŠ” ì»¨íŠ¸ë¡¤ëŸ¬ ë°”ì¸ë”©ì¸ì§€ í™•ì¸
                 if (binding.isComposite || string.IsNullOrEmpty(binding.effectivePath))
                     continue;
 
-                // ¹ÙÀÎµùµÈ Å° ÀÌ¸§ °¡Á®¿À±â
+                // ë°”ì¸ë”©ëœ í‚¤ ì´ë¦„ ê°€ì ¸ì˜¤ê¸°
                 var keyName = InputControlPath.ToHumanReadableString(
                     binding.effectivePath,
                     InputControlPath.HumanReadableStringOptions.OmitDevice
                 );
 
-                // ÇöÀç ÀÔ·Â ÀåÄ¡ È®ÀÎ
+                // í˜„ì¬ ì…ë ¥ ì¥ì¹˜ í™•ì¸
                 var lastUsedDevice = submitAction.activeControl?.device;
 
                 if (lastUsedDevice != null)
                 {
-                    // ÀåÄ¡ À¯Çü¿¡ µû¶ó UI ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+                    // ì¥ì¹˜ ìœ í˜•ì— ë”°ë¼ UI í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
                     if (lastUsedDevice is Keyboard)
                     {
                         notReadyTextText.text = $"Press to {keyName}";
@@ -92,22 +92,22 @@ public class GameRoomUI : MonoBehaviour
         {
             foreach (var binding in submitAction.bindings)
             {
-                // Å°º¸µå ¶Ç´Â ÄÁÆ®·Ñ·¯ ¹ÙÀÎµùÀÎÁö È®ÀÎ
+                // í‚¤ë³´ë“œ ë˜ëŠ” ì»¨íŠ¸ë¡¤ëŸ¬ ë°”ì¸ë”©ì¸ì§€ í™•ì¸
                 if (binding.isComposite || string.IsNullOrEmpty(binding.effectivePath))
                     continue;
 
-                // ¹ÙÀÎµùµÈ Å° ÀÌ¸§ °¡Á®¿À±â
+                // ë°”ì¸ë”©ëœ í‚¤ ì´ë¦„ ê°€ì ¸ì˜¤ê¸°
                 var keyName = InputControlPath.ToHumanReadableString(
                     binding.effectivePath,
                     InputControlPath.HumanReadableStringOptions.OmitDevice
                 );
 
-                // ÇöÀç ÀÔ·Â ÀåÄ¡ È®ÀÎ
+                // í˜„ì¬ ì…ë ¥ ì¥ì¹˜ í™•ì¸
                 var lastUsedDevice = submitAction.activeControl?.device;
 
                 if (lastUsedDevice != null)
                 {
-                    // ÀåÄ¡ À¯Çü¿¡ µû¶ó UI ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+                    // ì¥ì¹˜ ìœ í˜•ì— ë”°ë¼ UI í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
                     if (lastUsedDevice is Keyboard)
                     {
                         lobbyKeyShowInfoText.text = $"Show : {keyName}";
@@ -171,7 +171,7 @@ public class GameRoomUI : MonoBehaviour
 
     public void CopyLobbyKey()
     {
-        GUIUtility.systemCopyBuffer = SteamRoomManager.Instance?.lobbyKeyStr; // ÅØ½ºÆ®¸¦ Å¬¸³º¸µå¿¡ º¹»ç
+        GUIUtility.systemCopyBuffer = SteamRoomManager.Instance?.lobbyKeyStr; // í…ìŠ¤íŠ¸ë¥¼ í´ë¦½ë³´ë“œì— ë³µì‚¬
     }
 
     public void ExitRoom()

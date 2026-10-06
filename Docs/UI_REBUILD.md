@@ -70,7 +70,6 @@ SettingsScreen.OnShow 또는 OnHide
 
 - 빌드에서 화면 모드 전환과 해상도 동시 변경이 실제 창에 반영되는지 수동 확인.
 - 설정 기본값 복귀 수단이 없다. 호출하는 곳이 없던 `SettingManager.ResetSettings`는 제거했다. 기본값 버튼이 필요해지면 `ValueAdjuster`에 기본값 적용 경로를 다시 두고 화면에 연결한다.
-- CP949로 저장된 기존 스크립트의 UTF-8 변환. `ValueAdjuster`·`ResolutionAdjuster`·`SoundManager`는 변환했고 `Assets/01_Scripts`에 15개가 남아 있다.
 - Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
 - 공개 로비 목록의 `LobbyItem` 참가 버튼은 어떤 선택 목록에도 들어가지 않아 게임패드로 고를 수 없다. 제거한 `ButtonNavigation`도 목록이 비어 있어 원래 없던 경로다. 필요하면 `PublicLobbyScreen`이 항목을 만들 때 `ButtonSelectController.tagetButtonList`에 넣는다.
 

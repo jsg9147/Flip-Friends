@@ -18,25 +18,25 @@ public class PlayerSound : NetworkBehaviour
     [ClientRpc]
     public void RpcPlayJumpSound()
     {
-        jumpSound.Play(); // ¿©·¯ Å¬¸³ Àç»ı °¡´É
+        jumpSound.Play(); // ì—¬ëŸ¬ í´ë¦½ ì¬ìƒ ê°€ëŠ¥
     }
 
     [ClientRpc]
     public void RpcPlayShrinkSound()
     {
-        shirinkSound.Play(); // ¿©·¯ Å¬¸³ Àç»ı °¡´É
+        shirinkSound.Play(); // ì—¬ëŸ¬ í´ë¦½ ì¬ìƒ ê°€ëŠ¥
     }
 
     [ClientRpc]
     public void RpcPlayEnterSound()
     {
-        shirinkSound.Play(); // ¿©·¯ Å¬¸³ Àç»ı °¡´É
+        shirinkSound.Play(); // ì—¬ëŸ¬ í´ë¦½ ì¬ìƒ ê°€ëŠ¥
     }
 
     [ClientRpc]
     public void RpcPlayExitSound()
     {
-        shirinkSound.Play(); // ¿©·¯ Å¬¸³ Àç»ı °¡´É
+        shirinkSound.Play(); // ì—¬ëŸ¬ í´ë¦½ ì¬ìƒ ê°€ëŠ¥
     }
 
     void SetVolume()

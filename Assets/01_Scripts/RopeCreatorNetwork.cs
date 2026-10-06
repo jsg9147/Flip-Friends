@@ -6,14 +6,14 @@ using Mirror;
 public class RopeCreatorNetwork : NetworkBehaviour
 {
     [SerializeField]
-    private GameObject ropePrefab; // ·ÎÇÁ ÇÁ¸®ÆÕ ¼³Á¤
+    private GameObject ropePrefab; // ë¡œí”„ í”„ë¦¬íŒ¹ ì„¤ì •
 
     [SerializeField, Min(1)]
-    private int ropeLength = 5; // ·ÎÇÁ ±æÀÌ ¼³Á¤ (ÃÖ¼Ò°ª 1)
+    private int ropeLength = 5; // ë¡œí”„ ê¸¸ì´ ì„¤ì • (ìµœì†Œê°’ 1)
 
     private void Start()
     {
-        if (isServer) // ¼­¹ö¿¡¼­¸¸ ½ÇÇà
+        if (isServer) // ì„œë²„ì—ì„œë§Œ ì‹¤í–‰
         {
             CreateRope();
         }
@@ -23,36 +23,36 @@ public class RopeCreatorNetwork : NetworkBehaviour
     {
         if (ropePrefab == null)
         {
-            Debug.LogError("Rope PrefabÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogError("Rope Prefabì´ ì„¤ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
         for (int i = 0; i < ropeLength; i++)
         {
-            // ·ÎÇÁ Á¶°¢ À§Ä¡ °è»ê
+            // ë¡œí”„ ì¡°ê° ìœ„ì¹˜ ê³„ì‚°
             Vector3 ropePosition = new Vector3(transform.position.x, transform.position.y - i, transform.position.z);
 
-            // ·ÎÇÁ Á¶°¢ »ı¼º
+            // ë¡œí”„ ì¡°ê° ìƒì„±
             GameObject ropeSegment = Instantiate(ropePrefab, ropePosition, Quaternion.identity, transform);
 
-            // ³×Æ®¿öÅ©¿¡ »ı¼ºµÈ °´Ã¼ µî·Ï
+            // ë„¤íŠ¸ì›Œí¬ì— ìƒì„±ëœ ê°ì²´ ë“±ë¡
             NetworkServer.Spawn(ropeSegment);
         }
     }
 
-    // ¾À ºä¿¡¼­ ·ÎÇÁÀÇ À§Ä¡¸¦ ½Ã°¢ÀûÀ¸·Î Ç¥½Ã
+    // ì”¬ ë·°ì—ì„œ ë¡œí”„ì˜ ìœ„ì¹˜ë¥¼ ì‹œê°ì ìœ¼ë¡œ í‘œì‹œ
     private void OnDrawGizmos()
     {
         if (ropeLength <= 0) return;
 
         Gizmos.color = Color.yellow;
 
-        // ·ÎÇÁÀÇ ½ÃÀÛ°ú ³¡ À§Ä¡¸¦ ¼±À¸·Î ¿¬°á
+        // ë¡œí”„ì˜ ì‹œì‘ê³¼ ë ìœ„ì¹˜ë¥¼ ì„ ìœ¼ë¡œ ì—°ê²°
         Vector3 startPosition = transform.position;
         Vector3 endPosition = startPosition + Vector3.down * (ropeLength - 1);
         Gizmos.DrawLine(startPosition, endPosition);
 
-        // °¢ ·ÎÇÁ ¼¼±×¸ÕÆ®ÀÇ À§Ä¡¿¡ ±¸Ã¼¸¦ ±×¸²
+        // ê° ë¡œí”„ ì„¸ê·¸ë¨¼íŠ¸ì˜ ìœ„ì¹˜ì— êµ¬ì²´ë¥¼ ê·¸ë¦¼
         for (int i = 0; i < ropeLength; i++)
         {
             Vector3 position = new Vector3(transform.position.x, transform.position.y - i, transform.position.z);
@@ -60,19 +60,19 @@ public class RopeCreatorNetwork : NetworkBehaviour
         }
     }
 
-    // ¿¡µğÅÍ¿¡¼­ °ª °ËÁõ
+    // ì—ë””í„°ì—ì„œ ê°’ ê²€ì¦
     protected override void OnValidate()
     {
         base.OnValidate();
         if (ropeLength < 1)
         {
-            Debug.LogWarning("Rope Length´Â ÃÖ¼Ò 1 ÀÌ»óÀÌ¾î¾ß ÇÕ´Ï´Ù. 1·Î ÃÊ±âÈ­ÇÕ´Ï´Ù.");
+            Debug.LogWarning("Rope LengthëŠ” ìµœì†Œ 1 ì´ìƒì´ì–´ì•¼ í•©ë‹ˆë‹¤. 1ë¡œ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.");
             ropeLength = 1;
         }
 
         if (ropePrefab == null)
         {
-            Debug.LogWarning("Rope PrefabÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù. ÇÁ¸®ÆÕÀ» ¼³Á¤ÇØÁÖ¼¼¿ä.");
+            Debug.LogWarning("Rope Prefabì´ ì„¤ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. í”„ë¦¬íŒ¹ì„ ì„¤ì •í•´ì£¼ì„¸ìš”.");
         }
     }
 }

@@ -4,14 +4,14 @@ using System.Collections;
 
 public class PlayerSummonSwitch : NetworkBehaviour
 {
-    public Transform summonLocation;   // ÇÃ·¹ÀÌ¾îµéÀÌ ¼ÒÈ¯µÉ ±âÁØ À§Ä¡
-    public float cooldownTime = 5f;    // ½ºÀ§Ä¡¸¦ ´©¸¥ ÈÄ Äğ´Ù¿î ½Ã°£ (ÃÊ)
+    public Transform summonLocation;   // í”Œë ˆì´ì–´ë“¤ì´ ì†Œí™˜ë  ê¸°ì¤€ ìœ„ì¹˜
+    public float cooldownTime = 5f;    // ìŠ¤ìœ„ì¹˜ë¥¼ ëˆ„ë¥¸ í›„ ì¿¨ë‹¤ìš´ ì‹œê°„ (ì´ˆ)
 
-    private bool isCooldown = false;   // Äğ´Ù¿î »óÅÂ È®ÀÎ
-    private NetworkIdentity triggeringPlayer; // ½ºÀ§Ä¡¸¦ ´©¸¥ ÇÃ·¹ÀÌ¾î
+    private bool isCooldown = false;   // ì¿¨ë‹¤ìš´ ìƒíƒœ í™•ì¸
+    private NetworkIdentity triggeringPlayer; // ìŠ¤ìœ„ì¹˜ë¥¼ ëˆ„ë¥¸ í”Œë ˆì´ì–´
 
-    public Sprite defaultSprite;       // ±âº» ½ºÇÁ¶óÀÌÆ®
-    public Sprite pressedSprite;       // ´­·¶À» ¶§ÀÇ ½ºÇÁ¶óÀÌÆ®
+    public Sprite defaultSprite;       // ê¸°ë³¸ ìŠ¤í”„ë¼ì´íŠ¸
+    public Sprite pressedSprite;       // ëˆŒë €ì„ ë•Œì˜ ìŠ¤í”„ë¼ì´íŠ¸
 
     private SpriteRenderer spriteRenderer;
 
@@ -26,7 +26,7 @@ public class PlayerSummonSwitch : NetworkBehaviour
         {
             if (isServer && !isCooldown)
             {
-                triggeringPlayer = collision.GetComponent<NetworkIdentity>(); // ´©¸¥ ÇÃ·¹ÀÌ¾î ÀúÀå
+                triggeringPlayer = collision.GetComponent<NetworkIdentity>(); // ëˆ„ë¥¸ í”Œë ˆì´ì–´ ì €ì¥
                 StartCoroutine(SummonAllPlayersWithCooldown());
             }
         }
@@ -36,31 +36,31 @@ public class PlayerSummonSwitch : NetworkBehaviour
     private IEnumerator SummonAllPlayersWithCooldown()
     {
         isCooldown = true;
-        spriteRenderer.sprite = pressedSprite; // ½ºÇÁ¶óÀÌÆ®¸¦ ´­¸° »óÅÂ·Î º¯°æ
-        SummonAllPlayers(); // ¸ğµç ÇÃ·¹ÀÌ¾î ¼ÒÈ¯
+        spriteRenderer.sprite = pressedSprite; // ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ëˆŒë¦° ìƒíƒœë¡œ ë³€ê²½
+        SummonAllPlayers(); // ëª¨ë“  í”Œë ˆì´ì–´ ì†Œí™˜
 
-        // Äğ´Ù¿î ´ë±â
+        // ì¿¨ë‹¤ìš´ ëŒ€ê¸°
         yield return new WaitForSeconds(cooldownTime);
 
-        spriteRenderer.sprite = defaultSprite; // ½ºÇÁ¶óÀÌÆ®¸¦ ¿ø·¡´ë·Î º¹¿ø
-        isCooldown = false; // Äğ´Ù¿î Á¾·á
+        spriteRenderer.sprite = defaultSprite; // ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ì›ë˜ëŒ€ë¡œ ë³µì›
+        isCooldown = false; // ì¿¨ë‹¤ìš´ ì¢…ë£Œ
     }
 
     [Server]
     private void SummonAllPlayers()
     {
-        int playerIndex = 0; // Y ÁÂÇ¥ Áõ°¡¸¦ À§ÇÑ ÀÎµ¦½º
+        int playerIndex = 0; // Y ì¢Œí‘œ ì¦ê°€ë¥¼ ìœ„í•œ ì¸ë±ìŠ¤
 
-        // ¸ğµç ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡¸¦ summonLocation ±âÁØÀ¸·Î Y ÁÂÇ¥¸¦ ¿Ã·Á ÀÌµ¿½ÃÅ°´Â RPC È£Ãâ
+        // ëª¨ë“  í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜ë¥¼ summonLocation ê¸°ì¤€ìœ¼ë¡œ Y ì¢Œí‘œë¥¼ ì˜¬ë ¤ ì´ë™ì‹œí‚¤ëŠ” RPC í˜¸ì¶œ
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
         {
             NetworkIdentity playerIdentity = conn.identity;
 
-            // ´©¸¥ ÇÃ·¹ÀÌ¾î°¡ ¾Æ´Ñ °æ¿ì¸¸ ¼ÒÈ¯
+            // ëˆ„ë¥¸ í”Œë ˆì´ì–´ê°€ ì•„ë‹Œ ê²½ìš°ë§Œ ì†Œí™˜
             if (playerIdentity != triggeringPlayer)
             {
                 RpcSummonPlayer(playerIdentity, playerIndex);
-                playerIndex++; // ´ÙÀ½ ÇÃ·¹ÀÌ¾îÀÇ Y ÁÂÇ¥¸¦ 1¾¿ Áõ°¡
+                playerIndex++; // ë‹¤ìŒ í”Œë ˆì´ì–´ì˜ Y ì¢Œí‘œë¥¼ 1ì”© ì¦ê°€
             }
         }
     }
@@ -68,11 +68,11 @@ public class PlayerSummonSwitch : NetworkBehaviour
     [ClientRpc]
     private void RpcSummonPlayer(NetworkIdentity player, int playerIndex)
     {
-        // Å¬¶óÀÌ¾ğÆ®¿¡¼­ °¢ ÇÃ·¹ÀÌ¾î¸¦ ¼ÒÈ¯ À§Ä¡·Î ÀÌµ¿
+        // í´ë¼ì´ì–¸íŠ¸ì—ì„œ ê° í”Œë ˆì´ì–´ë¥¼ ì†Œí™˜ ìœ„ì¹˜ë¡œ ì´ë™
         if (player != null)
         {
             Vector3 newPosition = summonLocation.position;
-            newPosition.y += playerIndex; // ÀÎµ¦½º¿¡ µû¶ó Y ÁÂÇ¥¸¦ 1¾¿ Áõ°¡
+            newPosition.y += playerIndex; // ì¸ë±ìŠ¤ì— ë”°ë¼ Y ì¢Œí‘œë¥¼ 1ì”© ì¦ê°€
             player.transform.position = newPosition;
         }
     }

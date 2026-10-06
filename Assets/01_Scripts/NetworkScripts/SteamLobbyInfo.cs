@@ -7,34 +7,34 @@ using UnityEngine;
 [Serializable]
 public class SteamLobbyInfo
 {
-    // ·ÎºñÀÇ Steam ID
+    // ë¡œë¹„ì˜ Steam ID
     public CSteamID LobbyID { get; private set; }
 
-    // ·ÎºñÀÇ ÀÌ¸§
+    // ë¡œë¹„ì˜ ì´ë¦„
     public string LobbyName { get; private set; }
 
-    // ·ÎºñÀÇ ÃÖ´ë ÀÎ¿ø ¼ö
+    // ë¡œë¹„ì˜ ìµœëŒ€ ì¸ì› ìˆ˜
     public int MaxMembers { get; private set; }
 
-    // ÇöÀç ·Îºñ¿¡ Á¢¼ÓÇÑ ¸â¹ö ¼ö
+    // í˜„ì¬ ë¡œë¹„ì— ì ‘ì†í•œ ë©¤ë²„ ìˆ˜
     public int CurrentMemberCount { get; private set; }
 
-    // ·Îºñ¿¡ ÀÖ´Â ¸â¹öµéÀÇ Steam ID ¸ñ·Ï
+    // ë¡œë¹„ì— ìˆëŠ” ë©¤ë²„ë“¤ì˜ Steam ID ëª©ë¡
     public List<CSteamID> MemberIDs { get; private set; }
 
-    // ·Îºñ°¡ °ÔÀÓ ÁßÀÎÁö ¿©ºÎ
+    // ë¡œë¹„ê°€ ê²Œì„ ì¤‘ì¸ì§€ ì—¬ë¶€
     public bool IsInGame { get; private set; }
 
     public string colorStr { get; private set; }
 
-    // »ı¼ºÀÚ
+    // ìƒì„±ì
     public SteamLobbyInfo(CSteamID lobbyID)
     {
         LobbyID = lobbyID;
         UpdateLobbyInfo();
     }
 
-    // ·Îºñ Á¤º¸ ¾÷µ¥ÀÌÆ®
+    // ë¡œë¹„ ì •ë³´ ì—…ë°ì´íŠ¸
     public void UpdateLobbyInfo()
     {
         if (!SteamManager.Initialized)
@@ -54,7 +54,7 @@ public class SteamLobbyInfo
         }
     }
 
-    // ¸â¹öµéÀÇ ÀÌ¸§ ¸ñ·Ï °¡Á®¿À±â
+    // ë©¤ë²„ë“¤ì˜ ì´ë¦„ ëª©ë¡ ê°€ì ¸ì˜¤ê¸°
     public List<string> GetMemberNames()
     {
         List<string> memberNames = new List<string>();
