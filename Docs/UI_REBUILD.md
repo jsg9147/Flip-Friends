@@ -64,17 +64,15 @@ SettingsScreen.OnShow 또는 OnHide
 - 누름 유지 입력을 플레이 모드에서 검증했다(일시정지 후 `EditorApplication.Step()`, `InputManager.dir`을 리플렉션으로 고정). 해상도는 오른쪽을 5프레임 누르고 있어도 `1600 x 900` → `1600 x 1024` 한 칸만 바뀌고, 뗐다가 왼쪽을 누르면 다시 한 칸만 돌아온다. SFX는 반복 값을 0.06초/0.04초로 바꿔 확인했고, 누른 프레임에 50 → 51, 0.06초 뒤 52, 이후 0.04초마다 한 칸씩 올랐다. 스텝 모드에서는 한 프레임이 `unscaledTime` 0.02초로 진행된다. 검증으로 바뀐 값은 복원했다.
 - 레거시 내비게이션 제거 후 플레이 모드에서 공개 로비의 Cancel 구독자가 3개에서 `PublicLobbyScreen` 1개로 줄었다. Cancel → `mode-select` → `main-menu`, 히스토리 없이 Cancel → `mode-select`, Back 클릭 → `mode-select`를 확인했고, 단계마다 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했다. 공개 로비 진입 시 Refresh가, `key-binding-gamepad` 진입 시 Close Btn이 선택된다.
 - Main, GameRoom, GamePlay, MapEditor 4개 씬 모두 오류 없이 로드된다.
-- 마우스·키보드·게임패드 실제 입력 이동과 Steam이 필요한 Host·공개 로비·비공개 참가 왕복은 수동 검증이 남아 있다.
+- Steam 런타임은 2026-10-06 사용자가 Steam 로그인 상태에서 수동 확인했고 정상 동작으로 보고했다. 대상은 Host 생성, 공개 로비 목록의 loading·empty·error·joining, 비공개 코드 참가와 실패 상태, Create·Join 1회 호출이다.
+- 마우스·키보드·게임패드 실제 입력 이동은 수동 검증이 남아 있다.
 
 ## 남은 작업
 
 - 빌드에서 화면 모드 전환과 해상도 동시 변경이 실제 창에 반영되는지 수동 확인.
 - 설정 기본값 복귀 수단이 없다. 호출하는 곳이 없던 `SettingManager.ResetSettings`는 제거했다. 기본값 버튼이 필요해지면 `ValueAdjuster`에 기본값 적용 경로를 다시 두고 화면에 연결한다.
-- Host, 공개 로비, 비공개 참가 화면의 실패 상태 포함 Steam 런타임 검증
 - 공개 로비 목록의 `LobbyItem` 참가 버튼은 어떤 선택 목록에도 들어가지 않아 게임패드로 고를 수 없다. 제거한 `ButtonNavigation`도 목록이 비어 있어 원래 없던 경로다. 필요하면 `PublicLobbyScreen`이 항목을 만들 때 `ButtonSelectController.tagetButtonList`에 넣는다.
 
 ## 다음 작업
 
-Host, 공개 로비, 비공개 참가의 Steam 런타임 수동 검증.
-
-착수 순서와 각 항목에서 먼저 정할 결정은 `Docs/NEXT_SESSION.md`에 정리돼 있다.
+공개 로비의 `LobbyItem` 참가 버튼을 게임패드로 고를 수 있게 `ButtonSelectController` 선택 목록에 넣는다.

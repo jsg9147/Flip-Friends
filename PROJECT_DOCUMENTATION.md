@@ -23,7 +23,7 @@
 | 맵 에디터, 저장소, 팔레트, 검증 | `.claude/rules/map-editor.md`와 `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
 | Main 메뉴, 로비 목록 | `Docs/UI_REBUILD.md` | Steam/Mirror 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
-| 다음에 할 작업 고르기, 세션 인계 | `Docs/NEXT_SESSION.md` | 고른 항목이 속한 기능 문서 |
+| 다음에 할 작업 고르기, 세션 인계 | `Docs/NEXT_SESSION.md`(있을 때), 없으면 각 기능 문서의 `다음 작업` | 고른 항목이 속한 기능 문서 |
 | 테스트 추가 또는 실패 조사 | `.claude/rules/tests.md`와 대상 기능 문서의 `검증` 절 | `Assets/Tests`와 Unity Console |
 
 두 영역 이상에 걸친 작업은 해당 문서를 모두 읽되, 관련 없는 문서는 읽지 않는다.
@@ -38,7 +38,6 @@
 | `Docs/MAP_EDITOR.md` | Active | 맵 제작·저장·검증의 현재 상태 |
 | `Docs/CUSTOM_MAP_NETWORK.md` | Active | 커스텀 맵 로비 선택·자동 공유·런타임 생성 |
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |
-| `Docs/NEXT_SESSION.md` | Active | 남은 작업의 착수 순서와 먼저 정할 결정. 큐가 비면 삭제한다 |
 | `Docs/Notes/*.md` | Active | 1회성 조사·실패한 시도·측정값. 자동으로 읽히지 않는다 |
 
 ## 문서 갱신 형식
