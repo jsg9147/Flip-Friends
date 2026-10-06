@@ -75,7 +75,7 @@ public class KeyRebindingManager : MonoBehaviour
 
     private void CreateSingleBindingUI(InputAction action, InputBinding binding, ScrollViewController container)
     {
-        KeyBindItem uiInstance = Instantiate(rebindUIPrefab, container.content);
+        KeyBindItem uiInstance = Instantiate(rebindUIPrefab, container.Content);
         container.GetComponent<ButtonSelectController>().tagetButtonList.Add(uiInstance.keyBindBtn);
 
         uiInstance.antionNameText.text = action.name;
@@ -91,7 +91,7 @@ public class KeyRebindingManager : MonoBehaviour
 
     private void CreateCompositePartUI(InputAction action, InputBinding partBinding, ScrollViewController container)
     {
-        var uiInstance = Instantiate(rebindUIPrefab, container.content);
+        var uiInstance = Instantiate(rebindUIPrefab, container.Content);
         var keyBindItem = uiInstance.GetComponent<KeyBindItem>();
         container.GetComponent<ButtonSelectController>().tagetButtonList.Add(uiInstance.keyBindBtn);
 

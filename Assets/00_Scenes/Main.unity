@@ -7871,6 +7871,8 @@ GameObject:
   - component: {fileID: 537933721}
   - component: {fileID: 537933723}
   - component: {fileID: 537933722}
+  - component: {fileID: 537933725}
+  - component: {fileID: 537933724}
   m_Layer: 5
   m_Name: LobbyContent
   m_TagString: Untagged
@@ -7936,6 +7938,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 537933720}
   m_CullTransparentMesh: 1
+--- !u!114 &537933724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537933720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
+  m_Content: {fileID: 1304428230}
+  m_Horizontal: 0
+  m_Vertical: 1
+  m_MovementType: 2
+  m_Elasticity: 0.1
+  m_Inertia: 1
+  m_DecelerationRate: 0.135
+  m_ScrollSensitivity: 20
+  m_Viewport: {fileID: 537933721}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 0}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &537933725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537933720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &539458388
 GameObject:
   m_ObjectHideFlags: 0
@@ -8275,6 +8321,8 @@ MonoBehaviour:
   maxValue: 255
   valueText: {fileID: 956268412}
   targetUI: {fileID: 1994126165}
+  repeatDelay: 0.4
+  repeatInterval: 0.1
 --- !u!1 &555641978
 GameObject:
   m_ObjectHideFlags: 0
@@ -12113,8 +12161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRect: {fileID: 1042418939}
   content: {fileID: 964765467}
-  selectedButton: {fileID: 0}
-  buttonSelectController: {fileID: 0}
+  edgePadding: 10
 --- !u!114 &841304904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16292,6 +16339,7 @@ GameObject:
   - component: {fileID: 1214857755}
   - component: {fileID: 1214857757}
   - component: {fileID: 1214857756}
+  - component: {fileID: 1214857758}
   m_Layer: 5
   m_Name: Public Lobby UI
   m_TagString: Untagged
@@ -16414,6 +16462,21 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1214857758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214857749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 488995e1af8b6a84a872d768948ed98c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScrollViewController
+  scrollRect: {fileID: 537933724}
+  content: {fileID: 1304428230}
+  edgePadding: 10
 --- !u!1 &1243510091
 GameObject:
   m_ObjectHideFlags: 0
@@ -17023,6 +17086,8 @@ MonoBehaviour:
   maxValue: 100
   valueText: {fileID: 35487798}
   targetUI: {fileID: 44291180}
+  repeatDelay: 0.4
+  repeatInterval: 0.1
 --- !u!1 &1303072024
 GameObject:
   m_ObjectHideFlags: 0
@@ -17166,6 +17231,7 @@ GameObject:
   - component: {fileID: 1304428230}
   - component: {fileID: 1304428231}
   - component: {fileID: 1304428232}
+  - component: {fileID: 1304428233}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -17187,11 +17253,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 537933721}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 0, y: 700}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1304428231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17212,7 +17278,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -17226,6 +17292,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1304428229}
   m_CullTransparentMesh: 1
+--- !u!114 &1304428233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304428229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1309359021
 GameObject:
   m_ObjectHideFlags: 0
@@ -20201,6 +20281,8 @@ MonoBehaviour:
   maxValue: 255
   valueText: {fileID: 2138242129}
   targetUI: {fileID: 1429817750}
+  repeatDelay: 0.4
+  repeatInterval: 0.1
 --- !u!222 &1444355399
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20266,6 +20348,8 @@ MonoBehaviour:
   maxValue: 255
   valueText: {fileID: 486123225}
   targetUI: {fileID: 101901824}
+  repeatDelay: 0.4
+  repeatInterval: 0.1
 --- !u!222 &1468806926
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21204,6 +21288,8 @@ MonoBehaviour:
   maxValue: 100
   valueText: {fileID: 2021653591}
   targetUI: {fileID: 374662506}
+  repeatDelay: 0.4
+  repeatInterval: 0.1
 --- !u!1 &1608310656
 GameObject:
   m_ObjectHideFlags: 0
@@ -26000,8 +26086,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRect: {fileID: 706853992}
   content: {fileID: 1129729121}
-  selectedButton: {fileID: 0}
-  buttonSelectController: {fileID: 0}
+  edgePadding: 10
 --- !u!114 &2097853340
 MonoBehaviour:
   m_ObjectHideFlags: 0
