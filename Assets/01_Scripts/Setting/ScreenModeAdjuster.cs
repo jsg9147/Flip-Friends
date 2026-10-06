@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using TMPro;
 
 public class ScreenModeAdjuster : MonoBehaviour
@@ -17,7 +16,9 @@ public class ScreenModeAdjuster : MonoBehaviour
     private const string ScreenModeKey = "ScreenMode";
 
     private int currentIndex;
-    private bool wasHorizontalHeld;
+
+    // 값이 둘뿐이라 누르고 있는 동안 반복하면 깜빡이다가 임의의 값에서 멈춘다
+    private readonly HorizontalStepInput stepInput = HorizontalStepInput.PressOnly();
 
     public FullScreenMode SelectedMode => SupportedModes[currentIndex];
 
@@ -29,28 +30,12 @@ public class ScreenModeAdjuster : MonoBehaviour
 
     void Update()
     {
-        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == targetUI)
-        {
-            HandleAdjustmentInput();
-        }
-        else
-        {
-            wasHorizontalHeld = false;
-        }
-    }
+        int direction = stepInput.Read(targetUI);
 
-    // InputManager.dir은 누르고 있는 동안 계속 값이 남는다. 값이 둘뿐이라 매 프레임 바꾸면 깜빡이다가 임의의 값에서 멈추므로 누른 순간에만 바꾼다
-    private void HandleAdjustmentInput()
-    {
-        float horizontal = InputManager.instance.dir.x;
-        bool isHorizontalHeld = horizontal != 0f;
-
-        if (isHorizontalHeld && !wasHorizontalHeld)
+        if (direction != 0)
         {
-            ChangeScreenMode(horizontal > 0f ? 1 : -1);
+            ChangeScreenMode(direction);
         }
-
-        wasHorizontalHeld = isHorizontalHeld;
     }
 
     // 마우스 클릭도 키보드·게임패드 입력과 같은 전환 경로를 쓰도록 공개

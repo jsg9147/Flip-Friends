@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections.Generic;
 
@@ -10,6 +9,9 @@ public class ResolutionAdjuster : MonoBehaviour
 
     private int currentIndex = 0; // 현재 선택된 해상도 인덱스
     private Resolution[] filteredResolutions; // 필터링된 해상도 목록
+
+    // 목록이 짧고 순환해서, 누르고 있는 동안 반복하면 원하는 해상도를 지나치기 쉽다
+    private readonly HorizontalStepInput stepInput = HorizontalStepInput.PressOnly();
 
     private const string ResolutionKey = "SavedResolution"; // PlayerPrefs 키
     private const int DefaultWidth = 1600; // 기본 해상도 너비
@@ -26,21 +28,11 @@ public class ResolutionAdjuster : MonoBehaviour
 
     void Update()
     {
-        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == targetUI)
-        {
-            HandleAdjustmentInput();
-        }
-    }
+        int direction = stepInput.Read(targetUI);
 
-    private void HandleAdjustmentInput()
-    {
-        if (InputManager.instance.dir.x > 0)
+        if (direction != 0)
         {
-            ChangeResolution(1); // 오른쪽 입력으로 다음 해상도
-        }
-        else if (InputManager.instance.dir.x < 0)
-        {
-            ChangeResolution(-1); // 왼쪽 입력으로 이전 해상도
+            ChangeResolution(direction);
         }
     }
 

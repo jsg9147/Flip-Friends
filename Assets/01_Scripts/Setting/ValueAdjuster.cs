@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using TMPro;
 
 public class ValueAdjuster : MonoBehaviour
@@ -15,7 +14,14 @@ public class ValueAdjuster : MonoBehaviour
     [SerializeField] private TMP_Text valueText; // 수치 표시 Text
     [SerializeField] private GameObject targetUI; // 조정 후 돌아갈 버튼
 
+    [Header("Hold Repeat")]
+    [SerializeField] private float repeatDelay = 0.4f; // 누른 뒤 반복을 시작하기까지 기다리는 시간(초)
+    [SerializeField] private float repeatInterval = 0.1f; // 반복 중 한 칸씩 바꾸는 간격(초)
+
     private int currentValue;
+
+    // 범위가 넓어 한 칸씩만 바꾸면 끝까지 가기 번거로우므로 누르고 있으면 반복한다
+    private HorizontalStepInput stepInput;
 
     // GetFloat이 int로 저장된 키에서 기본값을 돌려주는 것을 이용해 이전 저장 형식을 알아내는 표식
     private const float LegacyFormatMark = -1f;
@@ -30,26 +36,17 @@ public class ValueAdjuster : MonoBehaviour
 
     void Awake()
     {
+        stepInput = HorizontalStepInput.Repeating(repeatDelay, repeatInterval);
         LoadValue();
     }
 
     void Update()
     {
-        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == targetUI)
-        {
-            HandleAdjustmentInput();
-        }
-    }
+        int direction = stepInput.Read(targetUI);
 
-    private void HandleAdjustmentInput()
-    {
-        if (InputManager.instance.dir.x > 0)
+        if (direction != 0)
         {
-            ChangeValue(1); // 오른쪽 입력으로 값 증가
-        }
-        else if (InputManager.instance.dir.x < 0)
-        {
-            ChangeValue(-1); // 왼쪽 입력으로 값 감소
+            ChangeValue(direction);
         }
     }
 
