@@ -1,13 +1,14 @@
-using System;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MapEditorPalette", menuName = "Flip Friends/Map Editor Palette")]
-public class MapEditorPalette : ScriptableObject
+public class MapEditorPalette : ScriptableObject, IMapPaletteLookup
 {
     public List<PaletteEntry> entries = new List<PaletteEntry>();
     public MapValidationSettings validationSettings = new();
+
+    public MapValidationSettings ValidationSettings => validationSettings;
 
     public bool TryGetEntry(string prefabID, out PaletteEntry entry)
     {
@@ -78,42 +79,4 @@ public class MapEditorPalette : ScriptableObject
             0f,
             validationSettings.overlapPositionTolerance);
     }
-}
-
-public enum MapObjectCategory
-{
-    Essential,
-    Terrain,
-    Obstacle,
-    Interactive,
-    Decoration
-}
-
-[Serializable]
-public class PaletteEntry
-{
-    public string id;
-    public string displayName;
-    public MapObjectCategory category;
-    public GameObject prefab;
-    public Sprite thumbnail;
-    public MapObjectValidationRule validationRule = new();
-}
-
-[Serializable]
-public class MapValidationSettings
-{
-    public int minimumPlayerSpawnCount = 1;
-    public Vector2 minimumMapPosition = new(-50f, -30f);
-    public Vector2 maximumMapPosition = new(50f, 30f);
-    public float overlapPositionTolerance = 0.01f;
-}
-
-[Serializable]
-public class MapObjectValidationRule
-{
-    public int minimumCount;
-    public int maximumCount;
-    public bool disallowPositionOverlap = true;
-    public bool overlapIsCritical;
 }

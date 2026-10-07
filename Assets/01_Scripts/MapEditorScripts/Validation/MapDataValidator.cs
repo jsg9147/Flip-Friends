@@ -6,13 +6,14 @@ public sealed class MapDataValidator
     private const string PlayerSpawnID = "essential.player_spawn";
     private const string FinishID = "essential.finish";
 
-    private readonly MapEditorPalette palette;
+    private readonly IMapPaletteLookup palette;
     private readonly MapValidationSettings settings;
 
-    public MapDataValidator(MapEditorPalette palette)
+    public MapDataValidator(IMapPaletteLookup palette)
     {
-        this.palette = palette;
-        settings = palette?.validationSettings ?? new MapValidationSettings();
+        // 인터페이스로 받으면 Unity의 null 비교가 적용되지 않아, 연결이 끊긴 에셋을 직접 걸러낸다.
+        this.palette = palette is Object unityObject && unityObject == null ? null : palette;
+        settings = this.palette?.ValidationSettings ?? new MapValidationSettings();
     }
 
     public MapValidationReport Validate(MapData mapData)
