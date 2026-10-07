@@ -23,6 +23,8 @@ public enum MapTransferFailure
 
 public sealed class MapSessionSnapshot
 {
+    public const int MaximumContentBytes = 512 * 1024;
+
     public uint Generation { get; }
     public string TransferId { get; }
     public string MapId { get; }

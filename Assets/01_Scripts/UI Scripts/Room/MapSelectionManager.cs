@@ -36,7 +36,7 @@ public class MapSelectionManager : NetworkBehaviour
     private const float DefaultTransferTimeoutSeconds = 30f;
     private const float DefaultSelectionUploadTimeoutSeconds = 12f;
     private const int DefaultChunkBytes = 24 * 1024;
-    private const int DefaultMaximumMapBytes = 512 * 1024;
+    private const int DefaultMaximumMapBytes = MapSessionSnapshot.MaximumContentBytes;
     private const int DefaultChunksPerFrame = 2;
     private const int DefaultBytesPerFrame = 48 * 1024;
 

@@ -10,7 +10,7 @@ using Unity.Collections.LowLevel.Unsafe;
 public class CustomRoomPlayer : NetworkRoomPlayer
 {
     private const int MaximumChunkCount = 64;
-    private const int MaximumMapBytes = 512 * 1024;
+    private const int MaximumMapBytes = MapSessionSnapshot.MaximumContentBytes;
     private const int SelectionChunkBytes = 24 * 1024;
     [SyncVar(hook = nameof(OnNameChanged))]
     public string playerName = "No Name";

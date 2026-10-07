@@ -99,6 +99,7 @@ public class StageManager : NetworkBehaviour
         }
 
         SlimeRoomManager roomManager = (SlimeRoomManager)NetworkManager.singleton;
+        UnregisterSceneStartPositions();
         SpawnMapDataSync(
             roomManager.currentMapId,
             roomManager.currentMapContentHash);
@@ -107,6 +108,15 @@ public class StageManager : NetworkBehaviour
         {
             SpawnPlacedObject(objData);
         }
+    }
+
+    // 씬의 시작 위치는 기본 스테이지용이다. 남겨 두면 RoundRobin이 커스텀 맵에 배치한
+    // 시작 지점보다 먼저 골라 플레이어가 맵과 무관한 곳에서 생성된다.
+    [Server]
+    private void UnregisterSceneStartPositions()
+    {
+        foreach (Transform startPosition in NetworkManager.startPositions.ToArray())
+            NetworkManager.UnRegisterStartPosition(startPosition);
     }
 
     [Server]

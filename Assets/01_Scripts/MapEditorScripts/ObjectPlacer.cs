@@ -252,6 +252,7 @@ public class ObjectPlacer : MonoBehaviour
     private void RecreateGhost(string prefabID)
     {
         if (ghost != null) Destroy(ghost);
+        if (string.IsNullOrEmpty(prefabID)) return;
 
         MapEditorPalette palette = MapEditorManager.instance?.palette;
         if (palette == null || !palette.TryGetEntry(prefabID, out PaletteEntry entry)) return;

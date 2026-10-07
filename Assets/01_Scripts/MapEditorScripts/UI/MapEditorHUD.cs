@@ -118,6 +118,22 @@ public class MapEditorHUD : MonoBehaviour
         MapEditorManager.instance.ReturnToMain();
     }
 
+    public void OnTestPlayButtonClicked()
+    {
+        MapEditorManager manager = MapEditorManager.instance;
+        if (manager == null)
+        {
+            Debug.LogError("테스트 플레이를 시작할 수 없습니다. MapEditorManager 참조가 없습니다.", this);
+            return;
+        }
+
+        ShowCurrentValidation();
+        if (manager.TryStartTestPlay(out string error))
+            ShowStatus("테스트 플레이를 시작합니다...", Color.white);
+        else
+            ShowError(error);
+    }
+
     public void OnRotateButtonClicked()
     {
         GetTransformEditor()?.RotatePlacementPreview();

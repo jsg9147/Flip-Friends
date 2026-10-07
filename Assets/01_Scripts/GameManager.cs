@@ -80,6 +80,12 @@ public class GameManager : NetworkBehaviour
 
     public void ExitGame()
     {
+        if (NetworkManager.singleton is SlimeRoomManager { IsTestPlaying: true } roomManager)
+        {
+            roomManager.EndTestPlay();
+            return;
+        }
+
         if (SteamRoomManager.Instance != null)
         {
             SteamRoomManager.Instance.LeaveLobby();

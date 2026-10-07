@@ -136,6 +136,8 @@ public class SteamRoomManager : SlimeRoomManager
         matchmaking.LobbyCreateFailed -= HandleLobbyCreateFailed;
         matchmaking.LobbyEntered -= HandleLobbyEntered;
         base.OnDestroy();
-        Instance = null;
+        // Main으로 돌아올 때 파괴되는 중복 인스턴스가 살아 있는 인스턴스 참조를 지우면 안 된다.
+        if (Instance == this)
+            Instance = null;
     }
 }
