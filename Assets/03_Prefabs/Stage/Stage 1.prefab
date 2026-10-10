@@ -2852,6 +2852,8 @@ MonoBehaviour:
   speed: 5
   isRotate: 1
   rotationSpeed: 1000
+  interpolationSpeed: 15
+  carriesPlayers: 1
 --- !u!61 &2269991896356267213
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3724,6 +3726,8 @@ MonoBehaviour:
   speed: 5
   isRotate: 1
   rotationSpeed: 1000
+  interpolationSpeed: 15
+  carriesPlayers: 1
 --- !u!61 &8632905145599662203
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3918,6 +3922,8 @@ MonoBehaviour:
   speed: 5
   isRotate: 1
   rotationSpeed: 1000
+  interpolationSpeed: 15
+  carriesPlayers: 1
 --- !u!61 &3850703885575007557
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4555,6 +4561,8 @@ MonoBehaviour:
   speed: 5
   isRotate: 1
   rotationSpeed: 1000
+  interpolationSpeed: 15
+  carriesPlayers: 1
 --- !u!61 &7280408267296448810
 BoxCollider2D:
   m_ObjectHideFlags: 0
