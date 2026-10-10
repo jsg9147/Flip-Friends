@@ -13873,6 +13873,7 @@ MonoBehaviour:
   - {fileID: 3846973216450071382, guid: 336dbf72a10fc7d48a6e496ddc7da3f1, type: 3}
   - {fileID: 3846973216450071382, guid: 4d75d7909e4a83d49b878df020004f96, type: 3}
   - {fileID: 3846973216450071382, guid: d8dcd392b3d6f8d4d80fd7298cfa3eb5, type: 3}
+  - {fileID: 3846973216450071382, guid: 35ac4df8ad2c1fa40bc6ed772fef20fb, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -13895,7 +13896,7 @@ MonoBehaviour:
   GameplayScene: Assets/00_Scenes/GamePlay.unity
   _allPlayersReady: 0
   clientIndex: 0
-  currentStage: 0
+  currentBuiltInMapId: 
   currentMapId: 
   currentMapContentHash: 
 --- !u!4 &1011734842
@@ -18426,6 +18427,7 @@ MonoBehaviour:
   - {fileID: 5779526636097850817, guid: bb5932516d2ee3946843f694bc0bc807, type: 3}
   - {fileID: 7694952657952096941, guid: 2202653edc01ddf4c9d33b45d3a3bc71, type: 3}
   - {fileID: 3846973216450071382, guid: cbb8dff5a10f3cd478c0d032c5580306, type: 3}
+  - {fileID: 3846973216450071382, guid: 35ac4df8ad2c1fa40bc6ed772fef20fb, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -18448,7 +18450,7 @@ MonoBehaviour:
   GameplayScene: 
   _allPlayersReady: 0
   clientIndex: 0
-  currentStage: 0
+  currentBuiltInMapId: 
   currentMapId: 
   currentMapContentHash: 
 --- !u!4 &1360355056
