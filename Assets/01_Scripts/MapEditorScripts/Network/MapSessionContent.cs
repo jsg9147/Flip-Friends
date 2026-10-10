@@ -2,25 +2,6 @@ using System;
 using System.Text;
 using UnityEngine;
 
-public enum MapContentAvailability
-{
-    Available,
-    Missing,
-    HashMismatch,
-    InvalidLocalData
-}
-
-public enum MapTransferFailure
-{
-    None,
-    TransferPending,
-    TransferTimedOut,
-    InvalidChunk,
-    HashVerificationFailed,
-    MapValidationFailed,
-    SelectionChanged
-}
-
 public sealed class MapSessionSnapshot
 {
     public const int MaximumContentBytes = 512 * 1024;

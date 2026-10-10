@@ -91,26 +91,42 @@ public class MapSelectionManager : NetworkBehaviour
     public string SelectionSummary => BuildSelectedMapText();
     public string SelectionStatus => BuildStatusText();
 
-    private readonly Dictionary<NetworkConnectionToClient, ParticipantTransferState>
-        availabilityResponses = new();
-    private Coroutine availabilityTimeoutCoroutine;
-    private Coroutine transferTimeoutCoroutine;
+    private MapAvailabilityCheck<NetworkConnectionToClient> availabilityCheck;
     private Coroutine transferQueueCoroutine;
-    private Coroutine selectionUploadTimeoutCoroutine;
     private CustomRoomPlayer startRequester;
     private uint availabilityGeneration;
     private string availabilityMapId = string.Empty;
     private MapSessionSnapshot sessionSnapshot;
+    private CustomRoomPlayer selectionUploadRequester;
     private NetworkConnectionToClient selectionUploadConnection;
     private MapChunkAssembler selectionUploadAssembler;
     private bool selectionUploadHasWarnings;
     private readonly SelectionUploadLease selectionUploadLease = new();
     private readonly RoundRobinTransferQueue<PendingChunkTransfer> transferQueue = new();
 
+    private static double Now => Time.realtimeSinceStartupAsDouble;
+
+    private void Awake()
+    {
+        availabilityCheck = new MapAvailabilityCheck<NetworkConnectionToClient>(
+            availabilityTimeoutSeconds, transferTimeoutSeconds);
+    }
+
     private void Start()
     {
         AddButtonEvents();
         RefreshSelectionUI();
+    }
+
+    // 제한 시간은 Coroutine 대신 서버 프레임마다 상태 객체의 마감 시각과 비교한다.
+    private void Update()
+    {
+        if (!isServer) return;
+
+        double now = Now;
+        if (selectionUploadLease.HasExpired(now))
+            HandleSelectionUploadTimeout();
+        ApplyAvailabilityStep(availabilityCheck.Tick(now), null);
     }
 
     public override void OnStartClient()
@@ -268,13 +284,13 @@ public class MapSelectionManager : NetworkBehaviour
             return;
         }
 
+        selectionUploadRequester = requester;
         selectionUploadConnection = requester.connectionToClient;
         selectionUploadHasWarnings = hasWarnings;
         selectionUploadAssembler = new MapChunkAssembler(
             0, transferId, mapId, contentHash, byteLength, chunkCount);
-        selectionUploadLease.Begin(transferId, mapId, contentHash);
-        selectionUploadTimeoutCoroutine = StartCoroutine(
-            SelectionUploadTimeout(requester, transferId));
+        selectionUploadLease.Begin(
+            transferId, mapId, contentHash, Now + selectionUploadTimeoutSeconds);
     }
 
     [Server]
@@ -342,9 +358,7 @@ public class MapSelectionManager : NetworkBehaviour
 
     private void ClearSelectionUpload()
     {
-        if (selectionUploadTimeoutCoroutine != null)
-            StopCoroutine(selectionUploadTimeoutCoroutine);
-        selectionUploadTimeoutCoroutine = null;
+        selectionUploadRequester = null;
         selectionUploadConnection = null;
         selectionUploadAssembler = null;
         selectionUploadHasWarnings = false;
@@ -396,66 +410,20 @@ public class MapSelectionManager : NetworkBehaviour
         string contentHash,
         MapContentAvailability availability)
     {
-        if (responder == null || sessionSnapshot == null ||
-            availabilityTimeoutCoroutine == null)
-            return;
-        if (generation != availabilityGeneration)
+        if (responder == null || sessionSnapshot == null) return;
+
+        MapAvailabilityStep step = availabilityCheck.ReceiveManifest(
+            responder.connectionToClient, generation, mapId, transferId,
+            contentHash, availability);
+        if (step.Kind == MapAvailabilityStepKind.Ignored)
         {
             Debug.LogWarning(
-                $"이전 맵 보유 검사 응답을 무시했습니다: player={responder.playerName}, " +
+                $"이전 또는 중복 맵 보유 응답을 무시했습니다: player={responder.playerName}, " +
                 $"generation={generation}");
             return;
         }
 
-        if (mapId != availabilityMapId ||
-            transferId != sessionSnapshot.TransferId ||
-            contentHash != sessionSnapshot.ContentHash)
-        {
-            FailAvailabilityCheck(
-                $"잘못된 MapId 응답으로 게임 시작을 보류했습니다: {responder.playerName}",
-                MapTransferFailure.MapValidationFailed);
-            return;
-        }
-
-        NetworkConnectionToClient connection = responder.connectionToClient;
-        if (connection == null || !availabilityResponses.ContainsKey(connection))
-            return;
-        if (availabilityResponses[connection] != ParticipantTransferState.ManifestPending)
-        {
-            Debug.LogWarning($"중복 맵 보유 응답을 무시했습니다: {responder.playerName}");
-            return;
-        }
-
-        if (availability == MapContentAvailability.Available)
-        {
-            availabilityResponses[connection] = ParticipantTransferState.Ready;
-        }
-        else if (availability == MapContentAvailability.Missing ||
-                 availability == MapContentAvailability.HashMismatch)
-        {
-            availabilityResponses[connection] = ParticipantTransferState.TransferPending;
-        }
-        else
-        {
-            FailAvailabilityCheck(
-                $"'{responder.playerName}' 플레이어의 로컬 맵 데이터가 올바르지 않습니다.",
-                MapTransferFailure.MapValidationFailed);
-            return;
-        }
-
-        if (!AllManifestResponsesReceived()) return;
-
-        StopAvailabilityTimeout();
-        if (AllParticipantsHaveMap())
-        {
-            CompleteAvailabilityCheck();
-            return;
-        }
-
-        SetAvailabilityStatus(
-            LobbyMapAvailabilityState.TransferPending,
-            "필요한 참여자에게 커스텀 맵을 전송하고 있습니다.");
-        SendSnapshotToPendingParticipants();
+        ApplyAvailabilityStep(step, responder);
     }
 
     [Server]
@@ -467,26 +435,21 @@ public class MapSelectionManager : NetworkBehaviour
         string contentHash,
         MapTransferFailure failure)
     {
-        if (!MatchesCurrentTransfer(
-                responder, generation, transferId, mapId, contentHash,
-                out NetworkConnectionToClient connection))
-            return;
-        if (availabilityResponses[connection] != ParticipantTransferState.TransferPending)
+        if (responder == null) return;
+
+        MapAvailabilityStep step = availabilityCheck.ReceiveTransferResult(
+            responder.connectionToClient, generation, transferId, mapId,
+            contentHash, failure);
+        if (step.Kind == MapAvailabilityStepKind.Ignored)
         {
-            Debug.LogWarning($"중복 또는 늦은 맵 전송 응답을 무시했습니다: {responder.playerName}");
-            return;
-        }
-        if (failure != MapTransferFailure.None)
-        {
-            FailAvailabilityCheck(
-                $"'{responder.playerName}'의 맵 전송 검증에 실패했습니다: {failure}",
-                failure);
+            Debug.LogWarning(
+                $"현재 전송과 일치하지 않거나 늦은 완료 응답을 무시했습니다: " +
+                $"player={responder.playerName}, generation={generation}, " +
+                $"transferId={transferId}, mapId={mapId}");
             return;
         }
 
-        availabilityResponses[connection] = ParticipantTransferState.Ready;
-        if (AllParticipantsHaveMap())
-            CompleteAvailabilityCheck();
+        ApplyAvailabilityStep(step, responder);
     }
 
     [Server]
@@ -494,7 +457,8 @@ public class MapSelectionManager : NetworkBehaviour
     {
         availabilityGeneration++;
         ClearSelectionUpload();
-        if (availabilityTimeoutCoroutine == null)
+        // manifest 대기뿐 아니라 청크 전송 중에도 취소 사실을 알린다.
+        if (!availabilityCheck.IsActive)
         {
             ClearAvailabilityState();
             return;
@@ -579,8 +543,13 @@ public class MapSelectionManager : NetworkBehaviour
         SetAvailabilityStatus(
             LobbyMapAvailabilityState.Waiting,
             "참여자들의 커스텀 맵 보유 여부를 확인하고 있습니다.");
-        CollectParticipants();
-        if (availabilityResponses.Count == 0)
+        if (!availabilityCheck.Begin(
+                availabilityGeneration,
+                availabilityMapId,
+                sessionSnapshot.TransferId,
+                sessionSnapshot.ContentHash,
+                CollectParticipantConnections(),
+                Now))
         {
             requester.TargetShowMapSelectionError("검사할 활성 참여자가 없습니다.");
             ClearAvailabilityState();
@@ -588,32 +557,32 @@ public class MapSelectionManager : NetworkBehaviour
         }
 
         requester.TargetShowMapSelectionMessage(availabilityMessage);
-        availabilityTimeoutCoroutine = StartCoroutine(
-            AvailabilityTimeout(availabilityGeneration, availabilityMapId));
         RequestManifestFromParticipants();
     }
 
     [Server]
-    private void CollectParticipants()
+    private List<NetworkConnectionToClient> CollectParticipantConnections()
     {
-        if (NetworkManager.singleton is not SlimeRoomManager roomManager) return;
+        var connections = new List<NetworkConnectionToClient>();
+        if (NetworkManager.singleton is not SlimeRoomManager roomManager)
+            return connections;
 
         foreach (NetworkRoomPlayer roomPlayer in roomManager.roomSlots)
         {
-            if (roomPlayer is not CustomRoomPlayer customPlayer ||
-                customPlayer.connectionToClient == null)
-                continue;
-
-            availabilityResponses.TryAdd(
-                customPlayer.connectionToClient,
-                ParticipantTransferState.ManifestPending);
+            if (roomPlayer is CustomRoomPlayer customPlayer &&
+                customPlayer.connectionToClient != null)
+                connections.Add(customPlayer.connectionToClient);
         }
+
+        return connections;
     }
 
     [Server]
     private void RequestManifestFromParticipants()
     {
-        foreach (NetworkConnectionToClient connection in availabilityResponses.Keys)
+        var connections =
+            new List<NetworkConnectionToClient>(availabilityCheck.Participants);
+        foreach (NetworkConnectionToClient connection in connections)
         {
             if (connection.identity == null ||
                 !connection.identity.TryGetComponent(out CustomRoomPlayer player))
@@ -636,41 +605,54 @@ public class MapSelectionManager : NetworkBehaviour
         }
     }
 
-    private IEnumerator AvailabilityTimeout(uint generation, string mapId)
+    [Server]
+    private void ApplyAvailabilityStep(
+        MapAvailabilityStep step,
+        CustomRoomPlayer responder)
     {
-        yield return new WaitForSecondsRealtime(availabilityTimeoutSeconds);
-        if (!isServer || generation != availabilityGeneration ||
-            mapId != availabilityMapId)
-            yield break;
-
-        FailAvailabilityCheck(
-            "일부 참여자의 맵 보유 응답이 없어 게임 시작 시간이 초과되었습니다.",
-            MapTransferFailure.TransferTimedOut);
+        switch (step.Kind)
+        {
+            case MapAvailabilityStepKind.TransferRequired:
+                SetAvailabilityStatus(
+                    LobbyMapAvailabilityState.TransferPending,
+                    "필요한 참여자에게 커스텀 맵을 전송하고 있습니다.");
+                SendSnapshotToPendingParticipants();
+                break;
+            case MapAvailabilityStepKind.Completed:
+                CompleteAvailabilityCheck();
+                break;
+            case MapAvailabilityStepKind.Failed:
+                FailAvailabilityCheck(BuildFailureMessage(step, responder), step.Failure);
+                break;
+        }
     }
 
-    private IEnumerator TransferTimeout(uint generation, string transferId)
+    private static string BuildFailureMessage(
+        MapAvailabilityStep step,
+        CustomRoomPlayer responder)
     {
-        yield return new WaitForSecondsRealtime(transferTimeoutSeconds);
-        if (!isServer || sessionSnapshot == null ||
-            generation != availabilityGeneration ||
-            transferId != sessionSnapshot.TransferId)
-            yield break;
-
-        FailAvailabilityCheck(
-            "커스텀 맵 청크 수신 완료 응답 시간이 초과되었습니다.",
-            MapTransferFailure.TransferTimedOut);
+        string playerName = responder != null ? responder.playerName : "알 수 없음";
+        return step.Reason switch
+        {
+            MapAvailabilityFailureReason.IdentityMismatch =>
+                $"잘못된 MapId 응답으로 게임 시작을 보류했습니다: {playerName}",
+            MapAvailabilityFailureReason.InvalidLocalData =>
+                $"'{playerName}' 플레이어의 로컬 맵 데이터가 올바르지 않습니다.",
+            MapAvailabilityFailureReason.ParticipantReportedFailure =>
+                $"'{playerName}'의 맵 전송 검증에 실패했습니다: {step.Failure}",
+            MapAvailabilityFailureReason.ManifestTimedOut =>
+                "일부 참여자의 맵 보유 응답이 없어 게임 시작 시간이 초과되었습니다.",
+            MapAvailabilityFailureReason.TransferTimedOut =>
+                "커스텀 맵 청크 수신 완료 응답 시간이 초과되었습니다.",
+            _ => $"커스텀 맵 보유 검사에 실패했습니다: {step.Failure}"
+        };
     }
 
-    private IEnumerator SelectionUploadTimeout(
-        CustomRoomPlayer requester,
-        string transferId)
+    [Server]
+    private void HandleSelectionUploadTimeout()
     {
-        yield return new WaitForSecondsRealtime(selectionUploadTimeoutSeconds);
-        if (!isServer || selectionUploadAssembler == null ||
-            !selectionUploadLease.IsActive ||
-            transferId != selectionUploadLease.TransferId)
-            yield break;
-
+        CustomRoomPlayer requester = selectionUploadRequester;
+        string transferId = selectionUploadLease.TransferId;
         string message = "커스텀 맵 선택 업로드 시간이 초과되었습니다. 맵을 다시 선택하세요.";
         Debug.LogWarning(
             $"커스텀 맵 선택 업로드를 취소했습니다: transferId={transferId}, " +
@@ -684,12 +666,11 @@ public class MapSelectionManager : NetworkBehaviour
     private void SendSnapshotToPendingParticipants()
     {
         int chunkCount = GetChunkCount();
-        foreach (KeyValuePair<NetworkConnectionToClient, ParticipantTransferState> pair
-                 in availabilityResponses)
+        foreach (NetworkConnectionToClient connection in
+                 availabilityCheck.GetTransferPendingParticipants())
         {
-            if (pair.Value != ParticipantTransferState.TransferPending) continue;
-            if (pair.Key.identity == null ||
-                !pair.Key.identity.TryGetComponent(out CustomRoomPlayer player))
+            if (connection.identity == null ||
+                !connection.identity.TryGetComponent(out CustomRoomPlayer player))
             {
                 FailAvailabilityCheck(
                     "전송 대상 로비 플레이어를 찾을 수 없습니다.",
@@ -698,7 +679,7 @@ public class MapSelectionManager : NetworkBehaviour
             }
 
             transferQueue.Enqueue(new PendingChunkTransfer(
-                pair.Key, player, availabilityGeneration,
+                connection, player, availabilityGeneration,
                 sessionSnapshot.TransferId, sessionSnapshot.MapId,
                 sessionSnapshot.ContentHash, sessionSnapshot.ByteLength,
                 chunkCount));
@@ -710,7 +691,6 @@ public class MapSelectionManager : NetworkBehaviour
 
     private IEnumerator ProcessTransferQueue()
     {
-        bool timeoutStarted = false;
         while (transferQueue.Count > 0)
         {
             int sentChunks = 0;
@@ -733,13 +713,7 @@ public class MapSelectionManager : NetworkBehaviour
                     continue;
                 }
 
-                if (!timeoutStarted)
-                {
-                    timeoutStarted = true;
-                    transferTimeoutCoroutine = StartCoroutine(
-                        TransferTimeout(pending.Generation, pending.TransferId));
-                }
-
+                availabilityCheck.NotifyChunkSent(Now);
                 try
                 {
                     pending.Player.TargetReceiveMapChunk(
@@ -793,9 +767,7 @@ public class MapSelectionManager : NetworkBehaviour
                pending.Connection.isReady &&
                pending.Player != null &&
                pending.Player.connectionToClient == pending.Connection &&
-               availabilityResponses.TryGetValue(
-                   pending.Connection, out ParticipantTransferState state) &&
-               state == ParticipantTransferState.TransferPending &&
+               availabilityCheck.IsTransferPending(pending.Connection) &&
                pending.Generation == availabilityGeneration &&
                pending.TransferId == sessionSnapshot.TransferId &&
                pending.MapId == sessionSnapshot.MapId &&
@@ -804,51 +776,6 @@ public class MapSelectionManager : NetworkBehaviour
 
     private int GetChunkCount() =>
         Mathf.CeilToInt(sessionSnapshot.ByteLength / (float)transferChunkBytes);
-
-    private bool AllManifestResponsesReceived()
-    {
-        foreach (ParticipantTransferState state in availabilityResponses.Values)
-        {
-            if (state == ParticipantTransferState.ManifestPending)
-                return false;
-        }
-
-        return availabilityResponses.Count > 0;
-    }
-
-    private void StopAvailabilityTimeout()
-    {
-        if (availabilityTimeoutCoroutine == null) return;
-
-        StopCoroutine(availabilityTimeoutCoroutine);
-        availabilityTimeoutCoroutine = null;
-    }
-
-    private bool MatchesCurrentTransfer(
-        CustomRoomPlayer responder,
-        uint generation,
-        string transferId,
-        string mapId,
-        string contentHash,
-        out NetworkConnectionToClient connection)
-    {
-        connection = responder?.connectionToClient;
-        bool matches = sessionSnapshot != null &&
-                       connection != null &&
-                       availabilityResponses.ContainsKey(connection) &&
-                       generation == availabilityGeneration &&
-                       transferId == sessionSnapshot.TransferId &&
-                       mapId == sessionSnapshot.MapId &&
-                       contentHash == sessionSnapshot.ContentHash;
-        if (!matches)
-        {
-            Debug.LogWarning(
-                $"현재 전송과 일치하지 않는 완료 응답을 무시했습니다: " +
-                $"generation={generation}, transferId={transferId}, mapId={mapId}");
-        }
-
-        return matches;
-    }
 
     [Server]
     private void CompleteAvailabilityCheck()
@@ -902,30 +829,13 @@ public class MapSelectionManager : NetworkBehaviour
         roomManager.ServerChangeScene(roomManager.GameplayScene);
     }
 
-    private bool AllParticipantsHaveMap()
-    {
-        foreach (ParticipantTransferState response in availabilityResponses.Values)
-        {
-            if (response != ParticipantTransferState.Ready)
-                return false;
-        }
-
-        return availabilityResponses.Count > 0;
-    }
-
     private void ClearAvailabilityState()
     {
-        if (availabilityTimeoutCoroutine != null)
-            StopCoroutine(availabilityTimeoutCoroutine);
-        availabilityTimeoutCoroutine = null;
-        if (transferTimeoutCoroutine != null)
-            StopCoroutine(transferTimeoutCoroutine);
-        transferTimeoutCoroutine = null;
         if (transferQueueCoroutine != null)
             StopCoroutine(transferQueueCoroutine);
         transferQueueCoroutine = null;
         transferQueue.Clear();
-        availabilityResponses.Clear();
+        availabilityCheck.Cancel();
         availabilityMapId = string.Empty;
         startRequester = null;
     }
@@ -1062,13 +972,6 @@ public class MapSelectionManager : NetworkBehaviour
 
     private void OnAvailabilityMessageChanged(string oldValue, string newValue) =>
         RefreshSelectionUI();
-
-    private enum ParticipantTransferState
-    {
-        ManifestPending,
-        TransferPending,
-        Ready
-    }
 
     private sealed class PendingChunkTransfer
     {

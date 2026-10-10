@@ -139,14 +139,22 @@ public sealed class SelectionUploadLease
     public string MapId { get; private set; }
     public string ContentHash { get; private set; }
     public bool IsActive { get; private set; }
+    public double ExpiresAt { get; private set; } = double.PositiveInfinity;
 
-    public void Begin(string transferId, string mapId, string contentHash)
+    public void Begin(
+        string transferId,
+        string mapId,
+        string contentHash,
+        double expiresAt = double.PositiveInfinity)
     {
         TransferId = transferId;
         MapId = mapId;
         ContentHash = contentHash;
+        ExpiresAt = expiresAt;
         IsActive = true;
     }
+
+    public bool HasExpired(double now) => IsActive && now >= ExpiresAt;
 
     public bool Matches(string transferId, string mapId, string contentHash) =>
         IsActive &&
@@ -159,6 +167,7 @@ public sealed class SelectionUploadLease
         TransferId = null;
         MapId = null;
         ContentHash = null;
+        ExpiresAt = double.PositiveInfinity;
         IsActive = false;
     }
 }
