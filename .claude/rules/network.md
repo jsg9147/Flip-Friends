@@ -7,8 +7,11 @@ paths:
 
 # 네트워크 규칙 (Mirror)
 
-- **서버 권한**: 이동, 물리, 충돌은 서버에서만 실행한다. `MovementHandler.FixedUpdate`는 `if (!isServer) return`으로 막는다.
-- 클라이언트 → 서버는 `[Command]`, 서버 → 클라이언트는 `[ClientRpc]`를 쓴다. 예: `CmdJumpInputDown`, `CmdObjectInteraction` / `RpcFlipChanged`, `RpcVelocityReset`.
+- **이동은 예측 + 서버 권한**: 소유 클라이언트는 `ClientMover`로 예측하고, 서버는 `ServerMover`가 같은 `MovementHandler.Simulate`를 입력 하나당 한 번 돌려 보정값을 보낸다. 다음 틱에 영향을 주는 값은 모두 `StatePayload`에 넣고, 시뮬레이션 안의 타이머는 코루틴이 아니라 틱 카운터로 둔다.
+- 서버가 위치를 정하는 일(운반 해제, 리스폰)은 `ServerMover.Teleport`로만 한다. 에포크가 바뀌어 이전 입력·보정값이 버려진다. 플레이어 `transform.position`을 직접 바꾸지 않는다.
+- 들기·던지기와 피격은 서버만 판정하고 `SendStateNow`나 RPC로 알린다. 밟기 튕김·스프링·바운스·로프는 소유 클라이언트도 예측하되, 상대에게 주는 효과(Shrink, 점프 차단)는 서버만 낸다. 결과가 갈리면 서버 보정이 덮어쓴다.
+- 보정·재동기화로 생기는 위치 차이는 `ClientMover`의 보이는 위치 오프셋으로 약 0.1초에 걸쳐 따라간다. 판정용 위치(`predictedPosition`)에는 오프셋을 넣지 않는다.
+- 클라이언트 → 서버는 `[Command]`, 서버 → 클라이언트는 `[ClientRpc]`를 쓴다. 서버에 없는 입력(아래 방향 등)은 Command 인자로 보낸다.
 - 상태 동기화는 `[SyncVar(hook = nameof(...))]`로 해서 모든 클라이언트에서 hook이 불리게 한다.
 - `isServer`, `isOwned`, `isLocalPlayer` 분기는 메서드 진입부에서 조기 반환한다.
 - `[Command]`는 `Cmd`, `[ClientRpc]`는 `Rpc`, `[SyncVar]` hook은 `On` + 변수명 + `Changed` 접두사를 붙인다.
@@ -26,8 +29,8 @@ paths:
 
 ## 입력
 
-New Input System만 쓴다. `PlayerInputManager`가 콜백으로 입력을 받아 서버에 Command로 넘기고, 서버가 물리를 처리한 뒤 ClientRpc로 반영한다. 클라이언트에서 직접 물리를 건드리지 않는다.
+New Input System만 쓴다. `PlayerInputManager`가 콜백으로 입력을 받고, 이동 입력은 `ClientMover`가 `InputPayload`로 서버에 보낸다. 들기·리셋 같은 일회성 입력은 `Consume...`으로 한 번만 읽는다.
 
 ## 검증
 
-Steam 클라이언트 로그인이 필요하다. 2인 이상이 필요한 항목은 수동 검증으로 남기고 `Docs/CUSTOM_MAP_NETWORK.md`의 `검증`에 환경 제약으로 적는다.
+Steam 클라이언트 로그인이 필요하다. 한 PC에서 2인을 확인할 때는 `LocalNetworkTest`(KCP + 지연 시뮬레이션)를 쓴다: 에디터는 `Tools/Flip Friends/Local Network Test`, 빌드는 `-localhost`/`-localclient` `-latency 60`. Steam 경로가 필요한 항목은 수동 검증으로 남기고 `Docs/CUSTOM_MAP_NETWORK.md`의 `검증`에 환경 제약으로 적는다.

@@ -10,7 +10,9 @@ paths:
 
 ## 충돌
 
-Rigidbody 물리가 아니라 레이캐스트(`Controller2D`, `RaycastController`)로 판정한다. `Controller2D.collisions`가 이동 판단의 기준이다. 충돌 문제를 고칠 때 Rigidbody 설정을 먼저 의심하지 않는다.
+Rigidbody 물리가 아니라 레이캐스트(`Controller2D`, `RaycastController`)로 판정한다. `Controller2D.collisions`가 이동 판단의 기준이다. 충돌 문제를 고칠 때 Rigidbody 설정을 먼저 의심하지 않는다. 플레이어 `Rigidbody2D`는 트리거 감지용 Kinematic(Full Kinematic Contacts)이다.
+
+`Ground`는 Outline 콜라이더라 안에서 쏜 레이가 벽을 못 본다. 그래서 `Controller2D.Move`가 이동 전에 `ResolvePenetration`으로 겹침을 풀고, 무언가를 놓을 위치는 `RaycastController.CanOccupy`로 먼저 확인한다.
 
 ## 기능 추가 패턴
 
