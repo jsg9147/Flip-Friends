@@ -172,11 +172,11 @@ public class CustomRoomPlayer : NetworkRoomPlayer
     }
 
     [Command]
-    public void CmdSelectBuiltInMap(int stage)
+    public void CmdSelectBuiltInMap(string mapId)
     {
         if (!ServerIsRoomHost()) return;
 
-        FindAnyObjectByType<MapSelectionManager>()?.ServerSelectBuiltIn(stage);
+        FindAnyObjectByType<MapSelectionManager>()?.ServerSelectBuiltIn(mapId);
     }
 
     public void UploadCustomMapSelection(SavedMapListEntry entry)

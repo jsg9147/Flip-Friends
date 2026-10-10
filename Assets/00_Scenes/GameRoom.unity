@@ -447,7 +447,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -878,13 +878,7 @@ MonoBehaviour:
   mapEditorPalette: {fileID: 11400000, guid: d0d1b23d6083fcf46868911d60b227e9, type: 2}
   selectedMapText: {fileID: 1047209230}
   selectionStatusText: {fileID: 1747140471}
-  availabilityTimeoutSeconds: 10
-  transferTimeoutSeconds: 30
-  selectionUploadTimeoutSeconds: 12
-  transferChunkBytes: 24576
-  maximumMapBytes: 524288
-  maximumChunksPerFrame: 2
-  maximumTransferBytesPerFrame: 49152
+  builtInMapCatalog: {fileID: 11400000, guid: 542825b06bb0e0c4ea22186a22eda3bc, type: 2}
   mapButtons:
   - {fileID: 6797948985396392124}
   - {fileID: 712935691}
@@ -907,6 +901,13 @@ MonoBehaviour:
   - {fileID: 910238985}
   - {fileID: 1524767484}
   - {fileID: 502857344}
+  availabilityTimeoutSeconds: 10
+  transferTimeoutSeconds: 30
+  selectionUploadTimeoutSeconds: 12
+  transferChunkBytes: 24576
+  maximumMapBytes: 524288
+  maximumChunksPerFrame: 2
+  maximumTransferBytesPerFrame: 49152
 --- !u!4 &390381967
 Transform:
   m_ObjectHideFlags: 0
@@ -951,9 +952,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 446371844ef133040b2c6c44b6d86dbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   uiElements:
   - {fileID: 6797948985396392124}
   - {fileID: 712935691}
@@ -2065,7 +2063,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 00000000i
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -2080,6 +2078,9 @@ MonoBehaviour:
   m_ShadowSoftnessFalloffIntensity: 0.5
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
   m_LocalBounds:
     m_Center: {x: 0, y: -0.00000011920929, z: 0}
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
@@ -2236,7 +2237,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -2500,7 +2501,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -3706,7 +3707,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -5380,7 +5381,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -6421,7 +6422,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -7873,7 +7874,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

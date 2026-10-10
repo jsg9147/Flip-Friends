@@ -8,7 +8,7 @@ public class SlimeRoomManager : NetworkRoomManager
 {
     private List<GameObject> lobbyPlayerList;
 
-    public int currentStage = 0;
+    public string currentBuiltInMapId = string.Empty;
 
     public string currentMapId = string.Empty;
     public string currentMapContentHash = string.Empty;
@@ -122,7 +122,7 @@ public class SlimeRoomManager : NetworkRoomManager
             yield break;
         }
 
-        currentStage = -1;
+        currentBuiltInMapId = string.Empty;
         currentMapId = testPlaySnapshot.MapId;
         currentMapContentHash = testPlaySnapshot.ContentHash;
         ServerChangeScene(GameplayScene);
@@ -152,7 +152,7 @@ public class SlimeRoomManager : NetworkRoomManager
         testPlayReturnScene = null;
         offlineSceneBeforeTestPlay = null;
         isTestPlayEnding = false;
-        currentStage = 0;
+        currentBuiltInMapId = string.Empty;
         currentMapId = string.Empty;
         currentMapContentHash = string.Empty;
     }

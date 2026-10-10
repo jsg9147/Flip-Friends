@@ -550,7 +550,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 00000000i
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -565,6 +565,9 @@ MonoBehaviour:
   m_ShadowSoftnessFalloffIntensity: 0.5
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
   m_LocalBounds:
     m_Center: {x: 0, y: -0.00000011920929, z: 0}
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
@@ -643,28 +646,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  stageMapPrefabs:
-  - {fileID: 3846973216450071382, guid: 4c59ada489f6f2b4cacc3a289857120a, type: 3}
-  - {fileID: 3747033625749210140, guid: ebe2a51c9bd13e5439903195802c51a4, type: 3}
-  - {fileID: 5805161698478747626, guid: 30e69d81cf6da5d43a14a23db8b55dd1, type: 3}
-  - {fileID: 643198365634676647, guid: 76deccfbf2e099b4595e90ecebeda8d8, type: 3}
-  - {fileID: 3829263911076010992, guid: a1b34728f0cef82428ca985486f2ac89, type: 3}
-  - {fileID: 888922463325178406, guid: 0ff82ab7fec8dcd44a1f411e6d8f13f7, type: 3}
-  - {fileID: 5813359405025824721, guid: ad9315da8fd1dd541a633d812e99d518, type: 3}
-  - {fileID: 6749148591891718062, guid: c32f8b20d50c61a4da1c6980e6a7adf5, type: 3}
-  - {fileID: 4839135096584866826, guid: 05ea356a9062863458d87495d4f2f6d5, type: 3}
-  - {fileID: 6602192240865908714, guid: 1015012a2d8ec1443a696cc205c9ce89, type: 3}
-  - {fileID: 5779526636097850817, guid: bb5932516d2ee3946843f694bc0bc807, type: 3}
-  - {fileID: 7694952657952096941, guid: 2202653edc01ddf4c9d33b45d3a3bc71, type: 3}
-  - {fileID: 3846973216450071382, guid: cbb8dff5a10f3cd478c0d032c5580306, type: 3}
-  - {fileID: 3846973216450071382, guid: 5cdc071363935d54b93f39a9253b9336, type: 3}
-  - {fileID: 3846973216450071382, guid: 6ac71404db08f10439e5f276eaff82a7, type: 3}
-  - {fileID: 3846973216450071382, guid: ccb2dd7d1c21ac143ad0c1bde01daa13, type: 3}
-  - {fileID: 3846973216450071382, guid: 9eea45ecbb6985046adbec65613ec196, type: 3}
-  - {fileID: 3846973216450071382, guid: 336dbf72a10fc7d48a6e496ddc7da3f1, type: 3}
-  - {fileID: 3846973216450071382, guid: 4d75d7909e4a83d49b878df020004f96, type: 3}
-  - {fileID: 3846973216450071382, guid: d8dcd392b3d6f8d4d80fd7298cfa3eb5, type: 3}
-  - {fileID: 3846973216450071382, guid: 35ac4df8ad2c1fa40bc6ed772fef20fb, type: 3}
+  builtInMapCatalog: {fileID: 11400000, guid: 542825b06bb0e0c4ea22186a22eda3bc, type: 2}
   palette: {fileID: 11400000, guid: d0d1b23d6083fcf46868911d60b227e9, type: 2}
   mapDataSyncPrefab: {fileID: 2945471622916600022, guid: b14757c1186d91641a43363f31081669, type: 3}
 --- !u!4 &750259705

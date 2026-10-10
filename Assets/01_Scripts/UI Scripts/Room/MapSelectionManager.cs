@@ -45,6 +45,8 @@ public class MapSelectionManager : NetworkBehaviour
     [SerializeField] private MapEditorPalette mapEditorPalette;
     [SerializeField] private TMP_Text selectedMapText;
     [SerializeField] private TMP_Text selectionStatusText;
+    [SerializeField] private BuiltInMapCatalog builtInMapCatalog;
+    // i번째 버튼은 카탈로그의 i번째 기본 맵을 고른다. 카탈로그에 없는 버튼은 누를 수 없다.
     [SerializeField] private Button[] mapButtons;
     [SerializeField, Min(1f)]
     private float availabilityTimeoutSeconds = DefaultAvailabilityTimeoutSeconds;
@@ -63,8 +65,7 @@ public class MapSelectionManager : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnMapKindChanged))]
     private LobbyMapKind selectedMapKind;
-    [SyncVar(hook = nameof(OnStageChanged))]
-    private int selectedStage = -1;
+    // 기본 맵이면 BuiltInMapId, 커스텀 맵이면 GUID N 형식 MapId다. 종류는 selectedMapKind로 구분한다.
     [SyncVar(hook = nameof(OnMapIdChanged))]
     private string selectedMapId = string.Empty;
     [SyncVar(hook = nameof(OnMapNameChanged))]
@@ -160,11 +161,20 @@ public class MapSelectionManager : NetworkBehaviour
         stageSelectBtnEvent.SelectFirstValidIn(listContainer);
     }
 
-    public void StageLoad(int stage)
+    public void SelectBuiltInMapAt(int buttonIndex)
     {
         if (!CanLocalPlayerChangeSelection()) return;
 
-        RoomPlayer.CmdSelectBuiltInMap(stage);
+        BuiltInMapCatalog.Entry entry = builtInMapCatalog != null
+            ? builtInMapCatalog.GetAt(buttonIndex)
+            : null;
+        if (entry == null)
+        {
+            Debug.LogWarning($"카탈로그에 없는 기본 맵 버튼입니다: index={buttonIndex}", this);
+            return;
+        }
+
+        RoomPlayer.CmdSelectBuiltInMap(entry.MapId);
     }
 
     public void SelectCustomMap(SavedMapListEntry entry)
@@ -189,17 +199,16 @@ public class MapSelectionManager : NetworkBehaviour
     }
 
     [Server]
-    public void ServerSelectBuiltIn(int stage)
+    public void ServerSelectBuiltIn(string mapId)
     {
-        if (!IsValidBuiltInStage(stage)) return;
+        if (!TryGetBuiltInMap(mapId, out BuiltInMapCatalog.Entry entry)) return;
 
         ServerInvalidateAvailabilityCheck("기본 맵 선택으로 변경되었습니다.");
         SetAvailabilityStatus(LobbyMapAvailabilityState.Idle, string.Empty);
         sessionSnapshot = null;
         selectedMapKind = LobbyMapKind.BuiltIn;
-        selectedStage = stage;
-        selectedMapId = string.Empty;
-        selectedMapName = $"기본 스테이지 {stage + 1}";
+        selectedMapId = entry.MapId;
+        selectedMapName = entry.DisplayName;
         selectedAuthorName = "Flip Friends";
         selectedVersion = string.Empty;
         selectedMapHasWarnings = false;
@@ -247,7 +256,6 @@ public class MapSelectionManager : NetworkBehaviour
         sessionSnapshot = snapshot;
         SetAvailabilityStatus(LobbyMapAvailabilityState.Idle, string.Empty);
         selectedMapKind = LobbyMapKind.Custom;
-        selectedStage = -1;
         selectedMapId = normalizedMapId;
         selectedMapName = mapData.mapName;
         selectedAuthorName = string.IsNullOrWhiteSpace(mapData.authorName)
@@ -372,7 +380,6 @@ public class MapSelectionManager : NetworkBehaviour
         SetAvailabilityStatus(LobbyMapAvailabilityState.Idle, string.Empty);
         sessionSnapshot = null;
         selectedMapKind = LobbyMapKind.None;
-        selectedStage = -1;
         selectedMapId = string.Empty;
         selectedMapName = string.Empty;
         selectedAuthorName = string.Empty;
@@ -476,9 +483,9 @@ public class MapSelectionManager : NetworkBehaviour
     {
         if (NetworkManager.singleton is not SlimeRoomManager roomManager) return;
 
-        roomManager.currentStage = selectedMapKind == LobbyMapKind.BuiltIn
-            ? selectedStage
-            : -1;
+        roomManager.currentBuiltInMapId = selectedMapKind == LobbyMapKind.BuiltIn
+            ? selectedMapId
+            : string.Empty;
         roomManager.currentMapId = selectedMapKind == LobbyMapKind.Custom
             ? selectedMapId
             : string.Empty;
@@ -866,12 +873,18 @@ public class MapSelectionManager : NetworkBehaviour
         };
     }
 
-    private bool IsValidBuiltInStage(int stage)
+    private bool TryGetBuiltInMap(string mapId, out BuiltInMapCatalog.Entry entry)
     {
-        if (mapButtons != null && stage >= 0 && stage < mapButtons.Length)
+        entry = null;
+        if (builtInMapCatalog == null)
+        {
+            Debug.LogError("BuiltInMapCatalog가 MapSelectionManager에 연결되어 있지 않습니다.", this);
+            return false;
+        }
+        if (BuiltInMapId.IsValid(mapId) && builtInMapCatalog.TryGet(mapId, out entry))
             return true;
 
-        Debug.LogWarning($"범위를 벗어난 기본 맵 선택 요청을 거부했습니다: stage={stage}");
+        Debug.LogWarning($"카탈로그에 없는 기본 맵 선택 요청을 거부했습니다: mapId={mapId}", this);
         return false;
     }
 
@@ -889,8 +902,8 @@ public class MapSelectionManager : NetworkBehaviour
 
         for (int index = 0; index < mapButtons.Length; index++)
         {
-            int stageIndex = index;
-            mapButtons[index].onClick.AddListener(() => StageLoad(stageIndex));
+            int buttonIndex = index;
+            mapButtons[index].onClick.AddListener(() => SelectBuiltInMapAt(buttonIndex));
         }
     }
 
@@ -934,17 +947,17 @@ public class MapSelectionManager : NetworkBehaviour
     {
         if (mapButtons == null) return;
 
-        foreach (Button button in mapButtons)
+        for (int index = 0; index < mapButtons.Length; index++)
         {
-            if (button != null)
-                button.interactable = interactable;
+            if (mapButtons[index] != null)
+                mapButtons[index].interactable = interactable && HasBuiltInMapAt(index);
         }
     }
 
-    private void OnMapKindChanged(LobbyMapKind oldValue, LobbyMapKind newValue) =>
-        RefreshSelectionUI();
+    private bool HasBuiltInMapAt(int index) =>
+        builtInMapCatalog != null && builtInMapCatalog.GetAt(index)?.StagePrefab != null;
 
-    private void OnStageChanged(int oldValue, int newValue) =>
+    private void OnMapKindChanged(LobbyMapKind oldValue, LobbyMapKind newValue) =>
         RefreshSelectionUI();
 
     private void OnMapIdChanged(string oldValue, string newValue) =>

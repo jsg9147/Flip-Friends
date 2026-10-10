@@ -1,12 +1,11 @@
 using Mirror;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StageManager : NetworkBehaviour
 {
     public static StageManager instance;
 
-    public List<GameObject> stageMapPrefabs;
+    [SerializeField] private BuiltInMapCatalog builtInMapCatalog;
     public MapEditorPalette palette;
     public GameObject mapDataSyncPrefab;
 
@@ -62,14 +61,25 @@ public class StageManager : NetworkBehaviour
         }
         else
         {
-            LoadPrefabStage(slimeRoomManager.currentStage);
+            LoadPrefabStage(slimeRoomManager.currentBuiltInMapId);
         }
     }
 
     [Server]
-    private void LoadPrefabStage(int stage)
+    private void LoadPrefabStage(string mapId)
     {
-        GameObject stageObject = Instantiate(stageMapPrefabs[stage]);
+        if (builtInMapCatalog == null)
+        {
+            Debug.LogError("BuiltInMapCatalog가 StageManager에 연결되어 있지 않습니다.", this);
+            return;
+        }
+        if (!builtInMapCatalog.TryGet(mapId, out BuiltInMapCatalog.Entry entry))
+        {
+            Debug.LogError($"카탈로그에서 기본 맵을 찾을 수 없습니다: mapId={mapId}", this);
+            return;
+        }
+
+        GameObject stageObject = Instantiate(entry.StagePrefab);
 
         NetworkIdentity stageIdentity = stageObject.GetComponent<NetworkIdentity>();
         if (stageIdentity != null)

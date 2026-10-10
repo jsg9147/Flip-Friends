@@ -20,6 +20,7 @@
 - 자동 수신 데이터는 Maps 폴더에 쓰지 않는다. 영구 저장은 `MapReceivePrompt`의 명시적 승인 흐름만 사용한다.
 - 커스텀 맵을 로드하면 `StageManager`가 GamePlay 씬의 기본 시작 위치를 해제한다. 맵에 배치한 시작 지점(`NetworkStartPosition`)만 RoundRobin 대상이다. 이전에는 씬 시작 위치가 먼저 골라져 플레이어가 맵과 무관한 곳에서 생성됐다.
 - 팔레트의 `BasicGround` 프리팹 레이어를 `Finish`에서 `Ground`로 고쳤다. 이전에는 플레이어 충돌 마스크에 걸리지 않아 커스텀 맵 지면을 통과해 떨어졌다.
+- 기본 맵은 `BuiltInMapCatalog`(`Assets/07_ScriptableObject/BuiltInMapCatalog.asset`)의 문자열 ID(`stage-01`~`stage-21`, 소문자 kebab-case, `BuiltInMapId` 규칙)로 고른다. `CmdSelectBuiltInMap`, `selectedMapId` SyncVar, `SlimeRoomManager.currentBuiltInMapId`, `StageManager` 로드가 모두 ID를 쓴다. 정수 `currentStage`·`selectedStage`와 `StageManager.stageMapPrefabs`는 제거됐다. 카탈로그 순서는 GameRoom `mapButtons` 순서와만 연결되고, 항목이 없는 버튼은 누를 수 없다.
 - 맵 에디터 테스트 플레이는 같은 서버 세션 경로(`ServerMapSession`, `currentMapId`)로 맵을 생성한다. 흐름은 `Docs/MAP_EDITOR.md`에 있다.
 
 ## 핵심 흐름
@@ -49,7 +50,9 @@ MapListUI
 - `FlipFriends.MapTransferCore.Tests` Edit Mode 테스트 9개가 통과했다. Unity `6000.6.3f1`과 test-framework `1.8.0`에서 재실행해 9개 전부 통과를 확인했다.
 - 역순 조립, 중복, 누락, 크기 초과, 이전 식별자, 라운드 로빈 순환·취소, 업로드 lease 무효화·교체를 검증한다.
 - `MapAvailabilityCheckTests` 15개는 Mirror 연결을 문자열 참여자로, Coroutine을 수동 시계로 바꾼 하네스다. 전원 보유 시 완료, 누락자에게만 전송, manifest 10초 초과, 전송 제한이 첫 청크 송신부터 재짐(manifest 단계 알림은 무시), 취소 후 늦은 응답·마감 무시, 새 세대가 이전 응답·마감을 무시, 중복·명단 밖 응답, 식별자 불일치·로컬 데이터 손상·참여자 보고 실패, 3인 부분 완료, 빈 참여자, lease 마감 만료를 보장한다.
-- 2026-10-10 Unity `6000.6.3f1` Test Runner에서 Edit Mode 전체 87개(`FlipFriends.MapTransferCore.Tests` 24개 포함)가 통과했다. 에디터 컴파일(Mirror weaver 포함)과 `Assembly-CSharp` 빌드는 오류 0건이다.
+- 2026-10-10 Unity `6000.6.3f1` Test Runner에서 Edit Mode 전체 102개(`FlipFriends.MapTransferCore.Tests` 39개 포함)가 통과했다. 에디터 컴파일(Mirror weaver 포함)은 오류 0건이다.
+- `BuiltInMapIdTests` 15개는 kebab-case 허용, 대문자·밑줄·공백·연속 하이픈·64자 초과 거부, 목록의 중복 ID와 형식 오류 위치 보고를 보장한다.
+- 카탈로그 21개 항목이 이전 `stageMapPrefabs` 순서(Stage 1~21)와 같고, GameRoom `MapSelectionManager`와 GamePlay `StageManager`에 연결된 것을 에디터에서 확인했다. 실제 방에서 기본 스테이지를 골라 시작하는 흐름은 수동 검증이 남아 있다.
 - Unity 컴파일과 `Assembly-CSharp` 빌드는 오류 없이 통과했다. `6000.6.3f1`에서도 테스트 어셈블리를 포함해 오류 없이 빌드된다.
 - 실제 Steam 2인 환경의 자동 수신, 지연, 전송 중 이탈·선택 변경, 타임아웃과 Host/원격 GamePlay 일치는 수동 검증 대기다.
 
@@ -57,11 +60,10 @@ MapListUI
 
 - 실제 Steam 2인 및 최대 4인 수동 검증
 - 실제 Mirror 연결(호스트·원격 클라이언트)과 청크 큐를 포함하는 Play Mode 통합 테스트. 상태 전이는 Edit Mode에서 검증된다.
-- 기본 맵의 안정적 문자열 ID와 `currentStage` 직접 의존 제거
 - `StageManager`의 런타임 로더·오브젝트 팩토리 책임 분리
 - 재접속 정책과 실패 중 생성된 세션 오브젝트 정리
 - 상세 전송 진행률 UI는 안정성 검증 이후 진행
 
 ## 다음 작업
 
-기본 맵에 안정적 문자열 ID를 주고 `currentStage` 직접 의존을 걷어낸다.
+`StageManager`에서 커스텀 맵 런타임 로더와 오브젝트 팩토리 책임을 분리한다.
