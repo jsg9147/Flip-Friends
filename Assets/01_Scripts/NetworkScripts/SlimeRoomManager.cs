@@ -182,6 +182,9 @@ public class SlimeRoomManager : NetworkRoomManager
     {
         FindAnyObjectByType<MapSelectionManager>()?
             .ServerInvalidateAvailabilityCheck("참여자가 연결을 종료했습니다.");
+        // 게임 중 이탈자는 재입장할 수 없으므로 남은 인원만으로 클리어를 판정한다.
+        if (Utils.IsSceneActive(GameplayScene) && GameManager.Instance != null)
+            GameManager.Instance.ServerRecheckFinishNextFrame();
         base.OnRoomServerDisconnect(conn);
     }
 

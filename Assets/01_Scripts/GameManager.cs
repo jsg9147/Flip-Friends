@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Linq;
 using Mirror;
 
@@ -8,8 +9,6 @@ public class GameManager : NetworkBehaviour
     public static GameManager Instance;
 
     public GameObject menuScreen;
-
-    private PlayerController2D[] playerControllers;
 
     public void Awake()
     {
@@ -32,17 +31,12 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void SetPlayerController(PlayerController2D[] playerControllers)
-    {
-        this.playerControllers = playerControllers;
-    }
-
+    // 플레이어 목록을 캐시하지 않는다. 캐시하면 도중에 이탈한 플레이어가 남아 클리어가 영영 안 된다.
     public void FinishCheck()
     {
-        if (playerControllers == null || playerControllers.Length == 0)
-        {
-            this.playerControllers = FindObjectsByType<PlayerController2D>();
-        }
+        PlayerController2D[] playerControllers = FindObjectsByType<PlayerController2D>();
+        if (playerControllers.Length == 0)
+            return;
 
         bool allPlayersFinished = playerControllers.All(player => player.isFinish);
 
@@ -51,6 +45,20 @@ public class GameManager : NetworkBehaviour
             Debug.Log("클리어");
             StageClear();
         }
+    }
+
+    // 남은 플레이어가 모두 도착한 상태에서 마지막 미도착자가 나가면 아무도 판정을 다시 부르지 않는다.
+    // 이탈한 플레이어 오브젝트는 프레임 끝에 파괴되므로 다음 프레임에 검사한다.
+    [Server]
+    public void ServerRecheckFinishNextFrame()
+    {
+        StartCoroutine(RecheckFinishNextFrame());
+    }
+
+    private IEnumerator RecheckFinishNextFrame()
+    {
+        yield return null;
+        FinishCheck();
     }
 
     private void StageClear()

@@ -20,6 +20,8 @@ paths:
 
 맵 에디터 테스트 플레이(`SlimeRoomManager.IsTestPlaying`) 중에는 `ReturnRoomScene()`과 `GameManager.ExitGame()`이 호스트를 끄고 에디터로 돌아간다. 이 동안 `offlineScene`을 비워 둔다. 값이 있으면 Mirror가 종료 시 매니저를 DDOL에서 꺼내 파괴한다. 서버 종료 흐름을 바꿀 때 이 분기를 함께 확인한다.
 
+게임 진행 중 입장·재입장은 받지 않는다(Mirror가 Room 씬 밖의 새 연결을 끊고, `SteamRoomManager`가 GameRoom 밖에서 로비를 입장 불가로 둔다). 이 정책을 바꾸면 `GameManager.FinishCheck`와 커스텀 맵 세션 캐시를 함께 확인한다.
+
 `NetworkRoomManager.OnServerAddPlayer`는 `OnRoomServerAddPlayer`를 호출하지 않는다. 방 플레이어 생성 직후에 할 일은 `OnServerAddPlayer`를 오버라이드한다.
 
 ## 입력

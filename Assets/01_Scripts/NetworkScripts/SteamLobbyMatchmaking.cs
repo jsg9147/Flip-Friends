@@ -78,6 +78,16 @@ public sealed class SteamLobbyMatchmaking
         CurrentLobbyId = CSteamID.Nil;
     }
 
+    // 로비 소유자만 바꿀 수 있다. 입장 불가 로비는 목록 검색과 초대 입장에서 모두 빠진다.
+    public void SetLobbyJoinable(bool isJoinable)
+    {
+        if (CurrentLobbyId == CSteamID.Nil)
+            return;
+
+        if (!SteamMatchmaking.SetLobbyJoinable(CurrentLobbyId, isJoinable))
+            Debug.LogWarning($"로비 입장 가능 여부를 바꾸지 못했습니다: lobby={CurrentLobbyId}, joinable={isJoinable}");
+    }
+
     public async Task<List<SteamLobbyInfo>> GetLobbyListAsync()
     {
         LobbyInfos.Clear();

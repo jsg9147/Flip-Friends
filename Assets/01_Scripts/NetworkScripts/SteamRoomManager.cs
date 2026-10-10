@@ -91,6 +91,14 @@ public class SteamRoomManager : SlimeRoomManager
         StopNetworkSession();
     }
 
+    // 게임 진행 중에는 Mirror가 새 연결을 끊는다. Steam 로비에 들어온 뒤 끊기면
+    // 로비 멤버로만 남으므로 GameRoom에 있을 때만 입장을 받는다.
+    public override void OnRoomServerSceneChanged(string sceneName)
+    {
+        base.OnRoomServerSceneChanged(sceneName);
+        matchmaking.SetLobbyJoinable(Utils.IsSceneActive(RoomScene));
+    }
+
     private void HandleLobbyCreateFailed()
     {
         // StartHost 이후 CreateLobby 실패 시 고아 호스트 세션을 정리

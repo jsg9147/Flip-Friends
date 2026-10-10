@@ -21,6 +21,10 @@
 - 커스텀 맵을 로드하면 `StageManager`가 GamePlay 씬의 기본 시작 위치를 해제한다. 맵에 배치한 시작 지점(`NetworkStartPosition`)만 RoundRobin 대상이다. 이전에는 씬 시작 위치가 먼저 골라져 플레이어가 맵과 무관한 곳에서 생성됐다.
 - 팔레트의 `BasicGround` 프리팹 레이어를 `Finish`에서 `Ground`로 고쳤다. 이전에는 플레이어 충돌 마스크에 걸리지 않아 커스텀 맵 지면을 통과해 떨어졌다.
 - 기본 맵은 `BuiltInMapCatalog`(`Assets/07_ScriptableObject/BuiltInMapCatalog.asset`)의 문자열 ID(`stage-01`~`stage-21`, 소문자 kebab-case, `BuiltInMapId` 규칙)로 고른다. `CmdSelectBuiltInMap`, `selectedMapId` SyncVar, `SlimeRoomManager.currentBuiltInMapId`, `StageManager` 로드가 모두 ID를 쓴다. 정수 `currentStage`·`selectedStage`와 `StageManager.stageMapPrefabs`는 제거됐다. 카탈로그 순서는 GameRoom `mapButtons` 순서와만 연결되고, 항목이 없는 버튼은 누를 수 없다.
+- GamePlay 서버의 커스텀 맵 생성은 세 단계로 나뉜다. `StageManager`가 기본 맵과 커스텀 맵 중 무엇을 띄울지 정하고, `CustomMapRuntimeLoader`가 생성 순서(씬 시작 위치 해제 → `MapDataNetworkSync` 생성 → 배치 오브젝트 생성)를 맡고, `PlacedObjectFactory`가 배치 항목 하나를 팔레트 프리팹으로 만들어 Spawn한다. 두 클래스는 MonoBehaviour가 아니므로 Inspector 연결은 `StageManager`에 그대로 있다.
+- 로드 실패 정책: 세션 맵 누락, 팔레트·동기화 프리팹 미연결, 배치 오브젝트 하나라도 생성 실패, 기본 맵 카탈로그 누락이면 실패다. 커스텀 맵은 일부만 생성된 상태로 두지 않는다. 로더가 이미 Spawn한 오브젝트를 모두 `NetworkServer.Destroy`하고 씬 시작 위치를 다시 등록한다. 이후 `StageManager`가 다음 프레임에 `ReturnRoomScene()`으로 전원을 GameRoom에 돌려보낸다(테스트 플레이는 에디터 복귀). 실패 사유는 서버 로그에만 남는다.
+- 재접속 정책: GamePlay 진행 중 입장·재입장은 받지 않는다. Mirror `NetworkRoomManager`가 Room 씬이 아니면 새 연결을 끊는다. 이와 맞추어 `SteamRoomManager`는 GameRoom에서만 Steam 로비를 입장 가능으로 둔다. 이탈한 플레이어는 GameRoom으로 돌아온 뒤 새 참여자로 다시 들어오며, 이때 보유 검사가 무효화되고 클라이언트 `MapSessionCache`는 `OnStopClient`에서 이미 비워져 있다.
+- 게임 중 이탈하면 남은 인원으로 클리어를 판정한다. `GameManager.FinishCheck`는 플레이어 목록을 캐시하지 않고, 서버는 이탈 다음 프레임에 판정을 다시 부른다. 이전에는 이탈자가 캐시에 남아 클리어가 불가능했다.
 - 맵 에디터 테스트 플레이는 같은 서버 세션 경로(`ServerMapSession`, `currentMapId`)로 맵을 생성한다. 흐름은 `Docs/MAP_EDITOR.md`에 있다.
 
 ## 핵심 흐름
@@ -32,6 +36,7 @@ MapListUI
   → ServerMapSessionStore / MapSessionCache
   → SlimeRoomManager(MapId, ContentHash)
   → StageManager
+  → CustomMapRuntimeLoader → PlacedObjectFactory
   → MapDataNetworkSync
 ```
 
@@ -41,7 +46,7 @@ MapListUI
 - `Assets/01_Scripts/NetworkScripts/CustomRoomPlayer.cs`
 - `Assets/01_Scripts/NetworkScripts/SlimeRoomManager.cs`
 - `Assets/01_Scripts/PlayingScripts/StageManager.cs`
-- `Assets/01_Scripts/MapEditorScripts/Network`
+- `Assets/01_Scripts/MapEditorScripts/Network` (`CustomMapRuntimeLoader`, `PlacedObjectFactory` 포함)
 - `Assets/01_Scripts/MapEditorScripts/Network/Core/MapAvailabilityCheck.cs`
 - `Assets/Tests/EditMode/MapTransferCoreTests.cs`, `MapAvailabilityCheckTests.cs`
 
@@ -53,6 +58,7 @@ MapListUI
 - 2026-10-10 Unity `6000.6.3f1` Test Runner에서 Edit Mode 전체 102개(`FlipFriends.MapTransferCore.Tests` 39개 포함)가 통과했다. 에디터 컴파일(Mirror weaver 포함)은 오류 0건이다.
 - `BuiltInMapIdTests` 15개는 kebab-case 허용, 대문자·밑줄·공백·연속 하이픈·64자 초과 거부, 목록의 중복 ID와 형식 오류 위치 보고를 보장한다.
 - 카탈로그 21개 항목이 이전 `stageMapPrefabs` 순서(Stage 1~21)와 같고, GameRoom `MapSelectionManager`와 GamePlay `StageManager`에 연결된 것을 에디터에서 확인했다. Stage 21이 Main 씬 `SlimeRoomManager`·`SteamRoomManager`의 `spawnPrefabs`에서 빠져 원격 클라이언트에 생성되지 않던 문제(변경 전부터 존재)를 등록으로 고쳤다. 실제 방에서 기본 스테이지, 특히 Stage 21을 원격 클라이언트까지 확인하는 것은 수동 검증이 남아 있다.
+- 2026-10-10 로더·팩토리 분리, 로드 실패 정리, 재접속 정책 반영 후 Unity 컴파일(Mirror weaver 포함)과 `Assembly-CSharp` 빌드 오류 0건, Edit Mode 102개 통과를 확인했다. 런타임 동작(커스텀 맵 생성, 실패 시 GameRoom 복귀, 게임 중 이탈 후 클리어, 게임 중 Steam 로비 비노출)은 수동 검증이 남아 있다. 이탈·로비 항목은 2인 이상이 필요하다.
 - Unity 컴파일과 `Assembly-CSharp` 빌드는 오류 없이 통과했다. `6000.6.3f1`에서도 테스트 어셈블리를 포함해 오류 없이 빌드된다.
 - 2026-10-10 사용자가 실제 Steam 2인 환경에서 커스텀 맵 선택·전송·시작 흐름을 수동 확인했다. 3~4인 환경은 확인하지 않았다.
 
@@ -60,10 +66,9 @@ MapListUI
 
 - 기본 스테이지 2인 수동 검증, 최대 4인 수동 검증
 - 실제 Mirror 연결(호스트·원격 클라이언트)과 청크 큐를 포함하는 Play Mode 통합 테스트. 상태 전이는 Edit Mode에서 검증된다.
-- `StageManager`의 런타임 로더·오브젝트 팩토리 책임 분리
-- 재접속 정책과 실패 중 생성된 세션 오브젝트 정리
+- 로드 실패 사유를 클라이언트에 알리는 UI. 지금은 서버 로그만 남고 전원이 GameRoom으로 돌아간다.
 - 상세 전송 진행률 UI는 안정성 검증 이후 진행
 
 ## 다음 작업
 
-`StageManager`에서 커스텀 맵 런타임 로더와 오브젝트 팩토리 책임을 분리한다.
+Steam 2인 환경에서 기본 스테이지(Stage 21 포함), 게임 중 이탈 후 클리어, 게임 중 로비 비노출을 수동 확인한다.
