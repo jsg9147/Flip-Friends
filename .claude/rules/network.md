@@ -8,7 +8,7 @@ paths:
 # 네트워크 규칙 (Mirror)
 
 - **이동은 예측 + 서버 권한**: 소유 클라이언트는 `ClientMover`로 예측하고, 서버는 `ServerMover`가 같은 `MovementHandler.Simulate`를 입력 하나당 한 번 돌려 보정값을 보낸다. 다음 틱에 영향을 주는 값은 모두 `StatePayload`에 넣고, 시뮬레이션 안의 타이머는 코루틴이 아니라 틱 카운터로 둔다.
-- 서버가 위치를 정하는 일(운반 해제, 리스폰)은 `ServerMover.Teleport`로만 한다. 에포크가 바뀌어 이전 입력·보정값이 버려진다. 플레이어 `transform.position`을 직접 바꾸지 않는다.
+- 서버가 위치를 정하는 일(운반 해제, 리스폰)은 `ServerMover.Teleport`로만 한다. 에포크가 바뀌어 이전 입력·보정값이 버려진다. 플레이어 `transform.position`을 직접 바꾸지 않는다. 예외는 `PlayerLagCompensation`이 입력 하나를 시뮬레이션하는 동안 다른 플레이어를 옮겼다가 같은 틱에 되돌리는 것뿐이다.
 - 들기·던지기와 피격은 서버만 판정하고 `SendStateNow`나 RPC로 알린다. 밟기 튕김·스프링·바운스·로프는 소유 클라이언트도 예측하되, 상대에게 주는 효과(Shrink, 점프 차단)는 서버만 낸다. 결과가 갈리면 서버 보정이 덮어쓴다.
 - 보정·재동기화로 생기는 위치 차이는 `ClientMover`의 보이는 위치 오프셋으로 약 0.1초에 걸쳐 따라간다. 판정용 위치(`predictedPosition`)에는 오프셋을 넣지 않는다.
 - 클라이언트 → 서버는 `[Command]`, 서버 → 클라이언트는 `[ClientRpc]`를 쓴다. 서버에 없는 입력(아래 방향 등)은 Command 인자로 보낸다.

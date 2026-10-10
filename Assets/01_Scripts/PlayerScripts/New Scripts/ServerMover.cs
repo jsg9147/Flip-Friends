@@ -20,8 +20,13 @@ public class ServerMover : NetworkBehaviour
     private const int StarvationTicks = 10;
     private int ticksWithoutInput;
 
+    // 서버 프레임이 빨라도 PlayerLagCompensation.MaxRewindTime(0.5초)을 덮도록 넉넉히 둔다.
+    private const int HistoryCapacity = 256;
+
     private MovementHandler movementHandler;
     private ClientMover clientMover;
+    private BoxCollider2D boxCollider;
+    private readonly PlayerPositionHistory positionHistory = new PlayerPositionHistory(HistoryCapacity);
 
     private readonly Queue<InputPayload> inputQueue = new Queue<InputPayload>();
 
@@ -40,6 +45,7 @@ public class ServerMover : NetworkBehaviour
     {
         movementHandler = GetComponent<MovementHandler>();
         clientMover = GetComponent<ClientMover>();
+        boxCollider = GetComponent<BoxCollider2D>();
     }
 
     public override void OnStartServer()
@@ -47,6 +53,22 @@ public class ServerMover : NetworkBehaviour
         base.OnStartServer();
         // ServerMover가 Simulate를 직접 호출하므로 MovementHandler.FixedUpdate 자동 실행 비활성화
         movementHandler.managedExternally = true;
+        PlayerLagCompensation.Register(this);
+    }
+
+    public override void OnStopServer()
+    {
+        PlayerLagCompensation.Unregister(this);
+        base.OnStopServer();
+    }
+
+    // 지연 보상에서 viewTime 시점의 위치로 옮길 수 있으면 true.
+    // 운반 중이면 운반자를 따라가고, 도착 지점에 들어가 콜라이더가 꺼져 있으면 판정에 끼지 않으므로 옮기지 않는다.
+    public bool TryGetRewindPosition(double viewTime, out Vector2 position)
+    {
+        position = default;
+        if (transform.parent != null || !boxCollider.enabled) return false;
+        return positionHistory.TrySample(viewTime, out position);
     }
 
     // ClientMover.CmdSendInput에서 서버 측으로 호출됨
@@ -113,11 +135,12 @@ public class ServerMover : NetworkBehaviour
 
             // 입력이 오래 끊기면 마지막 입력으로 계속 움직여 다른 화면에서 멈춰 보이지 않게 한다.
             // 방향/달리기는 유지하되 점프 같은 순간 이벤트는 제거
+            // 보던 시점도 틱만큼 흘려 다른 플레이어가 멈춘 것처럼 판정되지 않게 한다.
+            lastInput.viewTime += Time.fixedDeltaTime;
             InputPayload continuation = lastInput;
             continuation.jump   = false;
             continuation.jumpUp = false;
-            movementHandler.ApplyInput(continuation);
-            movementHandler.Simulate(Time.fixedDeltaTime);
+            SimulateInput(continuation);
             return;
         }
 
@@ -129,9 +152,31 @@ public class ServerMover : NetworkBehaviour
             lastInput = inputQueue.Dequeue();
             lastProcessedSeq = lastInput.sequenceNumber;
             hasInputInEpoch = true;
-            movementHandler.ApplyInput(lastInput);
+            SimulateInput(lastInput);
+        }
+    }
+
+    // 이 클라이언트가 입력을 만들 때 보던 위치에 다른 플레이어를 두고 시뮬레이션한다. 밟기 판정·밟힌 쪽 연출도 그 위치 기준이다.
+    private void SimulateInput(InputPayload input)
+    {
+        movementHandler.ApplyInput(input);
+        PlayerLagCompensation.Rewind(this, input.viewTime);
+        try
+        {
             movementHandler.Simulate(Time.fixedDeltaTime);
         }
+        finally
+        {
+            PlayerLagCompensation.Restore();
+        }
+    }
+
+    // NetworkTransform이 LateUpdate에서 보내는 것과 같은 시각·위치를 기록한다. 원격 화면은 이 값을 보간해 그린다.
+    // 실행 순서가 NetworkTransform보다 빠르지만 그 사이에 위치를 바꾸는 코드가 없어 같은 값이다.
+    private void LateUpdate()
+    {
+        if (!isServer) return;
+        positionHistory.Record(NetworkTime.localTime, transform.position);
     }
 
     private void SendStateIfNeeded()

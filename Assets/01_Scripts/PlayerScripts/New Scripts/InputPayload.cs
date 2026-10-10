@@ -15,4 +15,6 @@ public struct InputPayload
     public bool jumpUp;
     public bool run;
     public float deltaTime;
+    // 이 입력을 만들 때 화면의 원격 플레이어가 서 있던 서버 시각. 서버가 지연 보상으로 그 위치에 두고 판정한다.
+    public double viewTime;
 }

@@ -25,6 +25,7 @@ public class ClientMover : NetworkBehaviour
 
     private MovementHandler movementHandler;
     private PlayerInputManager inputManager;
+    private NetworkTransformUnreliable networkTransform;
 
     private readonly InputPayload[] inputBuffer = new InputPayload[BUFFER_SIZE];
     private readonly StatePayload[] stateBuffer = new StatePayload[BUFFER_SIZE];
@@ -44,10 +45,14 @@ public class ClientMover : NetworkBehaviour
     // 운반 중처럼 예측하지 않는 동안 화면에 보이던 위치. 풀려날 때 여기서부터 따라가게 한다.
     private Vector3 lastDisplayedPosition;
 
+    // 마지막으로 그린 화면에서 원격 플레이어가 서 있던 서버 시각. 다음 입력에 실어 보낸다.
+    private double viewedServerTime;
+
     private void Awake()
     {
         movementHandler = GetComponent<MovementHandler>();
         inputManager = GetComponent<PlayerInputManager>();
+        networkTransform = GetComponent<NetworkTransformUnreliable>();
         // Awake 시점 위치로 초기화 — 첫 LateUpdate에서 원점으로 순간이동하는 버그 방지
         predictedPosition = transform.position;
         lastDisplayedPosition = transform.position;
@@ -71,6 +76,11 @@ public class ClientMover : NetworkBehaviour
 
         // LateUpdate가 보정 오프셋을 더해 그려 두었으므로 시뮬레이션 전에 실제 예측 위치로 되돌린다.
         transform.position = predictedPosition;
+
+        // Auto Sync Transforms가 꺼져 있어 원격 플레이어 콜라이더는 마지막 물리 스텝 위치에 있다.
+        // 화면에 그린 위치(= viewedServerTime 시점)로 맞춰야 서버가 되돌려 판정하는 위치와 같아진다.
+        if (!isServer)
+            Physics2D.SyncTransforms();
 
         // 서버 보정값이 있으면 이번 예측 전에 먼저 처리
         if (hasPendingServerState)
@@ -101,6 +111,9 @@ public class ClientMover : NetworkBehaviour
     {
         if (!isOwned) return;
 
+        // 원격 플레이어 NetworkTransform은 Update에서 같은 NetworkTime.time으로 보간했으므로 이 프레임 화면의 시각이다.
+        viewedServerTime = NetworkTime.time - RemoteInterpolationDelay;
+
         // 운반 중이거나 도착 지점 안에서는 예측하지 않으므로 부모·NetworkTransform이 정한 위치를 그대로 둔다.
         if (!movementHandler.enabled)
         {
@@ -114,6 +127,20 @@ public class ClientMover : NetworkBehaviour
         // 렌더링은 LateUpdate 이후에 일어나므로 플레이어 눈에는 예측 위치(+보정 오프셋)만 보임
         transform.position = predictedPosition + (Vector3)visualOffset;
         lastDisplayedPosition = transform.position;
+    }
+
+    // NetworkTransformUnreliable은 받은 스냅샷을 서버 시각 + timeStampAdjustment + offset 자리에 넣고 NetworkTime.time으로 보간한다.
+    // 그 두 값은 protected라 같은 식으로 다시 구한다. 모든 플레이어가 같은 프리팹이라 내 NT 설정으로 계산해도 된다.
+    private double RemoteInterpolationDelay
+    {
+        get
+        {
+            double sendInterval = NetworkServer.sendInterval;
+            uint multiplier = networkTransform.sendIntervalMultiplier;
+            double timeStampAdjustment = sendInterval * (multiplier - 1);
+            double offset = networkTransform.timelineOffset ? sendInterval * multiplier : 0;
+            return timeStampAdjustment + offset;
+        }
     }
 
     private void AddVisualCorrection(Vector2 correction)
@@ -135,6 +162,7 @@ public class ClientMover : NetworkBehaviour
             jumpUp        = inputManager.IsJumpUp,
             run           = inputManager.IsRunPressed,
             deltaTime     = Time.fixedDeltaTime,
+            viewTime      = viewedServerTime,
         };
     }
 
