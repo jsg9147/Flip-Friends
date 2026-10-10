@@ -1,3 +1,4 @@
+using System.Collections;
 using Mirror;
 using UnityEngine;
 
@@ -6,8 +7,8 @@ public class StageManager : NetworkBehaviour
     public static StageManager instance;
 
     [SerializeField] private BuiltInMapCatalog builtInMapCatalog;
-    public MapEditorPalette palette;
-    public GameObject mapDataSyncPrefab;
+    [SerializeField] private MapEditorPalette palette;
+    [SerializeField] private GameObject mapDataSyncPrefab;
 
     private void Awake()
     {
@@ -33,158 +34,95 @@ public class StageManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        StageLoad();
-    }
-
-    [Server]
-    public void StageLoad()
-    {
-        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
-        if (slimeRoomManager == null)
+        if (TryLoadStage(out string error))
             return;
 
-        if (!string.IsNullOrEmpty(slimeRoomManager.currentMapId))
-        {
-            if (!slimeRoomManager.ServerMapSession.TryGet(
-                    slimeRoomManager.currentMapId,
-                    slimeRoomManager.currentMapContentHash,
-                    out MapData mapData))
-            {
-                Debug.LogError(
-                    $"서버 세션 맵을 찾을 수 없습니다: " +
-                    $"mapId={slimeRoomManager.currentMapId}, " +
-                    $"contentHash={slimeRoomManager.currentMapContentHash}");
-                return;
-            }
-
-            LoadFromMapData(mapData);
-        }
-        else
-        {
-            LoadPrefabStage(slimeRoomManager.currentBuiltInMapId);
-        }
+        // 맵 없는 GamePlay 씬에 플레이어를 남겨 두지 않는다.
+        Debug.LogError($"스테이지를 불러오지 못해 대기실로 돌아갑니다: {error}", this);
+        StartCoroutine(ReturnToRoomNextFrame());
     }
 
     [Server]
-    private void LoadPrefabStage(string mapId)
+    private bool TryLoadStage(out string error)
+    {
+        if (!(NetworkManager.singleton is SlimeRoomManager slimeRoomManager))
+        {
+            error = "SlimeRoomManager를 찾을 수 없습니다.";
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(slimeRoomManager.currentMapId))
+            return TryLoadPrefabStage(slimeRoomManager.currentBuiltInMapId, out error);
+
+        if (!slimeRoomManager.ServerMapSession.TryGet(
+                slimeRoomManager.currentMapId,
+                slimeRoomManager.currentMapContentHash,
+                out MapData mapData))
+        {
+            error = "서버 세션 맵을 찾을 수 없습니다: " +
+                    $"mapId={slimeRoomManager.currentMapId}, " +
+                    $"contentHash={slimeRoomManager.currentMapContentHash}";
+            return false;
+        }
+
+        return TryLoadCustomMap(
+            mapData,
+            slimeRoomManager.currentMapId,
+            slimeRoomManager.currentMapContentHash,
+            out error);
+    }
+
+    [Server]
+    private bool TryLoadPrefabStage(string mapId, out string error)
     {
         if (builtInMapCatalog == null)
         {
-            Debug.LogError("BuiltInMapCatalog가 StageManager에 연결되어 있지 않습니다.", this);
-            return;
+            error = "BuiltInMapCatalog가 StageManager에 연결되어 있지 않습니다.";
+            return false;
         }
         if (!builtInMapCatalog.TryGet(mapId, out BuiltInMapCatalog.Entry entry))
         {
-            Debug.LogError($"카탈로그에서 기본 맵을 찾을 수 없습니다: mapId={mapId}", this);
-            return;
+            error = $"카탈로그에서 기본 맵을 찾을 수 없습니다: mapId={mapId}";
+            return false;
         }
 
         GameObject stageObject = Instantiate(entry.StagePrefab);
+        if (stageObject.GetComponent<NetworkIdentity>() == null)
+        {
+            Destroy(stageObject);
+            error = $"스테이지 오브젝트에 NetworkIdentity 컴포넌트가 없습니다: mapId={mapId}";
+            return false;
+        }
 
-        NetworkIdentity stageIdentity = stageObject.GetComponent<NetworkIdentity>();
-        if (stageIdentity != null)
-        {
-            NetworkServer.Spawn(stageObject);
-        }
-        else
-        {
-            Debug.LogError("스테이지 오브젝트에 NetworkIdentity 컴포넌트가 없습니다.");
-        }
+        NetworkServer.Spawn(stageObject);
+        error = null;
+        return true;
     }
 
     [Server]
-    private void LoadFromMapData(MapData mapData)
-    {
-        if (mapData == null)
-        {
-            Debug.LogError("MapData가 null입니다. 맵을 불러올 수 없습니다.");
-            return;
-        }
-
-        string json = MapDataRepository.ToJson(mapData);
-        if (string.IsNullOrEmpty(json))
-        {
-            Debug.LogError("커스텀 맵 데이터를 동기화용 JSON으로 변환할 수 없습니다.");
-            return;
-        }
-
-        SlimeRoomManager roomManager = (SlimeRoomManager)NetworkManager.singleton;
-        UnregisterSceneStartPositions();
-        SpawnMapDataSync(
-            roomManager.currentMapId,
-            roomManager.currentMapContentHash);
-
-        foreach (PlacedObjectData objData in mapData.objects)
-        {
-            SpawnPlacedObject(objData);
-        }
-    }
-
-    // 씬의 시작 위치는 기본 스테이지용이다. 남겨 두면 RoundRobin이 커스텀 맵에 배치한
-    // 시작 지점보다 먼저 골라 플레이어가 맵과 무관한 곳에서 생성된다.
-    [Server]
-    private void UnregisterSceneStartPositions()
-    {
-        foreach (Transform startPosition in NetworkManager.startPositions.ToArray())
-            NetworkManager.UnRegisterStartPosition(startPosition);
-    }
-
-    [Server]
-    private void SpawnMapDataSync(string mapId, string contentHash)
-    {
-        if (mapDataSyncPrefab == null)
-        {
-            Debug.LogError("MapDataNetworkSync 프리팹이 StageManager에 연결되어 있지 않습니다.");
-            return;
-        }
-
-        GameObject syncObj = Instantiate(mapDataSyncPrefab);
-        if (syncObj.GetComponent<NetworkIdentity>() == null)
-        {
-            Debug.LogError("MapDataNetworkSync 프리팹에 NetworkIdentity가 없습니다.", syncObj);
-            Destroy(syncObj);
-            return;
-        }
-
-        MapDataNetworkSync mapDataSync = syncObj.GetComponent<MapDataNetworkSync>();
-        if (mapDataSync == null)
-        {
-            Debug.LogError("MapDataNetworkSync 컴포넌트가 프리팹에 없습니다.", syncObj);
-            Destroy(syncObj);
-            return;
-        }
-
-        mapDataSync.SetManifest(mapId, contentHash);
-        NetworkServer.Spawn(syncObj);
-    }
-
-    [Server]
-    private void SpawnPlacedObject(PlacedObjectData objData)
+    private bool TryLoadCustomMap(
+        MapData mapData,
+        string mapId,
+        string contentHash,
+        out string error)
     {
         if (palette == null)
         {
-            Debug.LogError("MapEditorPalette가 StageManager에 연결되어 있지 않습니다.");
-            return;
+            error = "MapEditorPalette가 StageManager에 연결되어 있지 않습니다.";
+            return false;
         }
 
-        GameObject prefab = palette.GetPrefab(objData.prefabID);
-        if (prefab == null)
-            return;
+        CustomMapRuntimeLoader loader = new CustomMapRuntimeLoader(
+            new PlacedObjectFactory(palette),
+            mapDataSyncPrefab);
+        return loader.TryLoad(mapData, mapId, contentHash, out error);
+    }
 
-        Vector3 position = objData.position.ToVector3();
-        Quaternion rotation = Quaternion.Euler(0f, 0f, objData.rotation);
-
-        GameObject obj = Instantiate(prefab, position, rotation);
-        obj.transform.localScale = objData.scale.ToVector3();
-
-        NetworkIdentity identity = obj.GetComponent<NetworkIdentity>();
-        if (identity == null)
-        {
-            Debug.LogError($"팔레트 프리팹에 NetworkIdentity가 없습니다: {objData.prefabID}", obj);
-            Destroy(obj);
-            return;
-        }
-
-        NetworkServer.Spawn(obj);
+    // OnStartServer는 씬 로드를 마무리하는 도중에 불리므로 같은 프레임에 씬을 바꾸지 않는다.
+    private IEnumerator ReturnToRoomNextFrame()
+    {
+        yield return null;
+        if (NetworkServer.active && NetworkManager.singleton is SlimeRoomManager roomManager)
+            roomManager.ReturnRoomScene();
     }
 }
