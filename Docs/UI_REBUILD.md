@@ -1,7 +1,7 @@
 # Main 메뉴 UI 재구축 현재 상태
 
 - 상태: Active
-- 최종 갱신: 2026-10-06
+- 최종 갱신: 2026-10-10
 - 범위: `Main.unity` 화면 전환, 로비 진입 UI, 설정과 키 바인딩
 
 ## 현재 상태
@@ -71,7 +71,7 @@ SettingsScreen.OnShow 또는 OnHide
 - Steam 런타임은 2026-10-06 사용자가 Steam 로그인 상태에서 수동 확인했고 정상 동작으로 보고했다. 대상은 Host 생성, 공개 로비 목록의 loading·empty·error·joining, 비공개 코드 참가와 실패 상태, Create·Join 1회 호출이다.
 - `LobbyItem` 선택 목록 등록을 플레이 모드에서 확인했다. Steam 없이 프리팹 3개를 직접 만들어 등록하면 목록이 Refresh, Lobby0~2, Back 순서가 되고, `SelectNextButton`이 Refresh → Lobby0 → Lobby1 → Back → Refresh로 돈다. 마지막 로비 항목을 선택한 채 목록을 비우면 Refresh, Back만 남고 인덱스가 1로 맞춰지며 콘솔 오류가 없다.
 - 공개 로비 스크롤 추적을 플레이 모드에서 확인했다. 로비 항목 10개를 직접 만들어(Content 높이 1025, 보이는 영역 700) `SelectNextButton`·`SelectPreviousButton`으로 Refresh → Lobby0~9 → Back → Refresh와 그 역순을 돌았고, 모든 단계에서 선택된 항목이 보이는 영역 안에 있었다. 보이는 항목을 고를 때는 스크롤이 움직이지 않는다. 목록을 비우면 Refresh, Back만 남는다. 키 바인딩 키보드(13개)·게임패드(9개) 창도 전 항목이 보이는 영역 안에 들어와 회귀가 없다.
-- 마우스·키보드·게임패드 실제 입력 이동은 수동 검증이 남아 있다. 실제 Steam 로비 목록에서 게임패드로 항목을 골라 참가하는 것도 포함한다.
+- 2026-10-10 사용자가 Windows Standalone 빌드에서 마우스·키보드·게임패드 실제 입력으로 화면 이동을 확인했고, 실제 Steam 공개 로비 목록을 게임패드로 스크롤해 항목을 골라 참가하는 것까지 수동 확인했다.
 
 ## 남은 작업
 
@@ -80,4 +80,4 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 다음 작업
 
-Windows Standalone 빌드에서 실제 게임패드로 공개 로비 목록을 스크롤해 참가할 수 있는지 수동 확인한다.
+남은 수동 검증은 없다. `남은 작업`의 설정 기본값 버튼이나 공개 로비 스크롤바가 필요해지면 그때 진행한다.
