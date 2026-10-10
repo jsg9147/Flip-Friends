@@ -16,6 +16,10 @@ public class SlimeRoomManager : NetworkRoomManager
 
     private bool shouldReconnectPlayers = false; // 씬 전환 후 플레이어 재연결 플래그
 
+    // 로드 실패 사유는 서버에만 있다. GameRoom으로 돌아간 각 클라이언트가 준비된 뒤에 개별로 보낸다.
+    private string stageLoadFailureReason;
+    private readonly HashSet<int> stageLoadFailureRecipients = new();
+
     private MapSessionSnapshot testPlaySnapshot;
     private MapEditorPalette testPlayPalette;
     private string testPlayReturnScene;
@@ -48,6 +52,7 @@ public class SlimeRoomManager : NetworkRoomManager
 
     public override void OnStopServer()
     {
+        ClearStageLoadFailureNotice();
         ServerMapSession.Clear();
         base.OnStopServer();
         if (IsTestPlaying)
@@ -182,6 +187,7 @@ public class SlimeRoomManager : NetworkRoomManager
     {
         FindAnyObjectByType<MapSelectionManager>()?
             .ServerInvalidateAvailabilityCheck("참여자가 연결을 종료했습니다.");
+        stageLoadFailureRecipients.Remove(conn.connectionId);
         // 게임 중 이탈자는 재입장할 수 없으므로 남은 인원만으로 클리어를 판정한다.
         if (Utils.IsSceneActive(GameplayScene) && GameManager.Instance != null)
             GameManager.Instance.ServerRecheckFinishNextFrame();
@@ -218,12 +224,55 @@ public class SlimeRoomManager : NetworkRoomManager
             return;
         }
 
+        ClearStageLoadFailureNotice();
         shouldReconnectPlayers = true;
         currentMapId = string.Empty;
         currentMapContentHash = string.Empty;
         ServerMapSession.Clear();
         MapSessionCache.Clear();
         ServerChangeScene(RoomScene);
+    }
+
+    [Server]
+    public void ReturnRoomSceneAfterLoadFailure(string reason)
+    {
+        if (IsTestPlaying)
+        {
+            EndTestPlay();
+            return;
+        }
+
+        ReturnRoomScene();
+        stageLoadFailureReason = reason;
+        foreach (int connectionId in NetworkServer.connections.Keys)
+            stageLoadFailureRecipients.Add(connectionId);
+    }
+
+    public override void OnServerReady(NetworkConnectionToClient conn)
+    {
+        base.OnServerReady(conn);
+        if (!Utils.IsSceneActive(RoomScene) || !stageLoadFailureRecipients.Remove(conn.connectionId))
+            return;
+
+        foreach (NetworkRoomPlayer roomPlayer in roomSlots)
+        {
+            if (roomPlayer != null &&
+                roomPlayer.connectionToClient == conn &&
+                roomPlayer.TryGetComponent(out CustomRoomPlayer customRoomPlayer))
+            {
+                customRoomPlayer.TargetShowStageLoadFailure(stageLoadFailureReason);
+                break;
+            }
+        }
+
+        if (stageLoadFailureRecipients.Count == 0)
+            stageLoadFailureReason = null;
+    }
+
+    private void ClearStageLoadFailureNotice()
+    {
+        stageLoadFailureReason = null;
+        stageLoadFailureRecipients.Clear();
     }
 
     [Server]

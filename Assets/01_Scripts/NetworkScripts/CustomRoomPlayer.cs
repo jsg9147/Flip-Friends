@@ -475,6 +475,19 @@ public class CustomRoomPlayer : NetworkRoomPlayer
         FindAnyObjectByType<MapListUI>()?.ShowSelectionMessage(message, false);
     }
 
+    [TargetRpc]
+    public void TargetShowStageLoadFailure(string reason)
+    {
+        StageLoadFailureNotice notice = FindAnyObjectByType<StageLoadFailureNotice>();
+        if (notice == null)
+        {
+            Debug.LogWarning($"로드 실패 알림 UI를 찾지 못했습니다: {reason}");
+            return;
+        }
+
+        notice.Show(reason);
+    }
+
     [Server]
     public bool ServerIsRoomHost()
     {

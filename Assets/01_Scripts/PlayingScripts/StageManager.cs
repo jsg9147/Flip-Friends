@@ -39,7 +39,7 @@ public class StageManager : NetworkBehaviour
 
         // 맵 없는 GamePlay 씬에 플레이어를 남겨 두지 않는다.
         Debug.LogError($"스테이지를 불러오지 못해 대기실로 돌아갑니다: {error}", this);
-        StartCoroutine(ReturnToRoomNextFrame());
+        StartCoroutine(ReturnToRoomNextFrame(error));
     }
 
     [Server]
@@ -119,10 +119,10 @@ public class StageManager : NetworkBehaviour
     }
 
     // OnStartServer는 씬 로드를 마무리하는 도중에 불리므로 같은 프레임에 씬을 바꾸지 않는다.
-    private IEnumerator ReturnToRoomNextFrame()
+    private IEnumerator ReturnToRoomNextFrame(string reason)
     {
         yield return null;
         if (NetworkServer.active && NetworkManager.singleton is SlimeRoomManager roomManager)
-            roomManager.ReturnRoomScene();
+            roomManager.ReturnRoomSceneAfterLoadFailure(reason);
     }
 }

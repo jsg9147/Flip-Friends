@@ -29,6 +29,7 @@
 - `ScrollViewController`는 공개 로비와 키 바인딩 창 2개가 같이 쓴다. 선택이 바뀐 순간에만, 선택 항목(Content 바로 아래 자식)이 보이는 영역을 벗어났을 때 필요한 만큼만 스크롤한다. 매 프레임 가운데로 맞추던 이전 방식은 마우스 휠 스크롤을 되돌려서 바꿨다.
 - 비공개 참가는 `TMP_InputField` 기반 코드 입력과 기존 참가 로직을 연결한다.
 - 기존 UI를 한 번에 제거하지 않고 새 흐름이 확인된 화면부터 교체한다.
+- GameRoom에는 로드 실패 알림 패널(`StageLoadFailureNotice`)이 있다. 화면 전환이 아닌 겹쳐 뜨는 알림이라 `ScreenNavigator`를 쓰지 않는다. 동작은 `Docs/CUSTOM_MAP_NETWORK.md`에 있다.
 
 ## 핵심 흐름
 
