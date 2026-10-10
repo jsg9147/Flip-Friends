@@ -30,12 +30,20 @@ public class PickupObj : RaycastController
         collisions.faceDir = 1;
     }
 
+    // 클라이언트는 SyncVar가 올 때마다 순간이동하면 끊겨 보여서 따라가기만 한다. 멀리 떨어지면(리셋 등) 바로 맞춘다.
+    private const float ClientFollowSharpness = 20f;
+    private const float ClientSnapDistance = 2f;
+
     private void Update()
     {
         if (isServer)
         {
             UpdateRaycastOrigins();
             collisions.Reset();
+        }
+        else
+        {
+            FollowSyncedPosition();
         }
     }
 
@@ -44,20 +52,38 @@ public class PickupObj : RaycastController
 
     private void FixedUpdate()
     {
-        if (isServer)
-        {
-            if (!isCarried)
-            {
-                CalculateMovement();
-                ApplyMovement();
-            }
+        if (!isServer) return;
 
-            syncedPosition = transform.position;
-        }
-        else
+        if (!isCarried)
         {
-            transform.position = syncedPosition;
+            CalculateMovement();
+            ApplyMovement();
         }
+
+        syncedPosition = transform.position;
+    }
+
+    private void FollowSyncedPosition()
+    {
+        Vector2 current = transform.position;
+        if (Vector2.Distance(current, syncedPosition) > ClientSnapDistance)
+            transform.position = syncedPosition;
+        else
+            transform.position = Vector2.Lerp(current, syncedPosition, 1f - Mathf.Exp(-ClientFollowSharpness * Time.deltaTime));
+    }
+
+    // 상자는 transform으로 움직이므로 물리 스텝 전의 bounds는 이전 위치다.
+    protected override Bounds GetColliderBounds() => ComputeBoundsFromTransform();
+
+    // 운반자가 정한 위치·속도로 놓는다. 서버만 시뮬레이션하므로 클라이언트에는 위치 SyncVar로 전달된다.
+    [Server]
+    public void Release(Vector2 position, Vector2 launchVelocity)
+    {
+        transform.position = position;
+        velocity = launchVelocity;
+        velocityXSmoothing = 0f;
+        syncedPosition = position;
+        StateReset();
     }
 
     private void CalculateMovement()
@@ -87,12 +113,6 @@ public class PickupObj : RaycastController
                 velocity.y = 0;
             }
         }
-    }
-
-    [ClientRpc]
-    public void RpcApplyVelocity(Vector2 playerVelocity)
-    {
-        this.velocity = playerVelocity;
     }
 
     public void Move(Vector2 moveAmount, bool standingOnPlatform = false)

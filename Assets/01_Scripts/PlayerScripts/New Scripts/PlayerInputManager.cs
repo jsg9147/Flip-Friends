@@ -14,8 +14,9 @@ public class PlayerInputManager : NetworkBehaviour
     // 상태성 플래그 — 누르는 동안 계속 true
     public bool IsJumpHold { get; private set; }
     public bool IsRunPressed { get; private set; }
-    public bool IsPickUpPressed { get; private set; }
-    public bool ResetPressed { get; private set; }
+    // 들기·리셋은 누른 순간 한 번만 처리한다. 누르는 동안 매 프레임 Command를 보내면 들자마자 던지게 된다.
+    private bool isPickUpPressed;
+    private bool isResetPressed;
     public bool IsNextPressed { get; private set; }
     public bool IsPreviousPressed { get; private set; }
 
@@ -25,6 +26,17 @@ public class PlayerInputManager : NetworkBehaviour
     {
         IsJumpPressed = false;
         IsJumpUp = false;
+    }
+
+    public bool ConsumePickUpPressed() => Consume(ref isPickUpPressed);
+
+    public bool ConsumeResetPressed() => Consume(ref isResetPressed);
+
+    private static bool Consume(ref bool flag)
+    {
+        bool value = flag;
+        flag = false;
+        return value;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -57,9 +69,7 @@ public class PlayerInputManager : NetworkBehaviour
         if (!isOwned) return;
 
         if (context.started)
-            IsPickUpPressed = true;
-        else if (context.canceled)
-            IsPickUpPressed = false;
+            isPickUpPressed = true;
     }
 
     public void OnRun(InputAction.CallbackContext context)
@@ -77,9 +87,7 @@ public class PlayerInputManager : NetworkBehaviour
         if (!isOwned) return;
 
         if (context.started)
-            ResetPressed = true;
-        else if (context.canceled)
-            ResetPressed = false;
+            isResetPressed = true;
     }
 
     public void OnNext(InputAction.CallbackContext context)

@@ -20,11 +20,63 @@ public class Controller2D : RaycastController
     public NetworkIdentity underPlayer { get; private set; }
     private Vector2 movementVector;
 
+    private const int MaxPenetrationPasses = 3;
+
+    public float CoyoteTime
+    {
+        get => coyoteTimeCounter;
+        set => coyoteTimeCounter = value;
+    }
+
     public override void Start()
     {
         base.Start();
         collisions.faceDir = 1;
     }
+
+    // 재시뮬레이션처럼 한 프레임에 Move를 여러 번 부르면 boxCollider.bounds가 이전 위치를 가리켜 레이가 벽을 뚫는다.
+    protected override Bounds GetColliderBounds() => ComputeBoundsFromTransform();
+
+    // 다른 플레이어·한 방향 발판·들고 있는 물체와 겹치는 건 정상이므로 밀어내지 않는다.
+    protected override bool IsBlocker(Collider2D hit)
+    {
+        if (!base.IsBlocker(hit) || hit.CompareTag("Player")) return false;
+        if (objCollider != null && hit.gameObject == objCollider.gameObject) return false;
+        return heldObj == null || hit.gameObject != heldObj;
+    }
+
+    // 레이는 콜라이더 밖에서 출발해야 벽을 본다. Ground는 Outline 콜라이더라 안에서 쏜 레이는 아무것도 맞히지 않으므로,
+    // 순간이동·보정·내려놓기로 벽에 박힌 상태면 이동 전에 가장 가까운 면으로 밀어낸다.
+    public void ResolvePenetration()
+    {
+        for (int pass = 0; pass < MaxPenetrationPasses; pass++)
+        {
+            Collider2D blocker = FindBlockingCollider(transform.position, overlapTolerance);
+            if (blocker == null) return;
+
+            // 자신의 물리 형상은 마지막 물리 스텝 위치에 있으므로 거리 계산 전에 맞춘다. 겹쳤을 때만 부르므로 평소 비용은 없다.
+            Physics2D.SyncTransforms();
+            ColliderDistance2D distance = boxCollider.Distance(blocker);
+            // 바닥에 선 상태도 접촉 여유 반경 때문에 -skinWidth 정도로 나온다. 이런 얕은 겹침은 레이가 처리한다.
+            // 여기서 밀면 매 틱 들썩여 접지 판정이 깜빡이고 점프 입력이 씹힌다.
+            if (!distance.isValid || distance.distance > -overlapTolerance) return;
+
+            transform.position += (Vector3)(distance.pointB - distance.pointA);
+        }
+    }
+
+    // 보정으로 위치를 되돌린 뒤, 다음 틱이 쓰는 발밑 정보(컨베이어·움직이는 발판)를 새 위치에서 다시 구한다.
+    public void RestoreContacts(bool isGrounded, int faceDir)
+    {
+        collisions.Reset();
+        collisions.faceDir = faceDir == 0 ? 1 : faceDir;
+        UpdateRaycastOrigins();
+        Vector2 probe = new Vector2(0f, -skinWidth);
+        VerticalCollisions(ref probe);
+        collisions.below = isGrounded;
+        underPlayer = null;
+    }
+
     public void Move(Vector2 moveAmount, bool standingOnPlatform)
     {
         Move(moveAmount, Vector2.zero, standingOnPlatform);
@@ -32,6 +84,7 @@ public class Controller2D : RaycastController
 
     public void Move(Vector2 moveAmount, Vector2 input, bool standingOnPlatform = false)
     {
+        ResolvePenetration();
         UpdateRaycastOrigins();
         collisions.Reset();
         collisions.moveAmountOld = moveAmount;
@@ -89,7 +142,7 @@ public class Controller2D : RaycastController
             RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 
             Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
-            ProcessHorizontalHits(hits, ref moveAmount, directionX, i);
+            ProcessHorizontalHits(hits, ref moveAmount, ref rayLength, directionX, i);
         }
     }
 
@@ -102,11 +155,13 @@ public class Controller2D : RaycastController
         return rayOrigin;
     }
 
-    private void ProcessHorizontalHits(RaycastHit2D[] hits, ref Vector2 moveAmount, float directionX, int rayIndex)
+    // 레이 길이를 가장 가까운 충돌 거리로 줄여 간다. 줄이지 않으면 더 먼 충돌이 이동량을 덮어써 앞의 벽을 통과한다.
+    private void ProcessHorizontalHits(RaycastHit2D[] hits, ref Vector2 moveAmount, ref float rayLength, float directionX, int rayIndex)
     {
         foreach (var hit in hits)
         {
             if (!IsValidHit(hit, moveAmount)) continue;
+            if (hit.distance > rayLength) break;
 
             float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 
@@ -119,6 +174,7 @@ public class Controller2D : RaycastController
             if (!collisions.climbingSlope || slopeAngle > maxSlopeAngle)
             {
                 AdjustHorizontalMovement(ref moveAmount, hit.distance, directionX, slopeAngle);
+                rayLength = hit.distance;
             }
         }
     }
@@ -137,7 +193,7 @@ public class Controller2D : RaycastController
             RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
 
             Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength, Color.red);
-            ProcessVerticalHits(hits, ref moveAmount, directionY);
+            ProcessVerticalHits(hits, ref moveAmount, ref rayLength, directionY);
         }
 
         if (collisions.climbingSlope)
@@ -168,13 +224,15 @@ public class Controller2D : RaycastController
         return rayOrigin;
     }
 
-    private void ProcessVerticalHits(RaycastHit2D[] hits, ref Vector2 moveAmount, float directionY)
+    private void ProcessVerticalHits(RaycastHit2D[] hits, ref Vector2 moveAmount, ref float rayLength, float directionY)
     {
         foreach (var hit in hits)
         {
             if (!IsValidHit(hit, moveAmount, true)) continue;
+            if (hit.distance > rayLength) break;
 
             moveAmount.y = (hit.distance - skinWidth) * directionY;
+            rayLength = hit.distance;
 
             if (collisions.climbingSlope)
                 moveAmount.x = moveAmount.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign(moveAmount.x);
@@ -367,6 +425,10 @@ public class Controller2D : RaycastController
             return false;
 
         if (hit.collider.gameObject == objCollider.gameObject)
+            return false;
+
+        // 머리 위에 든 플레이어는 자식으로 붙어 같이 움직이므로 위쪽 레이가 막히면 안 된다.
+        if (heldObj != null && hit.collider.gameObject == heldObj)
             return false;
 
         return true;

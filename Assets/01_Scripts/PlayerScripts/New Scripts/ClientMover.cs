@@ -14,6 +14,15 @@ public class ClientMover : NetworkBehaviour
     // 서버와 예측값의 위치 오차가 이 값 이하면 보정 생략 (부동소수점 드리프트 허용치)
     private const float RECONCILE_THRESHOLD = 0.15f;
 
+    // 밟기 튕김처럼 위치는 같은데 속도만 다른 순간을 바로 잡는다. 위치 오차만 보면 몇 틱 뒤 크게 벌어진 다음에야 보정된다.
+    private const float VELOCITY_RECONCILE_THRESHOLD = 1f;
+
+    // 보정·재동기화로 예측 위치가 갑자기 바뀌면, 화면에는 이전 위치에서 이 시간 상수로 따라가게 그린다.
+    // 판정은 항상 보정된 위치로 하므로 서버와 같고, 보이는 위치만 부드러워진다.
+    private const float VISUAL_SMOOTHING_TIME = 0.08f;
+    // 리스폰처럼 멀리 옮겨진 경우는 따라가지 않고 바로 보여 준다.
+    private const float VISUAL_SNAP_DISTANCE = 2f;
+
     private MovementHandler movementHandler;
     private PlayerInputManager inputManager;
 
@@ -22,11 +31,18 @@ public class ClientMover : NetworkBehaviour
 
     private uint currentSequenceNumber = 0;
 
+    // 서버가 순간이동시킬 때마다 바뀐다. 다른 에포크의 보정값은 순간이동 전 기준이라 버린다.
+    private ushort epoch;
+
     private bool hasPendingServerState = false;
     private StatePayload pendingServerState;
 
     // LateUpdate에서 NT의 덮어쓰기를 복원하기 위한 예측 위치
     private Vector3 predictedPosition;
+
+    private Vector2 visualOffset;
+    // 운반 중처럼 예측하지 않는 동안 화면에 보이던 위치. 풀려날 때 여기서부터 따라가게 한다.
+    private Vector3 lastDisplayedPosition;
 
     private void Awake()
     {
@@ -34,6 +50,7 @@ public class ClientMover : NetworkBehaviour
         inputManager = GetComponent<PlayerInputManager>();
         // Awake 시점 위치로 초기화 — 첫 LateUpdate에서 원점으로 순간이동하는 버그 방지
         predictedPosition = transform.position;
+        lastDisplayedPosition = transform.position;
     }
 
     private void FixedUpdate()
@@ -44,8 +61,16 @@ public class ClientMover : NetworkBehaviour
         // (연결 종료·씬 전환 시점에 isOwned가 아직 true인 채 FixedUpdate가 실행되는 경우 방지)
         if (!NetworkClient.active) return;
 
-        // 캐리 상태처럼 MovementHandler가 비활성화된 경우 예측 건너뜀
-        if (!movementHandler.enabled) return;
+        // 캐리 상태처럼 MovementHandler가 비활성화된 경우 예측 건너뜀.
+        // 이때 누른 점프가 남아 있다가 풀려난 직후 튀어 나가지 않도록 비운다.
+        if (!movementHandler.enabled)
+        {
+            inputManager.ClearJumpOneShots();
+            return;
+        }
+
+        // LateUpdate가 보정 오프셋을 더해 그려 두었으므로 시뮬레이션 전에 실제 예측 위치로 되돌린다.
+        transform.position = predictedPosition;
 
         // 서버 보정값이 있으면 이번 예측 전에 먼저 처리
         if (hasPendingServerState)
@@ -76,15 +101,33 @@ public class ClientMover : NetworkBehaviour
     {
         if (!isOwned) return;
 
+        // 운반 중이거나 도착 지점 안에서는 예측하지 않으므로 부모·NetworkTransform이 정한 위치를 그대로 둔다.
+        if (!movementHandler.enabled)
+        {
+            lastDisplayedPosition = transform.position;
+            return;
+        }
+
+        visualOffset = Vector2.Lerp(visualOffset, Vector2.zero, 1f - Mathf.Exp(-Time.deltaTime / VISUAL_SMOOTHING_TIME));
+
         // NetworkTransformUnreliable이 Update에서 서버 위치로 덮어썼을 수 있으므로 예측 위치로 복원
-        // 렌더링은 LateUpdate 이후에 일어나므로 플레이어 눈에는 예측 위치만 보임
-        transform.position = predictedPosition;
+        // 렌더링은 LateUpdate 이후에 일어나므로 플레이어 눈에는 예측 위치(+보정 오프셋)만 보임
+        transform.position = predictedPosition + (Vector3)visualOffset;
+        lastDisplayedPosition = transform.position;
+    }
+
+    private void AddVisualCorrection(Vector2 correction)
+    {
+        visualOffset += correction;
+        if (visualOffset.magnitude > VISUAL_SNAP_DISTANCE)
+            visualOffset = Vector2.zero;
     }
 
     private InputPayload BuildInputPayload()
     {
         return new InputPayload
         {
+            epoch         = epoch,
             sequenceNumber = currentSequenceNumber,
             movement      = inputManager.MovementInput,
             jump          = inputManager.IsJumpPressed,
@@ -106,6 +149,8 @@ public class ClientMover : NetworkBehaviour
     [TargetRpc]
     public void TargetSendState(NetworkConnection conn, StatePayload serverState)
     {
+        if (serverState.epoch != epoch) return;
+
         // 이미 받은 것보다 오래된 상태는 무시
         if (hasPendingServerState && serverState.sequenceNumber <= pendingServerState.sequenceNumber)
             return;
@@ -118,13 +163,24 @@ public class ClientMover : NetworkBehaviour
         hasPendingServerState = true;
     }
 
-    // 포지션 리셋처럼 순간 이동이 필요한 경우 예측 위치를 강제 동기화
-    [ClientRpc]
-    public void RpcForcePositionSync(Vector3 position)
+    // 운반 해제·리스폰처럼 서버가 위치를 정했을 때 그 상태에서 예측을 새로 시작한다.
+    [TargetRpc]
+    public void TargetResync(NetworkConnection conn, StatePayload state)
     {
-        if (!isOwned) return;
-        predictedPosition = position;
-        transform.position = position;
+        ApplyResync(state);
+    }
+
+    // 호스트 자신의 플레이어는 같은 프레임에 바로 적용해야 LateUpdate가 이전 예측 위치로 되돌리지 않는다.
+    public void ApplyResync(StatePayload state)
+    {
+        epoch = state.epoch;
+        hasPendingServerState = false;
+        movementHandler.SetState(state);
+        predictedPosition = transform.position;
+
+        // 운반에서 풀려날 때 화면의 운반자는 보간 때문에 과거 위치에 있다. 그 머리 위에서 서버 위치로 바로 옮기면 튀므로 따라가게 한다.
+        visualOffset = Vector2.zero;
+        AddVisualCorrection(lastDisplayedPosition - predictedPosition);
     }
 
     private void Reconcile(StatePayload serverState)
@@ -133,9 +189,12 @@ public class ClientMover : NetworkBehaviour
         StatePayload predictedState = stateBuffer[bufferIndex];
 
         float positionError = Vector2.Distance(serverState.position, predictedState.position);
+        float velocityError = Vector2.Distance(serverState.velocity, predictedState.velocity);
 
         // 오차가 임계값 이하면 정상 예측 — 보정 불필요
-        if (positionError < RECONCILE_THRESHOLD) return;
+        if (positionError < RECONCILE_THRESHOLD && velocityError < VELOCITY_RECONCILE_THRESHOLD) return;
+
+        Vector3 positionBeforeReconcile = predictedPosition;
 
         // 서버 상태로 복원 후 이후 입력들을 순서대로 재시뮬레이션
         movementHandler.SetState(serverState);
@@ -158,5 +217,6 @@ public class ClientMover : NetworkBehaviour
 
         movementHandler.isReconciling = false;
         predictedPosition = transform.position;
+        AddVisualCorrection(positionBeforeReconcile - predictedPosition);
     }
 }

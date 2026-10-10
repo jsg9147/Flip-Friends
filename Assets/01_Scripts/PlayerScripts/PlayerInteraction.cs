@@ -1,29 +1,47 @@
 using Mirror;
 using UnityEngine;
 
+// 들기·던지기·내려놓기는 모두 서버가 결정한다. 위치와 속도를 서버가 정해 모든 화면이 같은 결과를 보게 한다.
 public class PlayerInteraction : NetworkBehaviour
 {
     public float throwForce = 3f;
     public BoxCollider2D catchedCollider;
-    public LayerMask detectionLayer; // Ž���� ���̾�
-
-    private BoxCollider2D boxCollider;
-
-    private PickupObj heldObject;
-
-    private PlayerController2D heldPlayer;  // �÷��̾ ��� ���� �� ����
-    public bool IsCarriedPlayer => heldPlayer != null;
+    public LayerMask detectionLayer;
 
     [SerializeField] private Vector3 heldPos;
 
-    private float throwDealy = 0.5f;
+    [Header("플레이어 운반")]
+    [SerializeField] private Vector2 playerThrowVelocity = new Vector2(7f, 12f);
+    [SerializeField] private float thrownUncontrollableDuration = 0.4f;
+    [Tooltip("들린 플레이어가 이 시간(초)이 지나야 조작 입력으로 빠져나올 수 있다")]
+    [SerializeField] private float carryLockDuration = 1.5f;
+
+    private const float SearchRayLength = 0.2f;
+    private const int SearchRayCount = 10;
+    private const float SearchRaySpacingRatio = 1f / 8f;
+
+    private BoxCollider2D boxCollider;
+    private Controller2D controller;
+    private PlayerController2D playerController;
+
+    private PickupObj heldObject;
+    private PlayerController2D heldPlayer;
+    private double carryStartTime;
+
+    // 들자마자 같은 입력으로 던지는 것을 막는 최소 간격. 들기 입력은 누른 순간 한 번만 오므로 짧아도 된다.
+    [Tooltip("들고 난 뒤 이 시간(초) 동안은 던지기·내려놓기 입력을 무시한다")]
+    [SerializeField] private float throwDealy = 0.15f;
     private float currentDelay = 0f;
 
     public bool IsHoldingObject => heldObject != null;
+    public bool IsHoldingAnything => heldObject != null || heldPlayer != null;
+    public Vector3 HeldOffset => heldPos;
 
-    private void Start()
+    private void Awake()
     {
         boxCollider = GetComponent<BoxCollider2D>();
+        controller = GetComponent<Controller2D>();
+        playerController = GetComponent<PlayerController2D>();
     }
 
     private void Update()
@@ -32,119 +50,182 @@ public class PlayerInteraction : NetworkBehaviour
             currentDelay -= Time.deltaTime;
 
         if (isServer)
-        {
             FollowToPlayer();
+    }
+
+    [Server]
+    public void TryIntractive(Vector2 dir, bool isPutDown)
+    {
+        if (playerController.isCarried) return;
+
+        if (!IsHoldingAnything)
+        {
+            if (CheckObjectAbove()) return;
+
+            PlayerController2D targetPlayer = SearchPlayer(dir);
+            if (targetPlayer != null && targetPlayer.CanBeCarried)
+            {
+                PickUpPlayer(targetPlayer);
+                return;
+            }
+
+            var obj = SearchObject<PickupObj>(dir);
+            if (obj != null)
+                PickUpObj(obj);
+        }
+        else if (currentDelay <= 0)
+        {
+            Release(dir, isPutDown);
         }
     }
 
-    public void TryIntractive(Vector2 dir, bool inputDown)
+    // 피격·리셋·도착처럼 손을 놓아야 하는 상황. 들고 있던 것은 앞에 내려놓는다.
+    [Server]
+    public void DropAll()
     {
-        // ���� �ƹ��͵� ��� ���� ���� ���
-        if (heldObject == null && heldPlayer == null)
-        {
-            // 1) �Ӹ� ���� �ٸ� ������Ʈ�� �÷��̾ �ִ��� Ȯ�� (CheckObjectAbove())
-            if (!CheckObjectAbove())
-            {
-                // 2) ���� �÷��̾� Ž��
-                PlayerController2D targetPlayer = SearchPlayer(dir);
-                if (targetPlayer != null && !targetPlayer.isCarried)
-                {
-                    // �÷��̾ ��� ����
-                    PickUpPlayer(targetPlayer);
-                    return;
-                }
-
-                // 3) �÷��̾ ������ ������ �ϴ���� PickupObj Ž��
-                var obj = SearchObject<PickupObj>(dir);
-                if (obj != null)
-                {
-                    PickUpObj(obj);
-                }
-            }
-        }
-        else
-        {
-            // ���𰡸� ��� �ִٸ� �� ������ ó��
-            if (currentDelay <= 0)
-            {
-                ThrowCarried(dir, inputDown);
-            }
-        }
+        Release(playerController.FacingDirection, true);
     }
 
-    private PlayerController2D SearchPlayer(Vector2 dir)
+    // 들린 플레이어가 고정 시간이 지난 뒤 조작하면 운반자가 보는 방향으로 강제로 던져진다.
+    [Server]
+    public bool TryEscape(PlayerController2D carried)
     {
-        Vector2 boxSize = boxCollider.size;
-        float raySpacing = boxSize.x / 8f;
-        int rayCount = 10;
-        float xPos = (dir.x > 0) ? boxCollider.bounds.max.x : boxCollider.bounds.min.x;
+        if (heldPlayer != carried) return false;
+        if (NetworkTime.time - carryStartTime < carryLockDuration) return false;
 
-        for (int i = 0; i < rayCount; i++)
-        {
-            Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing) - raySpacing);
-            RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.2f, LayerMask.GetMask("Player"));
-            // �� "Player" ���̾ ����Ѵٸ� ���� ����
+        ReleaseHeldPlayer(playerController.FacingDirection, false);
+        return true;
+    }
 
-            foreach (RaycastHit2D hit in hits)
-            {
-                if (hit.collider != null && hit.collider.gameObject != gameObject)
-                {
-                    var pc = hit.collider.GetComponent<PlayerController2D>();
-                    if (pc != null)
-                    {
-                        return pc;
-                    }
-                }
-            }
-        }
-        return null;
+    // 들려 있던 플레이어가 나가면 손만 비운다. 내려놓을 대상이 이미 없다.
+    [Server]
+    public void ForgetHeldPlayer(PlayerController2D carried)
+    {
+        if (heldPlayer != carried) return;
+        heldPlayer = null;
+        SetHoldTarget(null);
+    }
+
+    private void Release(Vector2 dir, bool isPutDown)
+    {
+        if (heldPlayer != null)
+            ReleaseHeldPlayer(dir, isPutDown);
+        else if (heldObject != null)
+            ReleaseHeldObject(dir, isPutDown);
     }
 
     private void PickUpPlayer(PlayerController2D targetPlayer)
     {
         currentDelay = throwDealy;
         heldPlayer = targetPlayer;
+        carryStartTime = NetworkTime.time;
 
-        heldPlayer.SetCarriedState(true, transform);
-
-        // 충돌 무시를 모든 클라이언트에 전파 — 서버에서만 설정하면 클라이언트에서 들려있는 플레이어와 충돌 발생
+        SetHoldTarget(targetPlayer.gameObject);
+        targetPlayer.BeginCarried(this);
         RpcSetPlayerCollision(targetPlayer.netIdentity, true);
     }
-    private void ThrowCarried(Vector2 dir, bool isPutDown)
-    {
-        if (heldPlayer != null)
-        {
-            ThrowPlayer(dir, isPutDown);
-        }
-        else if (heldObject != null)
-        {
-            ThrowObject(dir, isPutDown);
-        }
-    }
 
-    private void ThrowPlayer(Vector2 dir, bool isPutDown)
+    private void ReleaseHeldPlayer(Vector2 dir, bool isPutDown)
     {
-        if (heldPlayer == null) return;
-
-        RpcSetPlayerCollision(heldPlayer.netIdentity, false);
-        heldPlayer.SetCarriedState(false, null);
+        PlayerController2D target = heldPlayer;
         heldPlayer = null;
-    }
+        SetHoldTarget(null);
+        RpcSetPlayerCollision(target.netIdentity, false);
 
+        RaycastController targetBody = target.GetComponent<Controller2D>();
+        Vector2 carriedPosition = transform.position + heldPos;
+        Vector2 position;
+        Vector2 velocity;
+
+        if (isPutDown)
+        {
+            position = FindPutDownPosition(targetBody, dir.x, carriedPosition);
+            velocity = Vector2.zero;
+        }
+        else
+        {
+            // 머리 위가 막혀 있으면(낮은 천장) 운반자 자리에서 던진다. 플레이어끼리는 겹쳐도 밀어내지 않는다.
+            position = targetBody.CanOccupy(carriedPosition) ? carriedPosition : (Vector2)transform.position;
+            velocity = new Vector2(Mathf.Sign(dir.x) * playerThrowVelocity.x, playerThrowVelocity.y);
+        }
+
+        target.EndCarried(position, velocity, isPutDown ? 0f : thrownUncontrollableDuration);
+    }
 
     private void PickUpObj(PickupObj pickableObj)
     {
-        if (pickableObj.GetComponent<PickupObj>() != null)
-        {
-            currentDelay = throwDealy;
-            heldObject = pickableObj;
-            GetComponent<Controller2D>().SetHoldObj(pickableObj.gameObject);
-            pickableObj.GetComponent<PickupObj>().SetPickupState(transform, true);
-            DisableCollisionWithHeldObject(pickableObj);
+        currentDelay = throwDealy;
+        heldObject = pickableObj;
+        SetHoldTarget(pickableObj.gameObject);
+        pickableObj.SetPickupState(transform, true);
+        SetCollisionWithHeldObject(pickableObj, true);
+        RpcVisibleBox(true);
+    }
 
-            if (isServer)
-                RpcVisibleBox(true);
+    private void ReleaseHeldObject(Vector2 dir, bool isPutDown)
+    {
+        PickupObj box = heldObject;
+        heldObject = null;
+
+        Vector2 carriedPosition = transform.position + heldPos;
+        Vector2 position;
+        Vector2 velocity;
+
+        if (isPutDown)
+        {
+            position = FindPutDownPosition(box, dir.x, carriedPosition);
+            velocity = Vector2.zero;
         }
+        else
+        {
+            position = box.CanOccupy(carriedPosition) ? carriedPosition : FindPutDownPosition(box, dir.x, carriedPosition);
+            velocity = new Vector2(Mathf.Sign(dir.x) * throwForce, throwForce);
+        }
+
+        box.Release(position, velocity);
+        RpcVisibleBox(false);
+        SetHoldTarget(null);
+        SetCollisionWithHeldObject(box, false);
+    }
+
+    // 앞쪽 바닥 높이에 내려놓는다. 벽에 막히면 머리 위, 그것도 막히면 운반자 자리를 쓴다.
+    private Vector2 FindPutDownPosition(RaycastController target, float dirX, Vector2 carriedPosition)
+    {
+        Bounds carrierBounds = controller.CurrentBounds;
+        Bounds targetBounds = target.CurrentBounds;
+        Vector2 pivotOffset = (Vector2)target.transform.position - (Vector2)targetBounds.center;
+        float gap = RaycastController.skinWidth;
+
+        Vector2 frontCenter = new Vector2(
+            carrierBounds.center.x + Mathf.Sign(dirX) * (carrierBounds.extents.x + targetBounds.extents.x + gap),
+            carrierBounds.min.y + targetBounds.extents.y + gap);
+        Vector2 front = frontCenter + pivotOffset;
+
+        if (target.CanOccupy(front)) return front;
+        if (target.CanOccupy(carriedPosition)) return carriedPosition;
+        return transform.position;
+    }
+
+    private void SetHoldTarget(GameObject target)
+    {
+        ApplyHoldTarget(target);
+        RpcSetHoldTarget(target);
+    }
+
+    // 운반자 클라이언트의 예측도 머리 위 물체를 알아야 낮은 천장에서 서버와 같은 곳에 멈춘다.
+    [ClientRpc]
+    private void RpcSetHoldTarget(GameObject target)
+    {
+        if (isServer) return;
+        ApplyHoldTarget(target);
+    }
+
+    private void ApplyHoldTarget(GameObject target)
+    {
+        if (target != null)
+            controller.SetHoldObj(target);
+        else
+            controller.HoldReset();
     }
 
     [ClientRpc]
@@ -154,114 +235,101 @@ public class PlayerInteraction : NetworkBehaviour
         catchedCollider.GetComponent<SpriteRenderer>().enabled = visible;
     }
 
-    void ThrowObject(Vector2 dir, bool isPutDown)
-    {
-        if (heldObject != null)
-        {
-            if (isServer)
-            {
-                PickupObj pickUp = heldObject.GetComponent<PickupObj>();
-                if (pickUp != null)
-                {
-                    Vector3 throwDir = new(dir.x * throwForce, throwForce);
-                    pickUp.RpcApplyVelocity(throwDir);
-                    pickUp.StateReset();
-                }
-            }
-
-            RpcVisibleBox(false);
-            GetComponent<Controller2D>().HoldReset();
-            EnableCollisionWithHeldObject(heldObject);
-            heldObject = null;
-        }
-    }
+    // 상자는 숨겨진 채 서버에서만 따라다닌다. 머리 위 상자 모양은 catchedCollider가 보여 준다.
     private void FollowToPlayer()
     {
         if (heldObject != null)
-        {
             heldObject.transform.position = transform.position + heldPos;
-            RpcheldPosUpdate(transform.position + heldPos);
-        }
-    }
-    [ClientRpc]
-    private void RpcheldPosUpdate(Vector3 pos)
-    {
-        if(heldObject != null)
-            heldObject.transform.position = pos;
     }
 
-    private bool CheckObjectAbove()
+    public override void OnStopServer()
     {
-        // �ڽ��� �߽� ��� (�÷��̾��� ����)
-        Vector2 boxCenter = catchedCollider.transform.position;
-
-        // �ڽ� ������ ��� �浹 ����
-        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, catchedCollider.size, 0f, detectionLayer);
-
-        // ����׿� �ð�ȭ (Scene â���� Ȯ�� ����)
-        Debug.DrawLine(boxCenter - new Vector2(catchedCollider.size.x / 2, catchedCollider.size.y / 2),
-                       boxCenter + new Vector2(catchedCollider.size.x / 2, catchedCollider.size.y / 2),
-                       Color.red, 0.1f);
-
-        return hits.Length > 0; // �ڽ� �ȿ� ��ü�� ������ true ��ȯ
+        // 운반자가 나가거나 파괴되면 들고 있던 것을 내려놓는다. 안 그러면 자식으로 붙은 플레이어가 같이 사라진다.
+        if (NetworkServer.active && IsHoldingAnything)
+            DropAll();
+        base.OnStopServer();
     }
-    private T SearchObject<T>(Vector2 dir) where T : Component
-    {
-        Vector2 boxSize = boxCollider.size;
-        Vector2 boxCenter = (Vector2)transform.position + boxCollider.offset;
-        float raySpacing = boxSize.x / 8f; // �ڽ��� ���� ũ�⸦ �������� ���� ���� ���̸� ����
-        int rayCount = 10; // �� 5���� Raycast ���
-        float xPos = (dir.x > 0) ? boxCollider.bounds.max.x : boxCollider.bounds.min.x;
 
-        for (int i = 0; i < rayCount; i++)
+    public override void OnStopClient()
+    {
+        // 운반자 파괴 메시지가 서버의 해제 RPC보다 먼저 도착하므로, 자식으로 붙은 플레이어를 먼저 떼어 같이 파괴되지 않게 한다.
+        foreach (PlayerController2D carried in GetComponentsInChildren<PlayerController2D>(true))
         {
-            // ���� ���� ��ġ�� ���ʿ��� ���� �������� ����
-            Vector2 rayOrigin = new Vector2(xPos, boxCollider.bounds.min.y + (i * raySpacing) - raySpacing);
+            if (carried != playerController)
+                carried.DetachFromCarrierLocally();
+        }
+        base.OnStopClient();
+    }
 
-            RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, dir, 0.2f, LayerMask.GetMask("Pickable"));
-            Debug.DrawRay(rayOrigin, dir * 0.2f, Color.red, 0.1f);
-
-            foreach (RaycastHit2D hit in hits)
+    private PlayerController2D SearchPlayer(Vector2 dir)
+    {
+        foreach (RaycastHit2D hit in CastSearchRays(dir, LayerMask.GetMask("Player")))
+        {
+            if (hit.collider != null && hit.collider.gameObject != gameObject)
             {
-                if (hit.collider != null && hit.collider.gameObject != gameObject)
-                {
-                    T obj = hit.collider.GetComponent<T>();
-                    if (obj != null)
-                    {
-                        return obj;
-                    }
-                }
+                var pc = hit.collider.GetComponent<PlayerController2D>();
+                if (pc != null)
+                    return pc;
             }
         }
         return null;
     }
 
+    private T SearchObject<T>(Vector2 dir) where T : Component
+    {
+        foreach (RaycastHit2D hit in CastSearchRays(dir, LayerMask.GetMask("Pickable")))
+        {
+            if (hit.collider != null && hit.collider.gameObject != gameObject)
+            {
+                T obj = hit.collider.GetComponent<T>();
+                if (obj != null)
+                    return obj;
+            }
+        }
+        return null;
+    }
+
+    private System.Collections.Generic.IEnumerable<RaycastHit2D> CastSearchRays(Vector2 dir, int layerMask)
+    {
+        Bounds bounds = controller.CurrentBounds;
+        float raySpacing = boxCollider.size.x * SearchRaySpacingRatio;
+        float xPos = (dir.x > 0) ? bounds.max.x : bounds.min.x;
+
+        for (int i = 0; i < SearchRayCount; i++)
+        {
+            Vector2 rayOrigin = new Vector2(xPos, bounds.min.y + (i * raySpacing) - raySpacing);
+            Debug.DrawRay(rayOrigin, dir * SearchRayLength, Color.red, 0.1f);
+
+            foreach (RaycastHit2D hit in Physics2D.RaycastAll(rayOrigin, dir, SearchRayLength, layerMask))
+                yield return hit;
+        }
+    }
+
+    private bool CheckObjectAbove()
+    {
+        // 머리 위 상자 자리에 다른 물체가 있으면 들 수 없다.
+        Vector2 boxCenter = catchedCollider.transform.position;
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, catchedCollider.size, 0f, detectionLayer);
+        return hits.Length > 0;
+    }
+
     [ClientRpc]
     private void RpcSetPlayerCollision(NetworkIdentity targetPlayer, bool ignore)
     {
+        if (targetPlayer == null) return;
         Collider2D heldCollider = targetPlayer.GetComponent<Collider2D>();
         if (heldCollider == null) return;
         Physics2D.IgnoreCollision(boxCollider, heldCollider, ignore);
         Physics2D.IgnoreCollision(catchedCollider, heldCollider, ignore);
     }
 
-    void DisableCollisionWithHeldObject(PickupObj objectToPickUp)
+    private void SetCollisionWithHeldObject(PickupObj obj, bool ignore)
     {
-        Collider2D heldCollider = objectToPickUp.GetComponent<Collider2D>();
+        Collider2D heldCollider = obj.GetComponent<Collider2D>();
         if (heldCollider != null && boxCollider != null)
         {
-            Physics2D.IgnoreCollision(boxCollider, heldCollider, true);
-            Physics2D.IgnoreCollision(catchedCollider, heldCollider, true);
-        }
-    }
-
-    void EnableCollisionWithHeldObject(PickupObj objectToRelease)
-    {
-        Collider2D heldCollider = objectToRelease.GetComponent<Collider2D>();
-        if (heldCollider != null && boxCollider != null)
-        {
-            Physics2D.IgnoreCollision(boxCollider, heldCollider, false);
-            Physics2D.IgnoreCollision(catchedCollider, heldCollider, false);
+            Physics2D.IgnoreCollision(boxCollider, heldCollider, ignore);
+            Physics2D.IgnoreCollision(catchedCollider, heldCollider, ignore);
         }
     }
 }

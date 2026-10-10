@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public struct InputPayload
 {
+    // 서버가 위치를 강제로 정할 때마다 바뀐다. 그 전에 보낸 입력은 서버가 버린다.
+    public ushort epoch;
     public uint sequenceNumber;
     public Vector2 movement;
     public bool jump;

@@ -15,6 +15,11 @@ public class ServerMover : NetworkBehaviour
     // N 프레임마다 한 번 서버 상태를 클라이언트에 전송
     private const int SEND_INTERVAL = 3;
 
+    private const int MaxInputsPerTick = 2;
+    // 이 틱 수(약 0.2초) 동안 입력이 없으면 연결이 밀린 것으로 보고 마지막 입력으로 계속 움직인다.
+    private const int StarvationTicks = 10;
+    private int ticksWithoutInput;
+
     private MovementHandler movementHandler;
     private ClientMover clientMover;
 
@@ -25,6 +30,11 @@ public class ServerMover : NetworkBehaviour
 
     private uint lastProcessedSeq = 0;
     private int sendCounter = 0;
+
+    // 순간이동할 때마다 올린다. 이전 에포크 입력은 순간이동 전 위치를 기준으로 만든 것이라 버린다.
+    private ushort epoch;
+    // 새 에포크의 입력을 하나도 처리하지 않았으면 lastProcessedSeq가 옛 값이라 보정값을 보내면 안 된다.
+    private bool hasInputInEpoch;
 
     private void Awake()
     {
@@ -39,17 +49,12 @@ public class ServerMover : NetworkBehaviour
         movementHandler.managedExternally = true;
     }
 
-    // 포지션 리셋 등 순간 이동 시 큐에 쌓인 오래된 입력 전부 제거
-    public void ClearInputQueue()
-    {
-        inputQueue.Clear();
-    }
-
     // ClientMover.CmdSendInput에서 서버 측으로 호출됨
     public void ReceiveInput(InputPayload input)
     {
         // 호스트 자신의 입력은 ClientMover가 로컬에서 처리 — 서버에서 중복 처리 방지
         if (isOwned) return;
+        if (input.epoch != epoch) return;
 
         if (inputQueue.Count >= MAX_QUEUE_SIZE)
             inputQueue.Dequeue();
@@ -57,38 +62,83 @@ public class ServerMover : NetworkBehaviour
         inputQueue.Enqueue(input);
     }
 
+    // 다음 FixedUpdate에서 바로 보정값을 보낸다. 피격·밟기처럼 서버만 아는 사건을 소유자에게 빨리 알리기 위함이다.
+    public void SendStateNow() => sendCounter = SEND_INTERVAL;
+
+    // 운반 해제·리스폰처럼 서버가 위치를 정하는 경우. 소유 클라이언트는 이 상태에서 예측을 새로 시작한다.
+    [Server]
+    public void Teleport(Vector2 position, Vector2 velocity, float uncontrollableDuration = 0f)
+    {
+        transform.position = position;
+        movementHandler.Launch(velocity, uncontrollableDuration);
+        // 순간이동 위치의 발밑 정보를 다시 구해 첫 틱이 이전 위치의 접지 상태를 쓰지 않게 한다.
+        StatePayload state = movementHandler.GetState();
+        movementHandler.SetState(state);
+
+        epoch++;
+        inputQueue.Clear();
+        lastInput = default;
+        hasInputInEpoch = false;
+        ticksWithoutInput = 0;
+
+        state.epoch = epoch;
+        if (isOwned)
+            clientMover.ApplyResync(state);
+        else if (connectionToClient != null)
+            clientMover.TargetResync(connectionToClient, state);
+    }
+
     private void FixedUpdate()
     {
         if (!isServer || isOwned) return;
+
+        // 운반되거나 도착 지점에 들어가 이동이 꺼진 동안은 시뮬레이션하지 않는다.
+        if (!movementHandler.enabled)
+        {
+            inputQueue.Clear();
+            return;
+        }
 
         ProcessInput();
         SendStateIfNeeded();
     }
 
+    // 입력 하나에 시뮬레이션 한 번을 맞춘다. 입력 없이 서버 시계로 돌리면 서버가 예측보다 틱을 더 밟아 보정이 계속 생긴다.
     private void ProcessInput()
     {
-        if (inputQueue.Count > 0)
+        if (inputQueue.Count == 0)
         {
-            lastInput = inputQueue.Dequeue();
-            lastProcessedSeq = lastInput.sequenceNumber;
-            movementHandler.ApplyInput(lastInput);
-        }
-        else
-        {
-            // 새 입력 없음 — 방향/달리기는 유지하되 점프 같은 순간 이벤트는 제거
+            ticksWithoutInput++;
+            if (ticksWithoutInput < StarvationTicks) return;
+
+            // 입력이 오래 끊기면 마지막 입력으로 계속 움직여 다른 화면에서 멈춰 보이지 않게 한다.
+            // 방향/달리기는 유지하되 점프 같은 순간 이벤트는 제거
             InputPayload continuation = lastInput;
             continuation.jump   = false;
             continuation.jumpUp = false;
             movementHandler.ApplyInput(continuation);
+            movementHandler.Simulate(Time.fixedDeltaTime);
+            return;
         }
 
-        movementHandler.Simulate(Time.fixedDeltaTime);
+        ticksWithoutInput = 0;
+        // 지연이 흔들려 입력이 몰려 오면 한 틱에 둘까지 처리해 밀린 만큼 따라잡는다.
+        int inputsThisTick = inputQueue.Count > 1 ? MaxInputsPerTick : 1;
+        for (int i = 0; i < inputsThisTick; i++)
+        {
+            lastInput = inputQueue.Dequeue();
+            lastProcessedSeq = lastInput.sequenceNumber;
+            hasInputInEpoch = true;
+            movementHandler.ApplyInput(lastInput);
+            movementHandler.Simulate(Time.fixedDeltaTime);
+        }
     }
 
     private void SendStateIfNeeded()
     {
         sendCounter++;
         if (sendCounter < SEND_INTERVAL) return;
+        if (!hasInputInEpoch) return;
 
         sendCounter = 0;
 
@@ -96,6 +146,7 @@ public class ServerMover : NetworkBehaviour
         if (connectionToClient == null) return;
 
         StatePayload state = movementHandler.GetState(lastProcessedSeq);
+        state.epoch = epoch;
         clientMover.TargetSendState(connectionToClient, state);
     }
 }

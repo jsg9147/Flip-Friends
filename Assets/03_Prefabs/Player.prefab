@@ -247,6 +247,7 @@ GameObject:
   - component: {fileID: -3241067295946928136}
   - component: {fileID: 7217499218770645992}
   - component: {fileID: 9126243930237469633}
+  - component: {fileID: -4926006492668182587}
   m_Layer: 11
   m_Name: Player
   m_TagString: Player
@@ -588,9 +589,9 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3003054522249890194}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
@@ -628,6 +629,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 19904
   heldPos: {x: 0, y: 0.95, z: 0}
+  playerThrowVelocity: {x: 7, y: 12}
+  thrownUncontrollableDuration: 0.4
+  carryLockDuration: 1.5
+  throwDealy: 0.15
 --- !u!114 &3134290846460151077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,6 +876,19 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+--- !u!114 &-4926006492668182587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3003054522249890194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d1bf5c7691de44d907196cff7fffb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThrownPlayerSmoother
+  blendDuration: 0.3
 --- !u!1 &3883857380098973467
 GameObject:
   m_ObjectHideFlags: 0
