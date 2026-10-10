@@ -1,88 +1,98 @@
 using UnityEngine;
-using Mirror;
 
-public class PlayerAnimationController : NetworkBehaviour
+// 전이 그래프 없이 PlayerState를 Animator 상태로 직접 재생한다. 네트워크 동기화는 PlayerStateController가 맡는다
+public class PlayerAnimationController : MonoBehaviour
 {
-    [SerializeField]
-    private Animator animator;
+    private static readonly int IdleHash = Animator.StringToHash("Idle");
+    private static readonly int WalkHash = Animator.StringToHash("Walk");
+    private static readonly int JumpHash = Animator.StringToHash("Jump");
+    private static readonly int ClimbHash = Animator.StringToHash("Climb");
+    private static readonly int ShrinkHash = Animator.StringToHash("Shrink");
+    private static readonly int DamagedHash = Animator.StringToHash("Damaged");
 
-    // Cached animation parameters
-    private static readonly int IsMoving = Animator.StringToHash("isMoving");
-    private static readonly int JumpTrigger = Animator.StringToHash("jumpTrigger");
-    private static readonly int AttackTrigger = Animator.StringToHash("attackTrigger");
-    private static readonly int IsLifting = Animator.StringToHash("isLifting");
-    private static readonly int ThrowTrigger = Animator.StringToHash("throwTrigger");
-    private static readonly int DamagedTrigger = Animator.StringToHash("damagedTrigger");
-    private static readonly int IsFalling = Animator.StringToHash("isFalling");
-    private static readonly int IsGround = Animator.StringToHash("isGround");
-    private static readonly int IsClimb = Animator.StringToHash("isClimb");
-    private static readonly int IsShrinkTrigger = Animator.StringToHash("isShrink");
+    [SerializeField] private Animator animator;
+
+    // 피격 클립은 1프레임이라 클립 길이만큼만 보이면 거의 안 보인다. 1회성 클립의 최소 표시 시간
+    [SerializeField, Min(0.1f)] private float minOneShotDuration = 0.25f;
+
+    private PlayerStateController stateController;
+    private int currentStateHash;
+    private int oneShotHash;
+    private float oneShotMinEndTime;
 
     private void Awake()
     {
-        // Avoid redundant GetComponent calls
         if (animator == null) animator = GetComponent<Animator>();
+        stateController = GetComponent<PlayerStateController>();
     }
 
-    [ClientRpc]
-    public void RpcChangeAnimation(PlayerState state)
+    private void OnEnable()
     {
-        if (animator.speed != 1) animator.speed = 1; // Ensure speed reset
+        // 비활성화 동안 Animator가 기본 상태로 돌아갔을 수 있어 다음 Update에서 다시 재생하게 한다
+        currentStateHash = 0;
+    }
 
-        ResetAllAnimations(); // Reset before playing a new one
+    private void Update()
+    {
+        if (IsOneShotPlaying()) return;
 
-        switch (state)
+        PlayerState state = stateController.GetDisplayState();
+        int stateHash = ToStateHash(state);
+
+        if (stateHash != currentStateHash)
         {
-            case PlayerState.Idle:
-                animator.SetBool(IsMoving, false);
-                break;
-            case PlayerState.Walk:
-                animator.SetBool(IsMoving, true);
-                break;
-            case PlayerState.Jump:
-                animator.SetTrigger(JumpTrigger);
-                break;
-            case PlayerState.Shrink:
-                animator.SetTrigger(IsShrinkTrigger);
-                break;
-            case PlayerState.Damaged:
-                animator.SetTrigger(DamagedTrigger);
-                break;
-            case PlayerState.Climb:
-                animator.SetBool(IsClimb, true);
-                break;
-            case PlayerState.ClimbIdle:
-                animator.SetBool(IsClimb, true);
-                animator.speed = 0; // Pause animation
-                break;
-            default:
-                Debug.LogWarning($"Animation state '{state}' not implemented.");
-                break;
+            animator.Play(stateHash, 0, 0f);
+            currentStateHash = stateHash;
         }
+
+        // 줄에 매달려 멈춰 있으면 등반 클립을 현재 프레임에서 멈춘다
+        animator.speed = state == PlayerState.ClimbIdle ? 0f : 1f;
     }
 
-    private void ResetAllAnimations()
+    public void PlayOneShot(PlayerState state)
     {
-        animator.ResetTrigger(JumpTrigger);
-        animator.ResetTrigger(AttackTrigger);
-        animator.ResetTrigger(DamagedTrigger);
-        animator.ResetTrigger(IsShrinkTrigger);
+        int stateHash = state switch
+        {
+            PlayerState.Damaged => DamagedHash,
+            PlayerState.Shrink => ShrinkHash,
+            _ => 0
+        };
 
-        animator.SetBool(IsMoving, false);
-        animator.SetBool(IsLifting, false);
-        animator.SetBool(IsFalling, false);
-        animator.SetBool(IsGround, true); // Default state as ground
-        animator.SetBool(IsClimb, false);
+        if (stateHash == 0)
+        {
+            Debug.LogWarning($"1회성 애니메이션이 없는 상태입니다: {state}", this);
+            return;
+        }
+
+        animator.speed = 1f;
+        animator.Play(stateHash, 0, 0f);
+        oneShotHash = stateHash;
+        oneShotMinEndTime = Time.time + minOneShotDuration;
+        // 1회성 클립이 끝나면 지속 상태를 다시 재생하도록 캐시를 비운다
+        currentStateHash = 0;
     }
 
-    [ClientRpc]
-    public void RpcGroundState(bool isGround)
+    private bool IsOneShotPlaying()
     {
-        animator.SetBool(IsGround, isGround);
+        if (oneShotHash == 0) return false;
+        if (Time.time < oneShotMinEndTime) return true;
+
+        AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
+        if (info.shortNameHash == oneShotHash && info.normalizedTime < 1f) return true;
+
+        oneShotHash = 0;
+        return false;
     }
 
-    public void PlayAttackAnimation() => animator.SetTrigger(AttackTrigger);
-    public void PlayLiftingAnimation(bool isLifting) => animator.SetBool(IsLifting, isLifting);
-    public void PlayThrowAnimation() => animator.SetTrigger(ThrowTrigger);
-    public void PlayFallAnimation(bool isFalling) => animator.SetBool(IsFalling, isFalling);
+    private static int ToStateHash(PlayerState state)
+    {
+        return state switch
+        {
+            PlayerState.Walk => WalkHash,
+            PlayerState.Jump => JumpHash,
+            PlayerState.Climb => ClimbHash,
+            PlayerState.ClimbIdle => ClimbHash,
+            _ => IdleHash
+        };
+    }
 }

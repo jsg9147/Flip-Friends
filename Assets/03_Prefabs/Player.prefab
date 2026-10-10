@@ -237,7 +237,6 @@ GameObject:
   - component: {fileID: 1341473684229653938}
   - component: {fileID: -2498110620195065340}
   - component: {fileID: 5579083501493351265}
-  - component: {fileID: -1633239351912719339}
   - component: {fileID: -554855401361225706}
   - component: {fileID: 2354184399810437624}
   - component: {fileID: -5772595210709794893}
@@ -417,10 +416,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 591d677b3812f1849bb29f23b0e79828, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   animator: {fileID: 44754235864495908}
+  minOneShotDuration: 0.25
 --- !u!114 &1341473684229653938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,26 +481,10 @@ MonoBehaviour:
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   bufferResetMultiplier: 3
+  useFixedUpdate: 0
   positionSensitivity: 0.003
   rotationSensitivity: 0.003
   scaleSensitivity: 0.01
---- !u!114 &-1633239351912719339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3003054522249890194}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 1
-  animator: {fileID: 44754235864495908}
 --- !u!114 &-554855401361225706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1434,7 +1415,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -1489,6 +1470,7 @@ MonoBehaviour:
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   bufferResetMultiplier: 3
+  useFixedUpdate: 0
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01

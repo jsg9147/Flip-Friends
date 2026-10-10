@@ -35,9 +35,6 @@ public class PlayerController2D : NetworkBehaviour
 
     private SavePoint savePoint;
 
-    // 이전 프레임의 접지 상태 — 이륙 순간 점프 애니메이션 자동 트리거에 사용
-    private bool wasGrounded = true;
-
     [SyncVar]private int ropeCollisionCount;
 
     [SyncVar(hook = nameof(PlayerNameUpdate))] public string playerName = "No Name";
@@ -157,7 +154,12 @@ public class PlayerController2D : NetworkBehaviour
 
     public void OnSteppedByOtherPlayer()
     {
-        UpdatePlayerStateAndAnimation(PlayerState.Shrink);
+        // 밟은 쪽 클라이언트의 예측 시뮬레이션에서도 불리므로 연출은 서버에서만 보낸다
+        if (isServer)
+        {
+            stateController.RpcPlayOneShot(PlayerState.Shrink);
+            soundController.RpcPlayShrinkSound();
+        }
         movementHandler.BlockJump(0.15f);
     }
 
@@ -189,33 +191,20 @@ public class PlayerController2D : NetworkBehaviour
         if (movementHandler == null) return;
 
         bool isGrounded = movementHandler.isGrounded;
+        Vector2 velocity = movementHandler.CurrentVelocity;
 
-        if (isGrounded)
-        {
-            UpdateGroundedState();
-            wasGrounded = true;
-        }
-        else if (wasGrounded)
-        {
-            // 이번 프레임에 처음 공중으로 전환 — 점프/낙하 모두 Jump 애니메이션으로 처리
-            UpdatePlayerStateAndAnimation(PlayerState.Jump);
-            wasGrounded = false;
-        }
+        if (isGrounded && PlayerStateController.IsWalking(velocity.x))
+            UpdateFlipState(velocity.x < 0);
 
-        animationController.RpcGroundState(isGrounded);
+        // 매 틱 이동 결과에서 상태를 다시 정한다. SyncVar라 값이 바뀔 때만 전송된다
+        stateController.ChangeState(ResolveServerState(isGrounded, velocity));
     }
 
-    private void UpdateGroundedState()
+    private PlayerState ResolveServerState(bool isGrounded, Vector2 velocity)
     {
-        if (Mathf.Abs(movementHandler.CurrentVelocity.x) > 0.05f)
-        {
-            UpdateFlipState(movementHandler.CurrentVelocity.x < 0);
-            UpdatePlayerStateAndAnimation(PlayerState.Walk);
-        }
-        else
-        {
-            UpdatePlayerStateAndAnimation(PlayerState.Idle);
-        }
+        if (isCarried) return PlayerState.Carried;
+        if (movementHandler.isClimbed && !isGrounded) return PlayerStateController.ResolveClimb(velocity);
+        return PlayerStateController.ResolveLocomotion(isGrounded, velocity.x);
     }
 
     private void UpdateFlipState(bool isFlip)
@@ -232,18 +221,6 @@ public class PlayerController2D : NetworkBehaviour
         spriteRenderer.flipX = isFlip;
     }
 
-    private void UpdatePlayerStateAndAnimation(PlayerState newState)
-    {
-        stateController.ChangeState(newState);
-
-        if (isServer)
-        {
-            animationController.RpcChangeAnimation(stateController.playerState);
-            if (newState == PlayerState.Shrink)
-                GetComponent<PlayerSound>().RpcPlayShrinkSound();
-        }
-    }
-
     private void HandleDamage(Collider2D collision)
     {
         if (!collision.CompareTag("Trap") && !collision.CompareTag("Enemy")) return;
@@ -256,9 +233,10 @@ public class PlayerController2D : NetworkBehaviour
             knockbackDirection = trap.knockbackDir;
         }
 
-        UpdatePlayerStateAndAnimation(PlayerState.Damaged);
         interactionController.TryIntractive(GetInteractionDirection(), true);
-        movementHandler.OnDamaged(knockbackDirection);
+
+        if (movementHandler.OnDamaged(knockbackDirection))
+            stateController.RpcPlayOneShot(PlayerState.Damaged);
     }
 
     private Vector3 GetInteractionDirection()
@@ -272,11 +250,6 @@ public class PlayerController2D : NetworkBehaviour
         if (interactionController.IsHoldingObject) return;
 
         movementHandler.SetClimbState(true);
-
-        if (movementHandler.isClimbed)
-        {
-            UpdatePlayerStateAndAnimation(PlayerState.Climb);
-        }
     }
 
     [Command]
@@ -290,10 +263,7 @@ public class PlayerController2D : NetworkBehaviour
         ropeCollisionCount = Mathf.Max(0, ropeCollisionCount - 1);
 
         if (ropeCollisionCount == 0)
-        {
             movementHandler.SetClimbState(false);
-            UpdatePlayerStateAndAnimation(PlayerState.Idle);
-        }
     }
 
     [Command]
@@ -399,7 +369,6 @@ public class PlayerController2D : NetworkBehaviour
     private void RpcSetCarriedState(bool carried, NetworkIdentity carrierIdentity)
     {
         movementHandler.enabled = !carried;
-        stateController.ChangeState(carried ? PlayerState.Carried : PlayerState.Idle);
         transform.SetParent(carried && carrierIdentity != null ? carrierIdentity.transform : null);
     }
 }

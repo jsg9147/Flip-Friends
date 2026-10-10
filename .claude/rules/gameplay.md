@@ -18,7 +18,7 @@ Rigidbody 물리가 아니라 레이캐스트(`Controller2D`, `RaycastController
 
 - **장애물**: `BasicTrap`(`ObstacleScripts/`)을 상속한다. 방사형이 아닌 넉백은 Inspector의 `knockbackDir`을 설정한다. 콜라이더 태그를 `"Trap"` 또는 `"Enemy"`로 두어 `PlayerController2D`의 피해 처리가 잡게 한다.
 - **스위치**: `Switch` 또는 `LayerBasedSwitch`(`PlayingScripts/SwitchScripts/`)를 상속하고 `OnSwitchStateChanged`를 재정의한다. `isActivated`는 `SyncVar`로 동기화된다.
-- **플레이어 상태**: `PlayerController2D`의 `PlayerState`에 값을 추가하고 `PlayerStateController`, `PlayerAnimationController`를 함께 고친다.
+- **플레이어 상태**: `PlayerController2D`의 `PlayerState`에 값을 추가하고 `PlayerStateController`, `PlayerAnimationController`를 함께 고친다. 지속 상태는 서버가 `ChangeState`(SyncVar)로 정하고, 피격처럼 순간적인 연출은 `RpcPlayOneShot`으로 보낸다. `PlayerAnimator.controller`는 전이·파라미터 없이 상태만 두고 코드가 `Animator.Play`로 재생한다. `Shrink` 클립이 콜라이더 크기를 바꾸므로 Write Defaults는 켜 둔다.
 - **들 수 있는 오브젝트**: `PickupObj`를 붙이고 레이어를 `"Pickable"`로 둔다. `PlayerInteraction`의 탐색이 이 레이어를 찾는다.
 
 ## 레이어와 태그

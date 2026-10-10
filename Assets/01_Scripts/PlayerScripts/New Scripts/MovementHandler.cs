@@ -321,13 +321,15 @@ public class MovementHandler : NetworkBehaviour
         }
     }
 
-    public void OnDamaged(Vector2 knockbackDirection)
+    // 무적 시간이라 피해를 받지 않았으면 false — 트랩에 닿아 있는 동안 매 틱 피격 연출이 반복되지 않게 한다
+    public bool OnDamaged(Vector2 knockbackDirection)
     {
-        if (invincible) return;
+        if (invincible) return false;
         velocity = knockbackDirection * damagedMove;
         DisableClimbTemporarily(1f);
         StartCoroutine(ActivateInvincibility());
         StartCoroutine(TemporaryUncontrollable(1f));
+        return true;
     }
 
     private IEnumerator ActivateInvincibility()
