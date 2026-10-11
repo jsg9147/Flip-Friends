@@ -15,6 +15,7 @@
 - `Data`·`Validation` 폴더는 `FlipFriends.MapEditorCore` 어셈블리다(`Validation`은 asmref). Mirror에 의존하지 않으며, 검증기는 `MapEditorPalette` 대신 `IMapPaletteLookup`을 받는다. Mirror 패킷 한계를 쓰는 `SavedMapCatalog`는 Assembly-CSharp에 남는다.
 - HUD의 `테스트 플레이`는 저장하지 않은 편집 상태로 혼자 플레이한다. `SlimeRoomManager.TryStartTestPlay`가 Steam 로비 없이 호스트를 열고 GameRoom을 바로 지나 GamePlay로 간다. 도착하거나 메뉴에서 나가면 호스트를 끄고 에디터로 돌아온다. Main 씬을 거쳐 들어와야 네트워크 매니저가 있다.
 - 편집 상태(MapData 복사본, 저장 파일명)는 `MapEditorDraftStore`가 씬 전환 동안 맡고, `MapEditorManager.Awake`가 한 번 꺼내 복원한다.
+- 커스텀 맵과 테스트 플레이에서도 추락이 막힌다. 서버가 생성된 오브젝트의 렌더러 범위로 `FallBoundary`를 만들고, 밖으로 나간 플레이어는 시작 지점으로, 상자는 배치 위치로 돌려보낸다. 리셋 키도 세이브 포인트가 없으면 원점이 아니라 시작 지점으로 보낸다.
 - 로비 선택과 자동 공유는 `Docs/CUSTOM_MAP_NETWORK.md`가 담당한다.
 
 ## 핵심 흐름
@@ -44,6 +45,7 @@ MapEditorManager
   - `MapDataValidatorTests`: 시작점·도착점 최소 개수, 등록되지 않은·빈 팔레트 ID, 팔레트 없음, 비정규 MapId, 경계 밖·NaN 좌표, 최대 개수, 겹침 경고·치명 오류·허용 오차를 보장한다.
 
 - 테스트 플레이는 2026-10-07 에디터 플레이 모드(Steam 로그인)에서 Main → MapEditor → 테스트 플레이 → GamePlay를 확인했다. 시작 지점에서 생성돼 지면 위에 서고, 도착 판정·메뉴 나가기·직접 클리어 요청 세 경로 모두 에디터로 돌아와 같은 MapId·이름·오브젝트 수와 표시 오브젝트가 복원됐다. 이후 Main 복귀도 정상이다. GameRoom을 바로 지나가며 방 플레이어 Command가 "client not ready" 경고로 버려지지만 게임 플레이어는 이름·색을 스스로 다시 보낸다.
+- 추락 리스폰(플레이어·상자·리셋 키)은 2026-10-11 컴파일만 확인했다. 테스트 플레이에서 맵 아래·옆으로 떨어지기, 상자 떨어뜨리기, 들고 떨어지기를 수동 확인해야 한다. 2인 운반 중 추락은 `LocalNetworkTest`로 확인한다.
 - 2026-10-10 사용자가 Windows 빌드에서 실제 키보드·게임패드로 테스트 플레이를 조작하고, 도착과 메뉴 나가기 양쪽에서 에디터로 돌아오는 것을 수동 확인했다.
 
 ## 남은 작업

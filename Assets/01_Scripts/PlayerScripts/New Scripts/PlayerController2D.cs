@@ -45,6 +45,8 @@ public class PlayerController2D : NetworkBehaviour
     private float escapeRequestCooldown;
 
     private SavePoint savePoint;
+    // NetworkRoomManager가 시작 지점 위치로 생성하므로 서버 시작 시점의 위치가 곧 시작 지점이다.
+    private Vector2 spawnPosition;
 
     [SyncVar(hook = nameof(PlayerNameUpdate))] public string playerName = "No Name";
     [SyncVar(hook = nameof(FinishCheck))] public bool isFinish;
@@ -104,7 +106,14 @@ public class PlayerController2D : NetworkBehaviour
         if (isServer && !isFinish)
         {
             UpdatePlayerState();
+            RespawnIfOutsideStage();
         }
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        spawnPosition = transform.position;
     }
 
     private void InitializeComponents()
@@ -290,16 +299,30 @@ public class PlayerController2D : NetworkBehaviour
     }
 
     [Command]
-    private void CmdPositionReset()
+    private void CmdPositionReset() => ServerRespawn();
+
+    [Server]
+    private void ServerRespawn()
     {
         // 들린 동안의 위치는 운반자가 정한다.
         if (isCarried) return;
 
         interactionController.DropAll();
-        Vector2 resetPos = Vector2.zero;
-        if(savePoint != null)
-            resetPos = savePoint.transform.position;
-        serverMover.Teleport(resetPos, Vector2.zero);
+        serverMover.Teleport(GetRespawnPosition(), Vector2.zero);
+    }
+
+    // 세이브 포인트가 없는 맵(커스텀 맵 등)에서 원점으로 보내면 허공일 수 있어 처음 생성된 시작 지점으로 보낸다.
+    private Vector2 GetRespawnPosition() =>
+        savePoint != null ? (Vector2)savePoint.transform.position : spawnPosition;
+
+    [Server]
+    private void RespawnIfOutsideStage()
+    {
+        if (isCarried) return;
+
+        FallBoundary boundary = StageManager.instance != null ? StageManager.instance.FallBoundary : null;
+        if (boundary != null && boundary.IsOutside(transform.position))
+            ServerRespawn();
     }
 
     private void UpdatePlayerState()

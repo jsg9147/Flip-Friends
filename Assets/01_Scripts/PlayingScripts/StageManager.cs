@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
@@ -9,6 +10,11 @@ public class StageManager : NetworkBehaviour
     [SerializeField] private BuiltInMapCatalog builtInMapCatalog;
     [SerializeField] private MapEditorPalette palette;
     [SerializeField] private GameObject mapDataSyncPrefab;
+    // 스테이지 그림 범위에서 이만큼 더 벗어나야 추락으로 본다. 끝자락에서 뛰는 정상 플레이를 잘못 잡지 않게 넉넉히 둔다.
+    [SerializeField] private float fallBoundaryMargin = 10f;
+
+    // 서버에서만 값이 있다. 스테이지 그림이 하나도 없으면 null이며, 그때는 추락 판정을 하지 않는다.
+    public FallBoundary FallBoundary { get; private set; }
 
     private void Awake()
     {
@@ -95,6 +101,7 @@ public class StageManager : NetworkBehaviour
         }
 
         NetworkServer.Spawn(stageObject);
+        CreateFallBoundary(new[] { stageObject });
         error = null;
         return true;
     }
@@ -115,7 +122,20 @@ public class StageManager : NetworkBehaviour
         CustomMapRuntimeLoader loader = new CustomMapRuntimeLoader(
             new PlacedObjectFactory(palette),
             mapDataSyncPrefab);
-        return loader.TryLoad(mapData, mapId, contentHash, out error);
+        if (!loader.TryLoad(mapData, mapId, contentHash, out IReadOnlyList<GameObject> spawnedObjects, out error))
+            return false;
+
+        CreateFallBoundary(spawnedObjects);
+        return true;
+    }
+
+    [Server]
+    private void CreateFallBoundary(IEnumerable<GameObject> stageObjects)
+    {
+        if (FallBoundary.TryCreate(stageObjects, fallBoundaryMargin, out FallBoundary boundary))
+            FallBoundary = boundary;
+        else
+            Debug.LogWarning("스테이지에 그림이 없어 추락 판정 영역을 만들지 못했습니다. 추락해도 리스폰되지 않습니다.", this);
     }
 
     // OnStartServer는 씬 로드를 마무리하는 도중에 불리므로 같은 프레임에 씬을 바꾸지 않는다.

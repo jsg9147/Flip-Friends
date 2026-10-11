@@ -16,8 +16,14 @@ public sealed class CustomMapRuntimeLoader
     }
 
     // 일부만 생성된 맵은 플레이할 수 없으므로, 하나라도 실패하면 이미 생성한 것을 모두 지운다.
-    public bool TryLoad(MapData mapData, string mapId, string contentHash, out string error)
+    public bool TryLoad(
+        MapData mapData,
+        string mapId,
+        string contentHash,
+        out IReadOnlyList<GameObject> spawnedMapObjects,
+        out string error)
     {
+        spawnedMapObjects = null;
         if (mapData == null)
         {
             error = "MapData가 null입니다.";
@@ -51,6 +57,7 @@ public sealed class CustomMapRuntimeLoader
             spawnedObjects.Add(obj);
         }
 
+        spawnedMapObjects = spawnedObjects;
         error = null;
         return true;
     }

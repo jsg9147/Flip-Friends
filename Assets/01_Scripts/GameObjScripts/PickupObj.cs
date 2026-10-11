@@ -23,6 +23,16 @@ public class PickupObj : RaycastController
     private float maxGravity = 12f;
 
     private float timeToWallUnstick;
+
+    // 스테이지 밖으로 떨어지면 처음 놓인 자리로 돌려보내 퍼즐에 필요한 상자를 잃지 않게 한다.
+    private Vector2 homePosition;
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        homePosition = transform.position;
+    }
+
     public override void Start()
     {
         base.Start();
@@ -58,6 +68,7 @@ public class PickupObj : RaycastController
         {
             CalculateMovement();
             ApplyMovement();
+            ReturnHomeIfOutsideStage();
         }
 
         syncedPosition = transform.position;
@@ -74,6 +85,24 @@ public class PickupObj : RaycastController
 
     // 상자는 transform으로 움직이므로 물리 스텝 전의 bounds는 이전 위치다.
     protected override Bounds GetColliderBounds() => ComputeBoundsFromTransform();
+
+    [Server]
+    private void ReturnHomeIfOutsideStage()
+    {
+        FallBoundary boundary = StageManager.instance != null ? StageManager.instance.FallBoundary : null;
+        if (boundary != null && boundary.IsOutside(transform.position))
+            ResetPosition(homePosition);
+    }
+
+    // 클라이언트는 위치 SyncVar가 ClientSnapDistance보다 멀리 바뀌면 바로 맞추므로 서버 위치만 바꾼다.
+    [Server]
+    private void ResetPosition(Vector2 position)
+    {
+        transform.position = position;
+        velocity = Vector2.zero;
+        velocityXSmoothing = 0f;
+        syncedPosition = position;
+    }
 
     // 운반자가 정한 위치·속도로 놓는다. 서버만 시뮬레이션하므로 클라이언트에는 위치 SyncVar로 전달된다.
     [Server]
@@ -388,20 +417,10 @@ public class PickupObj : RaycastController
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Reset"))
-        {
-            if (collision.GetComponent<RespawnHandler>() != null)
-            {
-                RpcResetPosition(collision.GetComponent<RespawnHandler>().resetPoint.position);
-            }
-        }
-    }
+        if (!isServer) return;
 
-    [ClientRpc]
-    private void RpcResetPosition(Vector3 resetPos)
-    {
-        velocity = Vector3.zero;
-        transform.position = resetPos;
+        if (collision.CompareTag("Reset") && collision.TryGetComponent(out RespawnHandler respawnHandler))
+            ResetPosition(respawnHandler.resetPoint.position);
     }
 
     [ClientRpc]
