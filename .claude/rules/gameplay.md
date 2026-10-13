@@ -20,6 +20,7 @@ Rigidbody 물리가 아니라 레이캐스트(`Controller2D`, `RaycastController
 
 - **장애물**: `BasicTrap`(`ObstacleScripts/`)을 상속한다. 방사형이 아닌 넉백은 Inspector의 `knockbackDir`을 설정한다. 콜라이더 태그를 `"Trap"` 또는 `"Enemy"`로 두어 `PlayerController2D`의 피해 처리가 잡게 한다.
 - **움직이는 장애물**: 위치를 매 틱 보내지 않는다. 서버가 시작 시각만 SyncVar로 주고, 양쪽이 `NetworkTime.predictedTime` 기준 경과 시간으로 위치를 계산한다(`MovingTrap`). 그래야 소유 클라이언트 화면의 트랩이 서버가 그 입력으로 피격을 판정하는 위치와 같다. NetworkTransform을 붙이지 않는다.
+- **스테이지 부품 프리팹**: 기본 스테이지는 루트에만 `NetworkIdentity`가 있고 Mirror는 자식 `NetworkIdentity`를 지원하지 않는다. 그래서 스테이지에 중첩하는 부품 프리팹(`Obstacle/Move Trap.prefab`, `Obstacle/Cannon.prefab`, `bouncy ball.prefab`)에는 `NetworkIdentity`를 넣지 않는다. 맵 에디터 팔레트에는 Variant에 `NetworkIdentity`를 더해 올린다(`MapEditor/MapEditorCannon.prefab`). 부품 프리팹을 단독으로 저장·임포트할 때 Mirror `OnValidate`가 "requires a NetworkIdentity" 에러를 남기는 것은 정상이다.
 - **스위치**: `Switch` 또는 `LayerBasedSwitch`(`PlayingScripts/SwitchScripts/`)를 상속하고 `OnSwitchStateChanged`를 재정의한다. `isActivated`는 `SyncVar`로 동기화된다.
 - **플레이어 상태**: `PlayerController2D`의 `PlayerState`에 값을 추가하고 `PlayerStateController`, `PlayerAnimationController`를 함께 고친다. 지속 상태는 서버가 `ChangeState`(SyncVar)로 정하고, 피격처럼 순간적인 연출은 `RpcPlayOneShot`으로 보낸다. `PlayerAnimator.controller`는 전이·파라미터 없이 상태만 두고 코드가 `Animator.Play`로 재생한다. `Shrink` 클립이 콜라이더 크기를 바꾸므로 Write Defaults는 켜 둔다.
 - **들 수 있는 오브젝트**: `PickupObj`를 붙이고 레이어를 `"Pickable"`로 둔다. `PlayerInteraction`의 탐색이 이 레이어를 찾는다.
