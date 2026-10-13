@@ -1210,7 +1210,6 @@ GameObject:
   - component: {fileID: 2712555306540743725}
   - component: {fileID: 5175024682176641538}
   - component: {fileID: 3447286204754980362}
-  - component: {fileID: 2672877463218773294}
   m_Layer: 10
   m_Name: Move Trap (2)
   m_TagString: Trap
@@ -1308,12 +1307,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: -7, y: 0}
   speed: 3
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
 --- !u!61 &3447286204754980362
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1360,40 +1358,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
---- !u!114 &2672877463218773294
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2500625326404748898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 772178222905926851}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &3747033625749210140
 GameObject:
   m_ObjectHideFlags: 0
@@ -4186,7 +4150,6 @@ GameObject:
   - component: {fileID: 4673127509886204258}
   - component: {fileID: 5332094774753263265}
   - component: {fileID: 9182580514169579189}
-  - component: {fileID: 3959298629324973609}
   m_Layer: 10
   m_Name: Move Trap (3)
   m_TagString: Trap
@@ -4284,12 +4247,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: -7, y: 0}
   speed: 2.5
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
 --- !u!61 &9182580514169579189
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4336,40 +4298,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
---- !u!114 &3959298629324973609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4415845125748749347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 9067602011502084421}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &5715471335298374772
 GameObject:
   m_ObjectHideFlags: 0
@@ -4382,7 +4310,6 @@ GameObject:
   - component: {fileID: 4171751465657119278}
   - component: {fileID: 6987506855279828750}
   - component: {fileID: 3978360573289138518}
-  - component: {fileID: 6047948261610959482}
   m_Layer: 10
   m_Name: Move Trap (4)
   m_TagString: Trap
@@ -4480,12 +4407,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: -7, y: 0}
   speed: 4
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
 --- !u!61 &3978360573289138518
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4532,40 +4458,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
---- !u!114 &6047948261610959482
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5715471335298374772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 7799318773039068889}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &6211692911309338821
 GameObject:
   m_ObjectHideFlags: 0
@@ -4919,7 +4811,6 @@ GameObject:
   - component: {fileID: 8365037451089088750}
   - component: {fileID: 6490214238922605259}
   - component: {fileID: 8310785007592816138}
-  - component: {fileID: 4794268536188426005}
   m_Layer: 10
   m_Name: Move Trap
   m_TagString: Trap
@@ -5017,12 +4908,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 0, y: 8}
   speed: 5
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
 --- !u!61 &8310785007592816138
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5069,40 +4959,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
---- !u!114 &4794268536188426005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7241499311591433556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 8919834044656634987}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &8964581599321071774
 GameObject:
   m_ObjectHideFlags: 0
@@ -5115,7 +4971,6 @@ GameObject:
   - component: {fileID: 8922620318834282963}
   - component: {fileID: 8286273626487422533}
   - component: {fileID: 1536597558592151142}
-  - component: {fileID: 2192010199677557367}
   m_Layer: 10
   m_Name: Move Trap (1)
   m_TagString: Trap
@@ -5213,12 +5068,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 0, y: 8}
   speed: 5
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
 --- !u!61 &1536597558592151142
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5265,40 +5119,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
---- !u!114 &2192010199677557367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8964581599321071774}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 6685870980448413640}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1001 &679276934380406542
 PrefabInstance:
   m_ObjectHideFlags: 0

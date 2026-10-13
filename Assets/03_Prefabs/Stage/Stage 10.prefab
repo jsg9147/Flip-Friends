@@ -5899,7 +5899,6 @@ GameObject:
   - component: {fileID: 7446156641880285219}
   - component: {fileID: 7282397404561649188}
   - component: {fileID: 6601839089258328900}
-  - component: {fileID: 1467714373995834451}
   - component: {fileID: 5582953180497147246}
   m_Layer: 10
   m_Name: Move Trap (1)
@@ -5998,46 +5997,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 0, y: 0}
   speed: 0
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
---- !u!114 &1467714373995834451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1849334878813315548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 7446156641880285219}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!58 &5582953180497147246
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -6085,7 +6049,6 @@ GameObject:
   - component: {fileID: 5879436913868145891}
   - component: {fileID: 9217603295616161500}
   - component: {fileID: 3312353707184916580}
-  - component: {fileID: 357504829669910475}
   - component: {fileID: 744204582852701350}
   m_Layer: 10
   m_Name: Move Trap (4)
@@ -6184,46 +6147,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 15, y: 0}
   speed: 2
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
---- !u!114 &357504829669910475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2005186402729258073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 5879436913868145891}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!58 &744204582852701350
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -6442,7 +6370,6 @@ GameObject:
   - component: {fileID: 7972539837090865128}
   - component: {fileID: 1584390146469603707}
   - component: {fileID: 6209730746398944452}
-  - component: {fileID: 7778766463024496150}
   - component: {fileID: 6265108086085827722}
   m_Layer: 10
   m_Name: Move Trap (3)
@@ -6541,46 +6468,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 0, y: 0}
   speed: 0
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
---- !u!114 &7778766463024496150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4143284002575659775}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 7972539837090865128}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!58 &6265108086085827722
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -7096,7 +6988,6 @@ GameObject:
   - component: {fileID: 8734849650932251171}
   - component: {fileID: 7306761633938967463}
   - component: {fileID: 8879791464193533420}
-  - component: {fileID: 5611419094553548352}
   - component: {fileID: 4176436744090029952}
   m_Layer: 10
   m_Name: Move Trap (5)
@@ -7195,46 +7086,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 10, y: 0}
   speed: 3
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
---- !u!114 &5611419094553548352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5380573427704288022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 8734849650932251171}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!58 &4176436744090029952
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -11463,7 +11319,6 @@ GameObject:
   - component: {fileID: 5675987584017057747}
   - component: {fileID: 2679211343868308233}
   - component: {fileID: 5336772418278470515}
-  - component: {fileID: 8659169140140167067}
   - component: {fileID: 2521889666213625549}
   m_Layer: 10
   m_Name: Move Trap (6)
@@ -11562,46 +11417,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 10, y: 0}
   speed: 4
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
---- !u!114 &8659169140140167067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6210374806561390127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 5675987584017057747}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!58 &2521889666213625549
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -12073,7 +11893,6 @@ GameObject:
   - component: {fileID: 5345254656247216017}
   - component: {fileID: 8764211071587863431}
   - component: {fileID: 5861793788456980833}
-  - component: {fileID: 5156974931036077158}
   - component: {fileID: 7209981098160365730}
   m_Layer: 10
   m_Name: Move Trap (2)
@@ -12172,46 +11991,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  knockbackDir: {x: 0, y: 0}
   endPosition: {x: 0, y: 0}
   speed: 0
   isRotate: 1
   rotationSpeed: 1000
-  interpolationSpeed: 15
-  carriesPlayers: 1
---- !u!114 &5156974931036077158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7674445724734107261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 5345254656247216017}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!58 &7209981098160365730
 CircleCollider2D:
   m_ObjectHideFlags: 0

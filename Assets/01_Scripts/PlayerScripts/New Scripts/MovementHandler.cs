@@ -355,11 +355,7 @@ public class MovementHandler : NetworkBehaviour
 
         velocity += externalVelocity;
 
-        Vector2 platformDelta = controller.onMovingPlatform != null
-            ? controller.onMovingPlatform.PlatformDelta
-            : Vector2.zero;
-
-        controller.Move(velocity * deltaTime + platformDelta, directionalInput);
+        controller.Move(velocity * deltaTime, directionalInput);
 
         if (controller.collisions.above || controller.collisions.below)
         {

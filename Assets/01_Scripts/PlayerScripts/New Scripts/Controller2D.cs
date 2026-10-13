@@ -15,7 +15,6 @@ public class Controller2D : RaycastController
     public bool isHold => heldObj != null;
 
     public Conveyor onConveyor;
-    public MovingPlatform onMovingPlatform { get; private set; }
 
     public NetworkIdentity underPlayer { get; private set; }
     private Vector2 movementVector;
@@ -185,7 +184,6 @@ public class Controller2D : RaycastController
         float rayLength = Mathf.Abs(moveAmount.y) + skinWidth;
 
         onConveyor = null;
-        onMovingPlatform = null;
 
         for (int i = 0; i < verticalRayCount; i++)
         {
@@ -241,7 +239,6 @@ public class Controller2D : RaycastController
             collisions.above = directionY == 1;
 
             SearchConveyor(hit);
-            SearchMovingPlatform(hit, directionY);
 
             if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f)  < transform.position.y)
             {
@@ -260,14 +257,6 @@ public class Controller2D : RaycastController
     {
         Conveyor conveyor = hit.transform.GetComponent<Conveyor>();
         onConveyor = conveyor;
-    }
-
-    private void SearchMovingPlatform(RaycastHit2D hit, float directionY)
-    {
-        if (directionY != -1) return;
-        MovingPlatform platform = hit.transform.GetComponent<MovingPlatform>();
-        if (platform != null)
-            onMovingPlatform = platform;
     }
 
     private void ProcessVerticalHitsPlayer(RaycastHit2D[] hits, Vector2 dir, float directionY)
