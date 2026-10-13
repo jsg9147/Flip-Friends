@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class OnOffManager : NetworkBehaviour
 {
+    private const string ActiveSwitchGroundName = "OnSwitchGround";
+    private const string InactiveSwitchGroundName = "OffSwitchGround";
+
     [SerializeField] private List<OnOffSwitch> switches;
     [SerializeField] private List<Conveyor> conveyorBelts;
 
@@ -16,9 +19,16 @@ public class OnOffManager : NetworkBehaviour
 
     private bool isActivated;
 
+    private void Awake()
+    {
+        ResolveMissingGroundReferences();
+    }
+
     private void Start()
     {
         isActivated = false;
+        UpdateSwitchState(isActivated);
+
         if (isServer)
         {
             RpcUpdateSwitchState(isActivated);
@@ -35,23 +45,52 @@ public class OnOffManager : NetworkBehaviour
         {
             switchUnit.RpcToggleSwitch(newState);
         }
+
+        UpdateSwitchState(newState);
         RpcUpdateSwitchState(newState);
     }
 
     [ClientRpc]
     private void RpcUpdateSwitchState(bool newState)
     {
+        UpdateSwitchState(newState);
+    }
+
+    private void UpdateSwitchState(bool newState)
+    {
         isActivated = newState;
 
-        if(activeSwitchGround != null)
+        if (activeSwitchGround != null)
             activeSwitchGround.SetActive(newState);
-        if(inactiveSwitchGround != null)
+        if (inactiveSwitchGround != null)
             inactiveSwitchGround.SetActive(!newState);
 
         foreach (var conveyor in conveyorBelts)
         {
-            if(conveyor != null)
+            if (conveyor != null)
                 conveyor.UpdateConveyorState(newState);
+        }
+    }
+
+    private void ResolveMissingGroundReferences()
+    {
+        if (activeSwitchGround != null && inactiveSwitchGround != null)
+            return;
+
+        Transform stageRoot = transform.parent;
+        if (stageRoot == null)
+            return;
+
+        OnOffManager[] managers = stageRoot.GetComponentsInChildren<OnOffManager>(true);
+        if (managers.Length != 1)
+            return;
+
+        foreach (Transform child in stageRoot.GetComponentsInChildren<Transform>(true))
+        {
+            if (activeSwitchGround == null && child.name == ActiveSwitchGroundName)
+                activeSwitchGround = child.gameObject;
+            else if (inactiveSwitchGround == null && child.name == InactiveSwitchGroundName)
+                inactiveSwitchGround = child.gameObject;
         }
     }
 

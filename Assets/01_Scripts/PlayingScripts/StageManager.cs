@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
@@ -10,8 +9,6 @@ public class StageManager : NetworkBehaviour
     [SerializeField] private BuiltInMapCatalog builtInMapCatalog;
     [SerializeField] private MapEditorPalette palette;
     [SerializeField] private GameObject mapDataSyncPrefab;
-    // 스테이지 그림 범위에서 이만큼 더 벗어나야 추락으로 본다. 끝자락에서 뛰는 정상 플레이를 잘못 잡지 않게 넉넉히 둔다.
-    [SerializeField] private float fallBoundaryMargin = 10f;
 
     // 서버에서만 값이 있다. 스테이지 그림이 하나도 없으면 null이며, 그때는 추락 판정을 하지 않는다.
     public FallBoundary FallBoundary { get; private set; }
@@ -101,7 +98,7 @@ public class StageManager : NetworkBehaviour
         }
 
         NetworkServer.Spawn(stageObject);
-        CreateFallBoundary(new[] { stageObject });
+        SetFallBoundary(FallBoundary.TryCreate(new[] { stageObject }, out FallBoundary boundary), boundary);
         error = null;
         return true;
     }
@@ -122,17 +119,17 @@ public class StageManager : NetworkBehaviour
         CustomMapRuntimeLoader loader = new CustomMapRuntimeLoader(
             new PlacedObjectFactory(palette),
             mapDataSyncPrefab);
-        if (!loader.TryLoad(mapData, mapId, contentHash, out IReadOnlyList<GameObject> spawnedObjects, out error))
+        if (!loader.TryLoad(mapData, mapId, contentHash, out error))
             return false;
 
-        CreateFallBoundary(spawnedObjects);
+        SetFallBoundary(FallBoundary.TryCreate(mapData.objects, palette, out FallBoundary boundary), boundary);
         return true;
     }
 
     [Server]
-    private void CreateFallBoundary(IEnumerable<GameObject> stageObjects)
+    private void SetFallBoundary(bool isCreated, FallBoundary boundary)
     {
-        if (FallBoundary.TryCreate(stageObjects, fallBoundaryMargin, out FallBoundary boundary))
+        if (isCreated)
             FallBoundary = boundary;
         else
             Debug.LogWarning("스테이지에 그림이 없어 추락 판정 영역을 만들지 못했습니다. 추락해도 리스폰되지 않습니다.", this);

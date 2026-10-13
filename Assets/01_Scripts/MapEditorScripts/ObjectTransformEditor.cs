@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using TMPro;
 
@@ -89,7 +91,7 @@ public class ObjectTransformEditor : MonoBehaviour
 
     private void HandlePrimaryPointer()
     {
-        if (!Input.GetMouseButtonDown(0) || IsPointerOverUI()) return;
+        if (!IsPrimaryButton(button => button.wasPressedThisFrame) || IsPointerOverUI()) return;
 
         ClearSelection();
         BeginPlacementDrag();
@@ -104,7 +106,7 @@ public class ObjectTransformEditor : MonoBehaviour
 
     private void HandleContinuousPlacement()
     {
-        if (!isPlacementDragging || !Input.GetMouseButton(0) || IsPointerOverUI()) return;
+        if (!isPlacementDragging || !IsPrimaryButton(button => button.isPressed) || IsPointerOverUI()) return;
         PlaceAtCurrentGridPosition();
     }
 
@@ -129,7 +131,7 @@ public class ObjectTransformEditor : MonoBehaviour
 
     private void HandleContinuousDelete()
     {
-        if (!Input.GetMouseButton(0) || IsPointerOverUI()) return;
+        if (!IsPrimaryButton(button => button.isPressed) || IsPointerOverUI()) return;
         if (!TryGetSelection(out PlacedObjectView view)) return;
 
         Select(null);
@@ -138,7 +140,7 @@ public class ObjectTransformEditor : MonoBehaviour
 
     private void HandlePointerRelease()
     {
-        if (!Input.GetMouseButtonUp(0)) return;
+        if (!IsPrimaryButton(button => button.wasReleasedThisFrame)) return;
 
         isPlacementDragging = false;
         paintedGridPositions.Clear();
@@ -146,17 +148,24 @@ public class ObjectTransformEditor : MonoBehaviour
 
     private void HandleKeyboard()
     {
-        if (IsKeyboardInputBlocked()) return;
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null || IsKeyboardInputBlocked()) return;
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (keyboard.rKey.wasPressedThisFrame)
             RotatePlacementPreview();
-        if (Input.GetKeyDown(KeyCode.F))
+        if (keyboard.fKey.wasPressedThisFrame)
             FlipPlacementPreview();
         if (!isDeleteMode &&
-            (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace)))
+            (keyboard.deleteKey.wasPressedThisFrame || keyboard.backspaceKey.wasPressedThisFrame))
             DeleteSelected();
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (keyboard.escapeKey.wasPressedThisFrame)
             SetDeleteMode(false);
+    }
+
+    private static bool IsPrimaryButton(Func<ButtonControl, bool> predicate)
+    {
+        Mouse mouse = Mouse.current;
+        return mouse != null && predicate(mouse.leftButton);
     }
 
     private void Select(PlacedObjectView view)

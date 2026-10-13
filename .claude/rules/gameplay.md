@@ -26,7 +26,7 @@ Rigidbody 물리가 아니라 레이캐스트(`Controller2D`, `RaycastController
 
 ## 추락
 
-스테이지 밖 판정은 서버에서 `StageManager.instance.FallBoundary`로 한다. 스테이지 생성 직후 Sprite·Tilemap 렌더러 범위에 여백(`fallBoundaryMargin`)을 더해 정하며 위쪽은 검사하지 않는다. 플레이어는 세이브 포인트, 없으면 처음 생성된 위치로 `ServerMover.Teleport`하고, 상자는 서버 시작 시 위치로 돌아간다. 판정 영역에 들어가야 하는 지형이나 장치는 렌더러가 있어야 한다. `"Reset"` 트리거는 구간별 리스폰에 계속 쓴다.
+스테이지 밖 판정은 서버에서 `StageManager.instance.FallBoundary`로 한다. Sprite·Tilemap 렌더러 범위에 여백(`FallBoundary.Margin`)을 더해 정하며 위쪽은 검사하지 않는다. 기본 스테이지는 생성된 렌더러로, 커스텀 맵은 맵 에디터 미리보기와 같은 `MapRenderBounds`(맵 데이터 + 팔레트 프리팹)로 잰다. 둘 중 하나의 렌더러 규칙을 바꾸면 다른 쪽도 맞춘다. 플레이어는 세이브 포인트, 없으면 처음 생성된 위치로 `ServerMover.Teleport`하고, 상자는 서버 시작 시 위치로 돌아간다. 판정 영역에 들어가야 하는 지형이나 장치는 렌더러가 있어야 한다. `"Reset"` 트리거는 구간별 리스폰에 계속 쓴다.
 
 ## 레이어와 태그
 

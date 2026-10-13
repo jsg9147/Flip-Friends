@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ObjectPlacer : MonoBehaviour
 {
@@ -211,7 +212,7 @@ public class ObjectPlacer : MonoBehaviour
             return Vector3.zero;
         }
 
-        Vector3 pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 pos = mainCamera.ScreenToWorldPoint(Pointer.current?.position.ReadValue() ?? Vector2.zero);
         pos.z = 0f;
         return pos;
     }

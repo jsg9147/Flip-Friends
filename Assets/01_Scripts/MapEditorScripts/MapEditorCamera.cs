@@ -1,8 +1,11 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MapEditorCamera : MonoBehaviour
 {
     private const float MinimumZoomDifference = 0.01f;
+    // Input System은 휠 한 칸을 ±1로 주므로, 기존 Mouse ScrollWheel 축(한 칸 0.1)과 같은 줌 속도로 맞춘다.
+    private const float ScrollToLegacyAxisScale = 0.1f;
 
     [Header("이동")]
     [SerializeField] private Vector2 minimumPosition = new(-50f, -30f);
@@ -27,29 +30,33 @@ public class MapEditorCamera : MonoBehaviour
 
     private void Update()
     {
-        HandlePan();
-        HandleZoom();
+        Mouse mouse = Mouse.current;
+        if (mouse == null) return;
+
+        HandlePan(mouse);
+        HandleZoom(mouse);
     }
 
-    private void HandlePan()
+    private void HandlePan(Mouse mouse)
     {
-        if (Input.GetMouseButtonDown(2))
+        Vector3 pointerPosition = mouse.position.ReadValue();
+        if (mouse.middleButton.wasPressedThisFrame)
         {
-            panOrigin = cam.ScreenToWorldPoint(Input.mousePosition);
+            panOrigin = cam.ScreenToWorldPoint(pointerPosition);
         }
 
-        if (Input.GetMouseButton(2))
+        if (mouse.middleButton.isPressed)
         {
             // 클릭한 월드 좌표가 마우스 위치에 고정되도록 카메라 이동
-            Vector3 delta = panOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 delta = panOrigin - cam.ScreenToWorldPoint(pointerPosition);
             cam.transform.position += delta;
             ClampPosition();
         }
     }
 
-    private void HandleZoom()
+    private void HandleZoom(Mouse mouse)
     {
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        float scroll = mouse.scroll.ReadValue().y * ScrollToLegacyAxisScale;
         if (Mathf.Abs(scroll) < 0.001f) return;
 
         cam.orthographicSize = Mathf.Clamp(
