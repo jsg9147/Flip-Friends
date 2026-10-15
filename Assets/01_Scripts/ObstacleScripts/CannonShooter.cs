@@ -2,7 +2,7 @@ using UnityEngine;
 using Mirror;
 using System.Collections;
 
-public class CannonShooter : NetworkBehaviour
+public class CannonShooter : StagePartBehaviour
 {
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private float firstShootDelay = 0f;
