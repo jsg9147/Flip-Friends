@@ -51,6 +51,11 @@ public static class LocalNetworkTest
 
         if (mode == Mode.Host)
         {
+            if (manager is SteamRoomManager steamManager && !steamManager.TryPrepareLocalTestMap())
+            {
+                Debug.LogError("[LocalNetworkTest] 테스트할 공식맵을 준비하지 못했습니다.");
+                yield break;
+            }
             manager.StartHost();
         }
         else

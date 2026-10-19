@@ -1,7 +1,9 @@
 {
     "name": "FlipFriends.MapEditorCore",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "FlipFriends.MapSelectionCore"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

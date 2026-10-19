@@ -9,12 +9,40 @@ public class SteamRoomManager : SlimeRoomManager
     public static SteamRoomManager Instance { get; private set; }
 
     private readonly SteamLobbyMatchmaking matchmaking = new SteamLobbyMatchmaking();
+    [SerializeField] private OfficialMapCatalog officialMapCatalog;
 
     public List<SteamLobbyInfo> lobbyInfos => matchmaking.LobbyInfos;
     public string lobbyKeyStr => matchmaking.LobbyKey;
     public CSteamID currentLobbyID => matchmaking.CurrentLobbyId;
 
     public string playerName { get; private set; }
+    public PendingRoomMapSelection PendingMapSelection { get; private set; }
+    public LobbyMapMetadata CurrentLobbyMapMetadata { get; private set; }
+
+    public bool TryPrepareLocalTestMap()
+    {
+        if (officialMapCatalog == null || officialMapCatalog.Entries.Count == 0 ||
+            !PendingRoomMapSelection.TryCreateOfficial(officialMapCatalog.Entries[0], out var selection) ||
+            !TrySetPendingMapSelection(selection) ||
+            !selection.TryCreateLobbyMetadata(out var metadata))
+            return false;
+
+        ConfigureRoomMap(metadata);
+        return true;
+    }
+
+    public bool TrySetPendingMapSelection(PendingRoomMapSelection selection)
+    {
+        if (selection == null ||
+            !selection.TryCreateLobbyMetadata(out _))
+        {
+            Debug.LogWarning("방 생성에 사용할 맵 정책 또는 선택 정보가 올바르지 않습니다.");
+            return false;
+        }
+
+        PendingMapSelection = selection;
+        return true;
+    }
 
     public override void Awake()
     {
@@ -66,8 +94,49 @@ public class SteamRoomManager : SlimeRoomManager
             return;
         }
 
+        if (PendingMapSelection == null ||
+            !PendingMapSelection.TryCreateLobbyMetadata(out LobbyMapMetadata metadata) ||
+            !CanCreateLobby(
+                roomType,
+                maxPlayer,
+                metadata,
+                PendingMapSelection.CompletionTarget))
+        {
+            return;
+        }
+
+        CurrentLobbyMapMetadata = metadata;
+        ConfigureRoomMap(metadata);
         StartHost();
-        matchmaking.CreateLobby(roomType, maxPlayer);
+        if (!matchmaking.CreateLobby(
+                roomType,
+                maxPlayer,
+                metadata,
+                PendingMapSelection.CompletionTarget))
+        {
+            StopHost();
+            CurrentLobbyMapMetadata = null;
+        }
+    }
+
+    private static bool CanCreateLobby(
+        RoomType roomType,
+        int maxPlayer,
+        LobbyMapMetadata metadata,
+        MapCompletionTarget completionTarget)
+    {
+        RoomCreationEligibility eligibility =
+            MapCompletionProgress.EvaluateRoomCreation(
+                roomType == RoomType.Public,
+                maxPlayer,
+                metadata,
+                completionTarget);
+        if (eligibility.CanCreate) return true;
+
+        Debug.LogWarning(
+            $"Steam 호스트 생성을 거부했습니다: reason={eligibility.BlockReason}, " +
+            $"roomType={roomType}, map={metadata?.MapKey}");
+        return false;
     }
 
     public void JoinPrivateLobby(string joinCode)
@@ -80,15 +149,18 @@ public class SteamRoomManager : SlimeRoomManager
         matchmaking.JoinLobby(joinId);
     }
 
-    public Task<List<SteamLobbyInfo>> GetLobbyListAsync()
+    public Task<List<SteamLobbyInfo>> GetLobbyListAsync(
+        LobbyMapFilter? filter = null)
     {
-        return matchmaking.GetLobbyListAsync();
+        return matchmaking.GetLobbyListAsync(filter);
     }
 
     public void LeaveLobby()
     {
         matchmaking.LeaveLobby();
         StopNetworkSession();
+        PendingMapSelection = null;
+        CurrentLobbyMapMetadata = null;
     }
 
     // 게임 진행 중에는 Mirror가 새 연결을 끊는다. Steam 로비에 들어온 뒤 끊기면
@@ -106,10 +178,16 @@ public class SteamRoomManager : SlimeRoomManager
         {
             StopHost();
         }
+        PendingMapSelection = null;
+        CurrentLobbyMapMetadata = null;
     }
 
     private void HandleLobbyEntered(CSteamID lobbyId, string hostAddress)
     {
+        SteamLobbyInfo lobbyInfo = new SteamLobbyInfo(lobbyId);
+        CurrentLobbyMapMetadata = lobbyInfo.MapMetadata;
+        ConfigureRoomMap(CurrentLobbyMapMetadata);
+
         if (NetworkServer.active)
         {
             return;

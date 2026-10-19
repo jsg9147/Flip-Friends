@@ -23,6 +23,7 @@
 | 장애물, 스위치, 충돌, 레이어·태그 | `.claude/rules/gameplay.md` | 없음 |
 | UI, 화면 전환, 설정 | `.claude/rules/ui.md`와 `Docs/UI_REBUILD.md` | 없음 |
 | 맵 에디터, 저장소, 팔레트, 검증 | `.claude/rules/map-editor.md`와 `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
+| 방 생성 전 맵 선택, 맵 정책, 최소 인원, 완료 기록과 공개방 자격 | `Docs/MAP_SELECTION_SYSTEM.md` | 전송은 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
 | Main 메뉴, 로비 목록 | `Docs/UI_REBUILD.md` | Steam/Mirror 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 다음에 할 작업 고르기, 세션 인계 | `Docs/NEXT_SESSION.md`(있을 때), 없으면 각 기능 문서의 `다음 작업` | 고른 항목이 속한 기능 문서 |
@@ -37,6 +38,7 @@
 | `CLAUDE.md` | Active | Claude가 매 세션 읽는 저장소 공통 규칙 |
 | `.claude/rules/*.md` | Active | 해당 폴더의 파일을 열 때만 읽히는 폴더별 규칙 |
 | `AGENTS.md` | Active | Codex 전용 진입 문서. 내용은 `CLAUDE.md`와 `.claude/rules/`를 가리킨다 |
+| `Docs/MAP_SELECTION_SYSTEM.md` | Active | 맵 선택·완료 리비전·공개방 자격 |
 | `Docs/MAP_EDITOR.md` | Active | 맵 제작·저장·검증의 현재 상태 |
 | `Docs/CUSTOM_MAP_NETWORK.md` | Active | 커스텀 맵 로비 선택·자동 공유·런타임 생성 |
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |

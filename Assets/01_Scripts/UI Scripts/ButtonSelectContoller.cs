@@ -13,12 +13,13 @@ public class ButtonSelectController : MonoBehaviour
 
     private void OnEnable()
     {
-        tagetButtonList[0].Select();
         currentIndex = 0;
+        SelectFirstBtn();
     }
 
     private void Update()
     {
+        if (InputManager.instance == null || tagetButtonList == null || tagetButtonList.Count == 0) return;
         if (Time.time - lastInputTime > inputDelay)
         {
             if (InputManager.instance.dir.y > 0)
@@ -35,31 +36,54 @@ public class ButtonSelectController : MonoBehaviour
 
         if (!IsAnyButtonSelected())
         {
-            tagetButtonList[currentIndex].Select();
+            SelectFirstBtn();
         }
     }
 
     private void SelectPreviousButton()
     {
-        currentIndex = (currentIndex - 1 + tagetButtonList.Count) % tagetButtonList.Count;
-        tagetButtonList[currentIndex].Select();
+        MoveSelection(-1);
     }
 
     private void SelectNextButton()
     {
-        currentIndex = (currentIndex + 1) % tagetButtonList.Count;
-        tagetButtonList[currentIndex].Select();
+        MoveSelection(1);
     }
+
+    private void MoveSelection(int direction)
+    {
+        if (tagetButtonList == null || tagetButtonList.Count == 0) return;
+        GameObject selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        int selectedIndex = tagetButtonList.FindIndex(item => item != null && item.gameObject == selected);
+        if (selectedIndex >= 0) currentIndex = selectedIndex;
+        for (int i = 0; i < tagetButtonList.Count; i++)
+        {
+            currentIndex = (currentIndex + direction + tagetButtonList.Count) % tagetButtonList.Count;
+            if (!IsSelectable(tagetButtonList[currentIndex])) continue;
+            tagetButtonList[currentIndex].Select();
+            return;
+        }
+    }
+
+    private static bool IsSelectable(Selectable item) =>
+        item != null && item.IsActive() && item.IsInteractable();
 
     private bool IsAnyButtonSelected()
     {
-        GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
-        return selectedObject != null && tagetButtonList.Exists(selectable => selectable != null && selectable.gameObject == selectedObject);
+        GameObject selectedObject = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        return selectedObject != null && tagetButtonList.Exists(selectable => IsSelectable(selectable) && selectable.gameObject == selectedObject);
     }
 
     public void SelectFirstBtn()
     {
-        tagetButtonList[0].Select();
+        if (tagetButtonList == null) return;
+        for (int i = 0; i < tagetButtonList.Count; i++)
+        {
+            if (!IsSelectable(tagetButtonList[i])) continue;
+            currentIndex = i;
+            tagetButtonList[i].Select();
+            return;
+        }
     }
 
     // 런타임에 생기는 항목은 고정 버튼 사이에 끼워 넣어야 하므로 위치를 받는다

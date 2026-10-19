@@ -1,5 +1,5 @@
 using UnityEngine;
-using System;
+using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using Mirror;
@@ -9,6 +9,9 @@ public class GameManager : NetworkBehaviour
     public static GameManager Instance;
 
     public GameObject menuScreen;
+
+    private PlayerController2D[] playerControllers;
+    private bool completionResultSent;
 
     public void Awake()
     {
@@ -31,20 +34,48 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    // 플레이어 목록을 캐시하지 않는다. 캐시하면 도중에 이탈한 플레이어가 남아 클리어가 영영 안 된다.
+    public void SetPlayerController(PlayerController2D[] playerControllers)
+    {
+        this.playerControllers = playerControllers;
+    }
+
     public void FinishCheck()
     {
-        PlayerController2D[] playerControllers = FindObjectsByType<PlayerController2D>();
-        if (playerControllers.Length == 0)
+        if (!isServer || completionResultSent) return;
+
+        if (NetworkManager.singleton is SlimeRoomManager { IsTestPlaying: true } testRoom)
+        {
+            var players = FindObjectsByType<PlayerController2D>(FindObjectsSortMode.InstanceID);
+            if (players.Length > 0 && players.All(player => player.isFinish))
+            {
+                completionResultSent = true;
+                testRoom.EndTestPlay();
+            }
+            return;
+        }
+
+        playerControllers = FindObjectsByType<PlayerController2D>(
+            FindObjectsSortMode.InstanceID);
+        if (!TryGetTrustedCompletion(
+                out SlimeRoomManager roomManager,
+                out GameplayCompletionSession session,
+                out MapCompletionTarget target))
             return;
 
-        bool allPlayersFinished = playerControllers.All(player => player.isFinish);
-
-        if (allPlayersFinished)
+        var finishedConnectionIds = new HashSet<int>();
+        foreach (PlayerController2D player in playerControllers)
         {
-            Debug.Log("클리어");
-            StageClear();
+            if (player == null || !player.isFinish || player.connectionToClient == null)
+                continue;
+
+            finishedConnectionIds.Add(player.connectionToClient.connectionId);
         }
+        if (!session.AreAllParticipantsComplete(finishedConnectionIds))
+            return;
+
+        completionResultSent = true;
+        SendCompletionToParticipants(session, target);
+        roomManager.ReturnRoomScene();
     }
 
     // 남은 플레이어가 모두 도착한 상태에서 마지막 미도착자가 나가면 아무도 판정을 다시 부르지 않는다.
@@ -61,29 +92,86 @@ public class GameManager : NetworkBehaviour
         FinishCheck();
     }
 
-    private void StageClear()
+    [Server]
+    private bool TryGetTrustedCompletion(
+        out SlimeRoomManager roomManager,
+        out GameplayCompletionSession session,
+        out MapCompletionTarget target)
     {
-        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
+        roomManager = NetworkManager.singleton as SlimeRoomManager;
+        session = roomManager?.GameplayCompletionSession;
+        target = default;
+        if (roomManager == null || session == null || StageManager.instance == null)
+            return false;
 
-        if(slimeRoomManager != null)
+        if (StageManager.instance.TryGetLoadedCompletionTarget(out target))
+            return true;
+
+        Debug.LogError("서버가 실제 로드한 맵의 완료 리비전을 검증하지 못했습니다.");
+        return false;
+    }
+
+    [Server]
+    private void SendCompletionToParticipants(
+        GameplayCompletionSession session,
+        MapCompletionTarget target)
+    {
+        var notifiedConnections = new HashSet<int>();
+        foreach (PlayerController2D player in playerControllers)
         {
-            CmdChangeScene();
-        }
-        else
-        {
-            Debug.LogError("Cannot find slimeRoomManager.");
+            NetworkConnectionToClient connection = player?.connectionToClient;
+            if (connection == null ||
+                !session.ContainsParticipant(connection.connectionId) ||
+                !notifiedConnections.Add(connection.connectionId))
+                continue;
+
+            int officialRevision = target.MapKey.Kind == LobbyMapKind.Official
+                ? int.Parse(target.Revision)
+                : 0;
+            string contentHash = target.MapKey.Kind == LobbyMapKind.Custom
+                ? target.Revision
+                : string.Empty;
+            TargetRecordMapCompletion(
+                connection,
+                target.MapKey.Kind,
+                target.MapKey.MapId,
+                officialRevision,
+                contentHash);
         }
     }
 
-    [Command(requiresAuthority = false)]
-    public void CmdChangeScene()
+    [TargetRpc]
+    private void TargetRecordMapCompletion(
+        NetworkConnectionToClient targetConnection,
+        LobbyMapKind mapKind,
+        string mapId,
+        int officialRevision,
+        string contentHash)
     {
-        if (isServer)
+        MapCompletionTarget completion;
+        bool valid = mapKind switch
         {
-            SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
-            if(slimeRoomManager != null)
-                slimeRoomManager.ReturnRoomScene();
+            LobbyMapKind.Official => MapCompletionTarget.TryCreateOfficial(
+                mapId, officialRevision, out completion),
+            LobbyMapKind.Custom => MapCompletionTarget.TryCreateCustom(
+                mapId, contentHash, out completion),
+            _ => FailCompletionTarget(out completion)
+        };
+        if (!valid)
+        {
+            Debug.LogError(
+                $"서버에서 받은 맵 완료 결과가 올바르지 않습니다: " +
+                $"kind={mapKind}, mapId={mapId}");
+            return;
         }
+
+        MapCompletionProgress.TryRecord(completion);
+    }
+
+    private static bool FailCompletionTarget(out MapCompletionTarget target)
+    {
+        target = default;
+        return false;
     }
 
     public void ExitGame()

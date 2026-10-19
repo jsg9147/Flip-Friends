@@ -8,11 +8,12 @@ public class SlimeRoomManager : NetworkRoomManager
 {
     private List<GameObject> lobbyPlayerList;
 
-    public string currentBuiltInMapId = string.Empty;
-
+    public LobbyMapKind currentMapKind = LobbyMapKind.None;
     public string currentMapId = string.Empty;
     public string currentMapContentHash = string.Empty;
+    public LobbyMapMetadata RoomMapMetadata { get; private set; }
     public ServerMapSessionStore ServerMapSession { get; } = new();
+    public GameplayCompletionSession GameplayCompletionSession { get; private set; }
 
     private bool shouldReconnectPlayers = false; // 씬 전환 후 플레이어 재연결 플래그
 
@@ -46,6 +47,8 @@ public class SlimeRoomManager : NetworkRoomManager
 
     public override void OnStartServer()
     {
+        ClearCurrentMap();
+        GameplayCompletionSession = null;
         ServerMapSession.Clear();
         base.OnStartServer();
     }
@@ -53,6 +56,9 @@ public class SlimeRoomManager : NetworkRoomManager
     public override void OnStopServer()
     {
         ClearStageLoadFailureNotice();
+        ClearCurrentMap();
+        RoomMapMetadata = null;
+        GameplayCompletionSession = null;
         ServerMapSession.Clear();
         base.OnStopServer();
         if (IsTestPlaying)
@@ -127,9 +133,7 @@ public class SlimeRoomManager : NetworkRoomManager
             yield break;
         }
 
-        currentBuiltInMapId = string.Empty;
-        currentMapId = testPlaySnapshot.MapId;
-        currentMapContentHash = testPlaySnapshot.ContentHash;
+        SetCurrentMap(LobbyMapKind.Custom, testPlaySnapshot.MapId, testPlaySnapshot.ContentHash);
         ServerChangeScene(GameplayScene);
     }
 
@@ -157,13 +161,12 @@ public class SlimeRoomManager : NetworkRoomManager
         testPlayReturnScene = null;
         offlineSceneBeforeTestPlay = null;
         isTestPlayEnding = false;
-        currentBuiltInMapId = string.Empty;
-        currentMapId = string.Empty;
-        currentMapContentHash = string.Empty;
+        ClearCurrentMap();
     }
 
     public override void OnStopClient()
     {
+        RoomMapMetadata = null;
         MapSessionCache.Clear();
         base.OnStopClient();
     }
@@ -188,6 +191,7 @@ public class SlimeRoomManager : NetworkRoomManager
         FindAnyObjectByType<MapSelectionManager>()?
             .ServerInvalidateAvailabilityCheck("참여자가 연결을 종료했습니다.");
         stageLoadFailureRecipients.Remove(conn.connectionId);
+        GameplayCompletionSession?.RemoveDisconnectedParticipant(conn.connectionId);
         // 게임 중 이탈자는 재입장할 수 없으므로 남은 인원만으로 클리어를 판정한다.
         if (Utils.IsSceneActive(GameplayScene) && GameManager.Instance != null)
             GameManager.Instance.ServerRecheckFinishNextFrame();
@@ -226,11 +230,92 @@ public class SlimeRoomManager : NetworkRoomManager
 
         ClearStageLoadFailureNotice();
         shouldReconnectPlayers = true;
-        currentMapId = string.Empty;
-        currentMapContentHash = string.Empty;
+        ClearCurrentMap();
+        GameplayCompletionSession = null;
         ServerMapSession.Clear();
         MapSessionCache.Clear();
         ServerChangeScene(RoomScene);
+    }
+
+    public void SetCurrentMap(
+        LobbyMapKind mapKind,
+        string mapId,
+        string contentHash)
+    {
+        currentMapKind = mapKind;
+        currentMapId = mapId ?? string.Empty;
+        currentMapContentHash = contentHash ?? string.Empty;
+    }
+
+    public void ConfigureRoomMap(LobbyMapMetadata metadata)
+    {
+        RoomMapMetadata = metadata;
+    }
+
+    public bool IsConfiguredMapSelection(
+        LobbyMapKind mapKind,
+        string mapId,
+        int minimumPlayersToClear)
+    {
+        return RoomMapSessionRules.IsConfiguredSelectionValid(
+            RoomMapMetadata,
+            mapKind,
+            mapId,
+            minimumPlayersToClear);
+    }
+
+    public bool AllowsCustomMapTransfer() =>
+        RoomMapSessionRules.AllowsCustomTransfer(RoomMapMetadata);
+
+    [Server]
+    public bool TryBeginGameplayCompletionSession(out string error)
+    {
+        GameplayCompletionSession = null;
+        if (RoomMapMetadata == null ||
+            !IsConfiguredMapSelection(
+                currentMapKind,
+                currentMapId,
+                RoomMapMetadata.MinimumPlayersToClear))
+        {
+            error = "서버의 방 맵 설정과 실제 선택이 일치하지 않습니다.";
+            return false;
+        }
+        if (currentMapKind == LobbyMapKind.Custom &&
+            !ServerMapSession.TryGet(
+                currentMapId, currentMapContentHash, out _))
+        {
+            error = "서버 커스텀맵 세션 스냅샷을 확인할 수 없습니다.";
+            return false;
+        }
+
+        var participantConnectionIds = new List<int>();
+        foreach (NetworkRoomPlayer roomPlayer in roomSlots)
+        {
+            if (roomPlayer?.connectionToClient == null || !roomPlayer.readyToBegin)
+                continue;
+
+            participantConnectionIds.Add(roomPlayer.connectionToClient.connectionId);
+        }
+
+        if (!GameplayCompletionSession.TryCreate(
+                currentMapKind,
+                currentMapId,
+                currentMapContentHash,
+                participantConnectionIds,
+                out GameplayCompletionSession session))
+        {
+            error = "완료 판정용 서버 세션 스냅샷을 만들 수 없습니다.";
+            return false;
+        }
+
+        GameplayCompletionSession = session;
+        error = null;
+        return true;
+    }
+
+    public void ClearCurrentMap()
+    {
+        SetCurrentMap(LobbyMapKind.None, string.Empty, string.Empty);
     }
 
     [Server]
@@ -289,6 +374,21 @@ public class SlimeRoomManager : NetworkRoomManager
         return true;
     }
 
+    [Server]
+    public int CountReadyRoomPlayers()
+    {
+        int readyPlayerCount = 0;
+        foreach (NetworkRoomPlayer roomPlayer in roomSlots)
+        {
+            if (roomPlayer != null &&
+                roomPlayer.connectionToClient != null &&
+                roomPlayer.readyToBegin)
+                readyPlayerCount++;
+        }
+
+        return readyPlayerCount;
+    }
+
     public void DestroyAllLobbyPlayers()
     {
         foreach (GameObject player in lobbyPlayerList)
@@ -306,6 +406,13 @@ public class SlimeRoomManager : NetworkRoomManager
         base.OnRoomServerSceneChanged(sceneName);
         FindAnyObjectByType<MapSelectionManager>()?
             .ServerInvalidateAvailabilityCheck($"씬이 전환되었습니다: {sceneName}");
+
+        if (sceneName.Contains("GameRoom"))
+        {
+            ClearCurrentMap();
+            GameplayCompletionSession = null;
+            ServerMapSession.Clear();
+        }
 
         if (sceneName.Contains("GameRoom") && shouldReconnectPlayers)
         {

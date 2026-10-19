@@ -110,6 +110,11 @@ public static class MapDataRepository
                 MapSaveFailureKind.InvalidName,
                 $"맵을 저장할 수 없습니다: {error}",
                 out result);
+        if (!MapPlayRequirements.IsValidMinimumPlayers(data.minimumPlayersToClear))
+            return FailSave(
+                MapSaveFailureKind.InvalidRequirements,
+                "맵을 저장할 수 없습니다: 최소 클리어 인원은 1~4명이어야 합니다.",
+                out result);
         if (!TryPrepareForSave(data, out error))
             return FailSave(
                 MapSaveFailureKind.InvalidMapId,
@@ -653,9 +658,7 @@ public static class MapDataRepository
                     out failure);
             if (!TryMigrate(source, out mapData, out string error, out wasMigrated))
                 return FailLoad(
-                    source.version == MapData.CurrentVersion
-                        ? MapRepositoryFailureKind.InvalidMapId
-                        : MapRepositoryFailureKind.UnsupportedVersion,
+                    GetMigrationFailureKind(source),
                     $"{context}을(를) 불러올 수 없습니다: {error}",
                     out failure);
 
@@ -679,6 +682,19 @@ public static class MapDataRepository
         ReportFailure(message);
         failure = new MapRepositoryFailure(kind, message);
         return false;
+    }
+
+    private static MapRepositoryFailureKind GetMigrationFailureKind(MapData source)
+    {
+        if (source.version != MapData.CurrentVersion &&
+            source.version != MapData.PreviousVersion &&
+            source.version != MapData.LegacyVersion)
+            return MapRepositoryFailureKind.UnsupportedVersion;
+        if (!MapData.TryNormalizeMapId(source.mapId, out _) &&
+            source.version != MapData.LegacyVersion)
+            return MapRepositoryFailureKind.InvalidMapId;
+
+        return MapRepositoryFailureKind.InvalidRequirements;
     }
 
     private static void ReportFailure(string message)
@@ -712,11 +728,32 @@ public static class MapDataRepository
 
                 wasMigrated = source.mapId != normalizedMapId;
                 source.mapId = normalizedMapId;
+                if (!MapPlayRequirements.IsValidMinimumPlayers(
+                        source.minimumPlayersToClear))
+                {
+                    error = "최소 클리어 인원은 1~4명이어야 합니다.";
+                    return false;
+                }
                 migratedData = source;
                 error = null;
                 return true;
             case MapData.PreviousVersion:
+                if (!MapData.TryNormalizeMapId(source.mapId, out normalizedMapId))
+                {
+                    error = "MapId가 없거나 형식이 올바르지 않습니다.";
+                    return false;
+                }
+
+                source.mapId = normalizedMapId;
+                source.minimumPlayersToClear = 1;
+                source.version = MapData.CurrentVersion;
+                migratedData = source;
+                error = null;
+                wasMigrated = true;
+                return true;
+            case MapData.LegacyVersion:
                 source.mapId = MapData.CreateMapId();
+                source.minimumPlayersToClear = 1;
                 source.version = MapData.CurrentVersion;
                 migratedData = source;
                 error = null;
@@ -738,6 +775,11 @@ public static class MapDataRepository
         }
 
         data.mapId = normalizedMapId;
+        if (!MapPlayRequirements.IsValidMinimumPlayers(data.minimumPlayersToClear))
+        {
+            error = "최소 클리어 인원은 1~4명이어야 합니다.";
+            return false;
+        }
         data.version = MapData.CurrentVersion;
         error = null;
         return true;
@@ -757,6 +799,7 @@ public enum MapSaveFailureKind
     MissingData,
     InvalidName,
     InvalidMapId,
+    InvalidRequirements,
     DuplicateMapId,
     NameConflict,
     MissingTarget,
@@ -794,6 +837,7 @@ public enum MapRepositoryFailureKind
 {
     InvalidName,
     InvalidMapId,
+    InvalidRequirements,
     DuplicateMapId,
     MissingFile,
     InvalidJson,
