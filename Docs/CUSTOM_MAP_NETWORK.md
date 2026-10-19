@@ -20,7 +20,7 @@
 - 자동 수신 데이터는 Maps 폴더에 쓰지 않는다. 영구 저장은 `MapReceivePrompt`의 명시적 승인 흐름만 사용한다.
 - 커스텀 맵을 로드하면 `StageManager`가 GamePlay 씬의 기본 시작 위치를 해제한다. 맵에 배치한 시작 지점(`NetworkStartPosition`)만 RoundRobin 대상이다. 이전에는 씬 시작 위치가 먼저 골라져 플레이어가 맵과 무관한 곳에서 생성됐다.
 - 팔레트의 `BasicGround` 프리팹 레이어를 `Finish`에서 `Ground`로 고쳤다. 이전에는 플레이어 충돌 마스크에 걸리지 않아 커스텀 맵 지면을 통과해 떨어졌다.
-- 기본 맵은 `BuiltInMapCatalog`(`Assets/07_ScriptableObject/BuiltInMapCatalog.asset`)의 문자열 ID(`stage-01`~`stage-21`, 소문자 kebab-case, `BuiltInMapId` 규칙)로 고른다. `CmdSelectBuiltInMap`, `selectedMapId` SyncVar, `SlimeRoomManager.currentBuiltInMapId`, `StageManager` 로드가 모두 ID를 쓴다. 정수 `currentStage`·`selectedStage`와 `StageManager.stageMapPrefabs`는 제거됐다. 카탈로그 순서는 GameRoom `mapButtons` 순서와만 연결되고, 항목이 없는 버튼은 누를 수 없다.
+- 공식맵은 `OfficialMapCatalog`의 `official.stage.01`~`21` ID로 선택·로드한다. 방 생성 전 맵을 고정하고 `currentMapKind`와 `currentMapId`를 사용한다. 맵 정책·완료 기록·공개방 자격은 `Docs/MAP_SELECTION_SYSTEM.md`를 따른다.
 - GamePlay 서버의 커스텀 맵 생성은 세 단계로 나뉜다. `StageManager`가 기본 맵과 커스텀 맵 중 무엇을 띄울지 정하고, `CustomMapRuntimeLoader`가 생성 순서(씬 시작 위치 해제 → `MapDataNetworkSync` 생성 → 배치 오브젝트 생성)를 맡고, `PlacedObjectFactory`가 배치 항목 하나를 팔레트 프리팹으로 만들어 Spawn한다. 두 클래스는 MonoBehaviour가 아니므로 Inspector 연결은 `StageManager`에 그대로 있다.
 - 로드 실패 정책: 세션 맵 누락, 팔레트·동기화 프리팹 미연결, 배치 오브젝트 하나라도 생성 실패, 기본 맵 카탈로그 누락이면 실패다. 커스텀 맵은 일부만 생성된 상태로 두지 않는다. 로더가 이미 Spawn한 오브젝트를 모두 `NetworkServer.Destroy`하고 씬 시작 위치를 다시 등록한다. 이후 `StageManager`가 다음 프레임에 `SlimeRoomManager.ReturnRoomSceneAfterLoadFailure`로 전원을 GameRoom에 돌려보낸다(테스트 플레이는 에디터 복귀). 서버는 그 시점의 연결 목록을 기억했다가 각 클라이언트가 GameRoom에서 준비되면(`OnServerReady`) `CustomRoomPlayer.TargetShowStageLoadFailure`로 사유를 한 번씩 보낸다. 사이에 나간 연결은 목록에서 빠지고, 새로 들어온 참여자는 받지 않는다. 클라이언트는 GameRoom Canvas의 `StageLoadFailureNotice` 패널에 사유를 띄운다. 맵 선택 화면은 이때 닫혀 있으므로 별도 패널이다. Submit·Cancel은 준비·방 나가기에 쓰이므로 패널은 닫기 버튼이나 8초 경과로 닫힌다.
 - 재접속 정책: GamePlay 진행 중 입장·재입장은 받지 않는다. Mirror `NetworkRoomManager`가 Room 씬이 아니면 새 연결을 끊는다. 이와 맞추어 `SteamRoomManager`는 GameRoom에서만 Steam 로비를 입장 가능으로 둔다. 이탈한 플레이어는 GameRoom으로 돌아온 뒤 새 참여자로 다시 들어오며, 이때 보유 검사가 무효화되고 클라이언트 `MapSessionCache`는 `OnStopClient`에서 이미 비워져 있다.
@@ -51,6 +51,8 @@ MapListUI
 - `Assets/Tests/EditMode/MapTransferCoreTests.cs`, `MapAvailabilityCheckTests.cs`
 
 ## 검증
+
+- 통합 후에도 `MapAvailabilityCheck` 상태 관리, 로더·팩토리의 실패 복구, 낙하 복귀, Steam 입장 차단을 유지한다. 완료 판정은 이탈자를 제외한 최초 참가자만 대상으로 하며, 테스트 플레이는 완료 기록 없이 에디터로 복귀한다.
 
 - `FlipFriends.MapTransferCore.Tests` Edit Mode 테스트 9개가 통과했다. Unity `6000.6.3f1`과 test-framework `1.8.0`에서 재실행해 9개 전부 통과를 확인했다.
 - 역순 조립, 중복, 누락, 크기 초과, 이전 식별자, 라운드 로빈 순환·취소, 업로드 lease 무효화·교체를 검증한다.

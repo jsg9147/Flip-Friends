@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mirror;
 using UnityEngine;
 
 public enum SavedMapAvailability
@@ -23,7 +22,9 @@ public sealed class SavedMapListEntry
     public string MapName { get; }
     public string AuthorName { get; }
     public string Version { get; }
+    public int MinimumPlayersToClear { get; }
     public string Json { get; }
+    public string ContentHash { get; }
     public int JsonByteCount { get; }
     public SavedMapAvailability Availability { get; }
     public MapValidationReport ValidationReport { get; }
@@ -38,18 +39,26 @@ public sealed class SavedMapListEntry
         string mapName,
         string authorName,
         string version,
+        int minimumPlayersToClear,
         string json,
         int jsonByteCount,
         SavedMapAvailability availability,
         MapValidationReport validationReport,
-        string message)
+        string message,
+        string contentHash = null)
     {
         MapId = mapId;
         FileName = fileName;
         MapName = mapName;
         AuthorName = authorName;
         Version = version;
+        MinimumPlayersToClear = minimumPlayersToClear;
         Json = json;
+        ContentHash = !string.IsNullOrEmpty(contentHash)
+            ? contentHash
+            : string.IsNullOrEmpty(json)
+            ? string.Empty
+            : MapContentHash.Compute(Encoding.UTF8.GetBytes(json));
         JsonByteCount = jsonByteCount;
         Availability = availability;
         ValidationReport = validationReport;
@@ -64,20 +73,18 @@ public sealed class SavedMapListEntry
             MapName,
             AuthorName,
             Version,
+            MinimumPlayersToClear,
             Json,
             JsonByteCount,
             SavedMapAvailability.DuplicateMapId,
             ValidationReport,
-            $"같은 MapId를 사용하는 파일이 둘 이상입니다: {MapId}");
+            $"같은 MapId를 사용하는 파일이 둘 이상입니다: {MapId}",
+            ContentHash);
     }
 }
 
 public sealed class SavedMapCatalog
 {
-    private const int FallbackPacketLimit = 1024 * 1024;
-    private const int PacketReserveBytes = 4096;
-    private const float SafePacketRatio = 0.8f;
-
     private readonly MapDataValidator validator;
 
     public SavedMapCatalog(MapEditorPalette palette)
@@ -121,7 +128,7 @@ public sealed class SavedMapCatalog
 
         MapValidationReport report = validator.Validate(mapData);
         int byteCount = Encoding.UTF8.GetByteCount(json);
-        if (byteCount >= GetSafeTransferLimit())
+        if (byteCount > MapSessionSnapshot.MaximumContentBytes)
             return CreateTransferBlockedEntry(fileName, mapData, json, byteCount, report);
         if (report.HasErrors)
             return CreateValidationBlockedEntry(fileName, mapData, json, byteCount, report);
@@ -150,6 +157,7 @@ public sealed class SavedMapCatalog
             mapName,
             "-",
             "-",
+            1,
             null,
             0,
             availability,
@@ -164,10 +172,10 @@ public sealed class SavedMapCatalog
         int byteCount,
         MapValidationReport report)
     {
-        int limit = GetSafeTransferLimit();
+        int limit = MapSessionSnapshot.MaximumContentBytes;
         string message =
             $"JSON 크기 {FormatBytes(byteCount)}가 안전 전송 한계 " +
-            $"{FormatBytes(limit)} 이상입니다. 맵 오브젝트 수를 줄여 주세요.";
+            $"{FormatBytes(limit)} 초과입니다. 맵 오브젝트 수를 줄여 주세요.";
         Debug.LogWarning($"커스텀 맵 전송을 차단했습니다: {data.mapName}\n{message}");
         return CreateEntry(
             fileName,
@@ -207,17 +215,23 @@ public sealed class SavedMapCatalog
         MapValidationReport report,
         string message)
     {
+        string canonicalJson = MapDataRepository.ToJson(data);
+        string contentHash = string.IsNullOrEmpty(canonicalJson)
+            ? string.Empty
+            : MapContentHash.Compute(Encoding.UTF8.GetBytes(canonicalJson));
         return new SavedMapListEntry(
             data.mapId,
             fileName,
             data.mapName,
             string.IsNullOrWhiteSpace(data.authorName) ? "알 수 없음" : data.authorName,
             data.version,
+            data.minimumPlayersToClear,
             json,
             byteCount,
             availability,
             report,
-            message);
+            message,
+            contentHash);
     }
 
     private void MarkDuplicateMapIds(List<SavedMapListEntry> entries)
@@ -234,15 +248,6 @@ public sealed class SavedMapCatalog
             if (duplicateIds.Contains(entries[index].MapId))
                 entries[index] = entries[index].AsDuplicateMapId();
         }
-    }
-
-    private int GetSafeTransferLimit()
-    {
-        int packetLimit = Transport.active != null
-            ? Transport.active.GetMaxPacketSize(Channels.Reliable)
-            : FallbackPacketLimit;
-        int ratioLimit = Mathf.FloorToInt(packetLimit * SafePacketRatio);
-        return Mathf.Max(1, Mathf.Min(ratioLimit, packetLimit - PacketReserveBytes));
     }
 
     private string BuildIssueMessage(MapValidationReport report)

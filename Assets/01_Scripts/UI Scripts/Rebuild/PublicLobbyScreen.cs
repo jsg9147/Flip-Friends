@@ -29,6 +29,10 @@ public class PublicLobbyScreen : NavigableScreen
     [SerializeField] private GameObject errorStateRoot;
     [SerializeField] private GameObject joiningStateRoot;
 
+    [Header("Map Filter")]
+    [SerializeField] private LobbyMapKind mapKindFilter = LobbyMapKind.None;
+    [SerializeField, Range(0, 4)] private int partySizeFilter;
+
     private readonly List<LobbyItem> lobbyItems = new();
     private ButtonSelectController selectController;
     private int refreshRequestVersion;
@@ -85,7 +89,8 @@ public class PublicLobbyScreen : NavigableScreen
 
         try
         {
-            List<SteamLobbyInfo> lobbyInfoList = await SteamRoomManager.Instance.GetLobbyListAsync();
+            List<SteamLobbyInfo> lobbyInfoList = await SteamRoomManager.Instance
+                .GetLobbyListAsync(new LobbyMapFilter(mapKindFilter, partySizeFilter));
 
             if (!IsVisible || requestVersion != refreshRequestVersion)
             {
@@ -120,6 +125,18 @@ public class PublicLobbyScreen : NavigableScreen
 
             SetState(LobbyViewState.Error, "Failed to load lobbies.");
         }
+    }
+
+    public void SetMapKindFilter(LobbyMapKind mapKind)
+    {
+        mapKindFilter = mapKind;
+        RequestRefresh();
+    }
+
+    public void SetPartySizeFilter(int partySize)
+    {
+        partySizeFilter = Mathf.Clamp(partySize, 0, 4);
+        RequestRefresh();
     }
 
     public void JoinLobby(SteamLobbyInfo lobbyInfo)

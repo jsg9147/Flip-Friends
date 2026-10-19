@@ -24,6 +24,7 @@ public class SteamLobbyInfo
 
     // 로비가 게임 중인지 여부
     public bool IsInGame { get; private set; }
+    public LobbyMapMetadata MapMetadata { get; private set; }
 
     public string colorStr { get; private set; }
 
@@ -47,11 +48,37 @@ public class SteamLobbyInfo
         MaxMembers = SteamMatchmaking.GetLobbyMemberLimit(LobbyID);
         CurrentMemberCount = SteamMatchmaking.GetNumLobbyMembers(LobbyID);
         IsInGame = SteamMatchmaking.GetLobbyData(LobbyID, "status") == "in_game";
+        MapMetadata = ReadMapMetadata();
         MemberIDs = new List<CSteamID>();
         for (int i = 0; i < CurrentMemberCount; i++)
         {
             MemberIDs.Add(SteamMatchmaking.GetLobbyMemberByIndex(LobbyID, i));
         }
+    }
+
+    private LobbyMapMetadata ReadMapMetadata()
+    {
+        string policyValue = SteamMatchmaking.GetLobbyData(
+            LobbyID, SteamLobbyMatchmaking.MapPolicyKey);
+        string kindValue = SteamMatchmaking.GetLobbyData(
+            LobbyID, SteamLobbyMatchmaking.MapKindKey);
+        string minimumValue = SteamMatchmaking.GetLobbyData(
+            LobbyID, SteamLobbyMatchmaking.MapMinimumPlayersKey);
+        if (!Enum.TryParse(policyValue, out RoomMapPolicy policy) ||
+            !Enum.TryParse(kindValue, out LobbyMapKind kind) ||
+            !int.TryParse(minimumValue, out int minimumPlayers))
+            return null;
+
+        LobbyMapMetadata.TryCreate(
+            policy,
+            kind,
+            SteamMatchmaking.GetLobbyData(LobbyID, SteamLobbyMatchmaking.MapIdKey),
+            SteamMatchmaking.GetLobbyData(LobbyID, SteamLobbyMatchmaking.MapNameKey),
+            SteamMatchmaking.GetLobbyData(LobbyID, SteamLobbyMatchmaking.MapAuthorKey),
+            SteamMatchmaking.GetLobbyData(LobbyID, SteamLobbyMatchmaking.MapVersionKey),
+            minimumPlayers,
+            out LobbyMapMetadata metadata);
+        return metadata;
     }
 
     // 멤버들의 이름 목록 가져오기

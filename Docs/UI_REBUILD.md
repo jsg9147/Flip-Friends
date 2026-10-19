@@ -6,6 +6,8 @@
 
 ## 현재 상태
 
+- HostRoom의 공식·커스텀 맵 목록과 완료 상태·생성 차단 이유는 `Docs/MAP_SELECTION_SYSTEM.md`를 따른다. 기존 `NavigableScreen`의 Cancel 처리와 `ButtonSelectController`·`ScrollViewController`를 사용한다.
+
 - 기존 Steam, Mirror, 입력, 사운드와 게임플레이는 유지하고 메뉴/UI 계층만 점진적으로 교체한다.
 - `Assets/01_Scripts/UI Scripts/Rebuild`에 공통 화면·내비게이션과 Main, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding 전용 화면이 있다.
 - `Main.unity`의 `MainUIManager` 오브젝트에 새 내비게이터가 연결되어 있다.

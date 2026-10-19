@@ -4,13 +4,15 @@ using System.Collections.Generic;
 [Serializable]
 public class MapData
 {
-    public const string CurrentVersion = "2.1";
-    public const string PreviousVersion = "2.0";
+    public const string CurrentVersion = "2.2";
+    public const string PreviousVersion = "2.1";
+    public const string LegacyVersion = "2.0";
 
     public string mapId;
     public string mapName;
     public string authorName;
     public string version = CurrentVersion;
+    public int minimumPlayersToClear = 1;
     public List<PlacedObjectData> objects = new List<PlacedObjectData>();
 
     public MapData(string mapName, string authorName)

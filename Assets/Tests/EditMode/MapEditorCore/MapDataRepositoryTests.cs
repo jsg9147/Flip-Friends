@@ -322,6 +322,33 @@ public sealed class MapDataRepositoryTests
 
     private static MapData CreateMap(string mapName) => new(mapName, "테스터");
 
+    [Test]
+    public void TryLoadWithJson_21을22로변환해MapId와최소인원을유지한다()
+    {
+        MapData source = CreateMap("이전 형식");
+        string json = JsonUtility.ToJson(source)
+            .Replace("\"version\":\"2.2\"", "\"version\":\"2.1\"")
+            .Replace(",\"minimumPlayersToClear\":1", string.Empty);
+        WriteRawMap("이전 형식", json);
+
+        Assert.That(MapDataRepository.TryLoadWithJson("이전 형식", out MapData loaded, out _, out _), Is.True);
+        Assert.That(loaded.mapId, Is.EqualTo(source.mapId));
+        Assert.That(loaded.version, Is.EqualTo(MapData.CurrentVersion));
+        Assert.That(loaded.minimumPlayersToClear, Is.EqualTo(1));
+    }
+
+    [TestCase(0)]
+    [TestCase(5)]
+    public void TryCreate_잘못된최소인원은저장하지않는다(int minimumPlayers)
+    {
+        MapData source = CreateMap("잘못된 인원");
+        source.minimumPlayersToClear = minimumPlayers;
+
+        Assert.That(MapDataRepository.TryCreate(source, false, out MapSaveResult result), Is.False);
+        Assert.That(result.FailureKind, Is.EqualTo(MapSaveFailureKind.InvalidRequirements));
+        Assert.That(File.Exists(MapPath(source.mapName)), Is.False);
+    }
+
     private string MapPath(string mapName) => Path.Combine(saveDirectory, $"{mapName}.json");
 
     private void WriteRawMap(string mapName, string json)
