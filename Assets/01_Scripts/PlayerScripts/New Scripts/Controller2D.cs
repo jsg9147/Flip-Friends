@@ -15,6 +15,8 @@ public class Controller2D : RaycastController
     public bool isHold => heldObj != null;
 
     public Conveyor onConveyor;
+    public PlatformController OnPlatform { get; private set; }
+    private PlatformController ignoredSupport;
 
     public NetworkIdentity underPlayer { get; private set; }
     private Vector2 movementVector;
@@ -39,6 +41,7 @@ public class Controller2D : RaycastController
     // 다른 플레이어·한 방향 발판·들고 있는 물체와 겹치는 건 정상이므로 밀어내지 않는다.
     protected override bool IsBlocker(Collider2D hit)
     {
+        if (ignoredSupport != null && hit.GetComponentInParent<PlatformController>() == ignoredSupport) return false;
         if (!base.IsBlocker(hit) || hit.CompareTag("Player")) return false;
         if (objCollider != null && hit.gameObject == objCollider.gameObject) return false;
         return heldObj == null || hit.gameObject != heldObj;
@@ -79,6 +82,21 @@ public class Controller2D : RaycastController
     public void Move(Vector2 moveAmount, bool standingOnPlatform)
     {
         Move(moveAmount, Vector2.zero, standingOnPlatform);
+    }
+
+    public void MoveWithPlatform(Vector2 delta, PlatformController platform)
+    {
+        bool wasGrounded = collisions.below;
+        ignoredSupport = platform;
+        try
+        {
+            Move(delta, Vector2.zero);
+            collisions.below = wasGrounded;
+        }
+        finally
+        {
+            ignoredSupport = null;
+        }
     }
 
     public void Move(Vector2 moveAmount, Vector2 input, bool standingOnPlatform = false)
@@ -184,6 +202,7 @@ public class Controller2D : RaycastController
         float rayLength = Mathf.Abs(moveAmount.y) + skinWidth;
 
         onConveyor = null;
+        OnPlatform = null;
 
         for (int i = 0; i < verticalRayCount; i++)
         {
@@ -239,6 +258,8 @@ public class Controller2D : RaycastController
             collisions.above = directionY == 1;
 
             SearchConveyor(hit);
+            if (directionY < 0)
+                OnPlatform = hit.collider.GetComponentInParent<PlatformController>();
 
             if (hit.transform != transform && hit.collider.CompareTag("Player") && hit.transform.position.y + (boxCollider.size.y * 0.5f)  < transform.position.y)
             {
@@ -404,6 +425,8 @@ public class Controller2D : RaycastController
     private bool IsValidHit(RaycastHit2D hit, Vector2 moveAmount, bool isVertical = false)
     {
         if (hit.collider == null || hit.collider == GetComponent<Collider2D>())
+            return false;
+        if (ignoredSupport != null && hit.collider.GetComponentInParent<PlatformController>() == ignoredSupport)
             return false;
 
         //if (hit.collider.CompareTag("Through") && Mathf.Sign(moveAmount.y) == 1)

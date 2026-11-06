@@ -3,26 +3,63 @@ using UnityEngine;
 
 public abstract class Switch : RaycastController
 {
-    [SyncVar] // 네트워크 싱크를 위한 상태 변수
+    [SyncVar(hook = nameof(OnActivatedChanged))]
     private bool isActivated = false;
 
     public Sprite onSwitchSprite;
     public Sprite offSwitchSprite;
 
-    // 스위치 활성화 상태 접근자
+    private SpriteRenderer switchRenderer;
+
     public bool IsActivated => isActivated;
 
-    // 스위치를 활성화 또는 비활성화하는 메서드
-    public virtual void ToggleSwitch()
+    public override void OnStartServer()
     {
-        isActivated = !isActivated;
-        OnSwitchStateChanged(isActivated);
+        base.OnStartServer();
+        ApplySwitchVisual(isActivated);
     }
 
-    // 스위치 상태 변경 이벤트 (상속받아 재정의 필요)
-    protected abstract void OnSwitchStateChanged(bool newState);
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        ApplySwitchVisual(isActivated);
+    }
 
+    [Server]
+    public virtual void ToggleSwitch()
+    {
+        if (!isServer) return;
+        SetSwitchState(!isActivated);
+    }
+
+    [Server]
+    public void SetSwitchState(bool newState)
+    {
+        if (!isServer) return;
+        if (isActivated == newState) return;
+        isActivated = newState;
+        ApplySwitchVisual(newState);
+        OnSwitchStateChanged(newState);
+    }
+
+    // 서버 효과와 클라이언트 표시를 분리해 hook에서 상태 변경을 재통보하지 않는다.
+    protected virtual void OnSwitchStateChanged(bool newState) { }
+
+    private void OnActivatedChanged(bool oldState, bool newState) => ApplySwitchVisual(newState);
+
+    protected virtual void ApplySwitchVisual(bool newState)
+    {
+        if (switchRenderer == null) switchRenderer = GetComponent<SpriteRenderer>();
+        if (switchRenderer != null) switchRenderer.sprite = newState ? onSwitchSprite : offSwitchSprite;
+    }
+
+    [Server]
     public void DetectPlayer()
+    {
+        if (HasPlayerBelow()) ToggleSwitch();
+    }
+
+    protected bool HasPlayerBelow()
     {
         UpdateRaycastOrigins();
         float rayLength = skinWidth * 2f;
@@ -43,12 +80,12 @@ public abstract class Switch : RaycastController
                         Controller2D player = hit.transform.GetComponent<Controller2D>();
                         if (player.collisions.above)
                         {
-                            ToggleSwitch();
-                            break;
+                            return true;
                         }
                     }
                 }
             }
         }
+        return false;
     }
 }

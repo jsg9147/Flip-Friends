@@ -1,189 +1,146 @@
-using System.Collections;
-using UnityEngine;
-using DG.Tweening;
 using Mirror;
+using UnityEngine;
 
 public class PlayerDetectPlatform : PlatformController
 {
+    public enum Phase { WaitingForPlayer, InitialDelay, Moving, Completed }
+
     [Header("Platform Settings")]
     public float initialWaitTime;
     public bool disappearAfterComplete;
     public bool disableColliderWhenFalling;
-
     [Header("References")]
     public SpriteRenderer spriteRenderer;
 
-    private bool isFirstWait = true;
-    private bool isPlayerDetected = false;
-    private bool hasDisappeared = false;
-    private bool hasStartedMoving = false;
+    [SyncVar(hook = nameof(OnPhaseChanged))] private Phase phase;
+    private bool isPlayerDetected;
+    private double detectionReadyAt;
+    private bool isPresentationInitialized;
+    private bool initialColliderEnabled;
+    private Color initialColor;
+    private Animator platformAnimator;
+    private const double DetectionDelay = .2;
+    private const float FadeDuration = .5f;
 
-    private float delayStartTime;
-    private bool delayStarted = false;
+    protected override bool AutoStart => false;
+    public Phase CurrentPhase => phase;
+    public bool UsesSpriteEffects => disableColliderWhenFalling || disappearAfterComplete;
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        ResetPlatformState();
+    }
 
     public override void Start()
     {
         base.Start();
-        ResetPlatformState();
+        InitializePresentation();
+        ApplyPresentation();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        InitializePresentation();
+        ApplyPresentation();
+    }
+
+    private void InitializePresentation()
+    {
+        if (isPresentationInitialized) return;
+        if (boxCollider == null) Awake();
+        initialColliderEnabled = boxCollider.enabled;
+        initialColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+        platformAnimator = GetComponent<Animator>();
+        isPresentationInitialized = true;
+        if (UsesSpriteEffects && spriteRenderer == null)
+            Debug.LogError($"{transform.root.name}/{name}: 발판 연출용 SpriteRenderer가 없습니다.", this);
     }
 
     private void Update()
     {
-        if (!isServer) return;
-
-        if (!delayStarted)
-        {
-            delayStartTime = Time.time;
-            delayStarted = true;
-        }
-
-        if (Time.time >= delayStartTime + 0.2f)
-        {
+        if (isServer && phase == Phase.WaitingForPlayer && NetworkTime.time >= detectionReadyAt)
             DetectPlayer();
-        }
+        ApplyPresentation();
     }
 
     public override void FixedUpdate()
     {
+        base.FixedUpdate();
         if (!isServer) return;
-        UpdateRaycastOrigins();
-
-        if (isPlayerDetected && !isCompleted)
-        {
-            HandleInitialWait();
-
-            if (!hasStartedMoving && Time.time >= nextMoveTime)
-            {
-                StartPlatformMovement();
-            }
-            base.FixedUpdate();
-        }
-
-        if (isCompleted)
-        {
-            HandleCompletion();
-        }
-
-        if (isWaitingAtStart && !isFirstWait)
+        if (isWaitingAtStart)
         {
             ResetPlatformState();
+            return;
         }
+        if (!isPlayerDetected) return;
+        phase = isCompleted ? Phase.Completed : NetworkTime.time >= MotionStartedAt ? Phase.Moving : Phase.InitialDelay;
+        ApplyPresentation();
     }
 
-    private void HandleInitialWait()
+    [Server]
+    public void ServerActivate()
     {
-        if (isFirstWait)
-        {
-            nextMoveTime = Time.time + initialWaitTime;
-            isFirstWait = false;
-        }
-    }
-
-    private void StartPlatformMovement()
-    {
-        hasStartedMoving = true;
-        if(disableColliderWhenFalling)
-            RpcFadeOutSpriteAlpha(0.5f);
-    }
-
-    private void HandleCompletion()
-    {
-        if (disableColliderWhenFalling)
-        {
-            RpcToggleCollider(false);
-        }
-
-        if (disappearAfterComplete && !hasDisappeared)
-        {
-            HandleDisappearance();
-        }
-    }
-
-    private void HandleDisappearance()
-    {
-        hasDisappeared = true;
+        if (!isServer || phase != Phase.WaitingForPlayer) return;
+        isPlayerDetected = true;
+        phase = Phase.InitialDelay;
+        StartMotion(NetworkTime.time + Mathf.Max(0, initialWaitTime));
+        ApplyPresentation();
     }
 
     private void DetectPlayer()
     {
-        float rayLength = skinWidth;
-
+        UpdateRaycastOrigins();
         for (int i = 0; i < verticalRayCount; i++)
         {
-            Vector2 rayOrigin = raycastOrigins.topLeft + Vector2.right * (verticalRaySpacing * i);
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, rayLength, passengerMask);
-
-            if (hit)
+            Vector2 origin = raycastOrigins.topLeft + Vector2.right * (verticalRaySpacing * i);
+            foreach (var hit in Physics2D.RaycastAll(origin, Vector2.up, skinWidth, passengerMask))
             {
-                if (hit.transform.position.y - (hit.collider.bounds.size.y * 0.5f) - hit.collider.offset.y > transform.position.y + boxCollider.offset.y + (boxCollider.size.y * 0.5f))
-                {
-                    if (hit.transform.GetComponent<Controller2D>() != null)
-                    {
-                        Controller2D player = hit.transform.GetComponent<Controller2D>();
-                        if (player.collisions.below)
-                        {
-                            isPlayerDetected = true;
-
-                            if (disableColliderWhenFalling)
-                                RpcPlayerFallAnimation(true);
-                            break;
-                        }
-                    }
-                }
+                if (hit.collider == null || !hit.collider.TryGetComponent(out Controller2D player)) continue;
+                if (!player.collisions.below) continue;
+                if (hit.transform.position.y - hit.collider.bounds.size.y * .5f - hit.collider.offset.y <=
+                    transform.position.y + boxCollider.offset.y + boxCollider.size.y * .5f) continue;
+                ServerActivate();
+                return;
             }
         }
     }
 
-    [ClientRpc]
-    private void RpcToggleCollider(bool enable)
+    private void OnPhaseChanged(Phase oldValue, Phase newValue) => ApplyPresentation();
+
+    public override bool IsCollidableAt(double time)
     {
-        var collider = GetComponent<BoxCollider2D>();
-        if (collider != null)
-        {
-            collider.enabled = enable;
-        }
+        InitializePresentation();
+        var sample = SampleAt(time);
+        return initialColliderEnabled && !(disableColliderWhenFalling && sample.isCompleted && !sample.hasReturned);
     }
 
-    [ClientRpc]
-    private void RpcFadeOutSpriteAlpha(float duration)
+    private void ApplyPresentation()
     {
-        spriteRenderer?.DOFade(0f, duration).SetEase(Ease.Linear);
+        InitializePresentation();
+        var sample = SampleAt(isServer ? NetworkTime.time : NetworkTime.predictedTime);
+        bool hasCompleted = IsMotionActive && sample.isCompleted && !sample.hasReturned;
+        boxCollider.enabled = IsCollidableAt(isServer ? NetworkTime.time : NetworkTime.predictedTime);
+        if (platformAnimator != null)
+            platformAnimator.SetBool("isFall", disableColliderWhenFalling && IsMotionActive && !sample.hasReturned);
+        if (!UsesSpriteEffects || spriteRenderer == null) return;
+        Color color = initialColor;
+        if (disableColliderWhenFalling && IsMotionActive && !sample.hasReturned)
+            color.a *= 1f - Mathf.Clamp01((float)((isServer ? NetworkTime.time : NetworkTime.predictedTime) - MotionStartedAt) / FadeDuration);
+        if (disappearAfterComplete && hasCompleted) color.a = 0;
+        spriteRenderer.color = color;
     }
 
-    [ClientRpc]
-    private void RpcSpriteRecovery()
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = Color.white;
-        }
-    }
-
-    [ClientRpc]
-    private void RpcPlayerFallAnimation(bool isFall)
-    {
-        var animator = GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.SetBool("isFall", isFall);
-        }
-    }
-
+    [Server]
     public void ResetPlatformState()
     {
-        isFirstWait = true;
+        if (!isServer) return;
+        InitializePresentation();
+        ResetMotion();
         isPlayerDetected = false;
-        hasDisappeared = false;
-        hasStartedMoving = false;
-        isCompleted = false;
-        isWaitingAtStart = false;
-
-        if (isServer)
-        {
-            RpcSyncPosition(transform.position);
-            RpcSpriteRecovery();
-            RpcToggleCollider(true);
-            RpcPlayerFallAnimation(false);
-        }
+        phase = Phase.WaitingForPlayer;
+        detectionReadyAt = NetworkTime.time + DetectionDelay;
+        ApplyPresentation();
     }
 }

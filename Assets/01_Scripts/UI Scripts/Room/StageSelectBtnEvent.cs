@@ -28,7 +28,7 @@ public class StageSelectBtnEvent : MonoBehaviour
         {
             if (!IsValid(selectable)) continue;
 
-            eventSystem.SetSelectedGameObject(selectable.gameObject);
+            UIInputModeController.RequestSelection(selectable.gameObject);
             return;
         }
     }

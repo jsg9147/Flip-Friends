@@ -7737,6 +7737,7 @@ MonoBehaviour:
   - {fileID: 7739612479821036532}
   - {fileID: 3337757253443845250}
   - {fileID: 5111662394867704343}
+  - {fileID: 5454651682744164211}
   activeSwitchGround: {fileID: 0}
   inactiveSwitchGround: {fileID: 0}
   autoToggleEnabled: 1
@@ -12096,6 +12097,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0.2
+  isPassengerTransportEnabled: 0
 --- !u!95 &2045535386321971450
 Animator:
   serializedVersion: 7
@@ -12793,6 +12795,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0.2
+  isPassengerTransportEnabled: 0
 --- !u!95 &3937114016946210733
 Animator:
   serializedVersion: 7
@@ -15264,6 +15267,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0.2
+  isPassengerTransportEnabled: 0
 --- !u!95 &1106741853288811701
 Animator:
   serializedVersion: 7
@@ -16575,6 +16579,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0
   disappearAfterComplete: 0
   disableColliderWhenFalling: 0
@@ -16778,8 +16783,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
-  conveyorBelts: []
+  switches:
+  - {fileID: 2058182703713858751}
+  conveyorBelts:
+  - {fileID: 593880059974938102}
   activeSwitchGround: {fileID: 0}
   inactiveSwitchGround: {fileID: 0}
   autoToggleEnabled: 1

@@ -77,6 +77,8 @@ public class ServerMover : NetworkBehaviour
         // 호스트 자신의 입력은 ClientMover가 로컬에서 처리 — 서버에서 중복 처리 방지
         if (isOwned) return;
         if (input.epoch != epoch) return;
+        if (double.IsNaN(input.platformTime) || double.IsInfinity(input.platformTime)) return;
+        input.platformTime = System.Math.Clamp(input.platformTime, NetworkTime.time - PlayerLagCompensation.MaxRewindTime, NetworkTime.time + Time.fixedDeltaTime);
 
         if (inputQueue.Count >= MAX_QUEUE_SIZE)
             inputQueue.Dequeue();
@@ -137,6 +139,8 @@ public class ServerMover : NetworkBehaviour
             // 방향/달리기는 유지하되 점프 같은 순간 이벤트는 제거
             // 보던 시점도 틱만큼 흘려 다른 플레이어가 멈춘 것처럼 판정되지 않게 한다.
             lastInput.viewTime += Time.fixedDeltaTime;
+            lastInput.platformTime += Time.fixedDeltaTime;
+            lastInput.platformTime = System.Math.Clamp(lastInput.platformTime, NetworkTime.time - PlayerLagCompensation.MaxRewindTime, NetworkTime.time + Time.fixedDeltaTime);
             InputPayload continuation = lastInput;
             continuation.jump   = false;
             continuation.jumpUp = false;

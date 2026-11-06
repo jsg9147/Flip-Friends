@@ -59,7 +59,7 @@ public class MainMenuScreen : UIScreen
         mapEditorButton.onClick.RemoveAllListeners();
         mapEditorButton.onClick.AddListener(OpenMapEditor);
         SetButtonLabel(mapEditorButton);
-        RegisterLegacyNavigation(mapEditorButton);
+        RegisterNavigation(mapEditorButton);
     }
 
     private void RemoveNavigationComponents(GameObject buttonObject)
@@ -83,18 +83,26 @@ public class MainMenuScreen : UIScreen
         label.text = "MAP EDITOR";
     }
 
-    private void RegisterLegacyNavigation(Button button)
+    private void RegisterNavigation(Button button)
     {
         ButtonSelectController controller = GetComponent<ButtonSelectController>();
         if (controller == null)
         {
-            Debug.LogWarning("Main 메뉴의 ButtonSelectController를 찾지 못해 맵 에디터 버튼의 레거시 키보드 탐색을 등록하지 못했습니다.", this);
+            Debug.LogWarning("Main 메뉴의 ButtonSelectController를 찾지 못해 맵 에디터 버튼의 탐색 순서를 등록하지 못했습니다.", this);
             return;
         }
 
-        if (!controller.tagetButtonList.Contains(button))
+        controller.tagetButtonList.Remove(button);
+        int insertionIndex = Mathf.Max(0, controller.tagetButtonList.Count - 1);
+        if (controller.tagetButtonList.Count > 0)
         {
-            controller.tagetButtonList.Insert(controller.tagetButtonList.Count - 1, button);
+            Selectable exitButton = controller.tagetButtonList[insertionIndex];
+            // 화면 배치도 선택 목록과 같이 종료 버튼 바로 앞에 둔다.
+            int siblingIndex = exitButton.transform.GetSiblingIndex();
+            if (button.transform.GetSiblingIndex() < siblingIndex)
+                siblingIndex--;
+            button.transform.SetSiblingIndex(siblingIndex);
         }
+        controller.InsertSelectable(insertionIndex, button);
     }
 }

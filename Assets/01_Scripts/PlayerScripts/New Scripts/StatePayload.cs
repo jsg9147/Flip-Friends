@@ -21,4 +21,7 @@ public struct StatePayload
     public float climbBlockTime;
     public float invincibleTime;
     public float uncontrollableTime;
+    public PlatformController supportPlatform;
+    public uint supportRevision;
+    public double platformTime;
 }

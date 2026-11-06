@@ -72,11 +72,17 @@ public class MovementHandler : NetworkBehaviour
 
     public bool isGrounded => controller.collisions.below;
     public Vector2 CurrentVelocity => velocity;
+    public Vector2 DirectionalInput => directionalInput;
+    public bool CanChangeFacing => !isUncontrollable;
     public float Gravity => gravity;
     public float MaxFallSpeed => maxGravity;
 
     // ServerMover가 Simulate를 직접 호출하는 경우 true — FixedUpdate 중복 실행 방지용
     [System.NonSerialized] public bool managedExternally = false;
+    private PlatformController supportPlatform;
+    private uint supportRevision;
+    private double platformTime;
+    private double previousPlatformTime;
 
     // ClientMover가 재시뮬레이션(Reconcile) 중일 때 true — 사운드 등 부작용 억제
     [System.NonSerialized] public bool isReconciling = false;
@@ -106,11 +112,24 @@ public class MovementHandler : NetworkBehaviour
     // 한 물리 스텝을 실행 — ClientMover와 ServerMover가 동일한 코드를 공유하기 위해 분리
     public void Simulate(float deltaTime)
     {
-        TickTimers(deltaTime);
-        UpdateClimbState();
-        CalculateMovement(deltaTime);
-        PlayerMovementInteract();
-        ApplyMovement(deltaTime);
+        using (PlatformController.AtSimulationTime(platformTime))
+        {
+            if (supportPlatform != null && velocity.y <= 0f && !isClimbed)
+            {
+                Vector2 delta = supportPlatform.Displacement(previousPlatformTime, platformTime, supportRevision);
+                if (delta != Vector2.zero) controller.MoveWithPlatform(delta, supportPlatform);
+            }
+            TickTimers(deltaTime);
+            UpdateClimbState();
+            CalculateMovement(deltaTime);
+            PlayerMovementInteract();
+            ApplyMovement(deltaTime);
+            supportPlatform = controller.collisions.below ? controller.OnPlatform : null;
+            if (supportPlatform != null && (!supportPlatform.TransportsPassengers || (supportPlatform.passengerMask.value & (1 << gameObject.layer)) == 0))
+                supportPlatform = null;
+            supportRevision = supportPlatform != null ? supportPlatform.MotionRevision : 0;
+            previousPlatformTime = platformTime;
+        }
     }
 
     private void TickTimers(float deltaTime)
@@ -137,6 +156,7 @@ public class MovementHandler : NetworkBehaviour
     // InputPayload를 받아 내부 입력 상태를 설정한 뒤 시뮬레이션
     public void ApplyInput(InputPayload input)
     {
+        platformTime = input.platformTime;
         SetDirectionalInput(input.movement, input.run);
         JumpHold(input.jumpHeld);
 
@@ -161,6 +181,9 @@ public class MovementHandler : NetworkBehaviour
             climbBlockTime = climbBlockTimer,
             invincibleTime = invincibleTimer,
             uncontrollableTime = uncontrollableTimer,
+            supportPlatform = supportPlatform,
+            supportRevision = supportRevision,
+            platformTime = previousPlatformTime,
         };
     }
 
@@ -177,12 +200,18 @@ public class MovementHandler : NetworkBehaviour
         invincibleTimer = state.invincibleTime;
         uncontrollableTimer = state.uncontrollableTime;
         controller.CoyoteTime = state.coyoteTime;
-        controller.RestoreContacts(state.isGrounded, state.faceDir);
+        using (PlatformController.AtSimulationTime(state.platformTime))
+            controller.RestoreContacts(state.isGrounded, state.faceDir);
+        supportPlatform = state.supportPlatform;
+        supportRevision = state.supportRevision;
+        platformTime = previousPlatformTime = state.platformTime;
     }
 
     // 던지기·순간이동처럼 서버가 움직임을 새로 정할 때 쓴다. 조작 불가 시간 동안은 입력이 궤적을 꺾지 못한다.
     public void Launch(Vector2 launchVelocity, float uncontrollableDuration)
     {
+        supportPlatform = null;
+        supportRevision = 0;
         velocity = launchVelocity;
         externalVelocity = Vector2.zero;
         velocityXSmoothing = 0f;

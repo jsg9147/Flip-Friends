@@ -106,6 +106,16 @@ public class PlayerInteraction : NetworkBehaviour
         SetHoldTarget(null);
     }
 
+    [Server]
+    public void ForgetHeldObject(PickupObj box)
+    {
+        if (heldObject != box) return;
+        heldObject = null;
+        SetCollisionWithHeldObject(box, false);
+        RpcVisibleBox(false);
+        SetHoldTarget(null);
+    }
+
     private void Release(Vector2 dir, bool isPutDown)
     {
         if (heldPlayer != null)
@@ -209,15 +219,16 @@ public class PlayerInteraction : NetworkBehaviour
     private void SetHoldTarget(GameObject target)
     {
         ApplyHoldTarget(target);
-        RpcSetHoldTarget(target);
+        // 기본 스테이지 상자는 자식 Identity가 없으므로 루트 Identity와 부품 인덱스로 전달한다.
+        RpcSetHoldTarget(target != null ? target.GetComponent<NetworkBehaviour>() : null);
     }
 
     // 운반자 클라이언트의 예측도 머리 위 물체를 알아야 낮은 천장에서 서버와 같은 곳에 멈춘다.
     [ClientRpc]
-    private void RpcSetHoldTarget(GameObject target)
+    private void RpcSetHoldTarget(NetworkBehaviour target)
     {
         if (isServer) return;
-        ApplyHoldTarget(target);
+        ApplyHoldTarget(target != null ? target.gameObject : null);
     }
 
     private void ApplyHoldTarget(GameObject target)

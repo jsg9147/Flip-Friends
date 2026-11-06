@@ -75,7 +75,10 @@ public class PlayerController2D : NetworkBehaviour
 
     private void PlayerColorUpdate(Vector4 oldValue, Vector4 newValue)
     {
-        GetComponent<SpriteRenderer>().color = newValue;
+        PlayerAnimationController controller = animationController != null
+            ? animationController
+            : GetComponent<PlayerAnimationController>();
+        controller.SetPlayerColor(newValue);
     }
 
     private void Start()
@@ -289,13 +292,21 @@ public class PlayerController2D : NetworkBehaviour
     }
 
 
+    [Server]
     public void SetSavePoint(SavePoint nextPoint)
     {
-        if (savePoint == null)
+        if (!isServer || nextPoint == null) return;
+        if (savePoint == null || nextPoint.savePointID > savePoint.savePointID)
             savePoint = nextPoint;
+    }
 
-        if(nextPoint.savePointID > savePoint.savePointID)
-            savePoint = nextPoint;
+    [Server]
+    public void ServerResetSection(Vector2 position, bool onlyBoxReset)
+    {
+        if (!isServer || isCarried) return;
+        if (onlyBoxReset && !interactionController.IsHoldingObject) return;
+        // 구간 이동은 들고 있는 상자를 유지한다. 리셋 키·추락은 기존처럼 내려놓는다.
+        serverMover.Teleport(position, Vector2.zero);
     }
 
     [Command]
@@ -332,8 +343,9 @@ public class PlayerController2D : NetworkBehaviour
         bool isGrounded = movementHandler.isGrounded;
         Vector2 velocity = movementHandler.CurrentVelocity;
 
-        if (!isCarried && isGrounded && PlayerStateController.IsWalking(velocity.x))
-            UpdateFlipState(velocity.x < 0);
+        float inputX = movementHandler.DirectionalInput.x;
+        if (!isCarried && movementHandler.CanChangeFacing && inputX != 0f)
+            UpdateFlipState(inputX < 0f);
 
         // 매 틱 이동 결과에서 상태를 다시 정한다. SyncVar라 값이 바뀔 때만 전송된다
         stateController.ChangeState(ResolveServerState(isGrounded, velocity));
@@ -350,6 +362,7 @@ public class PlayerController2D : NetworkBehaviour
     {
         if (spriteRenderer.flipX != isFlip)
         {
+            spriteRenderer.flipX = isFlip;
             RpcFlipChanged(isFlip);
         }
     }
@@ -376,6 +389,9 @@ public class PlayerController2D : NetworkBehaviour
 
         if (!movementHandler.OnDamaged(knockbackDirection)) return;
 
+        if (knockbackDirection.x != 0f)
+            UpdateFlipState(knockbackDirection.x < 0f);
+
         interactionController.DropAll();
         stateController.RpcPlayOneShot(PlayerState.Damaged);
         // 피격은 서버만 판정하므로 소유 클라이언트가 넉백을 늦지 않게 받도록 바로 보낸다.
@@ -401,12 +417,6 @@ public class PlayerController2D : NetworkBehaviour
         {
             SetFinishState(inputHandler.MovementInput);
         }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (isOwned && collision.CompareTag("Reset"))
-            CmdPositionReset();
     }
 
     private void FinishCheck(bool oldValue, bool newValue)

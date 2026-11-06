@@ -17,6 +17,8 @@ public class MovingTrap : BasicTrap
 
     private Vector2 startPosition;
     private float startAngle;
+    private bool hasServerStartTime;
+    private bool hasValidConfiguration = true;
 
     private void Awake()
     {
@@ -26,12 +28,21 @@ public class MovingTrap : BasicTrap
 
     public override void OnStartServer()
     {
+        base.OnStartServer();
+        if (hasServerStartTime) return;
+        hasValidConfiguration = TryValidateConfiguration(out string problem);
+        if (!hasValidConfiguration)
+        {
+            Debug.LogError($"{transform.root.name}/{name}: {problem}", this);
+            return;
+        }
         startTime = NetworkTime.localTime;
+        hasServerStartTime = true;
     }
 
     private void Update()
     {
-        if (!isServer && !isClient) return;
+        if ((!isServer && !isClient) || !hasValidConfiguration) return;
 
         // 피격은 서버가 소유 클라이언트의 입력을 처리하는 시점에 판정한다.
         // predictedTime은 지금 보낸 입력이 서버에 닿을 시각이라, 내 화면의 트랩 위치가 그 판정 위치와 같아진다. 서버에서는 localTime이다.
@@ -46,6 +57,7 @@ public class MovingTrap : BasicTrap
     // MoveTowards로 왕복하던 이전 동작과 같은 경로를 시간의 함수로 푼다.
     private Vector2 EvaluatePosition(double elapsed)
     {
+        elapsed = System.Math.Max(0, elapsed);
         float pathLength = endPosition.magnitude;
         if (pathLength < MinPathLength || speed <= 0f) return startPosition;
 
@@ -59,8 +71,18 @@ public class MovingTrap : BasicTrap
 
     private float EvaluateAngle(double elapsed)
     {
+        elapsed = System.Math.Max(0, elapsed);
         // 서버가 오래 켜져 있어도 float 정밀도를 잃지 않도록 double에서 한 바퀴 단위로 자른다.
         return startAngle + (float)((rotationSpeed * elapsed) % DegreesPerTurn);
+    }
+
+    private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
+    public bool TryValidateConfiguration(out string problem)
+    {
+        problem = IsFinite(endPosition.x) && IsFinite(endPosition.y) && IsFinite(speed) && IsFinite(rotationSpeed)
+            ? null : "이동 경로/속도/회전 설정이 유한값이 아닙니다.";
+        return problem == null;
     }
 
     private void OnDrawGizmos()

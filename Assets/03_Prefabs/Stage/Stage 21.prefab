@@ -3091,8 +3091,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   switches:
+  - {fileID: 3151015954546616063}
   - {fileID: 6831673080906997525}
-  conveyorBelts: []
+  conveyorBelts:
+  - {fileID: 2896912643016296295}
   activeSwitchGround: {fileID: 0}
   inactiveSwitchGround: {fileID: 0}
   autoToggleEnabled: 1
@@ -4098,10 +4100,6 @@ MonoBehaviour:
   - {fileID: 4066567837934821881}
   - {fileID: 4970356985914698782}
   - {fileID: 3682028069640047015}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   activeSwitchGround: {fileID: 0}
   inactiveSwitchGround: {fileID: 0}
   autoToggleEnabled: 1
@@ -6493,7 +6491,7 @@ MonoBehaviour:
   previewColor: {r: 1, g: 0, b: 0, a: 1}
   passengerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   localWaypoints:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 5, z: 0}
@@ -6504,6 +6502,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0
   disappearAfterComplete: 0
   disableColliderWhenFalling: 0

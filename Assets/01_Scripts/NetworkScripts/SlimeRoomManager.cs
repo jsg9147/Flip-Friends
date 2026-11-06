@@ -28,12 +28,6 @@ public class SlimeRoomManager : NetworkRoomManager
 
     public bool IsTestPlaying => testPlaySnapshot != null;
 
-    public override void OnStartHost()
-    {
-        base.OnStartHost();
-        lobbyPlayerList = new List<GameObject>();
-    }
-
     public override void OnRoomServerConnect(NetworkConnectionToClient conn)
     {
         base.OnRoomServerConnect(conn);
@@ -46,6 +40,8 @@ public class SlimeRoomManager : NetworkRoomManager
 
     public override void OnStartServer()
     {
+        // 전용 서버도 원격 접속 직후 로비 플레이어를 기록한다.
+        lobbyPlayerList = new List<GameObject>();
         ServerMapSession.Clear();
         base.OnStartServer();
     }
@@ -185,6 +181,8 @@ public class SlimeRoomManager : NetworkRoomManager
 
     public override void OnRoomServerDisconnect(NetworkConnectionToClient conn)
     {
+        // 대기실 Ready 뒤 이탈하면 다음 씬에서 끊긴 연결의 플레이어를 만들지 않는다.
+        pendingPlayers.RemoveWhere(pending => pending.conn == conn);
         FindAnyObjectByType<MapSelectionManager>()?
             .ServerInvalidateAvailabilityCheck("참여자가 연결을 종료했습니다.");
         stageLoadFailureRecipients.Remove(conn.connectionId);

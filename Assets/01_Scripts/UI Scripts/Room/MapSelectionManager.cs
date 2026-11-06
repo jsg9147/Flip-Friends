@@ -89,6 +89,7 @@ public class MapSelectionManager : NetworkBehaviour
     public bool IsLocalHost =>
         RoomPlayer != null && RoomPlayer.isLocalPlayer && RoomPlayer.index == 0;
     public LobbyMapKind SelectedMapKind => selectedMapKind;
+    public string SelectedMapId => selectedMapId;
     public string SelectionSummary => BuildSelectedMapText();
     public string SelectionStatus => BuildStatusText();
 

@@ -8,83 +8,84 @@ public class OnOffManager : NetworkBehaviour
     private const string ActiveSwitchGroundName = "OnSwitchGround";
     private const string InactiveSwitchGroundName = "OffSwitchGround";
 
-    [SerializeField] private List<OnOffSwitch> switches;
-    [SerializeField] private List<Conveyor> conveyorBelts;
-
+    [SerializeField] private List<OnOffSwitch> switches = new List<OnOffSwitch>();
+    [SerializeField] private List<Conveyor> conveyorBelts = new List<Conveyor>();
     [SerializeField] private GameObject activeSwitchGround;
     [SerializeField] private GameObject inactiveSwitchGround;
-
     [SerializeField] private bool autoToggleEnabled = false;
     [SerializeField] private float autoToggleInterval = 3.0f;
 
-    private bool isActivated;
+    [SyncVar(hook = nameof(OnActivatedChanged))] private bool isActivated;
+    private Coroutine autoToggleCoroutine;
 
-    private void Awake()
-    {
-        ResolveMissingGroundReferences();
-    }
+    public bool IsActivated => isActivated;
 
-    private void Start()
+    private void Awake() => ResolveMissingGroundReferences();
+
+    public override void OnStartServer()
     {
+        base.OnStartServer();
         isActivated = false;
-        UpdateSwitchState(isActivated);
-
-        if (isServer)
-        {
-            RpcUpdateSwitchState(isActivated);
-            if (autoToggleEnabled)
-            {
-                StartCoroutine(AutoToggleCoroutine());
-            }
-        }
+        ApplyState(isActivated);
+        if (autoToggleEnabled)
+            autoToggleCoroutine = StartCoroutine(AutoToggleCoroutine());
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        ApplyGroundState(isActivated);
+    }
+
+    public override void OnStopServer()
+    {
+        if (autoToggleCoroutine != null) StopCoroutine(autoToggleCoroutine);
+        autoToggleCoroutine = null;
+        base.OnStopServer();
+    }
+
+    [Server]
+    public void ToggleState()
+    {
+        if (!isServer) return;
+        ToggleOnOffState(!isActivated);
+    }
+
+    [Server]
     public void ToggleOnOffState(bool newState)
     {
-        foreach (var switchUnit in switches)
-        {
-            switchUnit.RpcToggleSwitch(newState);
-        }
-
-        UpdateSwitchState(newState);
-        RpcUpdateSwitchState(newState);
-    }
-
-    [ClientRpc]
-    private void RpcUpdateSwitchState(bool newState)
-    {
-        UpdateSwitchState(newState);
-    }
-
-    private void UpdateSwitchState(bool newState)
-    {
+        if (!isServer) return;
         isActivated = newState;
+        ApplyState(newState);
+    }
 
-        if (activeSwitchGround != null)
-            activeSwitchGround.SetActive(newState);
-        if (inactiveSwitchGround != null)
-            inactiveSwitchGround.SetActive(!newState);
+    private void OnActivatedChanged(bool oldState, bool newState) => ApplyGroundState(newState);
 
-        foreach (var conveyor in conveyorBelts)
+    private void ApplyState(bool newState)
+    {
+        ApplyGroundState(newState);
+        foreach (OnOffSwitch switchUnit in switches)
         {
-            if (conveyor != null)
-                conveyor.UpdateConveyorState(newState);
+            if (switchUnit != null && switchUnit.Manager == this)
+                switchUnit.SetSwitchState(newState);
         }
+        foreach (Conveyor conveyor in conveyorBelts)
+        {
+            if (conveyor != null) conveyor.UpdateConveyorState(newState);
+        }
+    }
+
+    private void ApplyGroundState(bool newState)
+    {
+        if (activeSwitchGround != null) activeSwitchGround.SetActive(newState);
+        if (inactiveSwitchGround != null) inactiveSwitchGround.SetActive(!newState);
     }
 
     private void ResolveMissingGroundReferences()
     {
-        if (activeSwitchGround != null && inactiveSwitchGround != null)
-            return;
-
+        if (activeSwitchGround != null && inactiveSwitchGround != null) return;
         Transform stageRoot = transform.parent;
-        if (stageRoot == null)
-            return;
-
-        OnOffManager[] managers = stageRoot.GetComponentsInChildren<OnOffManager>(true);
-        if (managers.Length != 1)
-            return;
-
+        if (stageRoot == null || stageRoot.GetComponentsInChildren<OnOffManager>(true).Length != 1) return;
         foreach (Transform child in stageRoot.GetComponentsInChildren<Transform>(true))
         {
             if (activeSwitchGround == null && child.name == ActiveSwitchGroundName)
@@ -98,8 +99,8 @@ public class OnOffManager : NetworkBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(autoToggleInterval);
-            ToggleOnOffState(!isActivated);
+            yield return new WaitForSeconds(Mathf.Max(0.01f, autoToggleInterval));
+            ToggleState();
         }
     }
 }

@@ -9,6 +9,7 @@ public class GameManager : NetworkBehaviour
     public static GameManager Instance;
 
     public GameObject menuScreen;
+    private bool isReturningRoom;
 
     public void Awake()
     {
@@ -32,8 +33,10 @@ public class GameManager : NetworkBehaviour
     }
 
     // 플레이어 목록을 캐시하지 않는다. 캐시하면 도중에 이탈한 플레이어가 남아 클리어가 영영 안 된다.
+    [Server]
     public void FinishCheck()
     {
+        if (!isServer || isReturningRoom) return;
         PlayerController2D[] playerControllers = FindObjectsByType<PlayerController2D>();
         if (playerControllers.Length == 0)
             return;
@@ -61,13 +64,13 @@ public class GameManager : NetworkBehaviour
         FinishCheck();
     }
 
+    [Server]
     private void StageClear()
     {
-        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
-
-        if(slimeRoomManager != null)
+        if (NetworkManager.singleton is SlimeRoomManager slimeRoomManager)
         {
-            CmdChangeScene();
+            isReturningRoom = true;
+            slimeRoomManager.ReturnRoomScene();
         }
         else
         {
@@ -78,12 +81,8 @@ public class GameManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdChangeScene()
     {
-        if (isServer)
-        {
-            SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
-            if(slimeRoomManager != null)
-                slimeRoomManager.ReturnRoomScene();
-        }
+        // 기존 외부 호출도 서버의 완료 상태를 다시 확인한다.
+        FinishCheck();
     }
 
     public void ExitGame()

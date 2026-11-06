@@ -87,7 +87,7 @@ public class UIScreen : MonoBehaviour
             return;
         }
 
-        EventSystem.current.SetSelectedGameObject(firstSelectedObject);
+        UIInputModeController.RequestSelection(firstSelectedObject);
     }
 
     protected virtual void OnShow()

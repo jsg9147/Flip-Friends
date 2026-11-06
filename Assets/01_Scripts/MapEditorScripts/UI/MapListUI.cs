@@ -13,6 +13,10 @@ public class MapListUI : MonoBehaviour
     [SerializeField] private Button openButton;
     [SerializeField] private Button startButton;
     [SerializeField] private Button clearSelectionButton;
+    [SerializeField] private bool isTabbedLayout;
+    [SerializeField] private TMP_Text emptyListText;
+    [SerializeField] private ScrollRect listScroll;
+    [SerializeField] private Color messageColor = Color.white;
 
     private readonly List<GameObject> createdItems = new();
     private SavedMapCatalog catalog;
@@ -22,8 +26,11 @@ public class MapListUI : MonoBehaviour
         if (!ValidateReferences()) return;
 
         catalog = new SavedMapCatalog(mapSelectionManager.Palette);
-        CreateMissingControls();
-        panel.SetActive(false);
+        if (!isTabbedLayout)
+        {
+            CreateMissingControls();
+            panel.SetActive(false);
+        }
         BindButtons();
         RefreshAuthorityState();
     }
@@ -72,21 +79,40 @@ public class MapListUI : MonoBehaviour
         messageText.text = message ?? "맵 선택 상태를 확인할 수 없습니다.";
         messageText.color = isError
             ? new Color(1f, 0.35f, 0.35f)
-            : Color.white;
+            : messageColor;
+    }
+
+    public void RefreshList()
+    {
+        if (catalog == null)
+            catalog = new SavedMapCatalog(mapSelectionManager.Palette);
+        PopulateList();
     }
 
     private void PopulateList()
     {
         ClearList();
         IReadOnlyList<SavedMapListEntry> entries = catalog.GetEntries();
+        if (emptyListText != null)
+        {
+            emptyListText.gameObject.SetActive(entries.Count == 0);
+            emptyListText.text = "저장된 커스텀 맵이 없습니다.\n맵 에디터에서 맵을 저장해 주세요.";
+        }
         if (entries.Count == 0)
         {
-            ShowSelectionMessage("로컬에 저장된 커스텀 맵이 없습니다.", false);
+            if (!isTabbedLayout)
+                ShowSelectionMessage("로컬에 저장된 커스텀 맵이 없습니다.", false);
             return;
         }
 
         foreach (SavedMapListEntry entry in entries)
             CreateListItem(entry);
+
+        if (listScroll != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)listContainer);
+            listScroll.verticalNormalizedPosition = 1f;
+        }
 
         mapSelectionManager.SelectFirstLocalMapListItem(listContainer);
     }
@@ -109,11 +135,15 @@ public class MapListUI : MonoBehaviour
         button.interactable = mapSelectionManager.IsLocalHost && entry.CanSelect;
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => OnMapSelected(entry));
+        MapChoiceFeedback feedback = item.GetComponent<MapChoiceFeedback>();
+        if (feedback != null)
+            feedback.Bind(mapSelectionManager, LobbyMapKind.Custom, entry.MapId);
     }
 
     private void PositionListItem(RectTransform rectTransform, int index)
     {
         if (rectTransform == null) return;
+        if (isTabbedLayout) return;
 
         rectTransform.anchorMin = new Vector2(0.5f, 1f);
         rectTransform.anchorMax = new Vector2(0.5f, 1f);
@@ -145,8 +175,11 @@ public class MapListUI : MonoBehaviour
         }
 
         mapSelectionManager.SelectCustomMap(refreshed);
-        ShowSelectionMessage(refreshed.Message, false);
-        panel.SetActive(false);
+        if (!isTabbedLayout)
+        {
+            ShowSelectionMessage(refreshed.Message, false);
+            panel.SetActive(false);
+        }
     }
 
     private void RefreshAuthorityState()
@@ -160,9 +193,9 @@ public class MapListUI : MonoBehaviour
         if (clearSelectionButton != null)
             clearSelectionButton.interactable =
                 isHost && mapSelectionManager.SelectedMapKind == LobbyMapKind.Custom;
-        if (!isHost && panel != null)
+        if (!isTabbedLayout && !isHost && panel != null)
             panel.SetActive(false);
-        if (messageText != null)
+        if (!isTabbedLayout && messageText != null)
             ShowSelectionMessage(
                 $"{mapSelectionManager.SelectionSummary}\n" +
                 mapSelectionManager.SelectionStatus,

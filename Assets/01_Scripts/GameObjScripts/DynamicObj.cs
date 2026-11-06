@@ -5,22 +5,33 @@ public class DynamicObj : NetworkBehaviour
 {
     public float xMoveValue;
     public float yMoveValue;
+    private Vector3 initialPosition;
+    private bool hasInitialPosition;
+
+    private void CaptureInitialPosition()
+    {
+        if (hasInitialPosition) return;
+        initialPosition = transform.position;
+        hasInitialPosition = true;
+    }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        UpdateDynamicObjPos();
+        if (!(NetworkManager.singleton is SlimeRoomManager roomManager))
+        {
+            Debug.LogError($"{transform.root.name}/{name}: SlimeRoomManager를 찾을 수 없습니다.", this);
+            return;
+        }
+        ServerApplyPlayerCount(roomManager.numPlayers);
     }
 
-
-    private void UpdateDynamicObjPos()
+    [Server]
+    public void ServerApplyPlayerCount(int playerCount)
     {
-        SlimeRoomManager slimeRoomManager = (SlimeRoomManager)NetworkManager.singleton;
-
-        if(slimeRoomManager != null)
-        {
-            int playerCount = slimeRoomManager.numPlayers - 1;
-            transform.position = transform.position + new Vector3(xMoveValue * playerCount, yMoveValue * playerCount);
-        }
+        if (!isServer) return;
+        CaptureInitialPosition();
+        int additionalPlayers = Mathf.Max(0, playerCount - 1);
+        transform.position = initialPosition + new Vector3(xMoveValue * additionalPlayers, yMoveValue * additionalPlayers, 0);
     }
 }

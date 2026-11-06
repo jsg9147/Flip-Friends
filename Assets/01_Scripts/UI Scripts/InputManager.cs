@@ -20,6 +20,8 @@ public class InputManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            if (GetComponent<UIInputModeController>() == null)
+                gameObject.AddComponent<UIInputModeController>();
         }
         else
         {

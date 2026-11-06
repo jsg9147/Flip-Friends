@@ -17,12 +17,17 @@ public class KeyRebindingManager : MonoBehaviour
     public ButtonSelectController gamepadRebindUIContainer;  // 리바인딩 게임 패드 UI 컨테이너
     public GameObject gamepadContent;
 
+    private readonly Dictionary<Guid, KeyBindItem> bindingItems = new Dictionary<Guid, KeyBindItem>();
+
     private Gamepad gamepad;
     private Dictionary<string, InputAction> _actions = new Dictionary<string, InputAction>();
     private InputActionRebindingExtensions.RebindingOperation _rebindingOperation;
 
     private void Start()
     {
+        StyleScrollView(keyboardRebindUIContainer);
+        StyleScrollView(gamepadRebindUIContainer);
+
         // Input Actions 초기화
         foreach (var map in inputActions.actionMaps)
         {
@@ -40,13 +45,45 @@ public class KeyRebindingManager : MonoBehaviour
         // 저장된 키 설정 불러오기
         LoadBindings();
     }
+
+    private void StyleScrollView(ButtonSelectController container)
+    {
+        ScrollRect scrollRect = container.GetComponentInChildren<ScrollRect>(true);
+        if (scrollRect == null) scrollRect = container.GetComponent<ScrollRect>();
+        if (scrollRect == null || scrollRect.verticalScrollbar == null) return;
+
+        Scrollbar scrollbar = scrollRect.verticalScrollbar;
+        Image track = scrollbar.GetComponent<Image>();
+        if (track != null)
+        {
+            track.sprite = null;
+            track.type = Image.Type.Simple;
+            track.color = new Color32(206, 234, 239, 255);
+        }
+
+        if (scrollbar.targetGraphic is Image handle)
+        {
+            handle.sprite = null;
+            handle.type = Image.Type.Simple;
+            handle.color = Color.white;
+        }
+
+        ColorBlock colors = scrollbar.colors;
+        colors.normalColor = new Color32(49, 164, 186, 255);
+        colors.highlightedColor = new Color32(146, 230, 101, 255);
+        colors.selectedColor = colors.highlightedColor;
+        colors.pressedColor = new Color32(75, 177, 198, 255);
+        colors.fadeDuration = 0f;
+        scrollbar.colors = colors;
+        scrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 24f);
+    }
     private void CreateRebindUI(InputAction action)
     {
         foreach (var binding in action.bindings)
         {
             ScrollViewController container = keyboardRebindUIContainer.GetComponent<ScrollViewController>();
 
-            if (binding.groups.Contains("Gamepad"))
+            if (binding.groups.Contains("Gamepad") || binding.path.StartsWith("<Gamepad>/", StringComparison.Ordinal))
                 container = gamepadRebindUIContainer.GetComponent<ScrollViewController>();
             else if (binding.groups.Contains("Keyboard"))
             {
@@ -78,7 +115,8 @@ public class KeyRebindingManager : MonoBehaviour
         KeyBindItem uiInstance = Instantiate(rebindUIPrefab, container.Content);
         container.GetComponent<ButtonSelectController>().tagetButtonList.Add(uiInstance.keyBindBtn);
 
-        uiInstance.antionNameText.text = action.name;
+        uiInstance.antionNameText.text = GetActionDisplayName(action.name);
+        bindingItems[binding.id] = uiInstance;
         UpdateBindingText(action, uiInstance.keyBindText, binding);
 
         // LINQ로 인덱스 찾기
@@ -95,7 +133,8 @@ public class KeyRebindingManager : MonoBehaviour
         var keyBindItem = uiInstance.GetComponent<KeyBindItem>();
         container.GetComponent<ButtonSelectController>().tagetButtonList.Add(uiInstance.keyBindBtn);
 
-        keyBindItem.antionNameText.text = $"{action.name} - {partBinding.name}";
+        keyBindItem.antionNameText.text = GetActionDisplayName(action.name) + " " + GetDirectionDisplayName(partBinding.name);
+        bindingItems[partBinding.id] = keyBindItem;
         UpdateBindingText(action, keyBindItem.keyBindText, partBinding);
 
         // LINQ로 인덱스 찾기
@@ -111,7 +150,7 @@ public class KeyRebindingManager : MonoBehaviour
     {
         action.Disable();
 
-        bindingText.text = "Press any key...";
+        bindingText.text = "Press a control...";
         foreach (Transform child in keyboardRebindUIContainer.transform)
         {
             var keyBindItem = child.GetComponent<KeyBindItem>();
@@ -279,44 +318,46 @@ public class KeyRebindingManager : MonoBehaviour
             }
         }
     }
+    private static string GetActionDisplayName(string actionName)
+    {
+        switch (actionName)
+        {
+            case "Submit": return "Confirm";
+            case "Cancel": return "Back";
+            case "Interact": return "Pick Up / Throw";
+            case "Previous": return "Previous Camera";
+            case "Next": return "Next Camera";
+            case "Sprint": return "Run";
+            case "Reset": return "Respawn";
+            default: return actionName;
+        }
+    }
+
+    private static string GetDirectionDisplayName(string direction)
+    {
+        switch (direction)
+        {
+            case "up": return "Up";
+            case "down": return "Down";
+            case "left": return "Left";
+            case "right": return "Right";
+            default: return direction;
+        }
+    }
+
     private void UpdateCompositeBindingUI(InputAction action, InputBinding binding)
     {
         foreach (var partBinding in action.bindings)
         {
             if (partBinding.isPartOfComposite && partBinding.action == binding.action)
-            {
-                foreach (Transform child in keyboardRebindUIContainer.transform)
-                {
-                    var keyBindItem = child.GetComponent<KeyBindItem>();
-                    if (keyBindItem != null && keyBindItem.antionNameText.text == $"{action.name} - {partBinding.name}")
-                    {
-                        keyBindItem.SetBindText(InputControlPath.ToHumanReadableString(
-                            partBinding.effectivePath,
-                            InputControlPath.HumanReadableStringOptions.OmitDevice
-                        ));
-                    }
-                }
-            }
+                UpdateSingleBindingUI(action, partBinding);
         }
     }
-
     private void UpdateSingleBindingUI(InputAction action, InputBinding binding)
     {
-        Transform uiContainer = keyboardRebindUIContainer.transform;
-        if (binding.groups.Contains("Gamepad"))
-            uiContainer = gamepadRebindUIContainer.transform;
-
-        foreach (Transform child in uiContainer)
-        {
-            var keyBindItem = child.GetComponent<KeyBindItem>();
-            if (keyBindItem != null && keyBindItem.antionNameText.text == action.name)
-            {
-                keyBindItem.SetBindText(InputControlPath.ToHumanReadableString(
-                    binding.effectivePath,
-                    InputControlPath.HumanReadableStringOptions.OmitDevice
-                ));
-            }
-        }
+        // 표시명이 같아도 각 바인딩의 저장값을 해당 행에 반영한다.
+        if (bindingItems.TryGetValue(binding.id, out var item))
+            UpdateBindingText(action, item.keyBindText, binding);
     }
     public void ResetBindings()
     {

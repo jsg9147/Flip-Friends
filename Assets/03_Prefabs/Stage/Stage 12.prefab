@@ -6782,6 +6782,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0.2
+  isPassengerTransportEnabled: 0
 --- !u!1 &2652896257835900386
 GameObject:
   m_ObjectHideFlags: 0
@@ -12976,6 +12977,7 @@ MonoBehaviour:
   originalPositionDelay: 0
   waitTime: 0
   easeAmount: 0.2
+  isPassengerTransportEnabled: 0
 --- !u!1 &6357254381964416588
 GameObject:
   m_ObjectHideFlags: 0
@@ -13227,10 +13229,18 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
+  switches:
+  - {fileID: 118564127728876534}
+  - {fileID: 1798694593879226506}
+  - {fileID: 3601288569208881634}
+  - {fileID: 8241957545332600853}
+  - {fileID: 5555608489022834849}
+  - {fileID: 8764368770117049360}
+  - {fileID: 3855957098908192096}
+  - {fileID: 2176694547234795375}
   conveyorBelts: []
-  activeSwitchGround: {fileID: 0}
-  inactiveSwitchGround: {fileID: 0}
+  activeSwitchGround: {fileID: 7501001768878313220}
+  inactiveSwitchGround: {fileID: 5025699439467915277}
   autoToggleEnabled: 0
   autoToggleInterval: 3
 --- !u!1 &6557640762620695867

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Mirror;
 using static Controller2D;
-using UnityEngine.InputSystem.XR;
 
 public class PickupObj : RaycastController
 {
@@ -9,7 +8,7 @@ public class PickupObj : RaycastController
     public float gravity = 9.8f;
     [System.NonSerialized] public CollisionInfo collisions;
 
-    [SyncVar] private bool isCarried = false;
+    [SyncVar(hook = nameof(OnIsCarriedChanged))] private bool isCarried = false;
     public bool IsCarried => isCarried;
 
     private bool wallSliding;
@@ -22,8 +21,6 @@ public class PickupObj : RaycastController
     public float wallSlideSpeedMax = 3f;
     private float maxGravity = 12f;
 
-    private float timeToWallUnstick;
-
     // 스테이지 밖으로 떨어지면 처음 놓인 자리로 돌려보내 퍼즐에 필요한 상자를 잃지 않게 한다.
     private Vector2 homePosition;
 
@@ -31,6 +28,7 @@ public class PickupObj : RaycastController
     {
         base.OnStartServer();
         homePosition = transform.position;
+        syncedPosition = homePosition;
     }
 
     public override void Start()
@@ -91,28 +89,29 @@ public class PickupObj : RaycastController
     {
         FallBoundary boundary = StageManager.instance != null ? StageManager.instance.FallBoundary : null;
         if (boundary != null && boundary.IsOutside(transform.position))
-            ResetPosition(homePosition);
+            ServerReset(homePosition);
     }
 
     // 클라이언트는 위치 SyncVar가 ClientSnapDistance보다 멀리 바뀌면 바로 맞추므로 서버 위치만 바꾼다.
     [Server]
-    private void ResetPosition(Vector2 position)
+    public void ServerReset(Vector2 position)
     {
-        transform.position = position;
-        velocity = Vector2.zero;
-        velocityXSmoothing = 0f;
-        syncedPosition = position;
+        Release(position, Vector2.zero);
     }
 
     // 운반자가 정한 위치·속도로 놓는다. 서버만 시뮬레이션하므로 클라이언트에는 위치 SyncVar로 전달된다.
     [Server]
     public void Release(Vector2 position, Vector2 launchVelocity)
     {
+        if (!isServer) return;
+        StateReset();
         transform.position = position;
         velocity = launchVelocity;
         velocityXSmoothing = 0f;
         syncedPosition = position;
-        StateReset();
+        wallSliding = false;
+        collisions = new CollisionInfo { faceDir = 1 };
+        UpdateRaycastOrigins();
     }
 
     private void CalculateMovement()
@@ -399,34 +398,39 @@ public class PickupObj : RaycastController
         return true;
     }
 
+    [Server]
     public void SetPickupState(Transform player, bool isCarried)
     {
+        if (!isServer) return;
         playerTransform = player;
         this.isCarried = isCarried;
-        if (isServer)
-            RpcSetVisible(!isCarried);
+        ApplyCarriedState();
     }
 
+    [Server]
     public void StateReset()
     {
+        if (!isServer) return;
+        Transform previousCarrier = playerTransform;
         playerTransform = null;
         isCarried = false;
-        if (isServer)
-            RpcSetVisible(true);
+        ApplyCarriedState();
+        if (previousCarrier != null)
+            previousCarrier.GetComponent<PlayerInteraction>().ForgetHeldObject(this);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public override void OnStartClient()
     {
-        if (!isServer) return;
-
-        if (collision.CompareTag("Reset") && collision.TryGetComponent(out RespawnHandler respawnHandler))
-            ResetPosition(respawnHandler.resetPoint.position);
+        base.OnStartClient();
+        transform.position = syncedPosition;
+        ApplyCarriedState();
     }
 
-    [ClientRpc]
-    public void RpcSetVisible(bool isVisible)
+    private void OnIsCarriedChanged(bool oldValue, bool newValue) => ApplyCarriedState();
+
+    private void ApplyCarriedState()
     {
-        GetComponent<SpriteRenderer>().enabled = isVisible;
-        GetComponent<Collider2D>().enabled = isVisible;
+        GetComponent<SpriteRenderer>().enabled = !isCarried;
+        GetComponent<Collider2D>().enabled = !isCarried;
     }
 }

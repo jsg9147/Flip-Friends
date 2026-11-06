@@ -6027,7 +6027,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2109228712852463627}
   - component: {fileID: 7567293421417715569}
-  - component: {fileID: 3517799712837300826}
   m_Layer: 0
   m_Name: Switch Door (0)
   m_TagString: Untagged
@@ -6098,36 +6097,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &3517799712837300826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1465298737550803979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 2920387636650339371}
 --- !u!1 &1542455459573343993
 GameObject:
   m_ObjectHideFlags: 0
@@ -17518,8 +17487,28 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
-  conveyorBelts: []
+  switches:
+  - {fileID: 8544031242367181531}
+  - {fileID: 1711215024762106577}
+  - {fileID: 419594185317787793}
+  - {fileID: 1555054186582924471}
+  - {fileID: 138664468444789303}
+  - {fileID: 1557213602530417186}
+  - {fileID: 8973344103703508613}
+  - {fileID: 8074558588833322799}
+  - {fileID: 2217197597472277252}
+  - {fileID: 2095117462358111350}
+  - {fileID: 5254564435274145160}
+  - {fileID: 323083149119479279}
+  conveyorBelts:
+  - {fileID: 5770389449955395469}
+  - {fileID: 8369059087100542540}
+  - {fileID: 2036550874984532006}
+  - {fileID: 3137785559115521392}
+  - {fileID: 6259989462080511317}
+  - {fileID: 7763883947576157330}
+  - {fileID: 4172880324924901612}
+  - {fileID: 5944224164620138282}
   activeSwitchGround: {fileID: 0}
   inactiveSwitchGround: {fileID: 0}
   autoToggleEnabled: 0

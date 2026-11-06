@@ -6982,6 +6982,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -7529,6 +7530,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -7773,6 +7775,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -8481,6 +8484,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -10296,6 +10300,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -10804,10 +10809,11 @@ MonoBehaviour:
   originalPositionDelay: 1
   waitTime: 0.5
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0
   disappearAfterComplete: 0
   disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 6028836969963768045}
 --- !u!1 &4036914664890520297
 GameObject:
   m_ObjectHideFlags: 0
@@ -11311,6 +11317,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -12230,18 +12237,18 @@ MonoBehaviour:
   offsetApply: 0
   collisionMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   horizontalRayCount: 0
   verticalRayCount: 0
   horizontalRaySpacing: 0
   verticalRaySpacing: 0
   boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 0}
-  offSwitchSprite: {fileID: 0}
+  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
+  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
   activationLayer:
     serializedVersion: 2
-    m_Bits: 0
-  detectPlatform: {fileID: 0}
+    m_Bits: 2048
+  detectPlatform: {fileID: 6800122307342171219}
 --- !u!212 &7768424907795579419
 SpriteRenderer:
   serializedVersion: 3
@@ -14066,7 +14073,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8971781410032164935}
   - component: {fileID: 2112363210937393595}
-  - component: {fileID: 7292546503672572177}
   m_Layer: 0
   m_Name: Switch Door (1)
   m_TagString: Untagged
@@ -14137,36 +14143,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7292546503672572177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7346048235744781849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 5394087452362087980}
 --- !u!1 &7369830858176203850
 GameObject:
   m_ObjectHideFlags: 0
@@ -14530,6 +14506,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -14897,7 +14874,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6248384690701133824}
   - component: {fileID: 5860524347264290930}
-  - component: {fileID: 7511237579624878699}
   m_Layer: 0
   m_Name: Switch Door (0)
   m_TagString: Untagged
@@ -14968,36 +14944,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7511237579624878699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8499355902772414466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 1844996593648780711}
 --- !u!1 &8753210486748670536
 GameObject:
   m_ObjectHideFlags: 0
@@ -15374,6 +15320,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1

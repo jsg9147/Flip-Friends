@@ -1,0 +1,2401 @@
+{
+  "scope": "Stage 1–21 저장된 프리팹, 2026-10-22 KST",
+  "stages": [
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 1.prefab",
+      "types": {
+        "UnityEngine.Transform": 10,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.Tilemaps.Tilemap": 3,
+        "UnityEngine.Tilemaps.TilemapRenderer": 3,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 3,
+        "UnityEngine.Rigidbody2D": 2,
+        "UnityEngine.CompositeCollider2D": 2,
+        "Mirror.NetworkTransformReliable": 1,
+        "DynamicObj": 1,
+        "UnityEngine.SpriteRenderer": 5,
+        "MovingTrap": 4,
+        "UnityEngine.BoxCollider2D": 5
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 2.prefab",
+      "types": {
+        "UnityEngine.Transform": 12,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.Tilemaps.Tilemap": 4,
+        "UnityEngine.Tilemaps.TilemapRenderer": 4,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 4,
+        "UnityEngine.Rigidbody2D": 2,
+        "UnityEngine.CompositeCollider2D": 2,
+        "Mirror.NetworkTransformReliable": 1,
+        "DynamicObj": 1,
+        "UnityEngine.SpriteRenderer": 6,
+        "MovingTrap": 5,
+        "UnityEngine.BoxCollider2D": 6
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 3.prefab",
+      "types": {
+        "UnityEngine.Transform": 32,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.Tilemaps.Tilemap": 3,
+        "UnityEngine.Tilemaps.TilemapRenderer": 3,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 3,
+        "UnityEngine.Rigidbody2D": 2,
+        "UnityEngine.CompositeCollider2D": 2,
+        "Mirror.NetworkTransformReliable": 1,
+        "DynamicObj": 1,
+        "UnityEngine.SpriteRenderer": 22,
+        "UnityEngine.BoxCollider2D": 18,
+        "UnityEngine.PolygonCollider2D": 4,
+        "MovingTrap": 7
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 4.prefab",
+      "types": {
+        "UnityEngine.Transform": 49,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.Tilemaps.Tilemap": 3,
+        "UnityEngine.Tilemaps.TilemapRenderer": 3,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 3,
+        "UnityEngine.Rigidbody2D": 2,
+        "UnityEngine.CompositeCollider2D": 2,
+        "Mirror.NetworkTransformReliable": 1,
+        "DynamicObj": 1,
+        "UnityEngine.SpriteRenderer": 37,
+        "UnityEngine.BoxCollider2D": 37,
+        "CannonShooter": 11
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 5.prefab",
+      "types": {
+        "UnityEngine.Transform": 16,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.Tilemaps.Tilemap": 4,
+        "UnityEngine.Tilemaps.TilemapRenderer": 4,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 3,
+        "UnityEngine.Rigidbody2D": 2,
+        "UnityEngine.CompositeCollider2D": 2,
+        "Mirror.NetworkTransformReliable": 1,
+        "DynamicObj": 1,
+        "UnityEngine.SpriteRenderer": 7,
+        "CannonShooter": 2,
+        "UnityEngine.BoxCollider2D": 7,
+        "RotatingObstacle": 4,
+        "Mirror.NetworkTransformUnreliable": 4
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 6.prefab",
+      "types": {
+        "UnityEngine.Transform": 32,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.Tilemaps.Tilemap": 5,
+        "UnityEngine.Tilemaps.TilemapRenderer": 5,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 4,
+        "UnityEngine.Rigidbody2D": 2,
+        "UnityEngine.CompositeCollider2D": 2,
+        "Mirror.NetworkTransformReliable": 1,
+        "DynamicObj": 1,
+        "UnityEngine.SpriteRenderer": 23,
+        "MovingTrap": 12,
+        "UnityEngine.BoxCollider2D": 23,
+        "CannonShooter": 7,
+        "RotatingObstacle": 3,
+        "Mirror.NetworkTransformUnreliable": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 7.prefab",
+      "types": {
+        "UnityEngine.Transform": 17,
+        "UnityEngine.Grid": 2,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 9,
+        "MovingTrap": 3,
+        "UnityEngine.CircleCollider2D": 3,
+        "UnityEngine.BoxCollider2D": 6,
+        "ObjSummonSwitch": 1,
+        "PickupObj": 1,
+        "UnityEngine.Tilemaps.Tilemap": 4,
+        "UnityEngine.Tilemaps.TilemapRenderer": 4,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 3,
+        "UnityEngine.Rigidbody2D": 3,
+        "UnityEngine.CompositeCollider2D": 1,
+        "RespawnHandler": 1,
+        "DoorSwitch": 1,
+        "UnityEngine.RectTransform": 1,
+        "UnityEngine.MeshRenderer": 1,
+        "TMPro.TextMeshPro": 1
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 8.prefab",
+      "types": {
+        "UnityEngine.Transform": 49,
+        "UnityEngine.Grid": 2,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 30,
+        "UnityEngine.BoxCollider2D": 24,
+        "UnityEngine.Tilemaps.Tilemap": 6,
+        "UnityEngine.Tilemaps.TilemapRenderer": 6,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 5,
+        "UnityEngine.Rigidbody2D": 5,
+        "UnityEngine.CompositeCollider2D": 1,
+        "RespawnHandler": 1,
+        "CannonShooter": 8,
+        "MovingTrap": 6,
+        "UnityEngine.CircleCollider2D": 6,
+        "RotatingObstacle": 1,
+        "Mirror.NetworkTransformUnreliable": 1,
+        "DoorSwitch": 4,
+        "ObjSummonSwitch": 3,
+        "PickupObj": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 8/Grid/ResetTile",
+          "type": "RespawnHandler",
+          "field": "resetPoint"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 9.prefab",
+      "types": {
+        "UnityEngine.Transform": 53,
+        "UnityEngine.Grid": 2,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 38,
+        "UnityEngine.BoxCollider2D": 34,
+        "UnityEngine.Tilemaps.Tilemap": 5,
+        "UnityEngine.Tilemaps.TilemapRenderer": 5,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 5,
+        "UnityEngine.Rigidbody2D": 7,
+        "UnityEngine.CompositeCollider2D": 1,
+        "RespawnHandler": 2,
+        "CannonShooter": 1,
+        "MovingTrap": 2,
+        "UnityEngine.CircleCollider2D": 2,
+        "RotatingObstacle": 20,
+        "Mirror.NetworkTransformUnreliable": 20,
+        "DoorSwitch": 4,
+        "UnityEngine.RectTransform": 3,
+        "UnityEngine.MeshRenderer": 3,
+        "TMPro.TextMeshPro": 3,
+        "ObjSummonSwitch": 1,
+        "PickupObj": 1,
+        "SavePoint": 2
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 10.prefab",
+      "types": {
+        "UnityEngine.Transform": 35,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 22,
+        "UnityEngine.BoxCollider2D": 16,
+        "DoorSwitch": 1,
+        "UnityEngine.Rigidbody2D": 4,
+        "MovingTrap": 6,
+        "UnityEngine.CircleCollider2D": 6,
+        "RotatingObstacle": 6,
+        "Mirror.NetworkTransformUnreliable": 6,
+        "UnityEngine.Grid": 1,
+        "UnityEngine.Tilemaps.Tilemap": 4,
+        "UnityEngine.Tilemaps.TilemapRenderer": 4,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 4,
+        "UnityEngine.CompositeCollider2D": 1,
+        "RespawnHandler": 2,
+        "ObjSummonSwitch": 1,
+        "PickupObj": 1,
+        "CannonShooter": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": []
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 11.prefab",
+      "types": {
+        "UnityEngine.Transform": 59,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 43,
+        "MovingTrap": 5,
+        "UnityEngine.CircleCollider2D": 22,
+        "UnityEngine.BoxCollider2D": 21,
+        "RotatingObstacle": 2,
+        "Mirror.NetworkTransformUnreliable": 2,
+        "UnityEngine.Grid": 1,
+        "UnityEngine.Tilemaps.Tilemap": 7,
+        "UnityEngine.Tilemaps.TilemapRenderer": 7,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 6,
+        "UnityEngine.Rigidbody2D": 17,
+        "UnityEngine.CompositeCollider2D": 3,
+        "RespawnHandler": 3,
+        "CannonShooter": 3,
+        "OnOffManager": 1,
+        "OnOffSwitch": 11,
+        "PlayerDetectPlatform": 1
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 11/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 12.prefab",
+      "types": {
+        "UnityEngine.Transform": 56,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 37,
+        "MovingTrap": 15,
+        "UnityEngine.CircleCollider2D": 16,
+        "UnityEngine.BoxCollider2D": 20,
+        "UnityEngine.Grid": 1,
+        "UnityEngine.Tilemaps.Tilemap": 10,
+        "UnityEngine.Tilemaps.TilemapRenderer": 10,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 9,
+        "UnityEngine.Rigidbody2D": 18,
+        "UnityEngine.CompositeCollider2D": 4,
+        "RespawnHandler": 4,
+        "UnityEngine.Animator": 2,
+        "PlatformController": 2,
+        "DoorSwitch": 2,
+        "UnityEngine.RectTransform": 1,
+        "UnityEngine.MeshRenderer": 1,
+        "TMPro.TextMeshPro": 1,
+        "OnOffManager": 1,
+        "OnOffSwitch": 8,
+        "ObjSummonSwitch": 1,
+        "PickupObj": 1
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 12/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 12/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 12/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 12/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 13.prefab",
+      "types": {
+        "UnityEngine.Transform": 53,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "OnOffManager": 1,
+        "UnityEngine.SpriteRenderer": 43,
+        "OnOffSwitch": 2,
+        "UnityEngine.BoxCollider2D": 23,
+        "UnityEngine.Rigidbody2D": 5,
+        "PlayerDetectPlatform": 20,
+        "UnityEngine.Animator": 20,
+        "UnityEngine.Tilemaps.Tilemap": 5,
+        "UnityEngine.Tilemaps.TilemapRenderer": 5,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 4,
+        "UnityEngine.CompositeCollider2D": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 13/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 13/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 13/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 13/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 14.prefab",
+      "types": {
+        "UnityEngine.Transform": 66,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 55,
+        "MovingTrap": 6,
+        "UnityEngine.BoxCollider2D": 33,
+        "OnOffManager": 1,
+        "OnOffSwitch": 4,
+        "UnityEngine.Rigidbody2D": 7,
+        "PlayerDetectPlatform": 22,
+        "UnityEngine.Animator": 22,
+        "UnityEngine.Tilemaps.Tilemap": 6,
+        "UnityEngine.Tilemaps.TilemapRenderer": 6,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 5,
+        "UnityEngine.CompositeCollider2D": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 14/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 14/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 14/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 14/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 15.prefab",
+      "types": {
+        "UnityEngine.Transform": 57,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 38,
+        "MovingTrap": 5,
+        "UnityEngine.BoxCollider2D": 32,
+        "PlayerDetectPlatform": 9,
+        "UnityEngine.Animator": 8,
+        "UnityEngine.Tilemaps.Tilemap": 8,
+        "UnityEngine.Tilemaps.TilemapRenderer": 8,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 7,
+        "UnityEngine.Rigidbody2D": 7,
+        "UnityEngine.CompositeCollider2D": 3,
+        "SavePoint": 2,
+        "DoorSwitch": 4,
+        "UnityEngine.RectTransform": 2,
+        "UnityEngine.MeshRenderer": 2,
+        "TMPro.TextMeshPro": 2,
+        "CannonShooter": 8,
+        "DetectPlatformResetBtn": 1
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform",
+          "type": "PlayerDetectPlatform",
+          "field": "spriteRenderer"
+        },
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "onSwitchSprite"
+        },
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "offSwitchSprite"
+        },
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "detectPlatform"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 16.prefab",
+      "types": {
+        "UnityEngine.Transform": 79,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 59,
+        "MovingTrap": 7,
+        "UnityEngine.BoxCollider2D": 45,
+        "SavePoint": 3,
+        "OnOffManager": 1,
+        "OnOffSwitch": 6,
+        "UnityEngine.Rigidbody2D": 13,
+        "PlayerDetectPlatform": 18,
+        "DetectPlatformResetBtn": 1,
+        "UnityEngine.Animator": 17,
+        "UnityEngine.Tilemaps.Tilemap": 7,
+        "UnityEngine.Tilemaps.TilemapRenderer": 7,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 6,
+        "UnityEngine.CompositeCollider2D": 3,
+        "DoorSwitch": 6,
+        "UnityEngine.RectTransform": 3,
+        "UnityEngine.MeshRenderer": 3,
+        "TMPro.TextMeshPro": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 16/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 16/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 16/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 16/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        },
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform",
+          "type": "PlayerDetectPlatform",
+          "field": "spriteRenderer"
+        },
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "onSwitchSprite"
+        },
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "offSwitchSprite"
+        },
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "detectPlatform"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 17.prefab",
+      "types": {
+        "UnityEngine.Transform": 51,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 29,
+        "UnityEngine.BoxCollider2D": 28,
+        "RotatingObstacle": 1,
+        "Mirror.NetworkTransformUnreliable": 1,
+        "SavePoint": 1,
+        "CannonShooter": 1,
+        "MovingTrap": 7,
+        "DoorSwitch": 4,
+        "UnityEngine.Rigidbody2D": 10,
+        "UnityEngine.RectTransform": 2,
+        "UnityEngine.MeshRenderer": 2,
+        "TMPro.TextMeshPro": 2,
+        "PlayerDetectPlatform": 5,
+        "DetectPlatformResetBtn": 2,
+        "OnOffManager": 1,
+        "OnOffSwitch": 4,
+        "UnityEngine.Animator": 3,
+        "UnityEngine.Tilemaps.Tilemap": 7,
+        "UnityEngine.Tilemaps.TilemapRenderer": 7,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 6,
+        "UnityEngine.CompositeCollider2D": 3
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform",
+          "type": "PlayerDetectPlatform",
+          "field": "spriteRenderer"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "onSwitchSprite"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "offSwitchSprite"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "detectPlatform"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform",
+          "type": "PlayerDetectPlatform",
+          "field": "spriteRenderer"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "onSwitchSprite"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "offSwitchSprite"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform Reset",
+          "type": "DetectPlatformResetBtn",
+          "field": "detectPlatform"
+        },
+        {
+          "obj": "Stage 17/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 17/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 17/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 17/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 18.prefab",
+      "types": {
+        "UnityEngine.Transform": 82,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 57,
+        "MovingTrap": 4,
+        "UnityEngine.BoxCollider2D": 33,
+        "PlayerDetectPlatform": 5,
+        "UnityEngine.Animator": 31,
+        "DoorSwitch": 4,
+        "UnityEngine.Rigidbody2D": 14,
+        "UnityEngine.RectTransform": 2,
+        "UnityEngine.MeshRenderer": 2,
+        "TMPro.TextMeshPro": 2,
+        "CannonShooter": 2,
+        "OnOffManager": 1,
+        "OnOffSwitch": 8,
+        "UnityEngine.Tilemaps.Tilemap": 7,
+        "UnityEngine.Tilemaps.TilemapRenderer": 7,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 6,
+        "UnityEngine.CompositeCollider2D": 3,
+        "SavePoint": 2,
+        "Conveyor": 5
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 18/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 18/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 18/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 18/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 19.prefab",
+      "types": {
+        "UnityEngine.Transform": 87,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 64,
+        "UnityEngine.BoxCollider2D": 41,
+        "ObjSummonSwitch": 1,
+        "PickupObj": 1,
+        "DoorSwitch": 2,
+        "UnityEngine.Rigidbody2D": 15,
+        "UnityEngine.RectTransform": 1,
+        "UnityEngine.MeshRenderer": 1,
+        "TMPro.TextMeshPro": 1,
+        "OnOffManager": 1,
+        "OnOffSwitch": 12,
+        "PlayerDetectPlatform": 6,
+        "UnityEngine.Animator": 32,
+        "MovingTrap": 7,
+        "UnityEngine.Tilemaps.Tilemap": 4,
+        "UnityEngine.Tilemaps.TilemapRenderer": 4,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 4,
+        "UnityEngine.CompositeCollider2D": 1,
+        "SavePoint": 2,
+        "Conveyor": 8
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 19/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 19/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 19/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 19/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 20.prefab",
+      "types": {
+        "UnityEngine.Transform": 105,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 82,
+        "SavePoint": 1,
+        "UnityEngine.BoxCollider2D": 41,
+        "CannonShooter": 22,
+        "OnOffManager": 2,
+        "OnOffSwitch": 2,
+        "UnityEngine.Rigidbody2D": 4,
+        "Conveyor": 10,
+        "UnityEngine.Animator": 54,
+        "MovingTrap": 2,
+        "Mirror.NetworkTransformUnreliable": 3,
+        "PlatformController": 3,
+        "UnityEngine.Tilemaps.Tilemap": 4,
+        "UnityEngine.Tilemaps.TilemapRenderer": 4,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 4,
+        "UnityEngine.CompositeCollider2D": 1,
+        "PlayerDetectPlatform": 1
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 20/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 20/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        },
+        {
+          "obj": "Stage 20/OnOffManager",
+          "type": "OnOffManager",
+          "field": "switches",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 20/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 20/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 20/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        },
+        {
+          "obj": "Stage 20/Moving Belt/Conveyor belt (9)",
+          "type": "PlayerDetectPlatform",
+          "field": "spriteRenderer"
+        }
+      ]
+    },
+    {
+      "path": "Assets/03_Prefabs/Stage/Stage 21.prefab",
+      "types": {
+        "UnityEngine.Transform": 49,
+        "UnityEngine.Grid": 1,
+        "Mirror.NetworkIdentity": 1,
+        "UnityEngine.SpriteRenderer": 27,
+        "UnityEngine.BoxCollider2D": 14,
+        "ObjSummonSwitch": 1,
+        "PickupObj": 1,
+        "SavePoint": 1,
+        "CannonShooter": 1,
+        "OnOffManager": 2,
+        "OnOffSwitch": 3,
+        "UnityEngine.Rigidbody2D": 6,
+        "Conveyor": 4,
+        "UnityEngine.Animator": 17,
+        "MovingTrap": 1,
+        "UnityEngine.Tilemaps.Tilemap": 6,
+        "UnityEngine.Tilemaps.TilemapRenderer": 6,
+        "UnityEngine.Tilemaps.TilemapCollider2D": 5,
+        "UnityEngine.CompositeCollider2D": 3,
+        "PlayerDetectPlatform": 1,
+        "DetectPlatformResetBtn": 1
+      },
+      "missingScripts": [],
+      "emptyReferences": [
+        {
+          "obj": "Stage 21/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts.Array.data[3]"
+        },
+        {
+          "obj": "Stage 21/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts.Array.data[4]"
+        },
+        {
+          "obj": "Stage 21/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts.Array.data[5]"
+        },
+        {
+          "obj": "Stage 21/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts.Array.data[6]"
+        },
+        {
+          "obj": "Stage 21/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 21/Auto OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        },
+        {
+          "obj": "Stage 21/OnOffManager",
+          "type": "OnOffManager",
+          "field": "conveyorBelts",
+          "emptyArray": true
+        },
+        {
+          "obj": "Stage 21/OnOffManager",
+          "type": "OnOffManager",
+          "field": "activeSwitchGround"
+        },
+        {
+          "obj": "Stage 21/OnOffManager",
+          "type": "OnOffManager",
+          "field": "inactiveSwitchGround"
+        },
+        {
+          "obj": "Stage 21/OnOffSwitch on MovingBelt/Conveyor belt (6)",
+          "type": "PlayerDetectPlatform",
+          "field": "spriteRenderer"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "stage": "Stage 1",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 2",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 3",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 4",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 5",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 6",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 7",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [
+        {
+          "name": "ResetTile",
+          "reset": "RespawnPoint",
+          "mask": 2304,
+          "boxOnly": false
+        }
+      ],
+      "issues": []
+    },
+    {
+      "stage": "Stage 8",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [
+        {
+          "name": "ResetTile",
+          "reset": null,
+          "mask": 2304,
+          "boxOnly": false
+        }
+      ],
+      "issues": []
+    },
+    {
+      "stage": "Stage 9",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [
+        {
+          "name": "First ResetTile",
+          "reset": "RespawnPoint ",
+          "mask": 2048,
+          "boxOnly": false
+        },
+        {
+          "name": "ResetTile",
+          "reset": "SecondRespawnPoint ",
+          "mask": 2048,
+          "boxOnly": false
+        }
+      ],
+      "issues": []
+    },
+    {
+      "stage": "Stage 10",
+      "managers": [],
+      "grounds": [],
+      "platforms": [],
+      "resets": [
+        {
+          "name": "BoxResetTile",
+          "reset": "RespawnPoint",
+          "mask": 2048,
+          "boxOnly": true
+        },
+        {
+          "name": "BoxResetTile (1)",
+          "reset": "RespawnPoint (1)",
+          "mask": 2048,
+          "boxOnly": true
+        }
+      ],
+      "issues": []
+    },
+    {
+      "stage": "Stage 11",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)",
+            "OnOff Switch (4)",
+            "OnOff Switch (5)",
+            "OnOff Switch (6)",
+            "OnOff Switch (7)",
+            "OnOff Switch (8)",
+            "OnOff Switch (9)",
+            "OnOff Switch (10)"
+          ],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)",
+            "OnOff Switch (4)",
+            "OnOff Switch (5)",
+            "OnOff Switch (6)",
+            "OnOff Switch (7)",
+            "OnOff Switch (8)",
+            "OnOff Switch (9)",
+            "OnOff Switch (10)"
+          ],
+          "belts": [],
+          "on": "OnSwitchGround",
+          "off": "OffSwitchGround"
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [],
+      "resets": [
+        {
+          "name": "ResetTile",
+          "reset": "RespawnPoint",
+          "mask": 2048,
+          "boxOnly": false
+        },
+        {
+          "name": "ResetTile (1)",
+          "reset": "RespawnPoint (1)",
+          "mask": 2048,
+          "boxOnly": false
+        },
+        {
+          "name": "ResetTile (2)",
+          "reset": "RespawnPoint (2)",
+          "mask": 2048,
+          "boxOnly": false
+        }
+      ],
+      "issues": []
+    },
+    {
+      "stage": "Stage 12",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (3)",
+            "OnOff Switch (5)",
+            "OnOff Switch (7)",
+            "OnOff Switch (2)",
+            "OnOff Switch (4)",
+            "OnOff Switch (6)",
+            "OnOff Switch (1)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [],
+      "resets": [
+        {
+          "name": "ResetTile",
+          "reset": "RespawnPoint (1)",
+          "mask": 2048,
+          "boxOnly": false
+        },
+        {
+          "name": "ResetTile (1)",
+          "reset": "RespawnPoint (2)",
+          "mask": 2048,
+          "boxOnly": false
+        },
+        {
+          "name": "BoxResetTile",
+          "reset": "RespawnPoint (0)",
+          "mask": 2048,
+          "boxOnly": true
+        },
+        {
+          "name": "BoxResetTile (1)",
+          "reset": "RespawnPoint (2)",
+          "mask": 2048,
+          "boxOnly": true
+        }
+      ],
+      "issues": [
+        "LagerBar_0: empty passengerMask",
+        "LagerBar_0 (1): empty passengerMask"
+      ]
+    },
+    {
+      "stage": "Stage 13",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 14",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [],
+      "resets": [],
+      "issues": []
+    },
+    {
+      "stage": "Stage 15",
+      "managers": [],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [
+        {
+          "name": "Platform",
+          "parent": "PlayerDetect Platfroms",
+          "fade": false,
+          "disappear": false,
+          "localRenderer": true
+        }
+      ],
+      "resets": [],
+      "issues": [
+        "Switch Door (0): incomplete switch components",
+        "Switch Door (1): incomplete switch components"
+      ]
+    },
+    {
+      "stage": "Stage 16",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)",
+            "OnOff Switch (4)",
+            "OnOff Switch (5)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [
+        {
+          "name": "Platform",
+          "parent": "PlayerDetect Platfroms",
+          "fade": false,
+          "disappear": false,
+          "localRenderer": true
+        }
+      ],
+      "resets": [],
+      "issues": [
+        "Switch Door (0): incomplete switch components",
+        "Switch Door (1): incomplete switch components",
+        "Switch Door (2): incomplete switch components"
+      ]
+    },
+    {
+      "stage": "Stage 17",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [
+        {
+          "name": "Platform",
+          "parent": "PlayerDetect Platfroms",
+          "fade": false,
+          "disappear": false,
+          "localRenderer": true
+        },
+        {
+          "name": "Platform",
+          "parent": "PlayerDetect Platfroms (1)",
+          "fade": false,
+          "disappear": false,
+          "localRenderer": true
+        }
+      ],
+      "resets": [],
+      "issues": [
+        "Switch Door (0): incomplete switch components",
+        "Switch Door (1): incomplete switch components"
+      ]
+    },
+    {
+      "stage": "Stage 18",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)",
+            "OnOff Switch (4)",
+            "OnOff Switch (5)",
+            "OnOff Switch (6)",
+            "OnOff Switch (7)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [],
+      "resets": [],
+      "issues": [
+        "Switch Door (0): incomplete switch components",
+        "Switch Door (1): incomplete switch components"
+      ]
+    },
+    {
+      "stage": "Stage 19",
+      "managers": [
+        {
+          "name": "OnOffManager",
+          "auto": false,
+          "switches": [],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch (1)",
+            "OnOff Switch (2)",
+            "OnOff Switch (3)",
+            "OnOff Switch (4)",
+            "OnOff Switch (5)",
+            "OnOff Switch (6)",
+            "OnOff Switch (7)",
+            "OnOff Switch (8)",
+            "OnOff Switch (9)",
+            "OnOff Switch (10)",
+            "OnOff Switch (11)"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [],
+      "platforms": [],
+      "resets": [],
+      "issues": [
+        "Switch Door (0): incomplete switch components"
+      ]
+    },
+    {
+      "stage": "Stage 20",
+      "managers": [
+        {
+          "name": "Auto OnOffManager",
+          "auto": true,
+          "switches": [
+            "OnOff Switch"
+          ],
+          "owned": [
+            "OnOff Switch"
+          ],
+          "belts": [
+            "Conveyor belt",
+            "Conveyor belt (1)",
+            "Conveyor belt (2)",
+            "Conveyor belt (3)",
+            "Conveyor belt (4)",
+            "Conveyor belt (5)",
+            "Conveyor belt (6)",
+            "Conveyor belt (7)"
+          ],
+          "on": null,
+          "off": null
+        },
+        {
+          "name": "OnOffManager",
+          "auto": true,
+          "switches": [],
+          "owned": [
+            "OnOff Switch"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [],
+      "platforms": [
+        {
+          "name": "Conveyor belt (9)",
+          "parent": "Moving Belt",
+          "fade": false,
+          "disappear": false,
+          "localRenderer": false
+        }
+      ],
+      "resets": [],
+      "issues": [
+        "Move Trap (1): empty passengerMask",
+        "Move Trap (3): empty passengerMask",
+        "Move Trap (4): empty passengerMask"
+      ]
+    },
+    {
+      "stage": "Stage 21",
+      "managers": [
+        {
+          "name": "Auto OnOffManager",
+          "auto": true,
+          "switches": [
+            "OnOff Switch"
+          ],
+          "owned": [
+            "OnOff Switch"
+          ],
+          "belts": [
+            "Conveyor belt",
+            "Conveyor belt (1)",
+            "Conveyor belt (2)",
+            "NULL",
+            "NULL",
+            "NULL",
+            "NULL"
+          ],
+          "on": null,
+          "off": null
+        },
+        {
+          "name": "OnOffManager",
+          "auto": true,
+          "switches": [
+            "OnOff Switch"
+          ],
+          "owned": [
+            "OnOff Switch",
+            "OnOff Switch"
+          ],
+          "belts": [],
+          "on": null,
+          "off": null
+        }
+      ],
+      "grounds": [
+        "OnSwitchGround",
+        "OffSwitchGround"
+      ],
+      "platforms": [
+        {
+          "name": "Conveyor belt (6)",
+          "parent": "OnOffSwitch on MovingBelt",
+          "fade": false,
+          "disappear": false,
+          "localRenderer": false
+        }
+      ],
+      "resets": [],
+      "issues": [
+        "Conveyor belt (6): empty passengerMask"
+      ]
+    }
+  ],
+  "componentChecks": [
+    {
+      "stage": "Stage 1",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 6,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 2",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 7,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 3",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 9,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 4",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 13,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 5",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 12,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 6",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 27,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 7",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 7,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 8",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 27,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 9",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 51,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 10",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 26,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 11",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 28,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 12",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 34,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 13",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 23,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 14",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 33,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 15",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 27,
+      "finishCount": 1,
+      "issues": [
+        {
+          "obj": "Stage 15/Door Groups/Switch Door (0)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 15/Door Groups/Switch Door (1)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "issue": "empty activationLayer"
+        }
+      ]
+    },
+    {
+      "stage": "Stage 16",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 39,
+      "finishCount": 1,
+      "issues": [
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "issue": "empty activationLayer"
+        },
+        {
+          "obj": "Stage 16/Door Groups/Switch Door (0)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 16/Door Groups/Switch Door (1)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 16/Door Groups/Switch Door (2)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        }
+      ]
+    },
+    {
+      "stage": "Stage 17",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 26,
+      "finishCount": 1,
+      "issues": [
+        {
+          "obj": "Stage 17/Door Groups/Switch Door (0)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 17/Door Groups/Switch Door (1)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "issue": "empty activationLayer"
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform Reset",
+          "issue": "empty activationLayer"
+        }
+      ]
+    },
+    {
+      "stage": "Stage 18",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 29,
+      "finishCount": 1,
+      "issues": [
+        {
+          "obj": "Stage 18/Door Groups/Switch Door (0)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        },
+        {
+          "obj": "Stage 18/Door Groups/Switch Door (1)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        }
+      ]
+    },
+    {
+      "stage": "Stage 19",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 38,
+      "finishCount": 1,
+      "issues": [
+        {
+          "obj": "Stage 19/Door Groups/Switch Door (0)",
+          "issue": "switch missing local SpriteRenderer",
+          "enabled": true,
+          "active": false,
+          "collider": true,
+          "onSprite": true,
+          "offSprite": true,
+          "layer": 2048
+        }
+      ]
+    },
+    {
+      "stage": "Stage 20",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 45,
+      "finishCount": 1,
+      "issues": []
+    },
+    {
+      "stage": "Stage 21",
+      "rootIdentity": true,
+      "identityCount": 1,
+      "networkBehaviours": 15,
+      "finishCount": 1,
+      "issues": []
+    }
+  ],
+  "activity": [
+    {
+      "stage": "Stage 8",
+      "details": [
+        {
+          "obj": "Stage 8/Grid/ResetTile",
+          "activeOnInstantiation": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "stage": "Stage 11",
+      "details": [
+        {
+          "obj": "Stage 11/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        },
+        {
+          "obj": "Stage 11/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 2
+        }
+      ]
+    },
+    {
+      "stage": "Stage 12",
+      "details": [
+        {
+          "obj": "Stage 12/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 2
+        },
+        {
+          "obj": "Stage 12/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 3
+        }
+      ]
+    },
+    {
+      "stage": "Stage 13",
+      "details": [
+        {
+          "obj": "Stage 13/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        },
+        {
+          "obj": "Stage 13/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        }
+      ]
+    },
+    {
+      "stage": "Stage 14",
+      "details": [
+        {
+          "obj": "Stage 14/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        },
+        {
+          "obj": "Stage 14/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        }
+      ]
+    },
+    {
+      "stage": "Stage 15",
+      "details": [
+        {
+          "obj": "Stage 15/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 0
+        },
+        {
+          "obj": "Stage 15/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 0
+        },
+        {
+          "obj": "Stage 15/Door Groups/Switch Door (0)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 15/Door Groups/Switch Door (1)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "activeOnInstantiation": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "stage": "Stage 16",
+      "details": [
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 16/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        },
+        {
+          "obj": "Stage 16/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        },
+        {
+          "obj": "Stage 16/Door Groups/Switch Door (0)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 16/Door Groups/Switch Door (1)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 16/Door Groups/Switch Door (2)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "stage": "Stage 17",
+      "details": [
+        {
+          "obj": "Stage 17/Door Groups/Switch Door (0)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 17/Door Groups/Switch Door (1)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform Reset",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 17/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        },
+        {
+          "obj": "Stage 17/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 1
+        }
+      ]
+    },
+    {
+      "stage": "Stage 18",
+      "details": [
+        {
+          "obj": "Stage 18/Door Groups/Switch Door (0)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 18/Door Groups/Switch Door (1)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 18/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 0
+        },
+        {
+          "obj": "Stage 18/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 0
+        }
+      ]
+    },
+    {
+      "stage": "Stage 19",
+      "details": [
+        {
+          "obj": "Stage 19/Door Groups/Switch Door (0)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "stage": "Stage 20",
+      "details": [
+        {
+          "obj": "Stage 20/Moving Belt/Conveyor belt (9)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "stage": "Stage 21",
+      "details": [
+        {
+          "obj": "Stage 21/Grid/OnSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 0
+        },
+        {
+          "obj": "Stage 21/Grid/OffSwitchGround",
+          "activeOnInstantiation": true,
+          "usedTileTypes": 0
+        },
+        {
+          "obj": "Stage 21/OnOffSwitch on MovingBelt/Conveyor belt (6)",
+          "activeOnInstantiation": true,
+          "enabled": true
+        },
+        {
+          "obj": "Stage 21/OnOffSwitch on MovingBelt/Reset Btn",
+          "activeOnInstantiation": true,
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "topology": {
+    "stages": [
+      {
+        "stage": "Stage 1",
+        "details": []
+      },
+      {
+        "stage": "Stage 2",
+        "details": []
+      },
+      {
+        "stage": "Stage 3",
+        "details": []
+      },
+      {
+        "stage": "Stage 4",
+        "details": []
+      },
+      {
+        "stage": "Stage 5",
+        "details": []
+      },
+      {
+        "stage": "Stage 6",
+        "details": []
+      },
+      {
+        "stage": "Stage 7",
+        "details": []
+      },
+      {
+        "stage": "Stage 8",
+        "details": [
+          {
+            "obj": "Stage 8/Grid/ResetTile",
+            "active": false,
+            "self": true,
+            "pos": "(3.00, 1.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 9",
+        "details": []
+      },
+      {
+        "stage": "Stage 10",
+        "details": []
+      },
+      {
+        "stage": "Stage 11",
+        "details": [
+          {
+            "obj": "Stage 11/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 11/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 12",
+        "details": [
+          {
+            "obj": "Stage 12/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 12/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 13",
+        "details": [
+          {
+            "obj": "Stage 13/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 13/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 14",
+        "details": [
+          {
+            "obj": "Stage 14/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 14/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 15",
+        "details": [
+          {
+            "obj": "Stage 15/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 15/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 15/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 16",
+        "details": [
+          {
+            "obj": "Stage 16/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+            "active": false,
+            "self": true,
+            "pos": "(13.49, 8.50, 0.00)"
+          },
+          {
+            "obj": "Stage 16/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 16/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 17",
+        "details": [
+          {
+            "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms/Platform Reset",
+            "active": false,
+            "self": true,
+            "pos": "(12.00, 14.50, 0.00)"
+          },
+          {
+            "obj": "Stage 17/MovePlatforms/PlayerDetect Platfroms (1)/Platform Reset",
+            "active": false,
+            "self": true,
+            "pos": "(40.50, 4.50, 0.00)"
+          },
+          {
+            "obj": "Stage 17/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 17/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 18",
+        "details": [
+          {
+            "obj": "Stage 18/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 18/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          }
+        ]
+      },
+      {
+        "stage": "Stage 19",
+        "details": []
+      },
+      {
+        "stage": "Stage 20",
+        "details": [
+          {
+            "belt": "Conveyor belt",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (1)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (2)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (3)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (4)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (5)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (6)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (7)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (8)",
+            "parent": "Belts",
+            "owners": []
+          },
+          {
+            "belt": "Conveyor belt (9)",
+            "parent": "Moving Belt",
+            "owners": []
+          },
+          {
+            "button": "OnOff Switch",
+            "parent": "Auto OnOffManager",
+            "manager": "Auto OnOffManager",
+            "active": false
+          },
+          {
+            "button": "OnOff Switch",
+            "parent": "OnOffManager",
+            "manager": "OnOffManager",
+            "active": false
+          }
+        ]
+      },
+      {
+        "stage": "Stage 21",
+        "details": [
+          {
+            "obj": "Stage 21/Grid/OnSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 21/Grid/OffSwitchGround",
+            "active": false,
+            "self": true,
+            "pos": "(0.00, 0.00, 0.00)"
+          },
+          {
+            "obj": "Stage 21/OnOffSwitch on MovingBelt/Reset Btn",
+            "active": false,
+            "self": true,
+            "pos": "(-20.00, 6.70, 0.00)"
+          },
+          {
+            "belt": "Conveyor belt",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (1)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (2)",
+            "parent": "Belts",
+            "owners": [
+              "Auto OnOffManager"
+            ]
+          },
+          {
+            "belt": "Conveyor belt (6)",
+            "parent": "OnOffSwitch on MovingBelt",
+            "owners": []
+          },
+          {
+            "button": "OnOff Switch",
+            "parent": "Auto OnOffManager",
+            "manager": "Auto OnOffManager",
+            "active": false
+          },
+          {
+            "button": "OnOff Switch",
+            "parent": "OnOffManager",
+            "manager": "OnOffManager",
+            "active": false
+          },
+          {
+            "button": "OnOff Switch",
+            "parent": "Conveyor belt (6)",
+            "manager": "OnOffManager",
+            "active": false
+          }
+        ]
+      }
+    ],
+    "catalog": [
+      "stage-01=Stage 1",
+      "stage-02=Stage 2",
+      "stage-03=Stage 3",
+      "stage-04=Stage 4",
+      "stage-05=Stage 5",
+      "stage-06=Stage 6",
+      "stage-07=Stage 7",
+      "stage-08=Stage 8",
+      "stage-09=Stage 9",
+      "stage-10=Stage 10",
+      "stage-11=Stage 11",
+      "stage-12=Stage 12",
+      "stage-13=Stage 13",
+      "stage-14=Stage 14",
+      "stage-15=Stage 15",
+      "stage-16=Stage 16",
+      "stage-17=Stage 17",
+      "stage-18=Stage 18",
+      "stage-19=Stage 19",
+      "stage-20=Stage 20",
+      "stage-21=Stage 21"
+    ]
+  }
+}

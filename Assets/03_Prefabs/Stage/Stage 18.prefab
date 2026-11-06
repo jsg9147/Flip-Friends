@@ -7737,7 +7737,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2202765336644083568}
   - component: {fileID: 8438717495968522219}
-  - component: {fileID: 2542809880643003995}
   m_Layer: 0
   m_Name: Switch Door (1)
   m_TagString: Untagged
@@ -7808,36 +7807,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &2542809880643003995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2137461697169801410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 2655208892762971548}
 --- !u!1 &2151227773628258513
 GameObject:
   m_ObjectHideFlags: 0
@@ -9283,8 +9252,21 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
-  conveyorBelts: []
+  switches:
+  - {fileID: 6903073179980371226}
+  - {fileID: 6593502740926637989}
+  - {fileID: 6408088805742370347}
+  - {fileID: 2619869984960137177}
+  - {fileID: 5757453564472093880}
+  - {fileID: 7127627592664439782}
+  - {fileID: 4867658823174817689}
+  - {fileID: 8652997709975466768}
+  conveyorBelts:
+  - {fileID: 4560224008780262035}
+  - {fileID: 6010847552757658118}
+  - {fileID: 7142247266268909611}
+  - {fileID: 8974215154429997356}
+  - {fileID: 6796047167382501496}
   activeSwitchGround: {fileID: 0}
   inactiveSwitchGround: {fileID: 0}
   autoToggleEnabled: 0
@@ -11241,7 +11223,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2603787433128712941}
   - component: {fileID: 3051192763463051742}
-  - component: {fileID: 4031117032522110900}
   m_Layer: 0
   m_Name: Switch Door (0)
   m_TagString: Untagged
@@ -11312,36 +11293,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4031117032522110900
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5675469614121539469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 4156439106999240298}
 --- !u!1 &6003761836523473629
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,17 @@
+input {
+    FP Horizontal;
+    FP Vertical;
+    button Jump;
+}
+
+component FlipFriendsPlayer {
+    player_ref Player;
+    FPVector2 Velocity;
+    bool IsGrounded;
+    bool IsTouchingLeft;
+    bool IsTouchingRight;
+    bool IsTouchingCeiling;
+    bool IsClimbed;
+    int RopeContactCount;
+    int ClimbBlockTicks;
+}

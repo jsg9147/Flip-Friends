@@ -13,23 +13,30 @@ public class ButtonSelectController : MonoBehaviour
 
     private void OnEnable()
     {
-        tagetButtonList[0].Select();
         currentIndex = 0;
+        if (tagetButtonList.Count > 0)
+            UIInputModeController.RequestSelection(tagetButtonList[0].gameObject);
     }
 
     private void Update()
     {
-        if (Time.time - lastInputTime > inputDelay)
+        if (EventSystem.current == null || tagetButtonList.Count == 0) return;
+        GameObject selected = EventSystem.current.currentSelectedGameObject;
+        int selectedIndex = tagetButtonList.FindIndex(item => item != null && item.gameObject == selected);
+        if (selectedIndex >= 0) currentIndex = selectedIndex;
+        if (UIInputModeController.IsPointerMode) return;
+
+        if (InputManager.instance != null && Time.unscaledTime - lastInputTime > inputDelay)
         {
             if (InputManager.instance.dir.y > 0)
             {
                 SelectPreviousButton();
-                lastInputTime = Time.time;
+                lastInputTime = Time.unscaledTime;
             }
             else if (InputManager.instance.dir.y < 0)
             {
                 SelectNextButton();
-                lastInputTime = Time.time;
+                lastInputTime = Time.unscaledTime;
             }
         }
 
@@ -59,7 +66,8 @@ public class ButtonSelectController : MonoBehaviour
 
     public void SelectFirstBtn()
     {
-        tagetButtonList[0].Select();
+        if (tagetButtonList.Count > 0)
+            UIInputModeController.RequestSelection(tagetButtonList[0].gameObject);
     }
 
     // 런타임에 생기는 항목은 고정 버튼 사이에 끼워 넣어야 하므로 위치를 받는다

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // 전이 그래프 없이 PlayerState를 Animator 상태로 직접 재생한다. 네트워크 동기화는 PlayerStateController가 맡는다
@@ -9,27 +10,40 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int ClimbHash = Animator.StringToHash("Climb");
     private static readonly int ShrinkHash = Animator.StringToHash("Shrink");
     private static readonly int DamagedHash = Animator.StringToHash("Damaged");
+    private const int DamageFlashCount = 2;
 
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     // 피격 클립은 1프레임이라 클립 길이만큼만 보이면 거의 안 보인다. 1회성 클립의 최소 표시 시간
     [SerializeField, Min(0.1f)] private float minOneShotDuration = 0.25f;
+    [SerializeField, Min(0.01f)] private float damageFlashInterval = 0.08f;
 
     private PlayerStateController stateController;
+    private Coroutine damageFlashCoroutine;
+    private Color playerColor;
     private int currentStateHash;
     private int oneShotHash;
     private float oneShotMinEndTime;
+    private bool isDamageFlashing;
 
     private void Awake()
     {
         if (animator == null) animator = GetComponent<Animator>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
         stateController = GetComponent<PlayerStateController>();
+        playerColor = spriteRenderer.color;
     }
 
     private void OnEnable()
     {
         // 비활성화 동안 Animator가 기본 상태로 돌아갔을 수 있어 다음 Update에서 다시 재생하게 한다
         currentStateHash = 0;
+    }
+
+    private void OnDisable()
+    {
+        StopDamageFlash();
     }
 
     private void Update()
@@ -68,8 +82,58 @@ public class PlayerAnimationController : MonoBehaviour
         animator.Play(stateHash, 0, 0f);
         oneShotHash = stateHash;
         oneShotMinEndTime = Time.time + minOneShotDuration;
+
+        if (state == PlayerState.Damaged)
+            StartDamageFlash();
+        else
+            StopDamageFlash();
+
         // 1회성 클립이 끝나면 지속 상태를 다시 재생하도록 캐시를 비운다
         currentStateHash = 0;
+    }
+
+    // 플레이어 색상이 점멸 중 동기화돼도 마지막에는 최신 색으로 돌아가야 한다
+    public void SetPlayerColor(Color color)
+    {
+        playerColor = color;
+        if (!isDamageFlashing)
+            spriteRenderer.color = playerColor;
+    }
+
+    private void StartDamageFlash()
+    {
+        StopDamageFlash();
+        isDamageFlashing = true;
+        damageFlashCoroutine = StartCoroutine(PlayDamageFlash());
+    }
+
+    private IEnumerator PlayDamageFlash()
+    {
+        WaitForSeconds interval = new WaitForSeconds(damageFlashInterval);
+
+        for (int i = 0; i < DamageFlashCount; i++)
+        {
+            spriteRenderer.color = new Color(1f, 1f, 1f, playerColor.a);
+            yield return interval;
+            spriteRenderer.color = playerColor;
+            yield return interval;
+        }
+
+        isDamageFlashing = false;
+        damageFlashCoroutine = null;
+    }
+
+    private void StopDamageFlash()
+    {
+        if (damageFlashCoroutine != null)
+        {
+            StopCoroutine(damageFlashCoroutine);
+            damageFlashCoroutine = null;
+        }
+
+        isDamageFlashing = false;
+        if (spriteRenderer != null)
+            spriteRenderer.color = playerColor;
     }
 
     private bool IsOneShotPlaying()

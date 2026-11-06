@@ -163,6 +163,7 @@ public class ClientMover : NetworkBehaviour
             run           = inputManager.IsRunPressed,
             deltaTime     = Time.fixedDeltaTime,
             viewTime      = viewedServerTime,
+            platformTime  = NetworkTime.predictedTime,
         };
     }
 
@@ -220,7 +221,9 @@ public class ClientMover : NetworkBehaviour
         float velocityError = Vector2.Distance(serverState.velocity, predictedState.velocity);
 
         // 오차가 임계값 이하면 정상 예측 — 보정 불필요
-        if (positionError < RECONCILE_THRESHOLD && velocityError < VELOCITY_RECONCILE_THRESHOLD) return;
+        if (positionError < RECONCILE_THRESHOLD && velocityError < VELOCITY_RECONCILE_THRESHOLD &&
+            serverState.supportPlatform == predictedState.supportPlatform && serverState.supportRevision == predictedState.supportRevision &&
+            System.Math.Abs(serverState.platformTime - predictedState.platformTime) < Time.fixedDeltaTime * .5f) return;
 
         Vector3 positionBeforeReconcile = predictedPosition;
 

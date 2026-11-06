@@ -1,65 +1,44 @@
+using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
 public class RespawnHandler : NetworkBehaviour
 {
-    public LayerMask targetLayers; // ������ ���̾�
-    public Transform resetPoint;  // ���� ����Ʈ ��ġ
-
+    public LayerMask targetLayers;
+    public Transform resetPoint;
     public bool onlyBoxReset;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!isServer)
-            return;
+    private readonly HashSet<GameObject> resetTargets = new HashSet<GameObject>();
+    private float lastContactTime = float.NegativeInfinity;
 
-        // ���� ��ü�� ���̾ targetLayers�� ���ԵǾ� �ִ��� Ȯ��
-        if (((1 << collision.gameObject.layer) & targetLayers) != 0)
-        {
-            // ���������� ��ġ�� �����ϵ��� ȣ��
-            ResetTarget(collision.gameObject);
-        }
-    }
+    private void OnTriggerEnter2D(Collider2D collision) => ResetTarget(collision.gameObject);
+    private void OnCollisionEnter2D(Collision2D collision) => ResetTarget(collision.gameObject);
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (!isServer)
-            return;
-
-        // ���� ��ü�� ���̾ targetLayers�� ���ԵǾ� �ִ��� Ȯ��
-        if (((1 << collision.gameObject.layer) & targetLayers) != 0)
-        {
-            // ���������� ��ġ�� �����ϵ��� ȣ��
-            ResetTarget(collision.gameObject);
-        }
-    }
-
+    [ServerCallback]
     private void ResetTarget(GameObject target)
     {
-        // 플레이어는 예측 이동을 하므로 위치를 직접 바꾸면 소유 클라이언트가 이전 예측 위치로 되돌린다. 서버 순간이동으로 처리한다.
-        if (target.TryGetComponent(out ServerMover mover))
+        if (!isServer) return;
+        PickupObj box = target.GetComponentInParent<PickupObj>();
+        // 기존 상자 자체 Reset 접촉은 Player 전용 마스크에서도 작동했다.
+        bool isBoxReset = box != null && CompareTag("Reset");
+        if (!isBoxReset && ((1 << target.layer) & targetLayers.value) == 0) return;
+        if (resetPoint == null)
         {
-            if (target.GetComponent<PlayerController2D>().isCarried) return;
-            if (onlyBoxReset && !target.GetComponent<PlayerInteraction>().IsHoldingObject) return;
-            mover.Teleport(resetPoint.position, Vector2.zero);
+            Debug.LogError($"{transform.root.name}/{name}: 필수 resetPoint가 없습니다.", this);
             return;
         }
-
-        RpcPositionReset(target);
-    }
-
-    [ClientRpc] // ���������� ����
-    private void RpcPositionReset(GameObject target)
-    {
-        if(target == null) return;
-        if (onlyBoxReset)
+        GameObject resetTarget = box != null ? box.gameObject : target;
+        if (lastContactTime != Time.fixedTime)
         {
-            PlayerInteraction targetPlayer = target.GetComponent<PlayerInteraction>();
-            if(targetPlayer != null && !targetPlayer.IsHoldingObject)
-            {
-                return;
-            }
+            resetTargets.Clear();
+            lastContactTime = Time.fixedTime;
         }
-        target.transform.position = resetPoint.position;
+        if (!resetTargets.Add(resetTarget)) return;
+        if (box != null)
+            box.ServerReset(resetPoint.position);
+        else if (target.TryGetComponent(out PlayerController2D player))
+            player.ServerResetSection(resetPoint.position, onlyBoxReset);
+        else
+            Debug.LogError($"{transform.root.name}/{name}: 지원하지 않는 리셋 대상 {target.name}", target);
     }
 }

@@ -6,6 +6,11 @@
 
 ## 현재 상태
 
+- Quantum 독립 시험은 기존 `MapData` 2.1·검증기·팔레트를 재사용한다. Mirror 생성/전송과 분리된 변환 v2·팔레트 v2에서 정적 박스와 `terrain.rope` 루트 박스 트리거를 처리한다. 로프 오프셋에도 배치 스케일·180도 회전을 적용하며 중심/크기는 불변 FP 설정에 담고 접촉/등반은 Quantum이 판정한다. 가로/경사 로프·자식/원형/합성/동적/비트리거 등 미지원 데이터는 위치·원인과 함께 전체 거부한다. [세부 규칙](QUANTUM_MIGRATION.md)을 따른다. 기존 저장 맵과 정적 시험 JSON을 보존했고 별도 `FlipFriendsRopeMap.json`·`QuantumRopeTest.unity`를 추가했다.
+- 공용 Cannon/MapEditorCannon은 서버에서 탄환을 초기화한 뒤 Spawn하고, CannonProjectile이 거리별 수명을 관리한다. 원격 탄환은 서버 위치만 따르며 팔레트 저장 스키마와 발사 설정은 유지했다.
+
+- 팔레트 `interactive.box`는 공용 Box.prefab을 사용한다. 단계 2의 PickupObj 서버 리셋 API가 추락 복귀·운반 해제에 적용되며 저장 형식/팔레트 연결은 유지한다.
+
 - `MapData` 스키마는 2.1이며 정규 GUID `N` 형식의 `mapId`를 사용한다.
 - 2.0 로컬 데이터는 최초 로드 시 2.1로 안전하게 마이그레이션한다. 잘못된 2.1 ID는 자동 교체하지 않고 거부한다.
 - 저장 API는 생성, 수정, 가져오기를 구분하며 같은 MapId나 파일명의 무단 덮어쓰기를 차단한다.
@@ -38,6 +43,16 @@ MapEditorManager
 
 ## 검증
 
+- 2026-11-06 로프 반복/역순 변환·해시·오프셋·반전/180도·미지원 데이터 위치 진단/전체 거부·실제 검증 에셋의 해시/두 버전 불일치 거부를 통과했다. 두 플레이어의 로프 상태 전이와 새 러너 재생 확정 120~960 체크섬 8개 일치를 실행했다. Unity API로 씬/맵/검증 에셋을 저장·재로드했으며 최종 정적 회귀·Photon 결과는 [Quantum 문서](QUANTUM_MIGRATION.md)를 따른다.
+- 2026-11-06 Quantum 시험 JSON의 기존 검증기 통과, 반복/역순 변환 동일성·해시 변화·변환/팔레트 버전 불일치와 미지원 데이터 거부를 실행했다. 새 씬·맵 에셋 저장/재로드, 두 플레이어의 지형 충돌·확정 프레임 입력 재생과 개발 Photon 같은 PC 2연결은 `Docs/QUANTUM_MIGRATION.md`의 이번 결과를 따른다. 기존 편집 UI 전체 이식을 뜻하지 않는다.
+- 2026-10-26 Main → MapEditor → API 임시 배치 5개(시작/도착/지형/공용 Box/MapEditorCannon) → KCP 테스트 플레이를 실행했다. 서버 탄환 속도 10·실제 비행·대포 중지 후 거리 소멸, 상자 낙하/경계 아래 Release 후 추락 복귀, 운반 API 후 ServerReset의 참조 해제와 낙하 안정을 확인했다. API 완료/ExitGame 두 경로 모두 에디터 복귀 후 편집 JSON이 전후 완전히 같았으며 Main 복귀도 확인했다. 저장하지 않았고 UI 배치·실조작 클리어 검증과 구분한다. [상세](Notes/2026-10-26-stage-live-validation.md).
+
+- 2026-10-26 팔레트 6종의 루트 Identity·Main spawn 등록, MapEditorCannon의 공용 투사체/서버 권한 참조 검사를 통과했다. 실제 편집 → 테스트 플레이의 탄환 비행·거리 제거·복귀는 미실행이다.
+
+- 2026-10-26 팔레트 프리팹 전체에 PlatformController가 없는 것을 확인했다. 단계 4 발판 예측 변경으로 팔레트/맵 저장 형식을 바꾸지 않았으며, 맵 에디터 테스트 플레이의 플레이어 이동 회귀는 수동 확인이 남는다.
+
+- 2026-10-26 공용 Box의 루트 NetworkIdentity 1개·Pickable 레이어와 팔레트 연결을 재확인했다. 격리 기본 스테이지 상자 리셋 검사는 통과했으나 맵 에디터 테스트 플레이의 실제 추락·운반 회귀는 미실행이다.
+
 - C# 및 Unity 컴파일을 통과한 상태다. Unity `6000.6.3f1`에서도 `Assembly-CSharp` 빌드가 오류 없이 통과한다.
 - 실제 1600x900 편집 UI, Main → MapEditor → Main 빌드 이동, 전체 편집 시나리오는 수동 검증이 남아 있다.
 - `FlipFriends.MapEditorCore.Tests` Edit Mode 테스트 63개가 통과한다(2026-10-07, 전체 72개).
@@ -56,4 +71,4 @@ MapEditorManager
 
 ## 다음 작업
 
-Windows 빌드에서 1600x900 편집 UI와 Main → MapEditor → Main 이동, 배치부터 저장·불러오기까지 전체 편집 시나리오를 수동 확인한다.
+Quantum의 로프 지원 형태와 v2 해시 경계를 유지한다. 가로/경사·동적 로프와 전체 맵 에디터는 별도 범위다. 기존 Mirror 편집 UI의 Box/Cannon 배치·운반·리셋·저장/불러오기 실조작 회귀는 별도로 남는다.

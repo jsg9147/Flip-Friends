@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using Mirror;
 
 public class SavePoint : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class SavePoint : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!NetworkServer.active) return;
         if (collision.CompareTag("Player"))
         {
             var player = collision.GetComponent<PlayerController2D>();

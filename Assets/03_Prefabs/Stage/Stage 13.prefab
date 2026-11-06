@@ -6596,10 +6596,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
+  switches:
+  - {fileID: 6903073179980371226}
+  - {fileID: 6593502740926637989}
   conveyorBelts: []
-  activeSwitchGround: {fileID: 0}
-  inactiveSwitchGround: {fileID: 0}
+  activeSwitchGround: {fileID: 1951466863537534454}
+  inactiveSwitchGround: {fileID: 8076667632160829645}
   autoToggleEnabled: 0
   autoToggleInterval: 3
 --- !u!1 &4370884807964099257

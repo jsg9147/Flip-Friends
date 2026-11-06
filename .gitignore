@@ -59,6 +59,7 @@ sysinfo.txt
 *.apk
 *.aab
 *.unitypackage
+!Assets/Photon/Quantum/PackageResources/*.unitypackage
 *.app
 
 # Crashlytics generated file

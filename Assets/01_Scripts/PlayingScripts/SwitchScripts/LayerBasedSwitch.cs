@@ -1,46 +1,39 @@
-using Mirror;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LayerBasedSwitch : Switch
 {
-    [SerializeField]
-    private LayerMask activationLayer; // 활성화할 레이어 설정
+    [SerializeField] private LayerMask activationLayer;
+    private readonly HashSet<Collider2D> contacts = new HashSet<Collider2D>();
 
     public virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if (IsLayerMatched(other.gameObject))
-        {
-            ToggleSwitch();
-        }
+        if (!isServer) return;
+        if (other == null || !IsLayerMatched(other.gameObject) || !contacts.Add(other)) return;
+        SetSwitchState(true);
     }
 
     public virtual void OnTriggerExit2D(Collider2D other)
     {
-        // 접촉이 끊어졌을 때도 레이어가 맞으면 스위치 비활성화
-        if (IsLayerMatched(other.gameObject))
-        {
-            ToggleSwitch();
-        }
+        if (!isServer) return;
+        if (!contacts.Remove(other)) return;
+        SetSwitchState(contacts.Count > 0 || HasAdditionalContact);
     }
 
-    // 레이어가 설정된 값과 일치하는지 확인하는 메서드
-    private bool IsLayerMatched(GameObject obj)
+    protected virtual bool HasAdditionalContact => false;
+
+    protected virtual void FixedUpdate()
     {
-        return (activationLayer.value & (1 << obj.layer)) > 0;
+        if (!isServer) return;
+        contacts.RemoveWhere(c => c == null || !c.enabled || !c.gameObject.activeInHierarchy || !IsLayerMatched(c.gameObject));
+        SetSwitchState(contacts.Count > 0 || HasAdditionalContact);
     }
 
-    // 스위치 상태가 변경되었을 때의 동작 정의
-    protected override void OnSwitchStateChanged(bool newState)
+    private void OnDisable()
     {
-        if (!isServer)
-            return;
-
-        RpcOnSwitchSpriteChange(newState);
+        contacts.Clear();
+        if (Mirror.NetworkServer.active && isServer) SetSwitchState(false);
     }
 
-    [ClientRpc]
-    private void RpcOnSwitchSpriteChange(bool newState)
-    {
-        GetComponent<SpriteRenderer>().sprite = newState ? onSwitchSprite : offSwitchSprite;
-    }
+    private bool IsLayerMatched(GameObject obj) => (activationLayer.value & (1 << obj.layer)) != 0;
 }

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8168881474306411735}
   - component: {fileID: 286281913397192668}
-  - component: {fileID: 3889569010515545908}
   m_Layer: 0
   m_Name: Switch Door (1)
   m_TagString: Untagged
@@ -81,36 +80,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &3889569010515545908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 140556752231317390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 759106065793163835}
 --- !u!1 &424869329229654007
 GameObject:
   m_ObjectHideFlags: 0
@@ -4768,6 +4737,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -4974,10 +4944,11 @@ MonoBehaviour:
   originalPositionDelay: 1
   waitTime: 0.5
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0
   disappearAfterComplete: 0
   disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 9132332450119019747}
 --- !u!1 &559882701952081071
 GameObject:
   m_ObjectHideFlags: 0
@@ -5685,18 +5656,18 @@ MonoBehaviour:
   offsetApply: 0
   collisionMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   horizontalRayCount: 0
   verticalRayCount: 0
   horizontalRaySpacing: 0
   verticalRaySpacing: 0
   boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 0}
-  offSwitchSprite: {fileID: 0}
+  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
+  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
   activationLayer:
     serializedVersion: 2
-    m_Bits: 0
-  detectPlatform: {fileID: 0}
+    m_Bits: 2048
+  detectPlatform: {fileID: 7134148088548558740}
 --- !u!212 &1057662670509908371
 SpriteRenderer:
   serializedVersion: 3
@@ -5982,6 +5953,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -7309,10 +7281,11 @@ MonoBehaviour:
   originalPositionDelay: 1
   waitTime: 0.5
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0
   disappearAfterComplete: 0
   disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 5166591957606771877}
 --- !u!1 &2641780176762931868
 GameObject:
   m_ObjectHideFlags: 0
@@ -8102,10 +8075,14 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
+  switches:
+  - {fileID: 6903073179980371226}
+  - {fileID: 6593502740926637989}
+  - {fileID: 7235358465877857639}
+  - {fileID: 2697644595999978391}
   conveyorBelts: []
-  activeSwitchGround: {fileID: 0}
-  inactiveSwitchGround: {fileID: 0}
+  activeSwitchGround: {fileID: 1951466863537534454}
+  inactiveSwitchGround: {fileID: 8076667632160829645}
   autoToggleEnabled: 0
   autoToggleInterval: 3
 --- !u!1 &4237591089304643419
@@ -8118,7 +8095,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2513008926795294186}
   - component: {fileID: 2455149526781132186}
-  - component: {fileID: 3783416725830299064}
   m_Layer: 0
   m_Name: Switch Door (0)
   m_TagString: Untagged
@@ -8189,36 +8165,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &3783416725830299064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4237591089304643419}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 5605550907518247895}
 --- !u!1 &5287310212242805553
 GameObject:
   m_ObjectHideFlags: 0
@@ -9389,6 +9335,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.3
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -10473,18 +10420,18 @@ MonoBehaviour:
   offsetApply: 0
   collisionMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   horizontalRayCount: 0
   verticalRayCount: 0
   horizontalRaySpacing: 0
   verticalRaySpacing: 0
   boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 0}
-  offSwitchSprite: {fileID: 0}
+  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
+  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
   activationLayer:
     serializedVersion: 2
-    m_Bits: 0
-  detectPlatform: {fileID: 0}
+    m_Bits: 2048
+  detectPlatform: {fileID: 4679975918602874482}
 --- !u!212 &753206616199764572
 SpriteRenderer:
   serializedVersion: 3

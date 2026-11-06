@@ -1,41 +1,52 @@
-using UnityEngine;
 using Mirror;
+using UnityEngine;
 
 public class RotatingObstacle : BasicTrap
 {
     public bool isCounterclockwise;
-    public float rotationSpeed = 120f; // 초당 회전 속도
-
+    public float rotationSpeed = 120f;
     public bool random;
     public float randomRange;
 
-    private void Start()
+    [SyncVar] private float serverRotationSpeed;
+    [SyncVar] private bool serverCounterclockwise;
+    private bool hasServerSelection;
+
+    public float SelectedRotationSpeed => serverRotationSpeed;
+    public bool SelectedCounterclockwise => serverCounterclockwise;
+
+    public override void OnStartServer()
     {
+        base.OnStartServer();
+        if (hasServerSelection) return;
+        if (!TryValidateConfiguration(out string problem))
+        {
+            Debug.LogError($"{transform.root.name}/{name}: {problem}", this);
+            return;
+        }
+        serverRotationSpeed = rotationSpeed;
+        serverCounterclockwise = isCounterclockwise;
         if (random)
         {
-            // randomRange의 ± 범위 내에서 랜덤 값 추가
-            float randomValue = Random.Range(-randomRange, randomRange);
-            rotationSpeed += randomValue;
-
-            isCounterclockwise = Random.Range(0f, 1f) >= 0.5f;
+            serverRotationSpeed += Random.Range(-randomRange, randomRange);
+            serverCounterclockwise = Random.Range(0f, 1f) >= .5f;
         }
+        hasServerSelection = true;
     }
 
-    void Update()
+    private void Update()
     {
-        // 서버에서만 회전 로직 실행
-        if (isServer)
-        {
-            RotateObstacle();
-        }
+        if (!isServer || !hasServerSelection) return;
+        transform.Rotate(Vector3.forward, RotationDelta(Time.deltaTime));
     }
 
-    [Server]
-    private void RotateObstacle()
-    {
-        Vector3 rotateDir = isCounterclockwise ? Vector3.back : Vector3.forward;
+    public float RotationDelta(float deltaTime) => (serverCounterclockwise ? -1 : 1) * serverRotationSpeed * deltaTime;
 
-        // 장애물 회전
-        transform.Rotate(rotateDir, rotationSpeed * Time.deltaTime);
+    public bool TryValidateConfiguration(out string problem)
+    {
+        problem = !float.IsNaN(rotationSpeed) && !float.IsInfinity(rotationSpeed) &&
+                  !float.IsNaN(randomRange) && !float.IsInfinity(randomRange) && randomRange >= 0
+            ? null : "회전 속도/랜덤 범위 설정이 잘못되었습니다.";
+        return problem == null;
     }
 }

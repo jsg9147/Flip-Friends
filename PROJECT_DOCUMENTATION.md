@@ -18,9 +18,10 @@
 |---|---|---|
 | 저장소 공통 규칙, 코딩 스타일, 빌드 | `CLAUDE.md` | 없음 |
 | 네트워크, 플레이어, 씬 전환 | `.claude/rules/network.md` | 커스텀 맵 흐름은 `Docs/CUSTOM_MAP_NETWORK.md` |
+| Quantum 전환, Steam 구매 인증, 온라인 접속 보호 | `Docs/QUANTUM_MIGRATION.md`, `Docs/QUANTUM_SECURITY.md`, `Docs/NEXT_SESSION.md` | 보안 문서는 Draft이며 출시 인증 검증은 미완료 |
 | 플레이어 이동·예측·들기·던지기 | `.claude/rules/network.md`와 `Docs/PLAYER_MOVEMENT_SYNC.md` | 충돌 판정은 `.claude/rules/gameplay.md` |
 | 플레이어 상태·애니메이션 | `.claude/rules/gameplay.md`와 `Docs/PLAYER_ANIMATION.md` | 없음 |
-| 장애물, 스위치, 충돌, 레이어·태그 | `.claude/rules/gameplay.md` | 없음 |
+| 장애물, 스위치, 충돌, 레이어·태그 | `.claude/rules/gameplay.md`와 `Docs/STAGE_COMPONENTS.md` | 없음 |
 | UI, 화면 전환, 설정 | `.claude/rules/ui.md`와 `Docs/UI_REBUILD.md` | 없음 |
 | 맵 에디터, 저장소, 팔레트, 검증 | `.claude/rules/map-editor.md`와 `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
@@ -42,6 +43,9 @@
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |
 | `Docs/PLAYER_ANIMATION.md` | Active | 플레이어 상태 동기화와 애니메이션 재생 |
 | `Docs/PLAYER_MOVEMENT_SYNC.md` | Active | 이동 예측·운반·던지기 동기화와 로컬 2인 테스트 |
+| `Docs/STAGE_COMPONENTS.md` | Active | 기본 스테이지 장치·On/Off 상태 동기화와 참조 검사 |
+| `Docs/QUANTUM_SECURITY.md` | Draft | Quantum 전환 시 Steam 인증·소유권·온라인 보호 설계와 미실행 검증 |
+| `Docs/QUANTUM_MIGRATION.md` | Active | Quantum SDK·독립 이동 테스트·입력 재생·인증 경계와 외부 차단 항목 |
 | `Docs/Notes/*.md` | Active | 1회성 조사·실패한 시도·측정값. 자동으로 읽히지 않는다 |
 
 ## 문서 갱신 형식

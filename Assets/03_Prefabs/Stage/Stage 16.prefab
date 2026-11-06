@@ -179,6 +179,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -2313,6 +2314,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -7692,7 +7694,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3006406877656151971}
   - component: {fileID: 5353548268583019179}
-  - component: {fileID: 6531067137273444205}
   m_Layer: 0
   m_Name: Switch Door (0)
   m_TagString: Untagged
@@ -7763,36 +7764,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &6531067137273444205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 600482908101164326}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 5173051979592938550}
 --- !u!1 &759477603662419337
 GameObject:
   m_ObjectHideFlags: 0
@@ -8631,6 +8602,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -8836,6 +8808,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -9306,18 +9279,18 @@ MonoBehaviour:
   offsetApply: 0
   collisionMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   horizontalRayCount: 0
   verticalRayCount: 0
   horizontalRaySpacing: 0
   verticalRaySpacing: 0
   boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 0}
-  offSwitchSprite: {fileID: 0}
+  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
+  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
   activationLayer:
     serializedVersion: 2
-    m_Bits: 0
-  detectPlatform: {fileID: 0}
+    m_Bits: 2048
+  detectPlatform: {fileID: 529721614257374449}
 --- !u!212 &50759291437681229
 SpriteRenderer:
   serializedVersion: 3
@@ -9603,6 +9576,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -10768,6 +10742,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -11752,6 +11727,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -11788,7 +11764,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5868858461418207189}
   - component: {fileID: 5692637585926908884}
-  - component: {fileID: 8897235211007757037}
   m_Layer: 0
   m_Name: Switch Door (2)
   m_TagString: Untagged
@@ -11859,36 +11834,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &8897235211007757037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3224226111050874722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 2740420260761688554}
 --- !u!1 &3298896308519981437
 GameObject:
   m_ObjectHideFlags: 0
@@ -12401,7 +12346,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5781091135916517315}
   - component: {fileID: 6444168997768439020}
-  - component: {fileID: 1464353378172508245}
   m_Layer: 0
   m_Name: Switch Door (1)
   m_TagString: Untagged
@@ -12472,36 +12416,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1464353378172508245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3849402411398277901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 4041023644806475698}
 --- !u!1 &3854645657539053276
 GameObject:
   m_ObjectHideFlags: 0
@@ -12732,10 +12646,16 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  switches: []
+  switches:
+  - {fileID: 6903073179980371226}
+  - {fileID: 3737088318521538409}
+  - {fileID: 3164949753981814112}
+  - {fileID: 2405449980959462261}
+  - {fileID: 9178983533597533133}
+  - {fileID: 2375193820892167108}
   conveyorBelts: []
-  activeSwitchGround: {fileID: 0}
-  inactiveSwitchGround: {fileID: 0}
+  activeSwitchGround: {fileID: 1951466863537534454}
+  inactiveSwitchGround: {fileID: 8076667632160829645}
   autoToggleEnabled: 0
   autoToggleInterval: 3
 --- !u!1 &4151949824379291877
@@ -12915,10 +12835,11 @@ MonoBehaviour:
   originalPositionDelay: 1
   waitTime: 0.5
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0
   disappearAfterComplete: 0
   disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 4415613690886543020}
 --- !u!1 &4268853091643721938
 GameObject:
   m_ObjectHideFlags: 0
@@ -13098,6 +13019,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -13303,6 +13225,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -13704,6 +13627,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -13909,6 +13833,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -14253,6 +14178,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -14642,6 +14568,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -15292,6 +15219,7 @@ MonoBehaviour:
   originalPositionDelay: 0.3
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -15497,6 +15425,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -16070,6 +15999,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 1
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
@@ -18409,6 +18339,7 @@ MonoBehaviour:
   originalPositionDelay: 0.5
   waitTime: 0.5
   easeAmount: 0.2
+  isPassengerTransportEnabled: 1
   initialWaitTime: 0.5
   disappearAfterComplete: 0
   disableColliderWhenFalling: 1
