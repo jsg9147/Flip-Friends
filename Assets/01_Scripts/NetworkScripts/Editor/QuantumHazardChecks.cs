@@ -44,11 +44,11 @@ public static class QuantumHazardChecks
             var directed = conversion.Traps.Single(t => t.Id.EndsWith("/방향 트랩"));
             var wall = conversion.Traps.Single(t => t.Id.EndsWith("/벽 트랩"));
             Require(spike.Vertices.Length == 3 && directed.Vertices.Length == 4 && directed.Direction == new FPVector2(-1, 0) && wall.Direction == new FPVector2(1, 0), "원본 가시 삼각·지정 방향 사각·벽 트랩");
-            Require(Config().CustomMapAgreement.StartsWith(asset.Agreement + ":제품9:") && QuantumGameContent.NetworkVersion == "ff-product-9", "공식1/제품9 합의");
+            Require(Config().CustomMapAgreement.StartsWith(asset.Agreement + ":제품10:") && QuantumGameContent.NetworkVersion == "ff-product-10", "공식1/제품10 합의");
             // 같은 원본 배열을 역순으로 줘도 변환은 ID 순이다. 동일 틱 다중 접촉의 우선순위가 작성 순서와 무관해야 한다.
             read.Data.traps = read.Data.traps.Reverse().ToArray();
             Require(QuantumOfficialStageConverter.Convert(read.Data, terrain, null).ContentHash == asset.ContentHash, "트랩 입력 순서 독립 해시");
-            lines.Add("재로드 해시·ID 순·입력 순서 독립·제품9 합의");
+            lines.Add("재로드 해시·ID 순·입력 순서 독립·제품10 합의");
 
             Reject(root => Trap(root, "원").AddComponent<CircleCollider2D>().isTrigger = true, "CircleCollider2D", lines);
             Reject(root => { var c = Trap(root, "오목").AddComponent<PolygonCollider2D>(); c.isTrigger = true;

@@ -153,7 +153,8 @@ namespace Quantum
                 Carrier = keepCarry ? old.Carrier : default, Held = keepCarry ? old.Held : default,
                 WasResetHeld = input.Reset.IsDown, WasJumpHeld = input.Jump.IsDown, WasInteractHeld = input.Interact.IsDown,
                 StompCount = old.StompCount, PickupCount = old.PickupCount, ThrowCount = old.ThrowCount,
-                PutDownCount = old.PutDownCount, EscapeCount = old.EscapeCount, DamageCount = old.DamageCount };
+                PutDownCount = old.PutDownCount, EscapeCount = old.EscapeCount, DamageCount = old.DamageCount,
+                LaunchCount = old.LaunchCount };
             frame.Unsafe.GetPointer<Transform2D>(entity)->Position = destination;
             var players = frame.Filter<FlipFriendsPlayer>();
             while (players.NextUnsafe(out _, out var other)) if (other->StompTarget == entity) other->StompTarget = default;

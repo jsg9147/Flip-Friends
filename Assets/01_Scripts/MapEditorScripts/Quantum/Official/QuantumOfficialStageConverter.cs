@@ -15,6 +15,7 @@ namespace FlipFriends.Maps
         private const int MaxRopes = 64;
         private const int MaxBoxes = 64;
         private const int MaxTraps = 128;
+        private const int MaxLaunchers = 128;
         private const int MaxTrapVertices = 8;
         private static readonly Regex StageIdPattern = new("^[a-z0-9][a-z0-9-]{0,47}$");
 
@@ -51,6 +52,7 @@ namespace FlipFriends.Maps
                 lines.Add($"상자={Key(box.Center)}/{Key(box.Size)};중력9.8;감속1.5;낙하12");
             }
             AddTraps(result, lines, data.traps, data.stageId);
+            AddLaunchers(result, lines, data.launchers, data.stageId);
             var boundary = new FallBoundary(data.renderBounds);
             result.MinX = QuantumMapConverter.Q(boundary.MinX); result.MaxX = QuantumMapConverter.Q(boundary.MaxX); result.MinY = QuantumMapConverter.Q(boundary.MinY);
             lines.Add($"복귀={Raw(result.MinX)},{Raw(result.MaxX)},{Raw(result.MinY)};여백10;위쪽제외");
@@ -85,19 +87,56 @@ namespace FlipFriends.Maps
                 if (source.vertices == null || source.vertices.Length < 3 || source.vertices.Length > MaxTrapVertices || !source.vertices.All(Finite))
                     throw new InvalidOperationException(at + $": 판정 꼭짓점은 유한한 3~{MaxTrapVertices}개여야 합니다.");
                 if (source.renderSize.x <= 0 || source.renderSize.y <= 0) throw new InvalidOperationException(at + ": 표시할 렌더러 범위가 없습니다.");
-                var vertices = source.vertices.Select(Q).ToArray();
-                long area = 0;
-                for (int i = 0; i < vertices.Length; i++) area += Cross(vertices[i], vertices[(i + 1) % vertices.Length], default);
-                if (area == 0) throw new InvalidOperationException(at + ": 판정 넓이가 0입니다.");
-                if (area < 0) Array.Reverse(vertices);
-                // FP 양자화 뒤에도 모든 모서리가 같은 쪽으로 꺾여야 분리축 검사가 원본 형상과 같다. 일직선 꼭짓점도 거부한다.
-                for (int i = 0; i < vertices.Length; i++)
-                    if (Cross(vertices[(i + 1) % vertices.Length], vertices[(i + 2) % vertices.Length], vertices[i]) <= 0)
-                        throw new InvalidOperationException(at + $": 꼭짓점 {i + 1}에서 오목하거나 일직선입니다. 볼록 다각형만 지원합니다.");
+                var vertices = ConvexVertices(source.vertices, at);
                 var config = new Quantum.FlipFriendsTrapConfig { Id = source.id, Origin = Q(source.origin), Direction = Q(source.direction), Vertices = vertices };
                 result.Traps.Add(config);
                 result.TrapVisuals.Add(source);
                 lines.Add($"트랩={source.id.Length}:{source.id};기준={Key(config.Origin)};방향={Key(config.Direction)};꼭짓점={string.Join("/", vertices.Select(Key))};표시={Key(Q(source.renderCenter))}/{Key(Q(source.renderSize))}");
+            }
+        }
+
+        private static FPVector2[] ConvexVertices(UnityEngine.Vector2[] source, string at)
+        {
+            var vertices = source.Select(Q).ToArray();
+            long area = 0;
+            for (int i = 0; i < vertices.Length; i++) area += Cross(vertices[i], vertices[(i + 1) % vertices.Length], default);
+            if (area == 0) throw new InvalidOperationException(at + ": 판정 넓이가 0입니다.");
+            if (area < 0) Array.Reverse(vertices);
+            // FP 양자화 뒤에도 모든 모서리가 같은 쪽으로 꺾여야 분리축 검사가 원본 형상과 같다. 일직선 꼭짓점도 거부한다.
+            for (int i = 0; i < vertices.Length; i++)
+                if (Cross(vertices[(i + 1) % vertices.Length], vertices[(i + 2) % vertices.Length], vertices[i]) <= 0)
+                    throw new InvalidOperationException(at + $": 꼭짓점 {i + 1}에서 오목하거나 일직선입니다. 볼록 다각형만 지원합니다.");
+            return vertices;
+        }
+
+        private static void AddLaunchers(QuantumMapConversion result, List<string> lines, QuantumLauncherSource[] sources, string stageId)
+        {
+            if ((sources?.Length ?? 0) > MaxLaunchers) throw new InvalidOperationException($"공식 스테이지 {stageId}: 스프링/바운스 {MaxLaunchers}개 상한을 초과했습니다.");
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var source in (sources ?? Array.Empty<QuantumLauncherSource>()).OrderBy(s => s?.id, StringComparer.Ordinal))
+            {
+                string at = $"공식 스테이지 {stageId}: 스프링/바운스 {source?.id} 위치={source?.origin}";
+                if (source == null || string.IsNullOrWhiteSpace(source.id) || !ids.Add(source.id)) throw new InvalidOperationException(at + ": ID가 없거나 중복입니다.");
+                if (source.kind < 0 || source.kind > 1 || !Finite(source.origin) || !Finite(source.center) || !float.IsFinite(source.radius) || source.radius < 0)
+                    throw new InvalidOperationException(at + ": 종류/기준점/원형 판정이 유효하지 않습니다.");
+                if (!Finite(source.renderCenter) || !Finite(source.renderSize) || source.renderSize.x <= 0 || source.renderSize.y <= 0)
+                    throw new InvalidOperationException(at + ": 표시할 렌더러 범위가 없습니다.");
+                FP radius = QuantumMapConverter.Q(source.radius);
+                FPVector2[] vertices;
+                if (source.radius > 0)
+                {
+                    if (radius <= 0 || (source.vertices?.Length ?? 0) != 0) throw new InvalidOperationException(at + ": 원 반지름이 FP에서 0이거나 다각형과 중복입니다.");
+                    vertices = Array.Empty<FPVector2>();
+                }
+                else
+                {
+                    if (source.vertices == null || source.vertices.Length < 3 || source.vertices.Length > MaxTrapVertices || !source.vertices.All(Finite))
+                        throw new InvalidOperationException(at + ": 판정 꼭짓점은 유한한 3~8개여야 합니다.");
+                    vertices = ConvexVertices(source.vertices, at);
+                }
+                var config = new Quantum.FlipFriendsLauncherConfig { Id = source.id, Kind = source.kind, Origin = Q(source.origin), Center = Q(source.center), Radius = radius, Vertices = vertices };
+                result.Launchers.Add(config); result.LauncherVisuals.Add(source);
+                lines.Add($"발사={source.id.Length}:{source.id};종류={source.kind};기준={Key(config.Origin)};원={Key(config.Center)}/{Raw(radius)};꼭짓점={string.Join("/", vertices.Select(Key))};표시={Key(Q(source.renderCenter))}/{Key(Q(source.renderSize))}");
             }
         }
 

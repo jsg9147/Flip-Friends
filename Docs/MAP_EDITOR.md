@@ -6,6 +6,8 @@
 
 ## 현재 상태
 
+- Quantum 제품10 공식 작성기는 `QuantumStageLauncher`의 스프링/바운스 종류·정적 원/Box/볼록 Polygon 트리거를 변환한다. 별도 공식 `official-launcher-test`를 등록했으며 일반 MapEditor 팔레트·테스트·친구 전송은 기존 Mirror 경로다. MapData2.1 규칙은 바꾸지 않았다. [작성·검증](Notes/2026-11-09-quantum-launchers.md).
+
 - Quantum 제품8의 지형 작성기는45도 이하 경사를 허용한다(플레이어 등반30도·상자45도). 초과 변은 윤곽ID·변번호·양 끝 위치·원인을 명시해 거부한다. 별도 공식 `official-slope-test`를 등록했으며 기존 MapData2.1 배치 범위/팔레트/전송 규칙은 바꾸지 않았다. [경사 검증](Notes/2026-11-08-quantum-slopes.md).
 
 - 새 Tilemap 사용례는 MapData2.1+별도 윤곽/장치 콘텐츠6:6·제품6이다. 실제 생성 형상을 FP로 변환하고 안정 조각 ID·작성 Transform/마스크/목적지 참조·추락 경계를 해시로 검증한다. 기존2:2~5:5를 보존하며 일반 MapEditor의 Tilemap 작성/테스트/전송은 미연결이다. [지원·거부 범위](Notes/2026-11-08-quantum-tilemap.md).
@@ -14,7 +16,7 @@
 
 - 경계는 MapRenderBounds+여백10을 FP로 변환하며 제품 시작 때 초기 위치/경계를 재검증한다. 기존2:2 정적/로프·3:3 상호작용·4:4 복귀와 새5:5 장치의 원본/베이크/해시를 보존한다.
 
-- Main은 정적/로프/상호작용/복귀/장치/Tilemap 사용례6종을 제품6으로 실행한다. 상자는 원본 interactive.box 루트0.9·중력9.8·배율1/회전0만 지원한다.
+- Main은 정적/로프/상호작용/복귀/장치/Tilemap 사용례6종과 공식 시험4종을 제품10으로 실행한다. 상자는 원본 interactive.box 루트0.9·중력9.8·배율1/회전0만 지원한다.
 - 로프는 수직 루트 박스 트리거이며 오프셋/스케일/180도 회전을 FP로 변환한다. 가로/경사/다중/합성/동적 판정 등 미지원 구성은 위치·원인과 함께 전체 거부한다. [로프 변환 근거](Notes/2026-11-06-quantum-wall-rope.md).
 - 공용 Cannon/MapEditorCannon은 서버에서 탄환을 초기화한 뒤 Spawn하고, CannonProjectile이 거리별 수명을 관리한다. 원격 탄환은 서버 위치만 따르며 팔레트 저장 스키마와 발사 설정은 유지했다.
 

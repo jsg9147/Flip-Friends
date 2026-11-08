@@ -11,6 +11,7 @@ global {
     int FlipFriendsCompletedFrame;
     bool FlipFriendsBoxesInitialized;
     bool FlipFriendsDevicesInitialized;
+    bool FlipFriendsLaunchersInitialized;
 }
 
 component FlipFriendsPlayer {
@@ -60,6 +61,14 @@ component FlipFriendsPlayer {
     int InvincibleTicks;
     int DamageCount;
     int DamageFrame;
+    int LaunchCount;
+    int LaunchFrame;
+    int LaunchKind;
+}
+
+component FlipFriendsLauncher {
+    int ContentIndex;
+    int PlayerContacts;
 }
 
 component FlipFriendsBox {

@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20383465417881e4faa925e49e8018fc, type: 3}
+  m_Name: Stage
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumOfficialStageAsset
+  displayName: "\uC2A4\uD504\uB9C1/\uBC14\uC6B4\uC2A4 \uC2DC\uD5D8"
+  data:
+    stageId: official-launcher-test
+    spawns:
+    - {x: -3, y: 0.6}
+    - {x: -10, y: 0.6}
+    boxes:
+    - {x: -4, y: 0.5}
+    goals:
+    - center: {x: -1, y: 1}
+      size: {x: 2, y: 1}
+    ropes:
+    - center: {x: -6, y: 4}
+      size: {x: 1, y: 8}
+    traps: []
+    launchers:
+    - id: "official-launcher-test/\uBC14\uC6B4\uC2A4"
+      kind: 0
+      origin: {x: 4, y: 0.5}
+      center: {x: 4, y: 0.5}
+      radius: 1
+      vertices: []
+      renderCenter: {x: 4, y: 0.5}
+      renderSize: {x: 2, y: 2}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+    - id: "official-launcher-test/\uC2A4\uD504\uB9C1"
+      kind: 1
+      origin: {x: -6, y: -0.3}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: -7, y: -0.8}
+      - {x: -5, y: -0.8}
+      - {x: -5, y: 0.19999999}
+      - {x: -7, y: 0.19999999}
+      renderCenter: {x: -6, y: -0.3}
+      renderSize: {x: 2, y: 2}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+    renderBounds:
+      m_Center: {x: 0.5, y: -0.25, z: 0.45000002}
+      m_Extent: {x: 18.5, y: 1.75, z: 0.55}
+  bakedMap: {fileID: 11400000, guid: 88f70538c4e8d244d883b16b75fe75dd, type: 2}
+  terrain: {fileID: 11400000, guid: b73ed58720ebeb543af75e8eba53d48f, type: 2}
+  devices: {fileID: 0}
+  contentHash: 3384b7e4105060e0f0b32cc0a92be8dfdaa0b969b7d242fd553cc745336bb89e

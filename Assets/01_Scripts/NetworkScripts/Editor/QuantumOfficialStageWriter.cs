@@ -23,7 +23,7 @@ public static class QuantumOfficialStageWriter
         typeof(Transform), typeof(Grid), typeof(Tilemap), typeof(TilemapRenderer), typeof(TilemapCollider2D), typeof(CompositeCollider2D),
         typeof(Rigidbody2D), typeof(SpriteRenderer), typeof(QuantumOfficialStage), typeof(QuantumStageSpawnPoint), typeof(QuantumStageGoal),
         typeof(QuantumStageBox), typeof(QuantumStageRope), typeof(QuantumStageReset), typeof(QuantumStageCheckpoint), typeof(QuantumStageBoxSpawner),
-        typeof(QuantumStageTrap), typeof(BoxCollider2D), typeof(PolygonCollider2D),
+        typeof(QuantumStageTrap), typeof(QuantumStageLauncher), typeof(BoxCollider2D), typeof(PolygonCollider2D), typeof(CircleCollider2D),
     };
 
     public sealed class ReadResult
@@ -116,8 +116,10 @@ public static class QuantumOfficialStageWriter
             bool isGround = collider.transform == ground.transform;
             bool isReset = collider is TilemapCollider2D && collider.GetComponent<QuantumStageReset>() != null;
             bool isTrap = collider.GetComponent<QuantumStageTrap>() != null;
-            if (!isGround && !isReset && !isTrap)
-                throw new InvalidOperationException($"{id}/{PathOf(collider.transform, root)}: 지원하지 않는 판정입니다. 지형은 Ground Tilemap, Reset은 QuantumStageReset Tilemap, 트랩은 QuantumStageTrap의 Box/Polygon만 Collider를 둡니다.");
+            bool isLauncher = collider.GetComponent<QuantumStageLauncher>() != null;
+            if (isTrap && isLauncher) throw new InvalidOperationException($"{id}/{PathOf(collider.transform, root)}: 트랩과 스프링/바운스는 같은 오브젝트에 둘 수 없습니다.");
+            if (!isGround && !isReset && !isTrap && !isLauncher)
+                throw new InvalidOperationException($"{id}/{PathOf(collider.transform, root)}: 지원하지 않는 판정입니다. Ground/QuantumStageReset Tilemap, QuantumStageTrap의 Box/Polygon, QuantumStageLauncher의 원/Box/Polygon만 Collider를 둡니다.");
         }
         foreach (var body in root.GetComponentsInChildren<Rigidbody2D>(true))
             if (body.transform != ground.transform && body.GetComponent<QuantumStageReset>() == null)
@@ -138,7 +140,8 @@ public static class QuantumOfficialStageWriter
             boxes = boxes.Select(b => (Vector2)b.transform.position).ToArray(),
             goals = Authoring<QuantumStageGoal>(root, id).Select(g => new QuantumStageArea { center = g.transform.position, size = g.Size }).ToArray(),
             ropes = Authoring<QuantumStageRope>(root, id).Select(r => new QuantumStageArea { center = r.transform.position, size = r.Size }).ToArray(),
-            traps = Authoring<QuantumStageTrap>(root, id).Select(trap => ReadTrap(trap, root, id)).ToArray(),
+            traps = Authoring<QuantumStageTrap>(root, id).Select(trap => ReadTrap(trap, root, id, trap.KnockbackDirection)).ToArray(),
+            launchers = Authoring<QuantumStageLauncher>(root, id).Select(launcher => ReadLauncher(launcher, root, id)).ToArray(),
             renderBounds = bounds,
         };
 
@@ -180,7 +183,7 @@ public static class QuantumOfficialStageWriter
     }
 
     // 원본 정적 가시(트리거 Polygon)와 같은 형상만 받는다. 원·캡슐·Edge·Composite·다중 경로·움직임은 다음 묶음이라 거부한다.
-    private static QuantumTrapSource ReadTrap(QuantumStageTrap trap, GameObject root, string stageId)
+    private static QuantumTrapSource ReadTrap(Component trap, GameObject root, string stageId, Vector2 direction)
     {
         string id = stageId + "/" + PathOf(trap.transform, root);
         var colliders = trap.GetComponents<Collider2D>();
@@ -206,8 +209,28 @@ public static class QuantumOfficialStageWriter
         var renderer = trap.GetComponent<SpriteRenderer>();
         if (renderer == null || renderer.sprite == null || !renderer.enabled)
             throw new InvalidOperationException($"{at}: 트랩 표시와 추락 경계에 쓸 활성 SpriteRenderer가 필요합니다.");
-        return new QuantumTrapSource { id = id, origin = trap.transform.position, direction = trap.KnockbackDirection,
+        return new QuantumTrapSource { id = id, origin = trap.transform.position, direction = direction,
             vertices = local.Select(p => (Vector2)trap.transform.TransformPoint(p + collider.offset)).ToArray(),
+            renderCenter = renderer.bounds.center, renderSize = renderer.bounds.size, sprite = renderer.sprite };
+    }
+
+    private static QuantumLauncherSource ReadLauncher(QuantumStageLauncher launcher, GameObject root, string stageId)
+    {
+        string id = stageId + "/" + PathOf(launcher.transform, root);
+        var circle = launcher.GetComponent<CircleCollider2D>();
+        if (circle == null)
+        {
+            var shape = ReadTrap(launcher, root, stageId, default);
+            return new QuantumLauncherSource { id = id, kind = (int)launcher.Kind, origin = shape.origin, vertices = shape.vertices,
+                renderCenter = shape.renderCenter, renderSize = shape.renderSize, sprite = shape.sprite };
+        }
+        if (launcher.GetComponents<Collider2D>().Length != 1) throw new InvalidOperationException($"{id}: 스프링/바운스 판정은 정확히 하나여야 합니다.");
+        if (!circle.enabled || !circle.isTrigger || circle.radius <= 0 || circle.compositeOperation != Collider2D.CompositeOperation.None || circle.usedByEffector)
+            throw new InvalidOperationException($"{id}: 원형 스프링/바운스는 활성 트리거·반지름>0·Composite/Effector 없음이어야 합니다.");
+        var renderer = launcher.GetComponent<SpriteRenderer>();
+        if (renderer == null || renderer.sprite == null || !renderer.enabled) throw new InvalidOperationException($"{id}: 활성 SpriteRenderer가 필요합니다.");
+        return new QuantumLauncherSource { id = id, kind = (int)launcher.Kind, origin = launcher.transform.position,
+            center = launcher.transform.TransformPoint(circle.offset), radius = circle.radius,
             renderCenter = renderer.bounds.center, renderSize = renderer.bounds.size, sprite = renderer.sprite };
     }
 

@@ -5,7 +5,7 @@
 
 ## 현재 상태
 
-- Quantum 제품6은 Stage1 Ground의 실제 Composite Outline과 Stage9 First ResetTile의26조각을 별도 Main 사용례 맵에서 지원한다. 원본 구멍·미세 생성 기울기·Transform·마스크/목적지를 보존한다. 경사 이동·동적/전환 지형·통과 지형·원형·여러 Collider 장치와 전체21개 스테이지는 미지원이다. [범위·검증](Notes/2026-11-08-quantum-tilemap.md).
+- Quantum 제품10은 Tilemap 윤곽·경사·정적 피격 트랩·스프링/바운스(정적 원/Box/볼록 Polygon)를 지원한다. 원형 지원은 스프링/바운스에 한정하며 동적/전환 지형·통과 지형·여러 Collider 장치와 전체21개 스테이지는 미지원이다. [최신 범위·검증](QUANTUM_MIGRATION.md).
 
 - Quantum 체크포인트·구간Reset·상자소환은 별도 Main 지원 맵에 있다. onlyBoxReset의 기존 상자 운반 조건과 실제5초 쿨다운·점유 대기/소환 실패 불변을 보존한다. 기존 단일 박스 지원에 위 Tilemap 사용례를 추가했으며 전체21개 스테이지는 Mirror다. [장치 정책](Notes/2026-11-08-quantum-devices.md)을 따른다.
 

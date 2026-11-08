@@ -30,6 +30,8 @@ namespace FlipFriends.Network
             foreach (var box in flow.Content.Ropes) AddBox(box, new Color(0.85f, 0.65f, 0.3f), "로프 표시");
             foreach (var box in flow.Content.Goals) AddBox(box, new Color(0.3f, 0.9f, 0.4f, 0.6f), "도착점 표시");
             foreach (var trap in flow.Content.TrapVisuals) AddTrap(trap);
+            foreach (var launcher in flow.Content.LauncherVisuals)
+                AddSprite("스프링/바운스 표시 " + launcher.id, launcher.renderCenter, launcher.renderSize, launcher.sprite);
             if (flow.Content.TerrainContours != null)
             foreach (var contour in flow.Content.TerrainContours)
             for (int i = 0; i < contour.Vertices.Length; i++)
@@ -50,15 +52,20 @@ namespace FlipFriends.Network
 
         private void AddTrap(QuantumTrapSource trap)
         {
-            var view = new GameObject("트랩 표시 " + trap.id);
+            AddSprite("트랩 표시 " + trap.id, trap.renderCenter, trap.renderSize, trap.sprite);
+        }
+
+        private void AddSprite(string name, Vector2 center, Vector2 renderSize, Sprite sprite)
+        {
+            var view = new GameObject(name);
             view.transform.SetParent(transform, false);
-            view.transform.position = trap.renderCenter;
+            view.transform.position = center;
             var renderer = view.AddComponent<SpriteRenderer>();
-            renderer.sprite = trap.sprite != null ? trap.sprite : whiteSprite;
+            renderer.sprite = sprite != null ? sprite : whiteSprite;
             renderer.sortingOrder = 6;
-            if (trap.sprite == null) renderer.color = new Color(0.9f, 0.1f, 0.1f, 0.7f);
+            if (sprite == null) renderer.color = new Color(0.9f, 0.1f, 0.1f, 0.7f);
             var size = renderer.sprite.bounds.size;
-            view.transform.localScale = new Vector3(trap.renderSize.x / size.x, trap.renderSize.y / size.y, 1);
+            view.transform.localScale = new Vector3(renderSize.x / size.x, renderSize.y / size.y, 1);
         }
 
         private void AddBox(QuantumMapBox box, Color color, string label)

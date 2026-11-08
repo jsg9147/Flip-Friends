@@ -22,6 +22,18 @@ namespace FlipFriends.Maps
         public Sprite sprite;
     }
 
+    [Serializable]
+    public sealed class QuantumLauncherSource
+    {
+        public string id;
+        public int kind;
+        public Vector2 origin, center;
+        public float radius;
+        public Vector2[] vertices;
+        public Vector2 renderCenter, renderSize;
+        public Sprite sprite;
+    }
+
     // 공식 스테이지 프리팹에서 읽은 지형·장치 밖의 배치 원본. 실행 시 이 값으로 변환을 다시 만들어 해시를 대조한다.
     [Serializable]
     public sealed class QuantumOfficialStageData
@@ -32,6 +44,7 @@ namespace FlipFriends.Maps
         public QuantumStageArea[] goals;
         public QuantumStageArea[] ropes;
         public QuantumTrapSource[] traps;
+        public QuantumLauncherSource[] launchers;
         public Bounds renderBounds;
     }
 }

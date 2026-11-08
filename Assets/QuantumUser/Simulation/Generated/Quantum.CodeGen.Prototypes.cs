@@ -110,6 +110,23 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsLauncher))]
+  public unsafe partial class FlipFriendsLauncherPrototype : ComponentPrototype<Quantum.FlipFriendsLauncher> {
+    public Int32 ContentIndex;
+    public Int32 PlayerContacts;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsLauncher result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsLauncher component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsLauncher result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.PlayerContacts = this.PlayerContacts;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsPlayer))]
   public unsafe class FlipFriendsPlayerPrototype : ComponentPrototype<Quantum.FlipFriendsPlayer> {
     public PlayerRef Player;
@@ -158,6 +175,9 @@ namespace Quantum.Prototypes {
     public Int32 InvincibleTicks;
     public Int32 DamageCount;
     public Int32 DamageFrame;
+    public Int32 LaunchCount;
+    public Int32 LaunchFrame;
+    public Int32 LaunchKind;
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.FlipFriendsPlayer component = default;
         Materialize((Frame)f, ref component, in context);
@@ -210,6 +230,9 @@ namespace Quantum.Prototypes {
         result.InvincibleTicks = this.InvincibleTicks;
         result.DamageCount = this.DamageCount;
         result.DamageFrame = this.DamageFrame;
+        result.LaunchCount = this.LaunchCount;
+        result.LaunchFrame = this.LaunchFrame;
+        result.LaunchKind = this.LaunchKind;
     }
   }
   [System.SerializableAttribute()]
