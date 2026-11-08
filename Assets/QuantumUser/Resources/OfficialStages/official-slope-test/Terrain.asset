@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e064d949a3f6b543bb50c6be840d476, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumMapTerrain
+  contours:
+  - id: official-slope-test/Grid/Ground/468f654c5533a88851d5cdb18ba0489512607d9dd89cc6990c2e5da1731aafb0
+    vertices:
+    - {x: -5.999971, y: -3}
+    - {x: -6, y: -0.000029300001}
+    - {x: -0.0000059, y: 0}
+    - {x: 7.9999943, y: 3.9999971}
+    - {x: 11.999994, y: 4}
+    - {x: 19.999996, y: 0.0000026}
+    - {x: 29.999971, y: 0}
+    - {x: 29.999971, y: -3}
+  renderCenter: {x: 12, y: 0.5}
+  renderSize: {x: 36, y: 7}
+  authoringSignature: "official-slope-test/Grid/Ground;Merge;Outlines;Kinematic;Ground;\uBC18\uACBD0;b06d142ec188046771005002c8f81d4e76d794cb326d614bdec27b7096b7737c"

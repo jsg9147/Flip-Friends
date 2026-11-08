@@ -218,7 +218,7 @@ public static class QuantumRespawnChecks
         data.objects.Reverse();
         Require(conversion.ContentHash == QuantumMapConverter.Convert(data, palette, true).ContentHash, "순서와 무관한 복귀 해시");
         var config = Config();
-        Require(config.CustomMapAgreement.StartsWith("4:4:") && config.CustomMapAgreement.Contains(":제품6:") && QuantumGameContent.NetworkVersion == "ff-product-6", "새 콘텐츠/입력/제품 합의");
+        Require(config.CustomMapAgreement.StartsWith("4:4:") && config.CustomMapAgreement.Contains(":제품8:") && QuantumGameContent.NetworkVersion == "ff-product-8", "새 콘텐츠/입력/제품 합의");
         FallBoundary.TryCreate(data.objects, palette, out var boundary);
         Require(config.FallMinX == QuantumMapConverter.Q(boundary.MinX) && config.FallMaxX == QuantumMapConverter.Q(boundary.MaxX) && config.FallMinY == QuantumMapConverter.Q(boundary.MinY), "Mirror 렌더러 경계+10 대조");
         data.objects.Single(x => x.prefabID == QuantumMapConverter.Spawn && x.position.x == -1).position.x -= 1;

@@ -26,6 +26,25 @@ namespace FlipFriends.Maps
         public readonly List<FPVector2> Spawns = new();
         public string CanonicalContent;
         public string ContentHash => QuantumMapConverter.Hash(CanonicalContent);
+
+        public void ApplyTo(Quantum.RuntimeConfig config, Quantum.Map map, string agreement)
+        {
+            config.Map = map;
+            config.CustomMapAgreement = agreement;
+            config.CustomMapSpawns = Spawns.ToArray();
+            config.CustomMapRopeCenters = Ropes.Select(rope => rope.Center).ToArray();
+            config.CustomMapRopeSizes = Ropes.Select(rope => rope.Size).ToArray();
+            config.BoxCenters = MovableBoxes.Select(box => box.Center).ToArray();
+            config.BoxSizes = MovableBoxes.Select(box => box.Size).ToArray();
+            config.Devices = Devices.ToArray();
+            config.TerrainContours = TerrainContours;
+        }
+
+        public void ApplyFallBoundary(Quantum.RuntimeConfig config)
+        {
+            config.EnableRespawn = true;
+            config.FallMinX = MinX; config.FallMaxX = MaxX; config.FallMinY = MinY;
+        }
     }
 
     [Serializable]
@@ -146,11 +165,8 @@ namespace FlipFriends.Maps
                     if (FPMath.Abs(box.Center.X - ground.Center.X) < (box.Size.X + ground.Size.X) / 2 &&
                         FPMath.Abs(box.Center.Y - ground.Center.Y) < (box.Size.Y + ground.Size.Y) / 2)
                         throw new InvalidOperationException("상자 초기 판정이 지형과 겹칩니다.");
-                foreach (var spawn in result.Spawns)
-                    if (FPMath.Abs(spawn.X - box.Center.X) < box.Size.X / 2 + Q(0.4f) &&
-                        FPMath.Abs(spawn.Y - box.Center.Y) < box.Size.Y / 2 + Q(0.5f))
-                        throw new InvalidOperationException("상자 초기 판정이 시작점과 겹칩니다.");
             }
+            ValidateBoxesAgainstSpawns(result);
             if (enableRespawn)
             {
                 ApplyRespawn(data, palette, result);
@@ -166,6 +182,20 @@ namespace FlipFriends.Maps
                 throw new InvalidOperationException("복귀 경계를 계산할 렌더러 범위가 없습니다.");
             var boundary = new FallBoundary(bounds);
             result.MinX = Q(boundary.MinX); result.MaxX = Q(boundary.MaxX); result.MinY = Q(boundary.MinY);
+            ValidateRespawnPlacement(result);
+        }
+
+        public static void ValidateBoxesAgainstSpawns(QuantumMapConversion result)
+        {
+            foreach (var box in result.MovableBoxes)
+            foreach (var spawn in result.Spawns)
+                if (FPMath.Abs(spawn.X - box.Center.X) < box.Size.X / 2 + Q(0.4f) &&
+                    FPMath.Abs(spawn.Y - box.Center.Y) < box.Size.Y / 2 + Q(0.5f))
+                    throw new InvalidOperationException("상자 초기 판정이 시작점과 겹칩니다.");
+        }
+
+        public static void ValidateRespawnPlacement(QuantumMapConversion result)
+        {
             bool Outside(FPVector2 p) => p.X < result.MinX || p.X > result.MaxX || p.Y < result.MinY;
             if (result.Spawns.Any(Outside) || result.MovableBoxes.Any(box => Outside(box.Center)))
                 throw new InvalidOperationException("복귀 초기 위치가 추락 경계 밖입니다.");

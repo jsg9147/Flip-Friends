@@ -17,7 +17,7 @@
 - 커스텀 탭은 `StageCustomMapItem` 전용 프리팹과 두께가 고정되는 `StageControlFrame`을 쓴다. `MapListUI.isTabbedLayout`에서는 임시 조작 버튼을 생성하지 않고, 맵 선택 후에도 탭을 유지한다. 빈 목록 안내와 `ScrollViewController`의 선택 추적을 연결했다.
 - 열린 탭은 연두색 배경과 밑줄로 계속 표시하고, 버튼의 입력 포커스·마우스 호버는 별도 주황색 바깥 테두리로 표시한다. 탭 배경은 Button의 색상 전환 대상에서 분리했다.
 - 기본/커스텀 맵의 `MapChoiceFeedback`은 동기화된 맵 종류·ID와 `SelectionChanged`를 따라 확정 맵에 연두색 배경·선택됨 배지를 유지한다. 입력 포커스·호버는 독립 주황색 테두리이며, 커스텀 목록 재생성 시에도 맵 ID로 표시를 복원한다.
-- Main Start는 `quantum-prepare`로 전환해 지원6종 맵 선택 → 오프라인 2인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
+- Main Start는 `quantum-prepare`로 전환해 지원6종 맵과 `공식 스테이지 선택`(공식 목록을 누를 때마다 차례로 고름, 7번째 버튼) 선택 → 오프라인 2인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
 - `Assets/01_Scripts/UI Scripts/Rebuild`에 공통 화면·내비게이션과 Main, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding 전용 화면이 있다.
 - `Main.unity`의 `MainUIManager` 오브젝트에 새 내비게이터가 연결되어 있다.
 - `Main.unity`의 화면 전환은 전부 `ScreenNavigator` 한 곳을 지난다. `UIScreen` 11개(`main-menu`, `mode-select`, `host-room`, `public-lobby`, `private-join`, `settings`, `settings-graphics-audio`, `settings-color`, `key-binding`, `key-binding-keyboard`, `key-binding-gamepad`)가 `ScreenNavigator.screens`에 명시적으로 등록되어 있고, 화면을 여닫는 버튼은 모두 `ScreenNavigationButton` 18개다.
@@ -61,6 +61,7 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 검증
 
+- Quantum 제품7: 준비 화면 7개 버튼(182 간격)·TMP overflow0, 공식 스테이지 선택→플레이/완료/재진입/메뉴 종료를 실제 Button 콜백으로 확인했다. 픽셀 클릭·게임패드 탐색은 미확인이다. [기록](Notes/2026-11-08-quantum-official-stage.md).
 - Quantum 제품5: Main 지원 맵5종·장치 플레이/완료/재진입·취소/실패/중복/씬왕복·잔존과 TMP overflow0을 확인했다. [공통 검증](QUANTUM_MIGRATION.md#검증), [실행·캡처 기록](Notes/2026-11-08-quantum-devices.md).
 - 2026-10월 Mirror UI: 화면/설정 트리 왕복·단일 버튼 콜백·포인터/탐색 전환·스크롤·선택 표시·설정 저장/복원·정수 저장값 마이그레이션을 검사했다. 당시 수치/입력 주입/실패 재현은 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존한다.
 - 사용자 Windows 빌드·Steam 로비/패드 실조작 확인은 당시 Mirror 경로의 결과다. Quantum 게임패드/키 재설정과 실제 다인 플레이 검증으로 간주하지 않는다.

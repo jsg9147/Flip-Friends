@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e064d949a3f6b543bb50c6be840d476, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumMapTerrain
+  contours:
+  - id: official-test/Grid/Ground/959f5f2627e44e532f53949ec45f41e58d80c6349bd3e51f8d02b98d68269cfe
+    vertices:
+    - {x: 98, y: 12.99997}
+    - {x: 98.00003, y: -2}
+    - {x: 141.99997, y: -2}
+    - {x: 141.99997, y: 13}
+  - id: official-test/Grid/Ground/6685715cea3ac0f2a160e20d7c16543907eafaa497d4a7f72a6800f5348903dc
+    vertices:
+    - {x: 99, y: 0.0000294}
+    - {x: 99.00003, y: 12}
+    - {x: 141, y: 11.99997}
+    - {x: 140.99997, y: 1}
+    - {x: 133, y: 0.99997073}
+    - {x: 132.99997, y: 0}
+    - {x: 121, y: -0.000029300001}
+    - {x: 121, y: -0.9999706}
+    - {x: 119, y: -0.9999706}
+    - {x: 118.99998, y: 0}
+  - id: official-test/Grid/Ground/0713b5bf2de509f20b6e814af2335abb4c60d374fb602b6c256c64b21e397b85
+    vertices:
+    - {x: 125, y: 7.9999704}
+    - {x: 125.00003, y: 4}
+    - {x: 129.99997, y: 4}
+    - {x: 129.99997, y: 8}
+  - id: official-test/Grid/Ground/6383c19c631d16a4196be3c824e79390aae86fdf20c81f50d743f9587eb2828b
+    vertices:
+    - {x: 126, y: 5.0000296}
+    - {x: 126.00003, y: 7}
+    - {x: 129, y: 6.9999704}
+    - {x: 129, y: 5.0000296}
+  renderCenter: {x: 120, y: 5.5}
+  renderSize: {x: 44, y: 15}
+  authoringSignature: "official-test/Grid/Ground;Merge;Outlines;Kinematic;Ground;\uBC18\uACBD0;a44c7736998c67584260cc05ac0e3758f7cb412d2175604b8b364abf5ea50a69"

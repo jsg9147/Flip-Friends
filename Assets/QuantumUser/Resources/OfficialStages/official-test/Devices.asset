@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224cf55341c3f7a42af0c07473955f20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumMapDevices
+  devices:
+  - id: "official-test/\uCCB4\uD06C\uD3EC\uC778\uD2B8"
+    authoringSignature: 
+    kind: 0
+    checkpointId: 1
+    center: {x: 123.5, y: 0.6}
+    size: {x: 1, y: 1}
+    destination: {x: 123.5, y: 0.6}
+    targetBoxHome: {x: 0, y: 0}
+    contactCenters: []
+    contactSizes: []
+    onlyBoxReset: 0
+    detectPlayers: 1
+    detectBoxes: 0
+    cooldownSeconds: 0
+    renderCenter: {x: 123.5, y: 0.6}
+    renderSize: {x: 1, y: 1}
+    defaultSprite: {fileID: 21300000, guid: e8e34133732eb474db79f939cb15f950, type: 3}
+    pressedSprite: {fileID: 0}
+  - id: official-test/Grid/Pit Reset
+    authoringSignature: "\uACF5\uC2DDReset;\uB300\uC0C1=True/True;\uC0C1\uC790\uB9CC=False;\uBAA9\uC801\uC9C0\uCC38\uC870=Reset \uBAA9\uC801\uC9C0;ec182ee849b2b0f08faf06eeac99b44fff668c8a860afaea9d6f50175ff7b9b0"
+    kind: 1
+    checkpointId: 0
+    center: {x: 119.5, y: -0.5}
+    size: {x: 1, y: 1}
+    destination: {x: 112.5, y: 0.6}
+    targetBoxHome: {x: 0, y: 0}
+    contactCenters:
+    - {x: 119.5, y: -0.5}
+    - {x: 120.5, y: -0.5}
+    contactSizes:
+    - {x: 1, y: 1}
+    - {x: 1, y: 1}
+    onlyBoxReset: 0
+    detectPlayers: 1
+    detectBoxes: 1
+    cooldownSeconds: 0
+    renderCenter: {x: 120, y: -0.5}
+    renderSize: {x: 2, y: 1}
+    defaultSprite: {fileID: 0}
+    pressedSprite: {fileID: 0}
+  - id: "official-test/\uC0C1\uC790 \uC18C\uD658"
+    authoringSignature: 
+    kind: 2
+    checkpointId: 0
+    center: {x: 100.5, y: 0.5}
+    size: {x: 1, y: 1}
+    destination: {x: 110.5, y: 0.5}
+    targetBoxHome: {x: 102.5, y: 0.5}
+    contactCenters: []
+    contactSizes: []
+    onlyBoxReset: 0
+    detectPlayers: 1
+    detectBoxes: 0
+    cooldownSeconds: 5
+    renderCenter: {x: 100.5, y: 0.5}
+    renderSize: {x: 1, y: 1}
+    defaultSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
+    pressedSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}

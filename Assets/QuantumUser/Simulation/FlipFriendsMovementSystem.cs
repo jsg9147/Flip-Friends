@@ -7,6 +7,7 @@ namespace Quantum
         private static readonly FP HalfWidth = FP.FromString("0.4");
         private static readonly FP HalfHeight = FP.FromString("0.5");
         private static readonly FP Skin = FP.FromString("0.02");
+        private static readonly FP MicroStep = FlipFriendsTerrain.MicroStep;
         private static readonly FP Gravity = FP.FromString("44");
         private static readonly FP JumpSpeed = FP.FromString("13.2");
         private static readonly FP MinJumpSpeed = FPMath.Sqrt(2 * Gravity * FP.FromString("1.2"));
@@ -82,6 +83,7 @@ namespace Quantum
             if (hasStomp) state.Velocity.X -= state.StompPushX;
             var verticalInput = FPMath.Clamp(input.Vertical, -FP._1, FP._1);
             bool isJumpHeld = input.Jump.IsDown;
+            bool onSteep = SteepSupport(frame, transform.Position, state, out var steepNormal);
             // Mirror와 같이 이전 틱의 등반 상태에서 점프를 먼저 처리하고 진입 제한을 줄인다.
             // 기존 BlockJump는 반복 밟기만 막으며 일반 점프 입력에는 연결되어 있지 않다.
             if (isJumpHeld && !state.WasJumpHeld && (!state.IsClimbed || state.UncontrollableTicks == 0))
@@ -94,8 +96,12 @@ namespace Quantum
                 }
                 else if (state.IsGrounded)
                 {
-                    state.Velocity.Y = JumpSpeed;
-                    if (input.Run.IsDown)
+                    if (onSteep)
+                    {
+                        if (horizontal != -FPMath.Sign(steepNormal.X)) state.Velocity = steepNormal * JumpSpeed;
+                    }
+                    else state.Velocity.Y = JumpSpeed;
+                    if (!onSteep && input.Run.IsDown)
                         state.Velocity.Y += RunJumpBonus * FPMath.Clamp((FPMath.Abs(state.Velocity.X) - WalkSpeed) / (RunSpeed - WalkSpeed), 0, 1);
                 }
             }
@@ -124,7 +130,10 @@ namespace Quantum
             var position = transform.Position;
             var half = FlipFriendsInteractionSystem.HalfSize(state);
             var offset = FlipFriendsInteractionSystem.Offset(state);
-            delta.X = LimitAxis(frame, position + offset, delta.X, true, half);
+            if (onSteep && delta.Y < 0 && !state.IsClimbed)
+                delta.X = FPMath.Sign(steepNormal.X) * FPMath.Abs(delta.Y) * steepNormal.Y / FPMath.Abs(steepNormal.X);
+            PrepareSlope(frame, ref position, ref delta, offset, half, state, default, state.IsClimbed);
+            delta.X = LimitHorizontalWithMicroStep(frame, ref position, offset, delta.X, half);
             delta.X = FlipFriendsInteractionSystem.LimitBoxes(frame, position + offset, half, delta.X, true, state.Held);
             delta.X = FlipFriendsInteractionSystem.LimitPlayerBodies(frame, state, position + offset, half, delta.X, true);
             if (state.Held.IsValid) delta.X = LimitHeldTerrain(frame, state.Held, position, delta.X, true);
@@ -136,7 +145,11 @@ namespace Quantum
             if (vertical > 0) vertical = FlipFriendsInteractionSystem.LimitPlayerBodies(frame, state, position + offset, half, vertical, false);
             state.IsGrounded = delta.Y < 0 && vertical != delta.Y;
             state.IsTouchingCeiling = delta.Y > 0 && vertical != delta.Y;
-            if (vertical != delta.Y) state.Velocity.Y = 0;
+            if (vertical != delta.Y)
+            {
+                if (state.IsGrounded && onSteep) state.Velocity.Y += steepNormal.Y * Gravity * frame.DeltaTime;
+                else state.Velocity.Y = 0;
+            }
             position.Y += vertical;
             state.IsTouchingLeft = LimitAxis(frame, position + offset, -Skin, true, half) != -Skin;
             state.IsTouchingRight = LimitAxis(frame, position + offset, Skin, true, half) != Skin;
@@ -161,6 +174,88 @@ namespace Quantum
             return result;
         }
 
+        public static void PrepareSlope(Frame frame, ref FPVector2 position, ref FPVector2 delta, FPVector2 offset,
+            FPVector2 half, FlipFriendsPlayer player, EntityRef boxEntity, bool isClimbed = false)
+        {
+            if (isClimbed || delta.X == 0) return;
+            var contours = frame.RuntimeConfig.TerrainContours;
+            var center = position + offset;
+            var foot = center.Y - half.Y;
+            var reach = FPMath.Abs(delta.X);
+            if (!FlipFriendsTerrain.Support(contours, center, half, foot - FPMath.Max(0, -delta.Y) - MicroStep,
+                foot + MicroStep, out var current, out var oldEdge)) return;
+            var next = center + new FPVector2(delta.X, 0);
+            if (!FlipFriendsTerrain.Support(contours, next, half, current - reach - MicroStep, current + reach + MicroStep,
+                out var target, out var edge) || !FlipFriendsTerrain.IsSlope(edge) && !FlipFriendsTerrain.IsSlope(oldEdge)) return;
+            // 위로 빠져나가는 점프는 붙잡지 않는다. 원본도 점프 상승량이 경사 상승량보다 크면 ClimbSlope를 적용하지 않는다.
+            var tangent = target > current ? edge : oldEdge;
+            if (!FlipFriendsTerrain.IsSlope(tangent)) tangent = edge;
+            if (!boxEntity.IsValid && !FlipFriendsTerrain.IsPlayerWalkable(tangent)) return;
+            var cosine = FPMath.Abs(tangent.X) / tangent.Magnitude;
+            var distance = delta.X * cosine;
+            if (target > current && !FlipFriendsTerrain.IsSlope(oldEdge))
+            {
+                var start = FPMath.Clamp(reach - (target - current) / FPMath.Abs(tangent.Y / tangent.X), 0, reach);
+                distance = FPMath.Sign(delta.X) * (start + (reach - start) * cosine);
+            }
+            if (delta.Y > 0 && target <= current) return;
+            if (delta.Y > FPMath.Abs(distance) * FPMath.Abs(tangent.Y / tangent.X)) return;
+
+            FP Limit(FPVector2 at, FP amount, bool horizontal)
+            {
+                var value = LimitAxis(frame, at + offset, amount, horizontal, half);
+                value = FlipFriendsInteractionSystem.LimitBoxes(frame, at + offset, half, value, horizontal,
+                    boxEntity.IsValid ? boxEntity : player.Held);
+                value = FlipFriendsInteractionSystem.LimitPlayerBodies(frame, player, at + offset, half, value, horizontal, isBox: boxEntity.IsValid);
+                if (player.Held.IsValid) value = LimitHeldTerrain(frame, player.Held, at, value, horizontal);
+                return value;
+            }
+
+            // 상승과 수평을 모두 검사한 뒤에만 위치를 반영한다. 막힌 머리/운반물 때문에 경사 속으로 들어가지 않는다.
+            var originalPosition = position;
+            FP low = 0, high = FPMath.Abs(distance), acceptedRise = 0;
+            FP sign = distance > 0 ? FP._1 : -FP._1;
+            bool CanMove(FP length, out FP rise)
+            {
+                rise = 0;
+                var destination = center + new FPVector2(length * sign, 0);
+                if (!FlipFriendsTerrain.Support(contours, destination, half, current - reach - MicroStep,
+                    current + reach + MicroStep, out var floor, out _)) return false;
+                // 유리수 변 교차의 바깥쪽 반올림과 수평 검사의 안쪽 반올림 사이 1raw 차이를 피한다.
+                // 아래 축 검사에서 즉시 지지면으로 돌아오므로 이 여유가 누적되지는 않는다.
+                rise = floor > foot ? floor - foot + FP.FromRaw(2) : FP._0;
+                if (Limit(originalPosition, rise, false) != rise) return false;
+                var raised = originalPosition + new FPVector2(0, rise);
+                return Limit(raised, length * sign, true) == length * sign;
+            }
+            if (CanMove(high, out var fullRise)) { low = high; acceptedRise = fullRise; }
+            else for (int i = 0; i < 16 && high.RawValue - low.RawValue > 1; i++)
+            {
+                var mid = (low + high) / 2;
+                if (CanMove(mid, out var rise)) { low = mid; acceptedRise = rise; } else high = mid;
+            }
+            delta.X = low * sign;
+            position.Y += acceptedRise;
+            if (acceptedRise > 0 && delta.Y > 0) delta.Y = -FP.FromRaw(2);
+            if (delta.Y <= 0 && FlipFriendsTerrain.Support(contours, center + new FPVector2(delta.X, 0), half,
+                current - reach - MicroStep, current + reach + MicroStep, out var destinationFloor, out _))
+                delta.Y -= FPMath.Max(0, foot - destinationFloor);
+        }
+
+        private static bool SteepSupport(Frame frame, FPVector2 position, FlipFriendsPlayer state, out FPVector2 normal)
+        {
+            normal = default;
+            var half = FlipFriendsInteractionSystem.HalfSize(state);
+            var center = position + FlipFriendsInteractionSystem.Offset(state);
+            var foot = center.Y - half.Y;
+            if (!FlipFriendsTerrain.Support(frame.RuntimeConfig.TerrainContours, center, half, foot - MicroStep, foot + MicroStep,
+                out _, out var edge) || FlipFriendsTerrain.IsPlayerWalkable(edge)) return false;
+            var tangent = edge / edge.Magnitude;
+            if (tangent.X < 0) tangent = -tangent;
+            normal = new FPVector2(-tangent.Y, tangent.X);
+            return true;
+        }
+
         private static int CountRopeContacts(Frame frame, FPVector2 position)
         {
             var centers = frame.RuntimeConfig.CustomMapRopeCenters;
@@ -182,7 +277,7 @@ namespace Quantum
             var extent = isHorizontal ? half.X : half.Y;
             var side = (isHorizontal ? half.Y : half.X) - Skin;
             var allowed = FPMath.Abs(distance);
-            // 좁은 테스트 지형용 세 줄 레이다. 경사·이동 발판·플레이어 상호작용은 별도 이식한다.
+            // SDK 정적 판정은 세 줄 레이로 검사하고 윤곽은 아래의 연속 AABB 검사로 보완한다.
             for (int ray = -1; ray <= 1; ray++)
             {
                 var origin = center + direction * (extent - Skin);
@@ -194,6 +289,22 @@ namespace Quantum
                     allowed = FPMath.Min(allowed, FPMath.Max(0, (hit.Value.Point - origin).Magnitude - Skin));
             }
             return FlipFriendsTerrain.Limit(frame.RuntimeConfig.TerrainContours, center, half, allowed * sign, isHorizontal);
+        }
+
+        // Composite가 만든 미세 기울기(작성기 허용 8raw 이하)가 수평 이동의 벽이 되지 않게, 막혔을 때만 그 높이까지 올라서 다시 잰다.
+        // 실제 벽은 8raw 위로 올라도 그대로 막히므로 결과가 같고 위치도 바뀌지 않는다.
+        public static FP LimitHorizontalWithMicroStep(Frame frame, ref FPVector2 position, FPVector2 offset, FP distance, FPVector2 half)
+        {
+            var limited = LimitAxis(frame, position + offset, distance, true, half);
+            // 직렬화 뒤 null 배열이 빈 배열로 돌아오므로 둘 다 윤곽 지형 없음으로 본다. 기존 박스 맵 동작은 바꾸지 않는다.
+            if (limited == distance || frame.RuntimeConfig.TerrainContours == null || frame.RuntimeConfig.TerrainContours.Length == 0) return limited;
+            var lift = LimitAxis(frame, position + offset, MicroStep, false, half);
+            if (lift <= 0) return limited;
+            var lifted = position + new FPVector2(0, lift);
+            var stepped = LimitAxis(frame, lifted + offset, distance, true, half);
+            if (FPMath.Abs(stepped) <= FPMath.Abs(limited)) return limited;
+            position = lifted;
+            return stepped;
         }
 
         public static FP LimitHeldTerrain(Frame frame, EntityRef held, FPVector2 position, FP distance, bool horizontal)

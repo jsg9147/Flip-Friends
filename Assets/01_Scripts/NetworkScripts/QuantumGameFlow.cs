@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FlipFriends.Maps;
@@ -21,6 +22,11 @@ namespace FlipFriends.Network
         public QuantumGameState State { get; private set; }
         public string Message { get; private set; } = "지원 맵을 골라 오프라인 2인 개발 실행을 시작하세요.";
         public QuantumCustomMapAsset[] SupportedMaps => supportedMaps;
+        // 공식 스테이지는 기존 사용례 뒤의 선택 번호를 쓴다. 기존 사용례 번호(0~5)는 바꾸지 않는다.
+        public IReadOnlyList<QuantumOfficialStageAsset> OfficialStages { get; private set; } = Array.Empty<QuantumOfficialStageAsset>();
+        public int MapCount => supportedMaps.Length + OfficialStages.Count;
+        public int OfficialMapIndex(int stage) => supportedMaps.Length + stage;
+        public IQuantumMapContent SelectedContent => SelectedMap < supportedMaps.Length ? supportedMaps[SelectedMap] : OfficialStages[SelectedMap - supportedMaps.Length];
         public int SelectedMap { get; private set; }
         public QuantumGameSession Session { get; private set; }
         public QuantumMapConversion Content { get; private set; }
@@ -41,6 +47,8 @@ namespace FlipFriends.Network
             if (deviceMap != null && !supportedMaps.Contains(deviceMap)) supportedMaps = supportedMaps.Concat(new[] { deviceMap }).ToArray();
             var tilemap = Resources.Load<QuantumCustomMapAsset>("FlipFriendsTilemapMapManifest");
             if (tilemap != null && !supportedMaps.Contains(tilemap)) supportedMaps = supportedMaps.Concat(new[] { tilemap }).ToArray();
+            try { OfficialStages = QuantumOfficialStageCatalog.LoadStages(); }
+            catch (InvalidOperationException error) { Debug.LogException(error, this); }
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
             Application.runInBackground = true;
@@ -49,9 +57,9 @@ namespace FlipFriends.Network
         public void SelectMap(int index)
         {
             if (State == QuantumGameState.Starting || State == QuantumGameState.Playing || State == QuantumGameState.Stopping) return;
-            if (index < 0 || index >= supportedMaps.Length) return;
+            if (index < 0 || index >= MapCount) return;
             SelectedMap = index;
-            SetState(QuantumGameState.Ready, "선택: " + supportedMaps[index].name);
+            SetState(QuantumGameState.Ready, "선택: " + SelectedContent.DisplayName);
         }
 
         public Task StartAsync(bool isOnline)
@@ -67,7 +75,7 @@ namespace FlipFriends.Network
             try
             {
                 var config = new RuntimeConfig();
-                Content = QuantumGameContent.Prepare(supportedMaps[SelectedMap], config);
+                Content = QuantumGameContent.Prepare(SelectedContent, config);
                 Session = new QuantumGameSession();
                 Session.InputSource = (frame, slot) => State == QuantumGameState.Playing ? QuantumPlayerInput.Read(slot) : default;
                 if (isOnline)

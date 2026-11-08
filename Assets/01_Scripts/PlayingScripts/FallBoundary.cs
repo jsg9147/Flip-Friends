@@ -32,8 +32,17 @@ public sealed class FallBoundary
     public static bool TryCreate(IEnumerable<GameObject> stageObjects, out FallBoundary boundary)
     {
         boundary = null;
+        if (!TryCalculateStageBounds(stageObjects, out Bounds stageBounds)) return false;
+
+        boundary = new FallBoundary(stageBounds);
+        return true;
+    }
+
+    // 공식 스테이지 작성기도 같은 렌더러 범위를 저장하도록 계산만 따로 연다.
+    public static bool TryCalculateStageBounds(IEnumerable<GameObject> stageObjects, out Bounds stageBounds)
+    {
         bool hasBounds = false;
-        Bounds stageBounds = default;
+        stageBounds = default;
 
         foreach (GameObject stageObject in stageObjects)
         {
@@ -59,10 +68,7 @@ public sealed class FallBoundary
             }
         }
 
-        if (!hasBounds) return false;
-
-        boundary = new FallBoundary(stageBounds);
-        return true;
+        return hasBounds;
     }
 
     // 커스텀 맵용. 맵 에디터 미리보기와 같은 계산을 써서 에디터에 보인 선에서 리스폰되게 한다.

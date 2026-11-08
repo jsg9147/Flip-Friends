@@ -11,6 +11,36 @@ namespace Quantum
 
     public static class FlipFriendsTerrain
     {
+        public static readonly FP MicroStep = FP.FromRaw(8);
+        private static readonly FP PlayerSlopeTangent = FPMath.Tan(FP.Pi / 6);
+
+        // 수평/수직과 Composite 양자화 오차는 종전 경로에 남긴다. 최대각 45도는 tan 비교로 정확히 포함한다.
+        public static bool IsSlope(FPVector2 edge) => FPMath.Min(FPMath.Abs(edge.X), FPMath.Abs(edge.Y)) > MicroStep;
+        public static bool IsWalkable(FPVector2 edge) => edge.X != 0 && FPMath.Abs(edge.Y) <= FPMath.Abs(edge.X);
+        public static bool IsPlayerWalkable(FPVector2 edge) => edge.X != 0 && FPMath.Abs(edge.Y / edge.X) <= PlayerSlopeTangent;
+
+        public static bool Support(FlipFriendsTerrainContour[] contours, FPVector2 center, FPVector2 half,
+            FP minHeight, FP maxHeight, out FP height, out FPVector2 edge)
+        {
+            height = minHeight; edge = default;
+            bool found = false;
+            if (contours == null) return false;
+            foreach (var contour in contours)
+            for (int i = 0; i < contour.Vertices.Length; i++)
+            {
+                var a = contour.Vertices[i]; var b = contour.Vertices[(i + 1) % contour.Vertices.Length];
+                var d = b - a;
+                if (!IsWalkable(d) || !Range(a.X, b.X, center.X - half.X, center.X + half.X, a.Y, b.Y, out _, out var top)) continue;
+                if (top < minHeight || top > maxHeight || found && top <= height) continue;
+                // 윤곽의 방향에 의존하지 않아 구멍 바닥은 지지하고 천장/섬 밑면은 제외한다.
+                var middle = (a + b) / 2;
+                if (Overlaps(contours, middle + new FPVector2(0, FP.FromRaw(4)), default) ||
+                    !Overlaps(contours, middle - new FPVector2(0, FP.FromRaw(4)), default)) continue;
+                height = top; edge = d; found = true;
+            }
+            return found;
+        }
+
         public static bool Overlaps(FlipFriendsTerrainContour[] contours, FPVector2 center, FPVector2 half)
         {
             if (contours == null) return false;

@@ -18,6 +18,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     private Button respawnMapButton;
     private Button deviceMapButton;
     private Button tilemapButton;
+    private Button officialStageButton;
+    private System.Collections.Generic.IReadOnlyList<FlipFriends.Maps.QuantumOfficialStageAsset> officialStages = Array.Empty<FlipFriends.Maps.QuantumOfficialStageAsset>();
 
     protected override void Awake()
     {
@@ -89,12 +91,43 @@ public sealed class QuantumPrepareScreen : NavigableScreen
                 ((RectTransform)label.transform).sizeDelta = new Vector2(195, 70); label.enableAutoSizing = true;
             }
         }
+        AddOfficialStageButton();
         staticMapButton.onClick.AddListener(() => flow.SelectMap(0));
         ropeMapButton.onClick.AddListener(() => flow.SelectMap(1));
         offlineButton.onClick.AddListener(() => StartGame(false));
         onlineButton.onClick.AddListener(() => StartGame(true));
         cancelButton.onClick.AddListener(OnCancel);
         legacyButton.onClick.AddListener(() => Navigator.Open("mode-select"));
+    }
+
+    // 공식 스테이지는 개수가 늘어나므로 버튼 하나로 목록을 차례로 고른다.
+    private void AddOfficialStageButton()
+    {
+        try { officialStages = FlipFriends.Maps.QuantumOfficialStageCatalog.LoadStages(); }
+        catch (InvalidOperationException error) { Debug.LogException(error, this); return; }
+        if (officialStages.Count == 0 || tilemapButton == null) return;
+        officialStageButton = Instantiate(ropeMapButton, ropeMapButton.transform.parent);
+        officialStageButton.name = "공식 스테이지 선택";
+        officialStageButton.onClick.AddListener(SelectNextOfficialStage);
+        GetComponent<ButtonSelectController>().tagetButtonList.Insert(6, officialStageButton);
+        var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton, respawnMapButton, deviceMapButton, tilemapButton, officialStageButton };
+        for (int i = 0; i < choices.Length; i++)
+        {
+            var rect = (RectTransform)choices[i].transform;
+            rect.anchoredPosition = new Vector2((i - 3f) * OfficialRowSpacing, rect.anchoredPosition.y);
+            rect.sizeDelta = new Vector2(OfficialRowSpacing - 10, rect.sizeDelta.y);
+            var label = choices[i].GetComponentInChildren<TMP_Text>();
+            ((RectTransform)label.transform).sizeDelta = new Vector2(OfficialRowSpacing - 20, 70); label.enableAutoSizing = true;
+        }
+    }
+
+    private const float OfficialRowSpacing = 182;
+
+    private void SelectNextOfficialStage()
+    {
+        int first = flow.OfficialMapIndex(0);
+        int next = flow.SelectedMap >= first ? flow.SelectedMap + 1 : first;
+        flow.SelectMap(next < flow.MapCount ? next : first);
     }
 
     protected override void OnShow()
@@ -135,8 +168,14 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         if (respawnMapButton != null) respawnMapButton.interactable = !isBusy;
         if (deviceMapButton != null) deviceMapButton.interactable = !isBusy;
         if (tilemapButton != null) tilemapButton.interactable = !isBusy;
+        bool isOfficial = flow.SelectedMap >= flow.SupportedMaps.Length;
+        if (officialStageButton != null)
+        {
+            officialStageButton.interactable = !isBusy;
+            officialStageButton.GetComponentInChildren<TMP_Text>().text = "공식 스테이지\n" + (isOfficial ? flow.SelectedContent.DisplayName : $"{officialStages.Count}개");
+        }
         cancelButton.interactable = flow.State != QuantumGameState.Stopping;
-        status.text = flow.Message + "\n선택 맵: " + (flow.SelectedMap == 0 ? "정적 지형" : flow.SelectedMap == 1 ? "로프" : flow.SelectedMap == 2 ? "밟기/운반/상자" : flow.SelectedMap == 3 ? "리셋/추락 복귀" : flow.SelectedMap == 4 ? "체크포인트/구간/소환" : "Tilemap 사용례 (전체 스테이지 아님)") +
+        status.text = flow.Message + "\n선택 맵: " + (flow.SelectedMap == 0 ? "정적 지형" : flow.SelectedMap == 1 ? "로프" : flow.SelectedMap == 2 ? "밟기/운반/상자" : flow.SelectedMap == 3 ? "리셋/추락 복귀" : flow.SelectedMap == 4 ? "체크포인트/구간/소환" : isOfficial ? "공식 스테이지 " + flow.SelectedContent.DisplayName : "Tilemap 사용례 (전체 스테이지 아님)") +
             "\n2인 / 이동/로프/운반/상자/체크포인트/구간/소환/도착 지원\n리셋 1P R / 2P Backspace | 전체 스테이지는 미지원";
     }
 

@@ -39,9 +39,8 @@ namespace FlipFriends.Maps
                 for (int i = 0; i < vertices.Length; i++)
                 {
                     var d = vertices[(i + 1) % vertices.Length] - vertices[i];
-                    // Composite가 생성한 미세 기울기는 그대로 보존하고 본격적인 경사는 별도 이동 이식까지 거부한다.
-                    if (FPMath.Min(FPMath.Abs(d.X), FPMath.Abs(d.Y)) > FP.FromRaw(8))
-                        throw new InvalidOperationException($"지형 {source.id} 위치={vertices[i]}: 경사 이동 미지원입니다.");
+                    if (FlipFriendsTerrain.IsSlope(d) && !FlipFriendsTerrain.IsWalkable(d))
+                        throw new InvalidOperationException($"지형 {source.id} 변={i} 위치={vertices[i]}→{vertices[(i + 1) % vertices.Length]}: 최대 지원 경사 45도 초과입니다.");
                 }
                 FP area = 0;
                 for (int i = 0; i < vertices.Length; i++) area += Cross(vertices[i], vertices[(i + 1) % vertices.Length]);

@@ -125,7 +125,7 @@ public static class QuantumTilemapChecks
         for (int x = -22; x <= 22; x++) for (int y = -5; y <= 62; y++)
             Require(FlipFriendsTerrain.Overlaps(contours, new FPVector2(x, y), half) == FlipFriendsTerrain.Overlaps(reversed, new FPVector2(x, y), half), "윤곽 순서/방향 독립");
         var manifest = AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(QuantumTilemapSetup.ManifestPath);
-        Require(config.CustomMapAgreement.StartsWith(manifest.Agreement + ":제품6:"), "제품6/6:6 합의");
+        Require(config.CustomMapAgreement.StartsWith(manifest.Agreement + ":제품8:"), "제품8/6:6 합의");
         CheckContent();
     }
     private static void CheckContent()
@@ -157,7 +157,7 @@ public static class QuantumTilemapChecks
             cloneDevices.Configure(Enumerable.Repeat(devices.Sources[0], 33).ToArray()); Reject(() => Convert(terrain, cloneDevices));
             cloneTerrain.Sources[0].id = cloneTerrain.Sources[1].id; Reject(() => Convert(cloneTerrain, devices));
             UnityEngine.Object.DestroyImmediate(cloneTerrain); cloneTerrain = UnityEngine.Object.Instantiate(terrain);
-            cloneTerrain.Sources[0].vertices[0].x += 1; Reject(() => Convert(cloneTerrain, devices));
+            cloneTerrain.Sources[0].vertices[1] = cloneTerrain.Sources[0].vertices[0] + new Vector2(0.25f, 1); Reject(() => Convert(cloneTerrain, devices));
             UnityEngine.Object.DestroyImmediate(cloneTerrain); cloneTerrain = UnityEngine.Object.Instantiate(terrain);
             cloneTerrain.Sources[0].vertices[0].x = float.NaN; Reject(() => Convert(cloneTerrain, devices));
             var large = new QuantumTerrainSource { id = "초과", vertices = Enumerable.Range(0, 513).Select(i => new Vector2(i, 0)).ToArray() };

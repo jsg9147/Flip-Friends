@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20383465417881e4faa925e49e8018fc, type: 3}
+  m_Name: Stage
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumOfficialStageAsset
+  displayName: "\uACBD\uC0AC \uC2DC\uD5D8"
+  data:
+    stageId: official-slope-test
+    spawns:
+    - {x: -4, y: 0.6}
+    - {x: -2, y: 0.6}
+    boxes:
+    - {x: -5, y: 0.5}
+    goals:
+    - center: {x: 25, y: 0.6}
+      size: {x: 1, y: 1}
+    ropes: []
+    renderBounds:
+      m_Center: {x: 12, y: 0.5, z: 0.5}
+      m_Extent: {x: 18, y: 3.5, z: 0.5}
+  bakedMap: {fileID: 11400000, guid: 7aacb8f8950d01a4596664de77355e72, type: 2}
+  terrain: {fileID: 11400000, guid: 5ce171a8c30bab54bbdf6b300d76f0fa, type: 2}
+  devices: {fileID: 0}
+  contentHash: ead65eb3cba1920f83885f660ce53f09e8153d85cbd5001c616196139d230287
