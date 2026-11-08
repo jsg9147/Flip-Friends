@@ -13,6 +13,11 @@ namespace FlipFriends.Maps
         [SerializeField] private string contentHash;
         [SerializeField] private int conversionVersion;
         [SerializeField] private int paletteVersion;
+        [SerializeField] private QuantumMapDevices devices;
+        [SerializeField] private QuantumMapTerrain terrain;
+        public void ConfigureTerrain(QuantumMapTerrain value) => terrain = value;
+
+        public void ConfigureDevices(QuantumMapDevices value) => devices = value;
 
         public string ContentHash => contentHash;
         public string Agreement => $"{conversionVersion}:{paletteVersion}:{contentHash}";
@@ -23,16 +28,19 @@ namespace FlipFriends.Maps
             palette = mapPalette;
             bakedMap = map;
             contentHash = conversion.ContentHash;
-            conversionVersion = QuantumMapConverter.ConversionVersion;
-            paletteVersion = QuantumMapConverter.PaletteVersion;
+            conversionVersion = conversion.Version;
+            paletteVersion = conversion.Version;
         }
 
         public QuantumMapConversion ValidateAndApply(RuntimeConfig config)
         {
-            if (source == null || bakedMap == null || conversionVersion != QuantumMapConverter.ConversionVersion ||
-                paletteVersion != QuantumMapConverter.PaletteVersion)
+            if (source == null || bakedMap == null || conversionVersion < 2 || conversionVersion > 6 || paletteVersion != conversionVersion ||
+                (conversionVersion >= 5) != (devices != null) || (conversionVersion == 6) != (terrain != null))
                 throw new InvalidOperationException("Quantum 맵 연결 또는 변환/팔레트 버전이 일치하지 않습니다.");
-            var conversion = QuantumMapConverter.Convert(JsonUtility.FromJson<MapData>(source.text), palette);
+            var conversion = QuantumMapConverter.Convert(JsonUtility.FromJson<MapData>(source.text), palette, conversionVersion >= 4);
+            if (devices != null) devices.Apply(conversion);
+            if (terrain != null) terrain.Apply(conversion);
+            if (conversionVersion != conversion.Version) throw new InvalidOperationException("콘텐츠에 맞는 변환/팔레트 버전이 아닙니다.");
             if (conversion.ContentHash != contentHash || bakedMap.StaticColliders2D.Length != conversion.Boxes.Count ||
                 bakedMap.MapEntities.Length != 0 || bakedMap.StaticColliders3D.Length != 0)
                 throw new InvalidOperationException("맵 콘텐츠 해시 또는 베이크 구성이 일치하지 않습니다.");
@@ -49,7 +57,18 @@ namespace FlipFriends.Maps
             config.CustomMapSpawns = conversion.Spawns.ToArray();
             config.CustomMapRopeCenters = conversion.Ropes.Select(rope => rope.Center).ToArray();
             config.CustomMapRopeSizes = conversion.Ropes.Select(rope => rope.Size).ToArray();
+            config.BoxCenters = conversion.MovableBoxes.Select(box => box.Center).ToArray();
+            config.BoxSizes = conversion.MovableBoxes.Select(box => box.Size).ToArray();
+            config.Devices = conversion.Devices.ToArray();
+            config.TerrainContours = conversion.TerrainContours;
             return conversion;
+        }
+
+        public void ApplyRespawn(RuntimeConfig config, QuantumMapConversion conversion)
+        {
+            if (devices == null) QuantumMapConverter.ApplyRespawn(JsonUtility.FromJson<MapData>(source.text), palette, conversion);
+            config.EnableRespawn = true;
+            config.FallMinX = conversion.MinX; config.FallMaxX = conversion.MaxX; config.FallMinY = conversion.MinY;
         }
 
         private static string BoxKey(Photon.Deterministic.FPVector2 position, Photon.Deterministic.FPVector2 size) =>
