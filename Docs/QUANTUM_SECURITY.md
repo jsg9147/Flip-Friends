@@ -5,7 +5,7 @@
 
 ## 현재 상태
 
-- 현재 본 게임은 Mirror + FizzySteamworks 구조이며 별도 Quantum 테스트 씬을 추가했다. `SteamPhotonTicket`과 온라인 시작 경계는 구현했지만 서버 구매 인증·차단은 미완료다. 이 문서는 출시 보호 기능의 구현 증거가 아니다.
+- Main Start의 오프라인 2인 지원 맵 경로는 Quantum으로 연결했다. 기존 Steam 로비·초대·전체 스테이지는 Mirror/FizzySteamworks로 남아 있다. 제품 `QuantumGameSession`은 별도 출시 Photon App ID와 `SteamPhotonTicket`을 요구하며, 미설정·개발 앱 선택은 실패 UI로 끝난다. 서버 구매 인증·차단은 미완료이고 이 문서는 출시 보호 기능의 구현 증거가 아니다.
 - Steamworks.NET 2024.8.0의 `GetAuthTicketForWebApi`·응답 콜백·`CancelAuthTicket`을 사용한다. 공급자는 `version=2`, `identity=photon`, `verifyOwnership=true`가 필요하다. 사용자가 Steam 출시 앱 미발급을 확인해 실제 공급자 설정과 실계정 검증은 차단됐다.
 - 개발 Quantum 앱은 생성했으며 에디터 전용 클라우드 시험에 사용한다. 출시 앱·Publisher 키·Steam 공급자는 미설정이다. 게임 온라인 경로는 Steam 티켓 실패 시 익명 접속으로 대체하지 않는다.
 - 목표는 Steam 이용 권한이 없는 사용자의 공식 Photon 온라인 접속을 차단하는 것이다. 로컬 복제·변조 실행과 비공식 서버까지 완전히 차단한다고 보장하지 않는다.
@@ -45,6 +45,11 @@
 
 ## 검증
 
+- 제품5/ff-product-5 새 개발 Photon 장치 맵 두 연결은 asia·같은 PC·주입 없음, 확정19개/완료2687·RTT114/115ms 일치와 종료 정리를 통과했다. [장치 기록](Notes/2026-11-08-quantum-devices.md)은 출시 Steam 공급자/소유권/익명 차단 검증이 아니다. 출시 앱 미발급·보안 Draft를 유지한다.
+
+- 2026-11-08 제품4/ff-product-4 새 개발 Photon 복귀19개·완료2640/RTT108·116ms, 로프/이동15개·상호작용11개 체크섬 일치·출시 설정 실패/익명 폴백 없음 유지. asia·같은 PC·주입 없음이며 [새 기록](Notes/2026-11-08-quantum-respawn.md)은 출시 Steam 인증 증거가 아니다. Draft를 유지한다.
+- 2026-11-07 상호작용 제품3·AppVersion ff-product-3에서 새 개발 Photon 두 연결을 실행했다. asia·같은 PC·주입 없음, 상호작용 확정 체크섬11개/완료1586 일치, 종료 정리와 출시 설정 실패/익명 폴백 없음은 유지했다. [새 측정](Notes/2026-11-07-quantum-interactions.md)은 출시 Steam 공급자·소유권·익명 차단 검증이 아니다. Draft를 유지한다.
+- 2026-11-06 Main 제품 온라인 버튼의 출시 설정 미완료 실패·재시도 UI와 익명 폴백 없음, 제품 개발 앱의 대기 취소·콘텐츠 불일치 거부·종료 자원 정리를 새 실행으로 확인했다. 개발 접속 메서드는 `UNITY_EDITOR`에만 있다. [실행 기록](Notes/2026-11-06-quantum-product-integration.md)은 출시 서버 인증·소유권·익명 차단이나 플레이어 빌드 실조작 검증이 아니다.
 - SDK 임포트·오프라인 2인·입력 재생을 실행했으며 범위는 실행 기반 문서를 따른다. 구매 인증·차단 효과·Steam 실계정 테스트는 미실행이다.
 - 허용: 정당한 이용 권한이 있는 서로 다른 계정 2~4개의 인증·친구 초대·입장·맵 전송·플레이.
 - 거부: 티켓 누락·잘못된 티켓·다른 App ID 티켓·미소유 계정·익명 연결·다른 인증 경로로 출시 앱 직접 접속.

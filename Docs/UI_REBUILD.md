@@ -6,6 +6,8 @@
 
 ## 현재 상태
 
+- Main 준비 화면에 여섯 번째 `Tilemap 지형/Reset` 사용례를 등록했다. 원본 전체 스테이지 지원과 구분해 안내하며 기존 시작 전 검증·실패/취소·완료/종료·재진입 수명을 사용한다. Main 미저장 씬은 보존하고 별도 작성 씬/콘텐츠만 저장했다. [Tilemap 기록](Notes/2026-11-08-quantum-tilemap.md).
+
 - Main 준비 화면에 다섯 번째 체크포인트/구간/소환 맵을 런타임 등록했다. 다섯 버튼의 배치·선택 목록과 지원 안내를 갱신하고 Main 미저장 씬은 보존했다. 플레이 화면의 체크포인트/구간 표지와 소환 버튼/남은 초는 프레임 상태를 표시한다. [장치 구현·검증](Notes/2026-11-08-quantum-devices.md)을 따른다.
 - Quantum 고정Reset은1P R·2P Backspace다. 기존 UI 키 재설정/게임패드 저장은 Quantum 게임 입력에 아직 미연결이다.
 - `InputManager`가 공통 `UIInputModeController`를 생성한다. 마우스 이동(3px 누적)·클릭·휠은 포인터 모드, 기존 Move/Navigate·Submit·Cancel·Menu 액션은 탐색 모드로 전환한다(방향 입력 임계값 0.5). 포인터 모드는 버튼 포커스를 해제하고 텍스트 입력 포커스는 유지하며, 탐색 모드는 커서와 uGUI 포인터 판정을 쉬고 마지막 유효 선택을 복원한다. 화면 기본 선택과 `ButtonSelectController` 자동 복원도 모드를 따른다. 확정 맵·열린 탭의 표시는 변경하지 않는다.
@@ -15,7 +17,7 @@
 - 커스텀 탭은 `StageCustomMapItem` 전용 프리팹과 두께가 고정되는 `StageControlFrame`을 쓴다. `MapListUI.isTabbedLayout`에서는 임시 조작 버튼을 생성하지 않고, 맵 선택 후에도 탭을 유지한다. 빈 목록 안내와 `ScrollViewController`의 선택 추적을 연결했다.
 - 열린 탭은 연두색 배경과 밑줄로 계속 표시하고, 버튼의 입력 포커스·마우스 호버는 별도 주황색 바깥 테두리로 표시한다. 탭 배경은 Button의 색상 전환 대상에서 분리했다.
 - 기본/커스텀 맵의 `MapChoiceFeedback`은 동기화된 맵 종류·ID와 `SelectionChanged`를 따라 확정 맵에 연두색 배경·선택됨 배지를 유지한다. 입력 포커스·호버는 독립 주황색 테두리이며, 커스텀 목록 재생성 시에도 맵 ID로 표시를 복원한다.
-- Main Start는 `quantum-prepare`로 전환해 지원5종 맵 선택 → 오프라인 2인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
+- Main Start는 `quantum-prepare`로 전환해 지원6종 맵 선택 → 오프라인 2인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
 - `Assets/01_Scripts/UI Scripts/Rebuild`에 공통 화면·내비게이션과 Main, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding 전용 화면이 있다.
 - `Main.unity`의 `MainUIManager` 오브젝트에 새 내비게이터가 연결되어 있다.
 - `Main.unity`의 화면 전환은 전부 `ScreenNavigator` 한 곳을 지난다. `UIScreen` 11개(`main-menu`, `mode-select`, `host-room`, `public-lobby`, `private-join`, `settings`, `settings-graphics-audio`, `settings-color`, `key-binding`, `key-binding-keyboard`, `key-binding-gamepad`)가 `ScreenNavigator.screens`에 명시적으로 등록되어 있고, 화면을 여닫는 버튼은 모두 `ScreenNavigationButton` 18개다.
