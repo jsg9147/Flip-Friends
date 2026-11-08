@@ -49,6 +49,132 @@ namespace Quantum.Prototypes.Unity {
   using RuntimeInitializeOnLoadMethodAttribute = UnityEngine.RuntimeInitializeOnLoadMethodAttribute;
   #endif //;
   
+  [System.SerializableAttribute()]
+  public unsafe partial class FlipFriendsBoxPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.FlipFriendsBoxPrototype> {
+    public Int32 ContentIndex;
+    public FPVector2 HomePosition;
+    public FPVector2 RespawnPosition;
+    public QBoolean RespawnPending;
+    public Int32 RespawnFrame;
+    public Int32 RespawnCount;
+    public FPVector2 HalfSize;
+    public FPVector2 Velocity;
+    public FP VelocityXSmoothing;
+    public Quantum.QuantumEntityPrototype Carrier;
+    public QBoolean IsGrounded;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.FlipFriendsBoxPrototype prototype);
+    public override Quantum.Prototypes.FlipFriendsBoxPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.FlipFriendsBoxPrototype();
+      converter.Convert(this.ContentIndex, out result.ContentIndex);
+      converter.Convert(this.HomePosition, out result.HomePosition);
+      converter.Convert(this.RespawnPosition, out result.RespawnPosition);
+      converter.Convert(this.RespawnPending, out result.RespawnPending);
+      converter.Convert(this.RespawnFrame, out result.RespawnFrame);
+      converter.Convert(this.RespawnCount, out result.RespawnCount);
+      converter.Convert(this.HalfSize, out result.HalfSize);
+      converter.Convert(this.Velocity, out result.Velocity);
+      converter.Convert(this.VelocityXSmoothing, out result.VelocityXSmoothing);
+      converter.Convert(this.Carrier, out result.Carrier);
+      converter.Convert(this.IsGrounded, out result.IsGrounded);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
+  public unsafe partial class FlipFriendsPlayerPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.FlipFriendsPlayerPrototype> {
+    public PlayerRef Player;
+    public FPVector2 HomePosition;
+    public QBoolean HasCheckpoint;
+    public Int32 CheckpointId;
+    public FPVector2 CheckpointPosition;
+    public FPVector2 RespawnPosition;
+    public QBoolean SectionPending;
+    public Int32 SectionCount;
+    public QBoolean WasResetHeld;
+    public QBoolean RespawnPending;
+    public Int32 RespawnFrame;
+    public Int32 RespawnCount;
+    public FPVector2 Velocity;
+    public FP VelocityXSmoothing;
+    public QBoolean WasJumpHeld;
+    public QBoolean IsGrounded;
+    public QBoolean IsTouchingLeft;
+    public QBoolean IsTouchingRight;
+    public QBoolean IsTouchingCeiling;
+    public QBoolean IsClimbed;
+    public Int32 RopeContactCount;
+    public Int32 ClimbBlockTicks;
+    public QBoolean IsFinished;
+    public Int32 FinishedFrame;
+    public FPVector2 PreviousPosition;
+    public Quantum.QuantumEntityPrototype StompTarget;
+    public Int32 JumpBlockTicks;
+    public Int32 ShrinkTicks;
+    public Int32 StompCount;
+    public Int32 StompFrame;
+    public FP StompPushX;
+    public Quantum.QuantumEntityPrototype Carrier;
+    public Quantum.QuantumEntityPrototype Held;
+    public QBoolean WasInteractHeld;
+    public Int32 Facing;
+    public Int32 ReleaseFrame;
+    public Int32 EscapeFrame;
+    public Int32 EscapeRequestFrame;
+    public Int32 UncontrollableTicks;
+    public Int32 PickupCount;
+    public Int32 ThrowCount;
+    public Int32 PutDownCount;
+    public Int32 EscapeCount;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.FlipFriendsPlayerPrototype prototype);
+    public override Quantum.Prototypes.FlipFriendsPlayerPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.FlipFriendsPlayerPrototype();
+      converter.Convert(this.Player, out result.Player);
+      converter.Convert(this.HomePosition, out result.HomePosition);
+      converter.Convert(this.HasCheckpoint, out result.HasCheckpoint);
+      converter.Convert(this.CheckpointId, out result.CheckpointId);
+      converter.Convert(this.CheckpointPosition, out result.CheckpointPosition);
+      converter.Convert(this.RespawnPosition, out result.RespawnPosition);
+      converter.Convert(this.SectionPending, out result.SectionPending);
+      converter.Convert(this.SectionCount, out result.SectionCount);
+      converter.Convert(this.WasResetHeld, out result.WasResetHeld);
+      converter.Convert(this.RespawnPending, out result.RespawnPending);
+      converter.Convert(this.RespawnFrame, out result.RespawnFrame);
+      converter.Convert(this.RespawnCount, out result.RespawnCount);
+      converter.Convert(this.Velocity, out result.Velocity);
+      converter.Convert(this.VelocityXSmoothing, out result.VelocityXSmoothing);
+      converter.Convert(this.WasJumpHeld, out result.WasJumpHeld);
+      converter.Convert(this.IsGrounded, out result.IsGrounded);
+      converter.Convert(this.IsTouchingLeft, out result.IsTouchingLeft);
+      converter.Convert(this.IsTouchingRight, out result.IsTouchingRight);
+      converter.Convert(this.IsTouchingCeiling, out result.IsTouchingCeiling);
+      converter.Convert(this.IsClimbed, out result.IsClimbed);
+      converter.Convert(this.RopeContactCount, out result.RopeContactCount);
+      converter.Convert(this.ClimbBlockTicks, out result.ClimbBlockTicks);
+      converter.Convert(this.IsFinished, out result.IsFinished);
+      converter.Convert(this.FinishedFrame, out result.FinishedFrame);
+      converter.Convert(this.PreviousPosition, out result.PreviousPosition);
+      converter.Convert(this.StompTarget, out result.StompTarget);
+      converter.Convert(this.JumpBlockTicks, out result.JumpBlockTicks);
+      converter.Convert(this.ShrinkTicks, out result.ShrinkTicks);
+      converter.Convert(this.StompCount, out result.StompCount);
+      converter.Convert(this.StompFrame, out result.StompFrame);
+      converter.Convert(this.StompPushX, out result.StompPushX);
+      converter.Convert(this.Carrier, out result.Carrier);
+      converter.Convert(this.Held, out result.Held);
+      converter.Convert(this.WasInteractHeld, out result.WasInteractHeld);
+      converter.Convert(this.Facing, out result.Facing);
+      converter.Convert(this.ReleaseFrame, out result.ReleaseFrame);
+      converter.Convert(this.EscapeFrame, out result.EscapeFrame);
+      converter.Convert(this.EscapeRequestFrame, out result.EscapeRequestFrame);
+      converter.Convert(this.UncontrollableTicks, out result.UncontrollableTicks);
+      converter.Convert(this.PickupCount, out result.PickupCount);
+      converter.Convert(this.ThrowCount, out result.ThrowCount);
+      converter.Convert(this.PutDownCount, out result.PutDownCount);
+      converter.Convert(this.EscapeCount, out result.EscapeCount);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
 }
 #pragma warning restore 0109
 #pragma warning restore 1591

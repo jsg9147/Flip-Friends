@@ -50,10 +50,83 @@ namespace Quantum.Prototypes {
   #endif //;
   
   [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsPlayer))]
-  public unsafe partial class FlipFriendsPlayerPrototype : ComponentPrototype<Quantum.FlipFriendsPlayer> {
-    public PlayerRef Player;
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsBox))]
+  public unsafe class FlipFriendsBoxPrototype : ComponentPrototype<Quantum.FlipFriendsBox> {
+    public Int32 ContentIndex;
+    public FPVector2 HomePosition;
+    public FPVector2 RespawnPosition;
+    public QBoolean RespawnPending;
+    public Int32 RespawnFrame;
+    public Int32 RespawnCount;
+    public FPVector2 HalfSize;
     public FPVector2 Velocity;
+    public FP VelocityXSmoothing;
+    public MapEntityId Carrier;
+    public QBoolean IsGrounded;
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsBox component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsBox result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.HomePosition = this.HomePosition;
+        result.RespawnPosition = this.RespawnPosition;
+        result.RespawnPending = this.RespawnPending;
+        result.RespawnFrame = this.RespawnFrame;
+        result.RespawnCount = this.RespawnCount;
+        result.HalfSize = this.HalfSize;
+        result.Velocity = this.Velocity;
+        result.VelocityXSmoothing = this.VelocityXSmoothing;
+        PrototypeValidator.FindMapEntity(this.Carrier, in context, out result.Carrier);
+        result.IsGrounded = this.IsGrounded;
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsDevice))]
+  public unsafe partial class FlipFriendsDevicePrototype : ComponentPrototype<Quantum.FlipFriendsDevice> {
+    public Int32 ContentIndex;
+    public Int32 PlayerContacts;
+    public UInt64 BoxContacts;
+    public Int32 CooldownUntil;
+    public Int32 LastSummonFrame;
+    public Int32 SuccessCount;
+    public Int32 FailureCount;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsDevice result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsDevice component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsDevice result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.PlayerContacts = this.PlayerContacts;
+        result.BoxContacts = this.BoxContacts;
+        result.CooldownUntil = this.CooldownUntil;
+        result.LastSummonFrame = this.LastSummonFrame;
+        result.SuccessCount = this.SuccessCount;
+        result.FailureCount = this.FailureCount;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsPlayer))]
+  public unsafe class FlipFriendsPlayerPrototype : ComponentPrototype<Quantum.FlipFriendsPlayer> {
+    public PlayerRef Player;
+    public FPVector2 HomePosition;
+    public QBoolean HasCheckpoint;
+    public Int32 CheckpointId;
+    public FPVector2 CheckpointPosition;
+    public FPVector2 RespawnPosition;
+    public QBoolean SectionPending;
+    public Int32 SectionCount;
+    public QBoolean WasResetHeld;
+    public QBoolean RespawnPending;
+    public Int32 RespawnFrame;
+    public Int32 RespawnCount;
+    public FPVector2 Velocity;
+    public FP VelocityXSmoothing;
+    public QBoolean WasJumpHeld;
     public QBoolean IsGrounded;
     public QBoolean IsTouchingLeft;
     public QBoolean IsTouchingRight;
@@ -61,7 +134,27 @@ namespace Quantum.Prototypes {
     public QBoolean IsClimbed;
     public Int32 RopeContactCount;
     public Int32 ClimbBlockTicks;
-    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsPlayer result, in PrototypeMaterializationContext context);
+    public QBoolean IsFinished;
+    public Int32 FinishedFrame;
+    public FPVector2 PreviousPosition;
+    public MapEntityId StompTarget;
+    public Int32 JumpBlockTicks;
+    public Int32 ShrinkTicks;
+    public Int32 StompCount;
+    public Int32 StompFrame;
+    public FP StompPushX;
+    public MapEntityId Carrier;
+    public MapEntityId Held;
+    public QBoolean WasInteractHeld;
+    public Int32 Facing;
+    public Int32 ReleaseFrame;
+    public Int32 EscapeFrame;
+    public Int32 EscapeRequestFrame;
+    public Int32 UncontrollableTicks;
+    public Int32 PickupCount;
+    public Int32 ThrowCount;
+    public Int32 PutDownCount;
+    public Int32 EscapeCount;
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.FlipFriendsPlayer component = default;
         Materialize((Frame)f, ref component, in context);
@@ -69,7 +162,20 @@ namespace Quantum.Prototypes {
     }
     public void Materialize(Frame frame, ref Quantum.FlipFriendsPlayer result, in PrototypeMaterializationContext context = default) {
         result.Player = this.Player;
+        result.HomePosition = this.HomePosition;
+        result.HasCheckpoint = this.HasCheckpoint;
+        result.CheckpointId = this.CheckpointId;
+        result.CheckpointPosition = this.CheckpointPosition;
+        result.RespawnPosition = this.RespawnPosition;
+        result.SectionPending = this.SectionPending;
+        result.SectionCount = this.SectionCount;
+        result.WasResetHeld = this.WasResetHeld;
+        result.RespawnPending = this.RespawnPending;
+        result.RespawnFrame = this.RespawnFrame;
+        result.RespawnCount = this.RespawnCount;
         result.Velocity = this.Velocity;
+        result.VelocityXSmoothing = this.VelocityXSmoothing;
+        result.WasJumpHeld = this.WasJumpHeld;
         result.IsGrounded = this.IsGrounded;
         result.IsTouchingLeft = this.IsTouchingLeft;
         result.IsTouchingRight = this.IsTouchingRight;
@@ -77,7 +183,27 @@ namespace Quantum.Prototypes {
         result.IsClimbed = this.IsClimbed;
         result.RopeContactCount = this.RopeContactCount;
         result.ClimbBlockTicks = this.ClimbBlockTicks;
-        MaterializeUser(frame, ref result, in context);
+        result.IsFinished = this.IsFinished;
+        result.FinishedFrame = this.FinishedFrame;
+        result.PreviousPosition = this.PreviousPosition;
+        PrototypeValidator.FindMapEntity(this.StompTarget, in context, out result.StompTarget);
+        result.JumpBlockTicks = this.JumpBlockTicks;
+        result.ShrinkTicks = this.ShrinkTicks;
+        result.StompCount = this.StompCount;
+        result.StompFrame = this.StompFrame;
+        result.StompPushX = this.StompPushX;
+        PrototypeValidator.FindMapEntity(this.Carrier, in context, out result.Carrier);
+        PrototypeValidator.FindMapEntity(this.Held, in context, out result.Held);
+        result.WasInteractHeld = this.WasInteractHeld;
+        result.Facing = this.Facing;
+        result.ReleaseFrame = this.ReleaseFrame;
+        result.EscapeFrame = this.EscapeFrame;
+        result.EscapeRequestFrame = this.EscapeRequestFrame;
+        result.UncontrollableTicks = this.UncontrollableTicks;
+        result.PickupCount = this.PickupCount;
+        result.ThrowCount = this.ThrowCount;
+        result.PutDownCount = this.PutDownCount;
+        result.EscapeCount = this.EscapeCount;
     }
   }
   [System.SerializableAttribute()]
@@ -86,11 +212,17 @@ namespace Quantum.Prototypes {
     public FP Horizontal;
     public FP Vertical;
     public Button Jump;
+    public Button Run;
+    public Button Interact;
+    public Button Reset;
     partial void MaterializeUser(Frame frame, ref Quantum.Input result, in PrototypeMaterializationContext context);
     public void Materialize(Frame frame, ref Quantum.Input result, in PrototypeMaterializationContext context = default) {
         result.Horizontal = this.Horizontal;
         result.Vertical = this.Vertical;
         result.Jump = this.Jump;
+        result.Run = this.Run;
+        result.Interact = this.Interact;
+        result.Reset = this.Reset;
         MaterializeUser(frame, ref result, in context);
     }
   }

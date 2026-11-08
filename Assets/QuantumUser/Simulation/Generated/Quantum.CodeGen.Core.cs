@@ -52,6 +52,9 @@ namespace Quantum {
   [System.FlagsAttribute()]
   public enum InputButtons : int {
     Jump = 1 << 0,
+    Run = 1 << 1,
+    Interact = 1 << 2,
+    Reset = 1 << 3,
   }
   public static unsafe partial class FlagsExtensions {
     public static Boolean IsFlagSet(this InputButtons self, InputButtons flag) {
@@ -512,22 +515,29 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Input {
-    public const Int32 SIZE = 32;
+    public const Int32 SIZE = 64;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(28)]
-    private fixed Byte _alignment_padding_[4];
     [FieldOffset(0)]
     public FP Horizontal;
     [FieldOffset(8)]
     public FP Vertical;
-    [FieldOffset(16)]
+    [FieldOffset(28)]
     public Button Jump;
+    [FieldOffset(52)]
+    public Button Run;
+    [FieldOffset(16)]
+    public Button Interact;
+    [FieldOffset(40)]
+    public Button Reset;
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 19249;
         hash = hash * 31 + Horizontal.GetHashCode();
         hash = hash * 31 + Vertical.GetHashCode();
         hash = hash * 31 + Jump.GetHashCode();
+        hash = hash * 31 + Run.GetHashCode();
+        hash = hash * 31 + Interact.GetHashCode();
+        hash = hash * 31 + Reset.GetHashCode();
         return hash;
       }
     }
@@ -537,12 +547,18 @@ namespace Quantum {
     public Boolean IsDown(InputButtons button) {
       switch (button) {
         case InputButtons.Jump: return Jump.IsDown;
+        case InputButtons.Run: return Run.IsDown;
+        case InputButtons.Interact: return Interact.IsDown;
+        case InputButtons.Reset: return Reset.IsDown;
         default: return false;
       }
     }
     public Boolean WasPressed(InputButtons button) {
       switch (button) {
         case InputButtons.Jump: return Jump.WasPressed;
+        case InputButtons.Run: return Run.WasPressed;
+        case InputButtons.Interact: return Interact.WasPressed;
+        case InputButtons.Reset: return Reset.WasPressed;
         default: return false;
       }
     }
@@ -550,13 +566,18 @@ namespace Quantum {
         var p = (Input*)ptr;
         FP.Serialize(&p->Horizontal, serializer);
         FP.Serialize(&p->Vertical, serializer);
+        Button.Serialize(&p->Interact, serializer);
         Button.Serialize(&p->Jump, serializer);
+        Button.Serialize(&p->Reset, serializer);
+        Button.Serialize(&p->Run, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 824;
+    public const Int32 SIZE = 1032;
     public const Int32 ALIGNMENT = 8;
+    [FieldOffset(1028)]
+    private fixed Byte _alignment_padding_[4];
     [FieldOffset(0)]
     public AssetRef<Map> Map;
     [FieldOffset(8)]
@@ -579,12 +600,18 @@ namespace Quantum {
     public Int32 PlayerConnectedCount;
     [FieldOffset(624)]
     [FramePrinter.FixedArrayAttribute(typeof(Input), 6)]
-    private fixed Byte _input_[192];
-    [FieldOffset(816)]
+    private fixed Byte _input_[384];
+    [FieldOffset(1008)]
     public BitSet6 PlayerLastConnectionState;
+    [FieldOffset(1016)]
+    public Int32 FlipFriendsCompletedFrame;
+    [FieldOffset(1020)]
+    public QBoolean FlipFriendsBoxesInitialized;
+    [FieldOffset(1024)]
+    public QBoolean FlipFriendsDevicesInitialized;
     public readonly FixedArray<Input> input {
       get {
-        fixed (byte* p = _input_) { return new FixedArray<Input>(p, 32, 6); }
+        fixed (byte* p = _input_) { return new FixedArray<Input>(p, 64, 6); }
       }
     }
     public override readonly Int32 GetHashCode() {
@@ -602,6 +629,9 @@ namespace Quantum {
         hash = hash * 31 + PlayerConnectedCount.GetHashCode();
         hash = hash * 31 + HashCodeUtils.GetArrayHashCode(input);
         hash = hash * 31 + PlayerLastConnectionState.GetHashCode();
+        hash = hash * 31 + FlipFriendsCompletedFrame.GetHashCode();
+        hash = hash * 31 + FlipFriendsBoxesInitialized.GetHashCode();
+        hash = hash * 31 + FlipFriendsDevicesInitialized.GetHashCode();
         return hash;
       }
     }
@@ -619,35 +649,219 @@ namespace Quantum {
         serializer.Stream.Serialize(&p->PlayerConnectedCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
         Quantum.BitSet6.Serialize(&p->PlayerLastConnectionState, serializer);
+        serializer.Stream.Serialize(&p->FlipFriendsCompletedFrame);
+        QBoolean.Serialize(&p->FlipFriendsBoxesInitialized, serializer);
+        QBoolean.Serialize(&p->FlipFriendsDevicesInitialized, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct FlipFriendsBox : Quantum.IComponent {
+    public const Int32 SIZE = 104;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public Int32 ContentIndex;
+    [FieldOffset(56)]
+    public FPVector2 HomePosition;
+    [FieldOffset(72)]
+    public FPVector2 RespawnPosition;
+    [FieldOffset(16)]
+    public QBoolean RespawnPending;
+    [FieldOffset(8)]
+    public Int32 RespawnFrame;
+    [FieldOffset(4)]
+    public Int32 RespawnCount;
+    [FieldOffset(40)]
+    public FPVector2 HalfSize;
+    [FieldOffset(88)]
+    public FPVector2 Velocity;
+    [FieldOffset(32)]
+    public FP VelocityXSmoothing;
+    [FieldOffset(24)]
+    public EntityRef Carrier;
+    [FieldOffset(12)]
+    public QBoolean IsGrounded;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 4621;
+        hash = hash * 31 + ContentIndex.GetHashCode();
+        hash = hash * 31 + HomePosition.GetHashCode();
+        hash = hash * 31 + RespawnPosition.GetHashCode();
+        hash = hash * 31 + RespawnPending.GetHashCode();
+        hash = hash * 31 + RespawnFrame.GetHashCode();
+        hash = hash * 31 + RespawnCount.GetHashCode();
+        hash = hash * 31 + HalfSize.GetHashCode();
+        hash = hash * 31 + Velocity.GetHashCode();
+        hash = hash * 31 + VelocityXSmoothing.GetHashCode();
+        hash = hash * 31 + Carrier.GetHashCode();
+        hash = hash * 31 + IsGrounded.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (FlipFriendsBox*)ptr;
+        serializer.Stream.Serialize(&p->ContentIndex);
+        serializer.Stream.Serialize(&p->RespawnCount);
+        serializer.Stream.Serialize(&p->RespawnFrame);
+        QBoolean.Serialize(&p->IsGrounded, serializer);
+        QBoolean.Serialize(&p->RespawnPending, serializer);
+        EntityRef.Serialize(&p->Carrier, serializer);
+        FP.Serialize(&p->VelocityXSmoothing, serializer);
+        FPVector2.Serialize(&p->HalfSize, serializer);
+        FPVector2.Serialize(&p->HomePosition, serializer);
+        FPVector2.Serialize(&p->RespawnPosition, serializer);
+        FPVector2.Serialize(&p->Velocity, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct FlipFriendsDevice : Quantum.IComponent {
+    public const Int32 SIZE = 32;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public Int32 ContentIndex;
+    [FieldOffset(16)]
+    public Int32 PlayerContacts;
+    [FieldOffset(24)]
+    public UInt64 BoxContacts;
+    [FieldOffset(4)]
+    public Int32 CooldownUntil;
+    [FieldOffset(12)]
+    public Int32 LastSummonFrame;
+    [FieldOffset(20)]
+    public Int32 SuccessCount;
+    [FieldOffset(8)]
+    public Int32 FailureCount;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 8167;
+        hash = hash * 31 + ContentIndex.GetHashCode();
+        hash = hash * 31 + PlayerContacts.GetHashCode();
+        hash = hash * 31 + BoxContacts.GetHashCode();
+        hash = hash * 31 + CooldownUntil.GetHashCode();
+        hash = hash * 31 + LastSummonFrame.GetHashCode();
+        hash = hash * 31 + SuccessCount.GetHashCode();
+        hash = hash * 31 + FailureCount.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (FlipFriendsDevice*)ptr;
+        serializer.Stream.Serialize(&p->ContentIndex);
+        serializer.Stream.Serialize(&p->CooldownUntil);
+        serializer.Stream.Serialize(&p->FailureCount);
+        serializer.Stream.Serialize(&p->LastSummonFrame);
+        serializer.Stream.Serialize(&p->PlayerContacts);
+        serializer.Stream.Serialize(&p->SuccessCount);
+        serializer.Stream.Serialize(&p->BoxContacts);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct FlipFriendsPlayer : Quantum.IComponent {
-    public const Int32 SIZE = 48;
+    public const Int32 SIZE = 256;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(8)]
+    [FieldOffset(80)]
     public PlayerRef Player;
-    [FieldOffset(32)]
-    public FPVector2 Velocity;
-    [FieldOffset(16)]
-    public QBoolean IsGrounded;
-    [FieldOffset(24)]
-    public QBoolean IsTouchingLeft;
-    [FieldOffset(28)]
-    public QBoolean IsTouchingRight;
-    [FieldOffset(20)]
-    public QBoolean IsTouchingCeiling;
-    [FieldOffset(12)]
-    public QBoolean IsClimbed;
-    [FieldOffset(4)]
-    public Int32 RopeContactCount;
+    [FieldOffset(192)]
+    public FPVector2 HomePosition;
+    [FieldOffset(84)]
+    public QBoolean HasCheckpoint;
     [FieldOffset(0)]
+    public Int32 CheckpointId;
+    [FieldOffset(176)]
+    public FPVector2 CheckpointPosition;
+    [FieldOffset(224)]
+    public FPVector2 RespawnPosition;
+    [FieldOffset(116)]
+    public QBoolean SectionPending;
+    [FieldOffset(56)]
+    public Int32 SectionCount;
+    [FieldOffset(128)]
+    public QBoolean WasResetHeld;
+    [FieldOffset(112)]
+    public QBoolean RespawnPending;
+    [FieldOffset(48)]
+    public Int32 RespawnFrame;
+    [FieldOffset(44)]
+    public Int32 RespawnCount;
+    [FieldOffset(240)]
+    public FPVector2 Velocity;
+    [FieldOffset(168)]
+    public FP VelocityXSmoothing;
+    [FieldOffset(124)]
+    public QBoolean WasJumpHeld;
+    [FieldOffset(96)]
+    public QBoolean IsGrounded;
+    [FieldOffset(104)]
+    public QBoolean IsTouchingLeft;
+    [FieldOffset(108)]
+    public QBoolean IsTouchingRight;
+    [FieldOffset(100)]
+    public QBoolean IsTouchingCeiling;
+    [FieldOffset(88)]
+    public QBoolean IsClimbed;
+    [FieldOffset(52)]
+    public Int32 RopeContactCount;
+    [FieldOffset(4)]
     public Int32 ClimbBlockTicks;
+    [FieldOffset(92)]
+    public QBoolean IsFinished;
+    [FieldOffset(24)]
+    public Int32 FinishedFrame;
+    [FieldOffset(208)]
+    public FPVector2 PreviousPosition;
+    [FieldOffset(152)]
+    public EntityRef StompTarget;
+    [FieldOffset(28)]
+    public Int32 JumpBlockTicks;
+    [FieldOffset(60)]
+    public Int32 ShrinkTicks;
+    [FieldOffset(64)]
+    public Int32 StompCount;
+    [FieldOffset(68)]
+    public Int32 StompFrame;
+    [FieldOffset(160)]
+    public FP StompPushX;
+    [FieldOffset(136)]
+    public EntityRef Carrier;
+    [FieldOffset(144)]
+    public EntityRef Held;
+    [FieldOffset(120)]
+    public QBoolean WasInteractHeld;
+    [FieldOffset(20)]
+    public Int32 Facing;
+    [FieldOffset(40)]
+    public Int32 ReleaseFrame;
+    [FieldOffset(12)]
+    public Int32 EscapeFrame;
+    [FieldOffset(16)]
+    public Int32 EscapeRequestFrame;
+    [FieldOffset(76)]
+    public Int32 UncontrollableTicks;
+    [FieldOffset(32)]
+    public Int32 PickupCount;
+    [FieldOffset(72)]
+    public Int32 ThrowCount;
+    [FieldOffset(36)]
+    public Int32 PutDownCount;
+    [FieldOffset(8)]
+    public Int32 EscapeCount;
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 4139;
         hash = hash * 31 + Player.GetHashCode();
+        hash = hash * 31 + HomePosition.GetHashCode();
+        hash = hash * 31 + HasCheckpoint.GetHashCode();
+        hash = hash * 31 + CheckpointId.GetHashCode();
+        hash = hash * 31 + CheckpointPosition.GetHashCode();
+        hash = hash * 31 + RespawnPosition.GetHashCode();
+        hash = hash * 31 + SectionPending.GetHashCode();
+        hash = hash * 31 + SectionCount.GetHashCode();
+        hash = hash * 31 + WasResetHeld.GetHashCode();
+        hash = hash * 31 + RespawnPending.GetHashCode();
+        hash = hash * 31 + RespawnFrame.GetHashCode();
+        hash = hash * 31 + RespawnCount.GetHashCode();
         hash = hash * 31 + Velocity.GetHashCode();
+        hash = hash * 31 + VelocityXSmoothing.GetHashCode();
+        hash = hash * 31 + WasJumpHeld.GetHashCode();
         hash = hash * 31 + IsGrounded.GetHashCode();
         hash = hash * 31 + IsTouchingLeft.GetHashCode();
         hash = hash * 31 + IsTouchingRight.GetHashCode();
@@ -655,19 +869,74 @@ namespace Quantum {
         hash = hash * 31 + IsClimbed.GetHashCode();
         hash = hash * 31 + RopeContactCount.GetHashCode();
         hash = hash * 31 + ClimbBlockTicks.GetHashCode();
+        hash = hash * 31 + IsFinished.GetHashCode();
+        hash = hash * 31 + FinishedFrame.GetHashCode();
+        hash = hash * 31 + PreviousPosition.GetHashCode();
+        hash = hash * 31 + StompTarget.GetHashCode();
+        hash = hash * 31 + JumpBlockTicks.GetHashCode();
+        hash = hash * 31 + ShrinkTicks.GetHashCode();
+        hash = hash * 31 + StompCount.GetHashCode();
+        hash = hash * 31 + StompFrame.GetHashCode();
+        hash = hash * 31 + StompPushX.GetHashCode();
+        hash = hash * 31 + Carrier.GetHashCode();
+        hash = hash * 31 + Held.GetHashCode();
+        hash = hash * 31 + WasInteractHeld.GetHashCode();
+        hash = hash * 31 + Facing.GetHashCode();
+        hash = hash * 31 + ReleaseFrame.GetHashCode();
+        hash = hash * 31 + EscapeFrame.GetHashCode();
+        hash = hash * 31 + EscapeRequestFrame.GetHashCode();
+        hash = hash * 31 + UncontrollableTicks.GetHashCode();
+        hash = hash * 31 + PickupCount.GetHashCode();
+        hash = hash * 31 + ThrowCount.GetHashCode();
+        hash = hash * 31 + PutDownCount.GetHashCode();
+        hash = hash * 31 + EscapeCount.GetHashCode();
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (FlipFriendsPlayer*)ptr;
+        serializer.Stream.Serialize(&p->CheckpointId);
         serializer.Stream.Serialize(&p->ClimbBlockTicks);
+        serializer.Stream.Serialize(&p->EscapeCount);
+        serializer.Stream.Serialize(&p->EscapeFrame);
+        serializer.Stream.Serialize(&p->EscapeRequestFrame);
+        serializer.Stream.Serialize(&p->Facing);
+        serializer.Stream.Serialize(&p->FinishedFrame);
+        serializer.Stream.Serialize(&p->JumpBlockTicks);
+        serializer.Stream.Serialize(&p->PickupCount);
+        serializer.Stream.Serialize(&p->PutDownCount);
+        serializer.Stream.Serialize(&p->ReleaseFrame);
+        serializer.Stream.Serialize(&p->RespawnCount);
+        serializer.Stream.Serialize(&p->RespawnFrame);
         serializer.Stream.Serialize(&p->RopeContactCount);
+        serializer.Stream.Serialize(&p->SectionCount);
+        serializer.Stream.Serialize(&p->ShrinkTicks);
+        serializer.Stream.Serialize(&p->StompCount);
+        serializer.Stream.Serialize(&p->StompFrame);
+        serializer.Stream.Serialize(&p->ThrowCount);
+        serializer.Stream.Serialize(&p->UncontrollableTicks);
         PlayerRef.Serialize(&p->Player, serializer);
+        QBoolean.Serialize(&p->HasCheckpoint, serializer);
         QBoolean.Serialize(&p->IsClimbed, serializer);
+        QBoolean.Serialize(&p->IsFinished, serializer);
         QBoolean.Serialize(&p->IsGrounded, serializer);
         QBoolean.Serialize(&p->IsTouchingCeiling, serializer);
         QBoolean.Serialize(&p->IsTouchingLeft, serializer);
         QBoolean.Serialize(&p->IsTouchingRight, serializer);
+        QBoolean.Serialize(&p->RespawnPending, serializer);
+        QBoolean.Serialize(&p->SectionPending, serializer);
+        QBoolean.Serialize(&p->WasInteractHeld, serializer);
+        QBoolean.Serialize(&p->WasJumpHeld, serializer);
+        QBoolean.Serialize(&p->WasResetHeld, serializer);
+        EntityRef.Serialize(&p->Carrier, serializer);
+        EntityRef.Serialize(&p->Held, serializer);
+        EntityRef.Serialize(&p->StompTarget, serializer);
+        FP.Serialize(&p->StompPushX, serializer);
+        FP.Serialize(&p->VelocityXSmoothing, serializer);
+        FPVector2.Serialize(&p->CheckpointPosition, serializer);
+        FPVector2.Serialize(&p->HomePosition, serializer);
+        FPVector2.Serialize(&p->PreviousPosition, serializer);
+        FPVector2.Serialize(&p->RespawnPosition, serializer);
         FPVector2.Serialize(&p->Velocity, serializer);
     }
   }
@@ -691,6 +960,10 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<CharacterController2D>();
       BuildSignalsArrayOnComponentAdded<CharacterController3D>();
       BuildSignalsArrayOnComponentRemoved<CharacterController3D>();
+      BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsBox>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsBox>();
+      BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsDevice>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsDevice>();
       BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsPlayer>();
       BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsPlayer>();
       BuildSignalsArrayOnComponentAdded<MapEntityLink>();
@@ -734,6 +1007,9 @@ namespace Quantum {
       i->Horizontal = input.Horizontal;
       i->Vertical = input.Vertical;
       i->Jump = i->Jump.Update(this.Number, input.Jump);
+      i->Run = i->Run.Update(this.Number, input.Run);
+      i->Interact = i->Interact.Update(this.Number, input.Interact);
+      i->Reset = i->Reset.Update(this.Number, input.Reset);
     }
     public Input* GetPlayerInput(PlayerRef player) {
       if ((int)player >= (int)_globals->input.Length) { throw new System.ArgumentOutOfRangeException("player"); }
@@ -784,6 +1060,8 @@ namespace Quantum {
       typeRegistry.Register(typeof(FPQuaternion), FPQuaternion.SIZE);
       typeRegistry.Register(typeof(FPVector2), FPVector2.SIZE);
       typeRegistry.Register(typeof(FPVector3), FPVector3.SIZE);
+      typeRegistry.Register(typeof(Quantum.FlipFriendsBox), Quantum.FlipFriendsBox.SIZE);
+      typeRegistry.Register(typeof(Quantum.FlipFriendsDevice), Quantum.FlipFriendsDevice.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsPlayer), Quantum.FlipFriendsPlayer.SIZE);
       typeRegistry.Register(typeof(FrameMetaData), FrameMetaData.SIZE);
       typeRegistry.Register(typeof(FrameTimer), FrameTimer.SIZE);
@@ -840,8 +1118,10 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
     static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 1)
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 3)
         .AddBuiltInComponents()
+        .Add<Quantum.FlipFriendsBox>(Quantum.FlipFriendsBox.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.FlipFriendsDevice>(Quantum.FlipFriendsDevice.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsPlayer>(Quantum.FlipFriendsPlayer.Serialize, null, null, ComponentFlags.None)
         .Finish();
     }

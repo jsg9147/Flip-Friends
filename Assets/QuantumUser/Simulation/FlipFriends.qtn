@@ -2,11 +2,33 @@ input {
     FP Horizontal;
     FP Vertical;
     button Jump;
+    button Run;
+    button Interact;
+    button Reset;
+}
+
+global {
+    int FlipFriendsCompletedFrame;
+    bool FlipFriendsBoxesInitialized;
+    bool FlipFriendsDevicesInitialized;
 }
 
 component FlipFriendsPlayer {
     player_ref Player;
+    FPVector2 HomePosition;
+    bool HasCheckpoint;
+    int CheckpointId;
+    FPVector2 CheckpointPosition;
+    FPVector2 RespawnPosition;
+    bool SectionPending;
+    int SectionCount;
+    bool WasResetHeld;
+    bool RespawnPending;
+    int RespawnFrame;
+    int RespawnCount;
     FPVector2 Velocity;
+    FP VelocityXSmoothing;
+    bool WasJumpHeld;
     bool IsGrounded;
     bool IsTouchingLeft;
     bool IsTouchingRight;
@@ -14,4 +36,49 @@ component FlipFriendsPlayer {
     bool IsClimbed;
     int RopeContactCount;
     int ClimbBlockTicks;
+    bool IsFinished;
+    int FinishedFrame;
+    FPVector2 PreviousPosition;
+    EntityRef StompTarget;
+    int JumpBlockTicks;
+    int ShrinkTicks;
+    int StompCount;
+    int StompFrame;
+    FP StompPushX;
+    EntityRef Carrier;
+    EntityRef Held;
+    bool WasInteractHeld;
+    int Facing;
+    int ReleaseFrame;
+    int EscapeFrame;
+    int EscapeRequestFrame;
+    int UncontrollableTicks;
+    int PickupCount;
+    int ThrowCount;
+    int PutDownCount;
+    int EscapeCount;
+}
+
+component FlipFriendsBox {
+    int ContentIndex;
+    FPVector2 HomePosition;
+    FPVector2 RespawnPosition;
+    bool RespawnPending;
+    int RespawnFrame;
+    int RespawnCount;
+    FPVector2 HalfSize;
+    FPVector2 Velocity;
+    FP VelocityXSmoothing;
+    EntityRef Carrier;
+    bool IsGrounded;
+}
+
+component FlipFriendsDevice {
+    int ContentIndex;
+    int PlayerContacts;
+    ulong BoxContacts;
+    int CooldownUntil;
+    int LastSummonFrame;
+    int SuccessCount;
+    int FailureCount;
 }
