@@ -1,0 +1,78 @@
+{
+    "mapId": "28be716f53d04bfd9942c2d857f47df4",
+    "mapName": "Quantum Tilemap 지형·다중 Reset 사용례",
+    "authorName": "Flip Friends",
+    "version": "2.1",
+    "objects": [
+        {
+            "prefabID": "essential.player_spawn",
+            "position": {
+                "x": 10.0,
+                "y": -2.299999952316284,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "essential.player_spawn",
+            "position": {
+                "x": 12.0,
+                "y": -2.299999952316284,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "essential.finish",
+            "position": {
+                "x": -10.0,
+                "y": -2.4000000953674316,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "interactive.box",
+            "position": {
+                "x": 14.5,
+                "y": -2.4000000953674316,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "terrain.ground.basic",
+            "position": {
+                "x": -35.0,
+                "y": -20.0,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    ]
+}

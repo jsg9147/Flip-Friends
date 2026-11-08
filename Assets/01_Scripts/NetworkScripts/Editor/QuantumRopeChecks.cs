@@ -20,10 +20,10 @@ public static class QuantumRopeChecks
         int horizontal = frame >= 220 && frame < 360 || frame >= 480 && frame < 600 ? outward :
             frame >= 450 && frame < 480 || frame >= 600 && frame < 650 ? -outward : 0;
         int vertical = frame >= 90 && frame < 110 || frame >= 145 && frame < 220 ||
-            frame >= 280 && frame < 360 || frame >= 600 && frame < 650 ? 1 :
-            frame >= 130 && frame < 145 || frame >= 380 && frame < 450 || frame >= 650 && frame < 690 ? -1 : 0;
+            frame >= 300 && frame < 390 ? 1 :
+            frame >= 130 && frame < 145 || frame >= 390 && frame < 460 || frame >= 650 && frame < 690 ? -1 : 0;
         return new Quantum.Input { Horizontal = horizontal, Vertical = vertical,
-            Jump = frame >= 145 && frame < 155 || frame >= 540 && frame < 550 };
+            Jump = frame >= 145 && frame < 155 || frame >= 540 && frame < 570 };
     }
 
     [MenuItem("Tools/Flip Friends/Quantum/Check Rope Conversion And Replay")]
@@ -150,7 +150,8 @@ public static class QuantumRopeChecks
                 if (frame.Number % 30 == 0)
                 {
                     var input = InputFor(frame.Number, slot);
-                    trace.Add($"확정 {frame.Number} 슬롯 {slot}: 위치={p} 속도={player.Velocity} 요청입력={input.Horizontal}/{input.Vertical} 등반={player.IsClimbed} 접촉={player.RopeContactCount} 제한={player.ClimbBlockTicks}");
+                    var actual = frame.FlipFriendsInput(player.Player);
+                    trace.Add($"확정 {frame.Number} 슬롯 {slot}: 위치={p} 속도={player.Velocity} 요청입력={input.Horizontal}/{input.Vertical} 실제={actual.Horizontal}/{actual.Vertical}/점프{actual.Jump.IsDown} 등반={player.IsClimbed} 접촉={player.RopeContactCount} 제한={player.ClimbBlockTicks}");
                 }
                 bool hasPrevious = lastFrame[slot] > 0;
                 if (hasPrevious) maxFrameGap[slot] = Math.Max(maxFrameGap[slot], frame.Number - lastFrame[slot]);

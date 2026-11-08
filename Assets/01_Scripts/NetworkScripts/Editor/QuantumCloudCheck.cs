@@ -40,7 +40,7 @@ public static class QuantumCloudCheck
         {
             bootstrap.ValidateCustomMap();
             string room = "ff-check-" + Guid.NewGuid().ToString("N");
-            var settings = new AppSettings { AppIdQuantum = DevelopmentAppId, AppVersion = "ff-quantum-step1", FixedRegion = "asia", UseNameServer = true };
+            var settings = new AppSettings { AppIdQuantum = DevelopmentAppId, AppVersion = QuantumGameContent.NetworkVersion + "-test", FixedRegion = "asia", UseNameServer = true };
             for (int i = 0; i < 2; i++)
                 clients[i] = await MatchmakingExtensions.ConnectToRoomAsync(new MatchmakingArguments
                 {

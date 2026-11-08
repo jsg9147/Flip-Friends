@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e064d949a3f6b543bb50c6be840d476, type: 3}
+  m_Name: FlipFriendsTilemapTerrain
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumMapTerrain
+  contours:
+  - id: stage-01/Ground/e6ac9b37f8e19bfece6ed80301e1a53c8c8723cf6096574ecc998dc83daef912
+    vertices:
+    - {x: -15.999971, y: 47}
+    - {x: -16, y: 47.999973}
+    - {x: -10.00003, y: 48}
+    - {x: -10.00003, y: 47}
+  - id: stage-01/Ground/c46f23fa84253318eddba47dd483586a170c8cf35455e32c136f6ea2bdfeb55d
+    vertices:
+    - {x: -19.999971, y: 60}
+    - {x: -20, y: -2.9999707}
+    - {x: 20, y: -2.9999707}
+    - {x: 20, y: 59.99997}
+  - id: stage-01/Ground/43390ee7408daa099547c887b21bf0d55e911da1e3be8201faba4aac6e03a609
+    vertices:
+    - {x: -20.999971, y: -4}
+    - {x: -21, y: 60.99997}
+    - {x: 20.999971, y: 61}
+    - {x: 20.999971, y: -4}
+  - id: stage-01/Ground/c1859bdeea50c2109cf6f9f7d75b7e03abc46c5d1bbe228704e29719766f2b7f
+    vertices:
+    - {x: 3, y: 4.999971}
+    - {x: 3.0000293, y: 4}
+    - {x: 7.9999704, y: 4}
+    - {x: 7.9999704, y: 5}
+  - id: stage-01/Ground/0aa28bc76f55122eac1faec6a31738fa758718f8b3868c6e6a84d12d20a8046e
+    vertices:
+    - {x: 5, y: 23.999971}
+    - {x: 5.000029, y: 23}
+    - {x: 9.99997, y: 23}
+    - {x: 9.99997, y: 24}
+  - id: stage-01/Ground/1c6f94602845dffb57f97cc73016a4e6cd787ae36d874bbe1e00e82dca97496e
+    vertices:
+    - {x: 5, y: 33.999973}
+    - {x: 5.000029, y: 33}
+    - {x: 9.99997, y: 33}
+    - {x: 9.99997, y: 34}
+  - id: stage-01/Ground/94c6e6e48f2ad7ff622c1a03e4aeda0eeb963eee0aa1dcbe8bceffbc3b4f9f89
+    vertices:
+    - {x: 5, y: 13.999971}
+    - {x: 5.000029, y: 13}
+    - {x: 9.99997, y: 13}
+    - {x: 9.99997, y: 14}
+  renderCenter: {x: -1, y: 31}
+  renderSize: {x: 60, y: 70}
+  authoringSignature: "stage-01/Ground;Merge;Outlines;Kinematic;Ground;\uBC18\uACBD0;36c02bd822ab90b2b777c7105d6a9f83ea0ced0be8e733ff9530b26598611984"

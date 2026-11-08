@@ -1,0 +1,92 @@
+{
+    "mapId": "0c20f3c407a14fa78dfca087b1b6988f",
+    "mapName": "Quantum 체크포인트·구간·소환",
+    "authorName": "Flip Friends",
+    "version": "2.1",
+    "objects": [
+        {
+            "prefabID": "essential.player_spawn",
+            "position": {
+                "x": -8.0,
+                "y": 0.75,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "essential.player_spawn",
+            "position": {
+                "x": -7.0,
+                "y": 0.75,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "essential.finish",
+            "position": {
+                "x": 9.0,
+                "y": 0.5,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "terrain.ground.basic",
+            "position": {
+                "x": 0.0,
+                "y": -0.5,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 22.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "interactive.box",
+            "position": {
+                "x": -3.0,
+                "y": 0.5,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        {
+            "prefabID": "terrain.rope",
+            "position": {
+                "x": -10.0,
+                "y": 2.0,
+                "z": 0.0
+            },
+            "rotation": 0.0,
+            "scale": {
+                "x": 1.0,
+                "y": 4.0,
+                "z": 1.0
+            }
+        }
+    ]
+}
