@@ -125,6 +125,9 @@ namespace Quantum.Prototypes.Unity {
     public Int32 ThrowCount;
     public Int32 PutDownCount;
     public Int32 EscapeCount;
+    public Int32 InvincibleTicks;
+    public Int32 DamageCount;
+    public Int32 DamageFrame;
     partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.FlipFriendsPlayerPrototype prototype);
     public override Quantum.Prototypes.FlipFriendsPlayerPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
       var result = new Quantum.Prototypes.FlipFriendsPlayerPrototype();
@@ -171,6 +174,9 @@ namespace Quantum.Prototypes.Unity {
       converter.Convert(this.ThrowCount, out result.ThrowCount);
       converter.Convert(this.PutDownCount, out result.PutDownCount);
       converter.Convert(this.EscapeCount, out result.EscapeCount);
+      converter.Convert(this.InvincibleTicks, out result.InvincibleTicks);
+      converter.Convert(this.DamageCount, out result.DamageCount);
+      converter.Convert(this.DamageFrame, out result.DamageFrame);
       ConvertUser(converter, ref result);
       return result;
     }

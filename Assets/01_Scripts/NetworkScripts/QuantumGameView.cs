@@ -29,6 +29,7 @@ namespace FlipFriends.Network
             foreach (var box in flow.Content.Boxes) AddBox(box, new Color(0.2f, 0.4f, 0.4f), "정적 지형 표시");
             foreach (var box in flow.Content.Ropes) AddBox(box, new Color(0.85f, 0.65f, 0.3f), "로프 표시");
             foreach (var box in flow.Content.Goals) AddBox(box, new Color(0.3f, 0.9f, 0.4f, 0.6f), "도착점 표시");
+            foreach (var trap in flow.Content.TrapVisuals) AddTrap(trap);
             if (flow.Content.TerrainContours != null)
             foreach (var contour in flow.Content.TerrainContours)
             for (int i = 0; i < contour.Vertices.Length; i++)
@@ -45,6 +46,19 @@ namespace FlipFriends.Network
             inputManager = InputManager.instance;
             if (inputManager != null) inputManager.OnMenuEvent += ReturnToMenu;
             status.text = "1P A/D/W/S/Space/왼쪽 Shift/E | 2P 방향키/오른쪽 Ctrl/오른쪽 Shift/Enter\nR/Backspace: 리셋 | E/Enter: 들기/던지기 | 아래+들기: 놓기 | 1.5초 후 이동/점프: 탈출 | 도착점 위: 도착";
+        }
+
+        private void AddTrap(QuantumTrapSource trap)
+        {
+            var view = new GameObject("트랩 표시 " + trap.id);
+            view.transform.SetParent(transform, false);
+            view.transform.position = trap.renderCenter;
+            var renderer = view.AddComponent<SpriteRenderer>();
+            renderer.sprite = trap.sprite != null ? trap.sprite : whiteSprite;
+            renderer.sortingOrder = 6;
+            if (trap.sprite == null) renderer.color = new Color(0.9f, 0.1f, 0.1f, 0.7f);
+            var size = renderer.sprite.bounds.size;
+            view.transform.localScale = new Vector3(trap.renderSize.x / size.x, trap.renderSize.y / size.y, 1);
         }
 
         private void AddBox(QuantumMapBox box, Color color, string label)

@@ -73,7 +73,7 @@ namespace Quantum
                 WasResetHeld = state->WasResetHeld, WasJumpHeld = state->WasJumpHeld, WasInteractHeld = state->WasInteractHeld,
                 RespawnPending = true, RespawnFrame = frame.Number, RespawnCount = state->RespawnCount + 1,
                 StompCount = state->StompCount, PickupCount = state->PickupCount, ThrowCount = state->ThrowCount,
-                PutDownCount = state->PutDownCount, EscapeCount = state->EscapeCount,
+                PutDownCount = state->PutDownCount, EscapeCount = state->EscapeCount, DamageCount = state->DamageCount,
                 PreviousPosition = Destination(*state)
             };
             frame.Unsafe.GetPointer<Transform2D>(entity)->Position = state->RespawnPosition;
@@ -153,7 +153,7 @@ namespace Quantum
                 Carrier = keepCarry ? old.Carrier : default, Held = keepCarry ? old.Held : default,
                 WasResetHeld = input.Reset.IsDown, WasJumpHeld = input.Jump.IsDown, WasInteractHeld = input.Interact.IsDown,
                 StompCount = old.StompCount, PickupCount = old.PickupCount, ThrowCount = old.ThrowCount,
-                PutDownCount = old.PutDownCount, EscapeCount = old.EscapeCount };
+                PutDownCount = old.PutDownCount, EscapeCount = old.EscapeCount, DamageCount = old.DamageCount };
             frame.Unsafe.GetPointer<Transform2D>(entity)->Position = destination;
             var players = frame.Filter<FlipFriendsPlayer>();
             while (players.NextUnsafe(out _, out var other)) if (other->StompTarget == entity) other->StompTarget = default;

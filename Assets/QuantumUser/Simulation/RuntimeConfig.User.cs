@@ -17,6 +17,16 @@
         public Photon.Deterministic.FPVector2[] BoxSizes;
         public FlipFriendsDeviceConfig[] Devices;
         public FlipFriendsTerrainContour[] TerrainContours;
+        public FlipFriendsTrapConfig[] Traps;
+    }
+
+    // 정적 피격 판정. 꼭짓점은 월드 좌표의 반시계 볼록 다각형이며, Direction이 0이면 기준점→플레이어 방향을 쓴다.
+    [System.Serializable]
+    public struct FlipFriendsTrapConfig
+    {
+        public string Id;
+        public Photon.Deterministic.FPVector2 Origin, Direction;
+        public Photon.Deterministic.FPVector2[] Vertices;
     }
 
     [System.Serializable]

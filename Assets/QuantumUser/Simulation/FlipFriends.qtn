@@ -57,6 +57,9 @@ component FlipFriendsPlayer {
     int ThrowCount;
     int PutDownCount;
     int EscapeCount;
+    int InvincibleTicks;
+    int DamageCount;
+    int DamageFrame;
 }
 
 component FlipFriendsBox {

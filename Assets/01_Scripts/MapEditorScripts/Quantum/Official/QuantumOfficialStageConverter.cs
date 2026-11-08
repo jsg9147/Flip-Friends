@@ -14,6 +14,8 @@ namespace FlipFriends.Maps
         private const int MaxGoals = 16;
         private const int MaxRopes = 64;
         private const int MaxBoxes = 64;
+        private const int MaxTraps = 128;
+        private const int MaxTrapVertices = 8;
         private static readonly Regex StageIdPattern = new("^[a-z0-9][a-z0-9-]{0,47}$");
 
         public static bool IsValidStageId(string id) => id != null && StageIdPattern.IsMatch(id);
@@ -48,6 +50,7 @@ namespace FlipFriends.Maps
                 result.MovableBoxes.Add(box);
                 lines.Add($"상자={Key(box.Center)}/{Key(box.Size)};중력9.8;감속1.5;낙하12");
             }
+            AddTraps(result, lines, data.traps, data.stageId);
             var boundary = new FallBoundary(data.renderBounds);
             result.MinX = QuantumMapConverter.Q(boundary.MinX); result.MaxX = QuantumMapConverter.Q(boundary.MaxX); result.MinY = QuantumMapConverter.Q(boundary.MinY);
             lines.Add($"복귀={Raw(result.MinX)},{Raw(result.MaxX)},{Raw(result.MinY)};여백10;위쪽제외");
@@ -69,6 +72,44 @@ namespace FlipFriends.Maps
             return converted;
         }
 
+        // 트랩은 ID(프리팹 경로) 순으로 정렬한다. 같은 틱에 여러 개에 닿으면 이 순서의 첫 트랩만 적용된다.
+        private static void AddTraps(QuantumMapConversion result, List<string> lines, QuantumTrapSource[] traps, string stageId)
+        {
+            if ((traps?.Length ?? 0) > MaxTraps) throw new InvalidOperationException($"공식 스테이지 {stageId}: 트랩 {MaxTraps}개 상한을 초과했습니다.");
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var source in (traps ?? Array.Empty<QuantumTrapSource>()).OrderBy(s => s?.id, StringComparer.Ordinal))
+            {
+                string at = $"공식 스테이지 {stageId}: 트랩 {source?.id} 위치={source?.origin}";
+                if (source == null || string.IsNullOrWhiteSpace(source.id) || !ids.Add(source.id)) throw new InvalidOperationException(at + ": 안정적인 트랩 ID가 없거나 중복입니다.");
+                if (!Finite(source.origin) || !Finite(source.direction)) throw new InvalidOperationException(at + ": 기준점/넉백 방향이 유한하지 않습니다.");
+                if (source.vertices == null || source.vertices.Length < 3 || source.vertices.Length > MaxTrapVertices || !source.vertices.All(Finite))
+                    throw new InvalidOperationException(at + $": 판정 꼭짓점은 유한한 3~{MaxTrapVertices}개여야 합니다.");
+                if (source.renderSize.x <= 0 || source.renderSize.y <= 0) throw new InvalidOperationException(at + ": 표시할 렌더러 범위가 없습니다.");
+                var vertices = source.vertices.Select(Q).ToArray();
+                long area = 0;
+                for (int i = 0; i < vertices.Length; i++) area += Cross(vertices[i], vertices[(i + 1) % vertices.Length], default);
+                if (area == 0) throw new InvalidOperationException(at + ": 판정 넓이가 0입니다.");
+                if (area < 0) Array.Reverse(vertices);
+                // FP 양자화 뒤에도 모든 모서리가 같은 쪽으로 꺾여야 분리축 검사가 원본 형상과 같다. 일직선 꼭짓점도 거부한다.
+                for (int i = 0; i < vertices.Length; i++)
+                    if (Cross(vertices[(i + 1) % vertices.Length], vertices[(i + 2) % vertices.Length], vertices[i]) <= 0)
+                        throw new InvalidOperationException(at + $": 꼭짓점 {i + 1}에서 오목하거나 일직선입니다. 볼록 다각형만 지원합니다.");
+                var config = new Quantum.FlipFriendsTrapConfig { Id = source.id, Origin = Q(source.origin), Direction = Q(source.direction), Vertices = vertices };
+                result.Traps.Add(config);
+                result.TrapVisuals.Add(source);
+                lines.Add($"트랩={source.id.Length}:{source.id};기준={Key(config.Origin)};방향={Key(config.Direction)};꼭짓점={string.Join("/", vertices.Select(Key))};표시={Key(Q(source.renderCenter))}/{Key(Q(source.renderSize))}");
+            }
+        }
+
+        // 원점 기준 외적을 raw 정수로 계산한다. 좌표 상한(작성 범위)에서 long을 넘지 않는다.
+        private static long Cross(FPVector2 a, FPVector2 b, FPVector2 origin)
+        {
+            long ax = a.X.RawValue - origin.X.RawValue, ay = a.Y.RawValue - origin.Y.RawValue;
+            long bx = b.X.RawValue - origin.X.RawValue, by = b.Y.RawValue - origin.Y.RawValue;
+            return checked(ax * by - ay * bx);
+        }
+
+        private static bool Finite(UnityEngine.Vector2 v) => float.IsFinite(v.x) && float.IsFinite(v.y);
         private static FPVector2 Q(UnityEngine.Vector2 v) => new(QuantumMapConverter.Q(v.x), QuantumMapConverter.Q(v.y));
         private static string Raw(FP value) => value.RawValue.ToString(CultureInfo.InvariantCulture);
         private static string Key(FPVector2 v) => Raw(v.X) + "," + Raw(v.Y);

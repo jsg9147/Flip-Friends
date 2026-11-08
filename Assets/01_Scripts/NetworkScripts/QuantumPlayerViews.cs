@@ -42,7 +42,12 @@ namespace FlipFriends.Network
                 view.transform.position = new Vector3(transform.Position.X.AsFloat, transform.Position.Y.AsFloat, 0);
                 view.transform.localScale = new Vector3(0.8f / sprite.bounds.size.x, (player.ShrinkTicks > 0 ? 0.5f : 1f) / sprite.bounds.size.y, 1);
                 if (player.ShrinkTicks > 0) view.transform.position += Vector3.down * 0.25f;
-                view.GetComponent<SpriteRenderer>().flipX = player.Facing < 0;
+                var body = view.GetComponent<SpriteRenderer>();
+                body.flipX = player.Facing < 0;
+                // 피격 연출은 이벤트가 아니라 프레임의 무적 틱에서 다시 계산한다. 예측 재시뮬레이션으로 중복 재생되지 않는다.
+                var color = (int)player.Player == 0 ? Color.cyan : Color.yellow;
+                if (player.InvincibleTicks > 0 && player.InvincibleTicks / 6 % 2 == 1) color.a = 0.35f;
+                body.color = color;
             }
             var removed = new List<EntityRef>();
             foreach (var pair in views)

@@ -155,6 +155,9 @@ namespace Quantum.Prototypes {
     public Int32 ThrowCount;
     public Int32 PutDownCount;
     public Int32 EscapeCount;
+    public Int32 InvincibleTicks;
+    public Int32 DamageCount;
+    public Int32 DamageFrame;
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.FlipFriendsPlayer component = default;
         Materialize((Frame)f, ref component, in context);
@@ -204,6 +207,9 @@ namespace Quantum.Prototypes {
         result.ThrowCount = this.ThrowCount;
         result.PutDownCount = this.PutDownCount;
         result.EscapeCount = this.EscapeCount;
+        result.InvincibleTicks = this.InvincibleTicks;
+        result.DamageCount = this.DamageCount;
+        result.DamageFrame = this.DamageFrame;
     }
   }
   [System.SerializableAttribute()]

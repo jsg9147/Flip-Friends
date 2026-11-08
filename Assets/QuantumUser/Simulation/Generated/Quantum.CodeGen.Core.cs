@@ -756,94 +756,100 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct FlipFriendsPlayer : Quantum.IComponent {
-    public const Int32 SIZE = 256;
+    public const Int32 SIZE = 264;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(80)]
+    [FieldOffset(92)]
     public PlayerRef Player;
-    [FieldOffset(192)]
+    [FieldOffset(200)]
     public FPVector2 HomePosition;
-    [FieldOffset(84)]
+    [FieldOffset(96)]
     public QBoolean HasCheckpoint;
     [FieldOffset(0)]
     public Int32 CheckpointId;
-    [FieldOffset(176)]
+    [FieldOffset(184)]
     public FPVector2 CheckpointPosition;
-    [FieldOffset(224)]
+    [FieldOffset(232)]
     public FPVector2 RespawnPosition;
-    [FieldOffset(116)]
-    public QBoolean SectionPending;
-    [FieldOffset(56)]
-    public Int32 SectionCount;
     [FieldOffset(128)]
+    public QBoolean SectionPending;
+    [FieldOffset(68)]
+    public Int32 SectionCount;
+    [FieldOffset(140)]
     public QBoolean WasResetHeld;
-    [FieldOffset(112)]
-    public QBoolean RespawnPending;
-    [FieldOffset(48)]
-    public Int32 RespawnFrame;
-    [FieldOffset(44)]
-    public Int32 RespawnCount;
-    [FieldOffset(240)]
-    public FPVector2 Velocity;
-    [FieldOffset(168)]
-    public FP VelocityXSmoothing;
     [FieldOffset(124)]
+    public QBoolean RespawnPending;
+    [FieldOffset(60)]
+    public Int32 RespawnFrame;
+    [FieldOffset(56)]
+    public Int32 RespawnCount;
+    [FieldOffset(248)]
+    public FPVector2 Velocity;
+    [FieldOffset(176)]
+    public FP VelocityXSmoothing;
+    [FieldOffset(136)]
     public QBoolean WasJumpHeld;
-    [FieldOffset(96)]
-    public QBoolean IsGrounded;
-    [FieldOffset(104)]
-    public QBoolean IsTouchingLeft;
     [FieldOffset(108)]
+    public QBoolean IsGrounded;
+    [FieldOffset(116)]
+    public QBoolean IsTouchingLeft;
+    [FieldOffset(120)]
     public QBoolean IsTouchingRight;
-    [FieldOffset(100)]
+    [FieldOffset(112)]
     public QBoolean IsTouchingCeiling;
-    [FieldOffset(88)]
+    [FieldOffset(100)]
     public QBoolean IsClimbed;
-    [FieldOffset(52)]
+    [FieldOffset(64)]
     public Int32 RopeContactCount;
     [FieldOffset(4)]
     public Int32 ClimbBlockTicks;
-    [FieldOffset(92)]
+    [FieldOffset(104)]
     public QBoolean IsFinished;
-    [FieldOffset(24)]
-    public Int32 FinishedFrame;
-    [FieldOffset(208)]
-    public FPVector2 PreviousPosition;
-    [FieldOffset(152)]
-    public EntityRef StompTarget;
-    [FieldOffset(28)]
-    public Int32 JumpBlockTicks;
-    [FieldOffset(60)]
-    public Int32 ShrinkTicks;
-    [FieldOffset(64)]
-    public Int32 StompCount;
-    [FieldOffset(68)]
-    public Int32 StompFrame;
-    [FieldOffset(160)]
-    public FP StompPushX;
-    [FieldOffset(136)]
-    public EntityRef Carrier;
-    [FieldOffset(144)]
-    public EntityRef Held;
-    [FieldOffset(120)]
-    public QBoolean WasInteractHeld;
-    [FieldOffset(20)]
-    public Int32 Facing;
-    [FieldOffset(40)]
-    public Int32 ReleaseFrame;
-    [FieldOffset(12)]
-    public Int32 EscapeFrame;
-    [FieldOffset(16)]
-    public Int32 EscapeRequestFrame;
-    [FieldOffset(76)]
-    public Int32 UncontrollableTicks;
     [FieldOffset(32)]
-    public Int32 PickupCount;
+    public Int32 FinishedFrame;
+    [FieldOffset(216)]
+    public FPVector2 PreviousPosition;
+    [FieldOffset(160)]
+    public EntityRef StompTarget;
+    [FieldOffset(40)]
+    public Int32 JumpBlockTicks;
     [FieldOffset(72)]
+    public Int32 ShrinkTicks;
+    [FieldOffset(76)]
+    public Int32 StompCount;
+    [FieldOffset(80)]
+    public Int32 StompFrame;
+    [FieldOffset(168)]
+    public FP StompPushX;
+    [FieldOffset(144)]
+    public EntityRef Carrier;
+    [FieldOffset(152)]
+    public EntityRef Held;
+    [FieldOffset(132)]
+    public QBoolean WasInteractHeld;
+    [FieldOffset(28)]
+    public Int32 Facing;
+    [FieldOffset(52)]
+    public Int32 ReleaseFrame;
+    [FieldOffset(20)]
+    public Int32 EscapeFrame;
+    [FieldOffset(24)]
+    public Int32 EscapeRequestFrame;
+    [FieldOffset(88)]
+    public Int32 UncontrollableTicks;
+    [FieldOffset(44)]
+    public Int32 PickupCount;
+    [FieldOffset(84)]
     public Int32 ThrowCount;
-    [FieldOffset(36)]
+    [FieldOffset(48)]
     public Int32 PutDownCount;
-    [FieldOffset(8)]
+    [FieldOffset(16)]
     public Int32 EscapeCount;
+    [FieldOffset(36)]
+    public Int32 InvincibleTicks;
+    [FieldOffset(8)]
+    public Int32 DamageCount;
+    [FieldOffset(12)]
+    public Int32 DamageFrame;
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 4139;
@@ -890,6 +896,9 @@ namespace Quantum {
         hash = hash * 31 + ThrowCount.GetHashCode();
         hash = hash * 31 + PutDownCount.GetHashCode();
         hash = hash * 31 + EscapeCount.GetHashCode();
+        hash = hash * 31 + InvincibleTicks.GetHashCode();
+        hash = hash * 31 + DamageCount.GetHashCode();
+        hash = hash * 31 + DamageFrame.GetHashCode();
         return hash;
       }
     }
@@ -897,11 +906,14 @@ namespace Quantum {
         var p = (FlipFriendsPlayer*)ptr;
         serializer.Stream.Serialize(&p->CheckpointId);
         serializer.Stream.Serialize(&p->ClimbBlockTicks);
+        serializer.Stream.Serialize(&p->DamageCount);
+        serializer.Stream.Serialize(&p->DamageFrame);
         serializer.Stream.Serialize(&p->EscapeCount);
         serializer.Stream.Serialize(&p->EscapeFrame);
         serializer.Stream.Serialize(&p->EscapeRequestFrame);
         serializer.Stream.Serialize(&p->Facing);
         serializer.Stream.Serialize(&p->FinishedFrame);
+        serializer.Stream.Serialize(&p->InvincibleTicks);
         serializer.Stream.Serialize(&p->JumpBlockTicks);
         serializer.Stream.Serialize(&p->PickupCount);
         serializer.Stream.Serialize(&p->PutDownCount);

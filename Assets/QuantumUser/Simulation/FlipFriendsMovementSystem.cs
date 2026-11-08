@@ -66,7 +66,7 @@ namespace Quantum
                     state.VelocityXSmoothing = 0;
                     state.IsClimbed = false;
                     state.StompTarget = default;
-                    state.ShrinkTicks = state.JumpBlockTicks = state.ClimbBlockTicks = state.UncontrollableTicks = 0;
+                    state.ShrinkTicks = state.JumpBlockTicks = state.ClimbBlockTicks = state.UncontrollableTicks = state.InvincibleTicks = 0;
                     return true;
                 }
             }

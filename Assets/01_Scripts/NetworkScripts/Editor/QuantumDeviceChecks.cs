@@ -227,7 +227,7 @@ public static class QuantumDeviceChecks
             var result = QuantumMapConverter.Convert(data, palette, true); devices.Apply(result); return result;
         }
         var valid = Convert(original);
-        Require(Config().CustomMapAgreement.Contains(":제품8:") && QuantumGameContent.NetworkVersion == "ff-product-8" && valid.Version == 5, "제품8/기존5:5 콘텐츠 합의");
+        Require(Config().CustomMapAgreement.Contains(":제품9:") && QuantumGameContent.NetworkVersion == "ff-product-9" && valid.Version == 5, "제품9/기존5:5 콘텐츠 합의");
         Require(valid.ContentHash == Convert(original, true).ContentHash, "상자 정렬/재변환 안정 참조");
         var expectedAgreement = Config().CustomMapAgreement;
         var previousCulture = System.Globalization.CultureInfo.CurrentCulture;

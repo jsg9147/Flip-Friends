@@ -86,7 +86,7 @@ public static class QuantumOfficialStageChecks
     private static void CheckContent()
     {
         var stage = Stage(); var config = Config(); var conversion = stage.ValidateAndApply(new RuntimeConfig());
-        Require(config.CustomMapAgreement.StartsWith(stage.Agreement + ":제품8:") && stage.Agreement.StartsWith("공식1:"), "공식1/제품8 합의");
+        Require(config.CustomMapAgreement.StartsWith(stage.Agreement + ":제품9:") && stage.Agreement.StartsWith("공식1:"), "공식1/제품9 합의");
         Require(conversion.TerrainContours.Length == 4 && conversion.Devices.Count == 3 && conversion.Devices.Single(d => d.Kind == 1).ContactCenters.Length == 2, "시험 프리팹 윤곽4·장치3·Reset 조각2");
         Require(config.CustomMapSpawns.All(s => s.X > 50) && config.FallMinX > 50, "MapData 배치 범위 밖 공식 배치·렌더러 경계");
         Require(QuantumOfficialStageCatalog.LoadStages().Contains(stage), "공식 목록 등록");

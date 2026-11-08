@@ -75,26 +75,26 @@ public static class QuantumOfficialTestStageSetup
         QuantumOfficialStageWriter.Write(PrefabPath);
     }
 
-    private static TileBase FirstTile(string prefabPath, string path)
+    internal static TileBase FirstTile(string prefabPath, string path)
     {
         var map = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath).transform.Find(path).GetComponent<Tilemap>();
         foreach (var cell in map.cellBounds.allPositionsWithin) { var tile = map.GetTile(cell); if (tile != null) return tile; }
         throw new InvalidOperationException($"{prefabPath}/{path}: 타일이 없습니다.");
     }
 
-    private static void Paint(Tilemap map, TileBase tile, int x, int y) => map.SetTile(new Vector3Int(x, y, 0), tile);
+    internal static void Paint(Tilemap map, TileBase tile, int x, int y) => map.SetTile(new Vector3Int(x, y, 0), tile);
 
-    private static GameObject Child(GameObject parent, string name)
+    internal static GameObject Child(GameObject parent, string name)
     {
         var child = new GameObject(name); child.transform.SetParent(parent.transform, false); return child;
     }
 
-    private static GameObject Point(GameObject root, string name, float x, float y)
+    internal static GameObject Point(GameObject root, string name, float x, float y)
     {
         var point = Child(root, name); point.transform.position = new Vector3(x, y, 0); return point;
     }
 
-    private static void Set(UnityEngine.Object target, string field, object value)
+    internal static void Set(UnityEngine.Object target, string field, object value)
     {
         var serialized = new SerializedObject(target); var property = serialized.FindProperty(field);
         switch (value)

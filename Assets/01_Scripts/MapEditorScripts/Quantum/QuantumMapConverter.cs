@@ -21,6 +21,8 @@ namespace FlipFriends.Maps
         public Quantum.FlipFriendsTerrainContour[] TerrainContours;
         public readonly List<Quantum.FlipFriendsDeviceConfig> Devices = new();
         public readonly List<QuantumDeviceSource> DeviceVisuals = new();
+        public readonly List<Quantum.FlipFriendsTrapConfig> Traps = new();
+        public readonly List<QuantumTrapSource> TrapVisuals = new();
         public FP MinX, MaxX, MinY;
         public int Version => HasTerrain ? 6 : HasDevices ? 5 : HasRespawn ? 4 : MovableBoxes.Count > 0 ? 3 : 2;
         public readonly List<FPVector2> Spawns = new();
@@ -38,6 +40,7 @@ namespace FlipFriends.Maps
             config.BoxSizes = MovableBoxes.Select(box => box.Size).ToArray();
             config.Devices = Devices.ToArray();
             config.TerrainContours = TerrainContours;
+            config.Traps = Traps.ToArray();
         }
 
         public void ApplyFallBoundary(Quantum.RuntimeConfig config)

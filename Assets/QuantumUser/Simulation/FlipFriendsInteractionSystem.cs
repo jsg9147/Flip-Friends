@@ -20,6 +20,8 @@ namespace Quantum
                 if (state->JumpBlockTicks > 0) state->JumpBlockTicks--;
                 if (state->ShrinkTicks > 0) state->ShrinkTicks--;
                 if (state->UncontrollableTicks > 0 && !state->Carrier.IsValid) state->UncontrollableTicks--;
+                // 원본 TickTimers는 이동이 꺼진 운반 중에는 돌지 않으므로 무적도 들린 동안 멈춘다.
+                if (state->InvincibleTicks > 0 && !state->Carrier.IsValid) state->InvincibleTicks--;
             }
             // 동일 틱의 접촉은 전역 PlayerRef 순서로 처리해 생성/접속 순서와 분리한다.
             for (int player = 0; player < frame.PlayerCount; player++)
