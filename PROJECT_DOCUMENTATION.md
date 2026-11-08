@@ -9,7 +9,7 @@
 1. 저장소 규칙은 Claude는 `CLAUDE.md`, Codex는 `AGENTS.md`를 기준으로 한다. 폴더별 규칙은 `.claude/rules/`에 있다.
 2. 작업을 시작할 때 아래 표에서 해당 영역의 문서만 추가로 읽는다.
 3. 코드·씬·Inspector가 문서와 다르면 실제 구현을 우선하고 같은 작업에서 문서를 수정한다.
-4. `Active` 문서만 현재 구현 근거로 사용한다. 완료된 일회성 프롬프트와 대체된 계획서는 유지하지 않는다.
+4. 현재 구현은 코드와 `Active` 기능 문서를 기준으로 한다. `Draft`는 미완료 설계, `Historical`은 과거 조사·측정 근거이며 현재 결함이나 새 검증 통과로 해석하지 않는다.
 5. 작업 완료 시 해당 영역 문서의 `현재 상태`, `검증`, `다음 작업`만 갱신한다. 날짜별 상세 작업 일지는 Git 기록에 맡긴다.
 
 ## 작업별 문서 경로
@@ -18,7 +18,8 @@
 |---|---|---|
 | 저장소 공통 규칙, 코딩 스타일, 빌드 | `CLAUDE.md` | 없음 |
 | 네트워크, 플레이어, 씬 전환 | `.claude/rules/network.md` | 커스텀 맵 흐름은 `Docs/CUSTOM_MAP_NETWORK.md` |
-| Quantum 전환, Steam 구매 인증, 온라인 접속 보호 | `Docs/QUANTUM_MIGRATION.md`, `Docs/QUANTUM_SECURITY.md`, `Docs/NEXT_SESSION.md` | 보안 문서는 Draft이며 출시 인증 검증은 미완료 |
+| Quantum 전환·다음 구현 묶음 | `Docs/QUANTUM_MIGRATION.md`, `Docs/NEXT_SESSION.md` | 실제 수정 영역 문서만 추가하며 Notes는 관련 규칙/측정이 필요할 때만 읽는다 |
+| Steam 구매 인증·온라인 접속 보호 | `Docs/QUANTUM_SECURITY.md`, `Docs/QUANTUM_MIGRATION.md` | 보안 문서는 Draft이며 출시 인증 검증은 미완료 |
 | 플레이어 이동·예측·들기·던지기 | `.claude/rules/network.md`와 `Docs/PLAYER_MOVEMENT_SYNC.md` | 충돌 판정은 `.claude/rules/gameplay.md` |
 | 플레이어 상태·애니메이션 | `.claude/rules/gameplay.md`와 `Docs/PLAYER_ANIMATION.md` | 없음 |
 | 장애물, 스위치, 충돌, 레이어·태그 | `.claude/rules/gameplay.md`와 `Docs/STAGE_COMPONENTS.md` | 없음 |
@@ -46,7 +47,8 @@
 | `Docs/STAGE_COMPONENTS.md` | Active | 기본 스테이지 장치·On/Off 상태 동기화와 참조 검사 |
 | `Docs/QUANTUM_SECURITY.md` | Draft | Quantum 전환 시 Steam 인증·소유권·온라인 보호 설계와 미실행 검증 |
 | `Docs/QUANTUM_MIGRATION.md` | Active | Quantum SDK·독립 이동 테스트·입력 재생·인증 경계와 외부 차단 항목 |
-| `Docs/Notes/*.md` | Active | 1회성 조사·실패한 시도·측정값. 자동으로 읽히지 않는다 |
+| `Docs/NEXT_SESSION.md` | Active | 현재 기준선·우선순위·전체 전환 순서와 외부 조건 |
+| `Docs/Notes/*.md` | Historical / 개별 표기 | 1회성 조사·실패·측정·분리된 과거 검증. 기능 문서의 링크로 필요할 때만 읽는다 |
 
 ## 문서 갱신 형식
 

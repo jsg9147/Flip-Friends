@@ -1,11 +1,17 @@
 # 플레이어 애니메이션 상태 동기화
 
 - 상태: Active
-- 최종 갱신: 2026-10-15
+- 문서 정리: 2026-11-08 (실행 검증 날짜는 검증 절 참조)
 - 범위: `PlayerStateController`, `PlayerAnimationController`, `PlayerAnimator.controller`
 
 ## 현재 상태
 
+- Quantum 구간 운반 대기는 두 대상을 숨기고 프레임 관계를 유지한다. 복귀 시 운동/접촉/Shrink 타이머를 정리하며 버튼 Sprite/남은 쿨다운도 프레임 상태만 표시한다. [장치 구현·검증](Notes/2026-11-08-quantum-devices.md)을 따른다.
+
+- Quantum 복귀 시 Shrink/운반/등반/접촉을 프레임에서 정리하고 복귀 대기 중 표시를 숨긴다. Animator/Unity 콜라이더는 복귀 판정에 사용하지 않는다. [복귀 구현·검증](Notes/2026-11-08-quantum-respawn.md)을 따른다.
+
+- Quantum 제품의 Shrink는30틱과 크기(0.8,0.5)/오프셋(0,-0.25)을 프레임에 저장하고 눌린 Sprite를 표시한다. 기존 Quantum 기본 판정으로 복원하며 Animator/Unity 콜라이더를 판정에 쓰지 않는다. Mirror 애니메이션 경로는 아래와 같이 보존한다. [실제 차이·검증](Notes/2026-11-07-quantum-interactions.md).
+- 아래 서버/SyncVar/Animator 설명은 기존 Mirror 경로다. Quantum의 전체 애니메이션·피격 연출 연결은 후속 작업이다.
 - 바라보는 방향은 지상·공중 모두 서버가 받은 좌우 입력으로 정하며, 입력이 없으면 유지한다. 피격 시에는 넉백의 X 방향을 바라보고 조작 제한 중에는 입력으로 바뀌지 않는다. 수직 피격은 기존 방향을 유지한다.
 - 지속 상태(Idle, Walk, Jump, Climb, ClimbIdle, Carried)는 서버가 `PlayerController2D.UpdatePlayerState`에서 매 틱 이동 결과로 정하고 `PlayerStateController`의 SyncVar로 보낸다. 값이 바뀔 때만 전송되고 늦게 들어온 클라이언트도 현재 값을 받는다.
 - 순간 연출(Damaged, Shrink)은 `RpcPlayOneShot`으로 보낸다. SyncVar에 실으면 같은 틱의 다음 상태에 덮여 클라이언트가 놓칠 수 있다. 피격은 `MovementHandler.OnDamaged`가 실제로 피해를 적용했을 때만 보낸다.
@@ -26,11 +32,9 @@
 
 ## 검증
 
-- 입력 방향 전환(관성·벽·공중), 피격 중 반대 입력 및 수직 피격의 방향 유지는 게임 화면에서 수동 확인이 필요하다.
-- 자동: `dotnet build Assembly-CSharp.csproj` 통과.
-- Unity Preview Scene 측정: 초기색 `RGBA(0.2, 0.4, 0.8, 0.75)`에서 첫 흰색을 확인했고, 점멸 중 색상을 `RGBA(0.8, 0.2, 0.4, 0.6)`으로 갱신하자 `흰색(기존 알파) → 최신색 → 흰색(최신 알파) → 최신색` 순서로 재생됐다. 완료와 비활성화 뒤에도 최신색이 유지됐다.
-- 수동(1인, 확인 완료): 대기·걷기·점프·등반(줄에서 멈춤 포함), 트랩 피격, 밟힘 후 콜라이더 복원, 운반.
-- 수동(미확인, 환경 제약): 2인 이상에서 다른 플레이어 애니메이션 동기화와 늦게 들어온 클라이언트의 초기 상태. Steam 2계정이 필요하다.
+- Quantum Shrink 판정·운반/복귀 대기 표시와 재생/Photon 결과는 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. Sprite 축소 표시이며 기존 Shrink 클립 전체 재생 이식은 아니다.
+- Mirror: 피격 점멸의 최신 색상 복원·비활성화 정리·1인 이동/등반/피격/밟힘/운반을 확인했다. [측정·재현](Notes/2026-10-15-player-damage-flash.md).
+- 실제 다인 애니메이션·피격 색상/방향 동기화는 미검증이다. 이전 세부 측정과 빌드 기록은 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존한다.
 
 ## 남은 작업
 

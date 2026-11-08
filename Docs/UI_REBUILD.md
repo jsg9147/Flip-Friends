@@ -1,11 +1,13 @@
 # Main 메뉴 UI 재구축 현재 상태
 
 - 상태: Active
-- 최종 갱신: 2026-10-10
+- 문서 정리: 2026-11-08 (실행 검증 날짜는 검증 절 참조)
 - 범위: `Main.unity` 화면 전환, 로비 진입 UI, 설정과 키 바인딩
 
 ## 현재 상태
 
+- Main 준비 화면에 다섯 번째 체크포인트/구간/소환 맵을 런타임 등록했다. 다섯 버튼의 배치·선택 목록과 지원 안내를 갱신하고 Main 미저장 씬은 보존했다. 플레이 화면의 체크포인트/구간 표지와 소환 버튼/남은 초는 프레임 상태를 표시한다. [장치 구현·검증](Notes/2026-11-08-quantum-devices.md)을 따른다.
+- Quantum 고정Reset은1P R·2P Backspace다. 기존 UI 키 재설정/게임패드 저장은 Quantum 게임 입력에 아직 미연결이다.
 - `InputManager`가 공통 `UIInputModeController`를 생성한다. 마우스 이동(3px 누적)·클릭·휠은 포인터 모드, 기존 Move/Navigate·Submit·Cancel·Menu 액션은 탐색 모드로 전환한다(방향 입력 임계값 0.5). 포인터 모드는 버튼 포커스를 해제하고 텍스트 입력 포커스는 유지하며, 탐색 모드는 커서와 uGUI 포인터 판정을 쉬고 마지막 유효 선택을 복원한다. 화면 기본 선택과 `ButtonSelectController` 자동 복원도 모드를 따른다. 확정 맵·열린 탭의 표시는 변경하지 않는다.
 - 키 설정은 높이 100의 2열 목록이며, 본문·입력값은 기호를 포함한 CC0 Kenney Mini 도트 글꼴과 짙은 청록색을 쓴다. 옅은 배경 위 입력 버튼은 기존 StageControlFrame의 하늘색 프레임이며 호버·선택 시 연두색으로 바뀐다. 스크롤바는 각진 청록 손잡이·옅은 트랙을 쓰고 제목 이미지는 유지한다. 한 줄 표시·자동 크기 조절을 유지하며 Pick Up / Throw, Respawn, Previous/Next Camera, Run, Confirm, Back을 표시한다. 저장값은 바인딩 ID로 행을 찾고, 그룹이 비어 있는 게임패드 Respawn/Menu도 장치 경로로 분류한다.
 - 타이틀 메뉴는 Start → Settings → Map Editor → Exit 순서로 화면 배치와 `ButtonSelectController` 선택 목록을 맞춘다. 런타임 생성되는 Map Editor도 Exit 바로 앞에 배치한다.
@@ -13,7 +15,7 @@
 - 커스텀 탭은 `StageCustomMapItem` 전용 프리팹과 두께가 고정되는 `StageControlFrame`을 쓴다. `MapListUI.isTabbedLayout`에서는 임시 조작 버튼을 생성하지 않고, 맵 선택 후에도 탭을 유지한다. 빈 목록 안내와 `ScrollViewController`의 선택 추적을 연결했다.
 - 열린 탭은 연두색 배경과 밑줄로 계속 표시하고, 버튼의 입력 포커스·마우스 호버는 별도 주황색 바깥 테두리로 표시한다. 탭 배경은 Button의 색상 전환 대상에서 분리했다.
 - 기본/커스텀 맵의 `MapChoiceFeedback`은 동기화된 맵 종류·ID와 `SelectionChanged`를 따라 확정 맵에 연두색 배경·선택됨 배지를 유지한다. 입력 포커스·호버는 독립 주황색 테두리이며, 커스텀 목록 재생성 시에도 맵 ID로 표시를 복원한다.
-- 기존 Steam, Mirror, 입력, 사운드와 게임플레이는 유지하고 메뉴/UI 계층만 점진적으로 교체한다.
+- Main Start는 `quantum-prepare`로 전환해 지원5종 맵 선택 → 오프라인 2인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
 - `Assets/01_Scripts/UI Scripts/Rebuild`에 공통 화면·내비게이션과 Main, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding 전용 화면이 있다.
 - `Main.unity`의 `MainUIManager` 오브젝트에 새 내비게이터가 연결되어 있다.
 - `Main.unity`의 화면 전환은 전부 `ScreenNavigator` 한 곳을 지난다. `UIScreen` 11개(`main-menu`, `mode-select`, `host-room`, `public-lobby`, `private-join`, `settings`, `settings-graphics-audio`, `settings-color`, `key-binding`, `key-binding-keyboard`, `key-binding-gamepad`)가 `ScreenNavigator.screens`에 명시적으로 등록되어 있고, 화면을 여닫는 버튼은 모두 `ScreenNavigationButton` 18개다.
@@ -45,12 +47,10 @@ ScreenNavigationButton 또는 NavigableScreen의 Cancel 처리
   → ScreenNavigator
   → UIScreen 파생 화면(MainMenu, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding, NavigableScreen)
   → 기존 SteamRoomManager 및 설정 서비스(SettingManager, KeyRebindingManager)
-
 ValueAdjuster, ResolutionAdjuster, ScreenModeAdjuster(값 증감과 저장)
   → ValueAdjuster.ValueChanged
   → SettingManager(적용)
   → SoundManager 음량, 플레이어 색 미리보기
-
 SettingsScreen.OnShow 또는 OnHide
   → SettingManager.ApplySettings
   → ResolutionAdjuster.ApplyResolution(ScreenModeAdjuster.SelectedMode)(해상도·화면 모드를 한 번에 적용)
@@ -59,34 +59,9 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 검증
 
-- 2026-10-30 키보드·패드 화면의 도트 본문·입력 프레임·스크롤바를 플레이 모드 캡처로 확인했다. 생성 행의 TMP overflow 0건, 입력 대기 문구 표시와 취소 후 Left Stick 복원을 확인했다. 번들 dotnet 빌드 오류 0건(기존 경고 96건)이며 실제 장치로 재지정·저장·재실행하는 검증은 남아 있다.
-- 2026-10-30 Main 플레이 모드에서 포인터 모드 초기 선택 없음, 버튼 선택 해제·마지막 위치 복원, 마우스 UI raycast 결과 3건→탐색 모드 0건을 확인했다. 실제 UI 모듈 처리로 Settings의 Highlighted→Normal 전환과 Start 포커스를 확인했다. 가상 키보드·게임패드 입력을 기존 Input System에 주입해 모드 전환과 스틱 0.1 입력 무시, 가상 마우스 이동으로 커서·포인터 판정 복구를 확인했다. 번들 dotnet 빌드 오류 0건(기존 경고 96건). Steam 미초기화 오류로 네트워크 검증은 제외했고, 실제 장치로 전체 화면을 왕복하는 수동 검증은 남아 있다.
-- 2026-10-29 Main 플레이 모드에서 키보드·게임패드 각 11개 행의 설명이 한 줄이고 설명·현재 입력의 TMP overflow가 없음을 확인했다. 두 화면을 캡처해 2열 배치·7개 이상 항목 표시·선택 행 강조를 확인했다. 키 버튼 클릭으로 입력 대기 진입과 취소 후 키 이름 복원을 확인했으며 번들 dotnet 빌드 오류 0건(경고 96건)이다. 실제 장치로 재지정·재실행 후 저장 복원은 수동 검증이 남아 있다.
-- 2026-10-29 타이틀의 Map Editor/Exit 순서 불일치 원인(생성 시 마지막 sibling, 선택 목록은 Exit 앞)을 수정했다. 번들 dotnet 빌드 오류 0건이며 실제 방향키·게임패드 조작 확인은 남아 있다.
-- 2026-10-29 플레이 모드 UI 상태 주입으로 기본 맵 확정·교체·해제, 확정 맵과 다른 맵의 EventSystem 포커스, 커스텀 맵 확정과 탭 왕복 후 배지 복원을 확인했다. 두 목록을 1600×900으로 캡처했고 번들 dotnet 빌드 오류 0건이다. Steam을 통한 실제 선택 동기화·전송 검증은 포함하지 않는다.
-- 2026-10-29 플레이 모드에서 열린 탭과 다른 탭에 EventSystem 포커스를 옮겨도 열린 화면·배경색이 유지되는 것을 확인했다. 포커스 해제 후 두 테두리의 알파가 0이 되어도 커스텀 탭의 활성 배경은 유지되며, 1600×900 캡처로 확인했다. 번들 dotnet 빌드 오류 0건이다.
-- 2026-10-29 저장된 GameRoom을 재로드한 뒤 플레이 모드에서 기본 탭 초기화, 실제 커스텀 탭 버튼 콜백, 로컬 맵 1개 생성(중복 없음)을 확인했다. 1600×900 Game 뷰의 두 탭을 캡처해 숫자·탭·하단 영역의 겹침과 프레임 두께를 확인했다. 번들 dotnet 빌드는 오류 0건이다. 이번 검증은 UI 범위이며 Steam 다인 선택·전송·시작과 실제 게임패드 조작은 재검증하지 않았다.
-- Unity `6000.6.3f1`에서 폐기된 오브젝트 검색 API를 현재 API로 교체한 뒤 번들 dotnet으로 `Assembly-CSharp`를 다시 빌드했고, 오류 0건이며 이번 작업 대상 경고 17건은 재발하지 않았다.
-- 스크립트와 씬 연결의 컴파일 검증은 완료됐다. Unity `6000.6.3f1` 번들 dotnet으로 `Assembly-CSharp` 빌드가 오류 0건으로 통과한다.
-- 중복 legacy listener 감사는 완료했다. 씬과 코드 모두 `MainUIManager`의 화면 전환을 호출하는 곳이 없다.
-- 버튼 중복 실행 버그를 플레이 모드에서 재현하고 고쳤다. 수정 전에는 Host·공개 로비·비공개 참가의 Back 클릭이 `HandleBack`을 두 번 실행해 `mode-select`를 건너뛰고 `main-menu`로 갔다. Create 버튼은 Inspector·`HostRoomScreen`·비활성 `HostSetting`의 `Awake`가 각각 등록해 `HostLobby`가 최대 3회, Join 버튼은 2회 호출되는 구조였다.
-- 수정 후 세 화면 각각에서 Back 클릭 → `mode-select`, Cancel → `mode-select` → `main-menu`, 히스토리를 비운 뒤 Cancel → `mode-select`를 확인했고 모든 단계에서 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했다.
-- 이중 소유 버그의 런타임 재현을 확인했다. 수정 전에는 `settings`가 Hide 상태일 때 `SettingManager.OpenSettingWindow()`를 호출하면 `activeSelf=true`, `CanvasGroup.alpha=0`, `CurrentScreen=main-menu`로 어긋났다. 씬의 `KeySetting Button` 경로에서는 `key-binding`이 `activeSelf=true`, `alpha=0`, `blocksRaycasts=false`로 열려 화면이 보이지 않고 입력도 받지 못했으며, `Setting UI`는 `activeSelf=false`인데 `IsVisible=true`로 남았다.
-- 수정 후 플레이 모드에서 설정 트리 전체를 실제 버튼 `onClick`과 Cancel 입력으로 왕복 검증했다. `main-menu` → `settings` → `key-binding` → `key-binding-keyboard` → (Close) → `key-binding-gamepad` → (Cancel) → `key-binding` → (Close) → `settings` → `settings-graphics-audio` → (Back) → `settings` → `settings-color` → (Cancel) → `settings` → (Cancel) → `main-menu` 13단계 전부에서 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했고, 나머지 화면은 모두 비활성·`alpha` 0이었다.
-- 설정 값 ± 버튼 12개를 플레이 모드에서 실제 `onClick`으로 검증했다. BGM 51, SFX 49로 증감되고 표시 텍스트와 `PlayerPrefs`가 함께 바뀌며, 해상도는 `1600 x 900` → `1600 x 1024` → `1600 x 900`으로 왕복하고, 색은 `150/250/250` → `149/251/251`로 바뀐다. 검증으로 바뀐 값은 원래대로 복원했다.
-- 기존 메인 흐름 회귀도 확인했다. `main-menu` ↔ `mode-select` 왕복과 `mode-select`에서 연 `settings`의 Close가 `mode-select`로 복귀한다. 설정의 Close는 고정 복귀가 아니라 히스토리 복귀다.
-- 설정 저장 경로를 플레이 모드에서 검증했다. 실제 `Right Button` `onClick`으로 BGM을 51로 올리면 `PlayerPrefs`가 0.510으로 바뀌고 `bgmSource.volume`도 0.510이 된다. 플레이 종료 후 재진입하면 설정 화면을 열지 않아도 `bgmSource.volume`과 `uiSource.volume`이 저장값 0.500으로 적용된다.
-- 이전 정수 저장값의 변환도 확인했다. 정수로 저장돼 있던 BGM 50, SFX 50, 색 150/250/250이 각각 0.500, 0.500, 0.588/0.980/0.980 float으로 바뀌어 다시 저장되고, 색 미리보기 `Image.color`가 같은 값이 된다. `PlayerPrefs.GetFloat`은 `SetInt`로 쓰인 키에서 저장값이 아니라 기본값을 돌려주므로, 음수 표식으로 이전 형식을 구분한다.
-- 해상도 확정 시점도 검증했다. 하위 창에서 `1600 x 900` → `1600 x 1024`로 바꾸는 동안 `SavedResolution`은 그대로고, Back으로 설정 루트에 돌아오는 순간 `1600x1024`로 저장된다. 플레이 재진입 시 그 값이 유지된다. 검증으로 바꾼 값은 모두 원래대로 복원했다.
-- 플레이 모드와 컴파일 모두 `ScreenNavigator`·`UIScreen` 관련 경고·오류가 없다. 남은 콘솔 경고는 vendor `.meta` 버전 경고 등 기존 항목뿐이다.
-- 화면 모드를 플레이 모드에서 검증했다. 실제 `Left`/`Right Button` `onClick`으로 `Windowed` ↔ `Fullscreen`이 표시만 바뀌고, Back으로 설정 루트에 돌아오는 순간 `ScreenMode`가 저장된다. `Screen Mode Border`를 선택하고 오른쪽을 7프레임 누르고 있어도 한 번만 바뀌고, 뗐다가 다시 누르면 다시 한 번 바뀐다. 에디터에서는 `Screen.fullScreenMode`가 실제로 바뀌지 않는다. 빌드에서 화면 모드 전환과 해상도 동시 변경이 실제 창에 반영되는 것은 2026-10-06 사용자가 수동 확인했다. 검증으로 만든 `ScreenMode` 키는 지웠다.
-- 누름 유지 입력을 플레이 모드에서 검증했다(일시정지 후 `EditorApplication.Step()`, `InputManager.dir`을 리플렉션으로 고정). 해상도는 오른쪽을 5프레임 누르고 있어도 `1600 x 900` → `1600 x 1024` 한 칸만 바뀌고, 뗐다가 왼쪽을 누르면 다시 한 칸만 돌아온다. SFX는 반복 값을 0.06초/0.04초로 바꿔 확인했고, 누른 프레임에 50 → 51, 0.06초 뒤 52, 이후 0.04초마다 한 칸씩 올랐다. 스텝 모드에서는 한 프레임이 `unscaledTime` 0.02초로 진행된다. 검증으로 바뀐 값은 복원했다.
-- 레거시 내비게이션 제거 후 플레이 모드에서 공개 로비의 Cancel 구독자가 3개에서 `PublicLobbyScreen` 1개로 줄었다. Cancel → `mode-select` → `main-menu`, 히스토리 없이 Cancel → `mode-select`, Back 클릭 → `mode-select`를 확인했고, 단계마다 `CurrentScreen`과 `activeSelf`·`alpha`·`blocksRaycasts`·`IsVisible`이 일치했다. 공개 로비 진입 시 Refresh가, `key-binding-gamepad` 진입 시 Close Btn이 선택된다.
-- Main, GameRoom, GamePlay, MapEditor 4개 씬 모두 오류 없이 로드된다.
-- Steam 런타임은 2026-10-06 사용자가 Steam 로그인 상태에서 수동 확인했고 정상 동작으로 보고했다. 대상은 Host 생성, 공개 로비 목록의 loading·empty·error·joining, 비공개 코드 참가와 실패 상태, Create·Join 1회 호출이다.
-- `LobbyItem` 선택 목록 등록을 플레이 모드에서 확인했다. Steam 없이 프리팹 3개를 직접 만들어 등록하면 목록이 Refresh, Lobby0~2, Back 순서가 되고, `SelectNextButton`이 Refresh → Lobby0 → Lobby1 → Back → Refresh로 돈다. 마지막 로비 항목을 선택한 채 목록을 비우면 Refresh, Back만 남고 인덱스가 1로 맞춰지며 콘솔 오류가 없다.
-- 공개 로비 스크롤 추적을 플레이 모드에서 확인했다. 로비 항목 10개를 직접 만들어(Content 높이 1025, 보이는 영역 700) `SelectNextButton`·`SelectPreviousButton`으로 Refresh → Lobby0~9 → Back → Refresh와 그 역순을 돌았고, 모든 단계에서 선택된 항목이 보이는 영역 안에 있었다. 보이는 항목을 고를 때는 스크롤이 움직이지 않는다. 목록을 비우면 Refresh, Back만 남는다. 키 바인딩 키보드(13개)·게임패드(9개) 창도 전 항목이 보이는 영역 안에 들어와 회귀가 없다.
-- 2026-10-10 사용자가 Windows Standalone 빌드에서 마우스·키보드·게임패드 실제 입력으로 화면 이동을 확인했고, 실제 Steam 공개 로비 목록을 게임패드로 스크롤해 항목을 골라 참가하는 것까지 수동 확인했다.
+- Quantum 제품5: Main 지원 맵5종·장치 플레이/완료/재진입·취소/실패/중복/씬왕복·잔존과 TMP overflow0을 확인했다. [공통 검증](QUANTUM_MIGRATION.md#검증), [실행·캡처 기록](Notes/2026-11-08-quantum-devices.md).
+- 2026-10월 Mirror UI: 화면/설정 트리 왕복·단일 버튼 콜백·포인터/탐색 전환·스크롤·선택 표시·설정 저장/복원·정수 저장값 마이그레이션을 검사했다. 당시 수치/입력 주입/실패 재현은 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존한다.
+- 사용자 Windows 빌드·Steam 로비/패드 실조작 확인은 당시 Mirror 경로의 결과다. Quantum 게임패드/키 재설정과 실제 다인 플레이 검증으로 간주하지 않는다.
 
 ## 남은 작업
 
@@ -95,6 +70,4 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 다음 작업
 
-실제 마우스·패드로 Main·설정·GameRoom을 왕복하며 강조의 중복·잔류, 마지막 포커스 복원, 참가 코드 입력을 확인한다. 키 설정 변경 후 재실행하여 저장 복원과 긴 입력 이름의 표시도 확인한다.
-
-새 스테이지 선택 UI를 실제 Steam 방에서 열고 방장 맵 선택·시작, 참가자 선택 정보 표시와 게임패드 탭/목록 이동을 확인한다.
+제품 Quantum 준비/플레이 화면의 실제 두 사람·마우스/게임패드 조작을 확인하고, 이동/스테이지 이식 뒤 Steam 로비·초대의 실제 진입점을 교체한다. 기존 설정·GameRoom의 실조작/키 저장 복원도 별도 회귀로 남긴다. 새 스테이지 선택 UI를 실제 Steam 방에서 열고 방장 맵 선택·시작, 참가자 선택 정보 표시와 게임패드 탭/목록 이동을 확인한다.

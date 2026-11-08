@@ -1,6 +1,6 @@
 # Flip Friends — Claude Code 지침
 
-Unity 6(`6000.6.3f1`)과 Mirror로 만든 2D 멀티플레이 협동 플랫포머다. 최대 4명이 레벨을 오르고 퍼즐을 풀며, 오브젝트나 다른 플레이어를 들어 옮겨 도착 지점에 도달한다. 로비는 Steam(FizzySteamworks)으로 관리한다.
+Unity 6 기반 2D 멀티플레이 협동 플랫포머다. 최대 4명이 레벨을 오르고 퍼즐을 풀며, 오브젝트나 다른 플레이어를 들어 옮겨 도착 지점에 도달한다. Mirror/Quantum 전환 상태는 기능 문서, 에디터 버전은 `ProjectSettings/ProjectVersion.txt`를 기준으로 한다.
 
 식별자는 영어, 주석·문서·커밋 메시지는 한국어로 쓴다. 사용자에게 하는 답변은 한글로 한다. 모든 소스 파일은 **UTF-8**로 저장한다.
 
@@ -27,25 +27,25 @@ Unity 6(`6000.6.3f1`)과 Mirror로 만든 2D 멀티플레이 협동 플랫포머
 에디터 실행:
 
 ```powershell
-Start-Process "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -ArgumentList '-projectPath','C:\Unity Project\Flip-Friends'
+Start-Process "C:\Program Files\Unity\Hub\Editor\6000.6.8f1\Editor\Unity.exe" -ArgumentList '-projectPath','C:\Unity Project\Flip-Friends'
 ```
 
-컴파일 확인. 에디터가 프로젝트를 열고 있어도 동작한다. 코드를 고쳤으면 이걸로 검증한다:
+컴파일 확인. 에디터가 프로젝트를 열고 있어도 동작한다. 아래는 검증에 사용한 별도 번들 SDK 경로이며 실행 에디터 버전과 구분한다. 코드를 고쳤으면 이걸로 검증한다:
 
 ```powershell
-& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\DotNetSdk\dotnet.exe" build Assembly-CSharp.csproj
+& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\DotNetSdk\dotnet.exe" build Assembly-CSharp.csproj -m:1
 ```
 
 Edit Mode 테스트는 Unity Test Runner로 돌린다. CLI로 돌릴 때는 에디터를 완전히 닫아야 한다. 열려 있으면 `Library` 잠금 때문에 실패한다:
 
 ```powershell
-& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -runTests -batchmode -projectPath "C:\Unity Project\Flip-Friends" -testPlatform EditMode -testResults "$env:TEMP\editmode-results.xml"
+& "C:\Program Files\Unity\Hub\Editor\6000.6.8f1\Editor\Unity.exe" -runTests -batchmode -projectPath "C:\Unity Project\Flip-Friends" -testPlatform EditMode -testResults "$env:TEMP\editmode-results.xml"
 ```
 
 ## 환경 제약
 
-- 로비·네트워크 흐름은 Steam 클라이언트에 로그인되어 있어야 동작한다. `steam_appid.txt`가 프로젝트 루트에 있어야 한다.
-- 2인 이상이 필요한 검증은 이 환경에서 끝까지 못 간다. 수동 검증으로 남기고 기능 문서의 `검증`에 환경 제약으로 적는다.
+- Mirror Steam 로비와 출시 인증 흐름은 Steam 로그인이 필요하다. `steam_appid.txt`가 프로젝트 루트에 있어야 한다. Quantum 오프라인·에디터 개발 Photon 검증과 구분한다.
+- 같은 PC의 오프라인2인·개발 Photon 두 연결은 자동 검사할 수 있다. 다른 PC·실제 다인 조작·Steam 다계정·출시 인증은 별도 조건이 필요하며 미실행 검증을 통과로 표시하지 않는다.
 - 대상은 Windows Standalone(1600x900), 제품명 `Slime Climb`, 회사 `MNSGStudio`다.
 - `Library/`, `Temp/`, `Logs/`, `UserSettings/`는 커밋하지 않는다.
 
