@@ -13,7 +13,7 @@ namespace Quantum
             if (frame.Global->FlipFriendsMotionStartedFrame == 0)
             {
                 int count = 0; var players = frame.Filter<FlipFriendsPlayer>(); while (players.Next(out _, out _)) count++;
-                if (count < frame.PlayerCount) return;
+                if (count < frame.MaxPlayerCount) return;
                 frame.Global->FlipFriendsMotionStartedFrame = frame.Number;
                 var motions = frame.Filter<FlipFriendsMotion>();
                 while (motions.NextUnsafe(out _, out var state)) state->ReadyFrame = frame.Number + 12;

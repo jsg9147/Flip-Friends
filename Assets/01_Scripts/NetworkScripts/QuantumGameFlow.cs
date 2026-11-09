@@ -7,6 +7,7 @@ using Photon.Realtime;
 using Quantum;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 namespace FlipFriends.Network
 {
@@ -20,7 +21,7 @@ namespace FlipFriends.Network
         [SerializeField] private string releasePhotonAppId;
         public static QuantumGameFlow Instance { get; private set; }
         public QuantumGameState State { get; private set; }
-        public string Message { get; private set; } = "지원 맵을 골라 오프라인 2인 개발 실행을 시작하세요.";
+        public string Message { get; private set; } = "맵과 참가 인원을 선택하고 장치 배정을 확인하세요.";
         public QuantumCustomMapAsset[] SupportedMaps => supportedMaps;
         // 공식 스테이지는 기존 사용례 뒤의 선택 번호를 쓴다. 기존 사용례 번호(0~5)는 바꾸지 않는다.
         public IReadOnlyList<QuantumOfficialStageAsset> OfficialStages { get; private set; } = Array.Empty<QuantumOfficialStageAsset>();
@@ -28,6 +29,10 @@ namespace FlipFriends.Network
         public int OfficialMapIndex(int stage) => supportedMaps.Length + stage;
         public IQuantumMapContent SelectedContent => SelectedMap < supportedMaps.Length ? supportedMaps[SelectedMap] : OfficialStages[SelectedMap - supportedMaps.Length];
         public int SelectedMap { get; private set; }
+        public int PlayerCount { get; private set; } = 2;
+        public int KeyboardSlots { get; private set; } = 2;
+        public bool HasLocalDevices => (KeyboardSlots == 0 || Keyboard.current != null) &&
+            Gamepad.all.Count >= PlayerCount - KeyboardSlots;
         public QuantumGameSession Session { get; private set; }
         public QuantumMapConversion Content { get; private set; }
         public event Action Changed;
@@ -62,6 +67,18 @@ namespace FlipFriends.Network
             SetState(QuantumGameState.Ready, "선택: " + SelectedContent.DisplayName);
         }
 
+        public void CycleParticipants()
+        {
+            if (State == QuantumGameState.Starting || State == QuantumGameState.Playing || State == QuantumGameState.Stopping) return;
+            if (KeyboardSlots > 0) KeyboardSlots--;
+            else
+            {
+                PlayerCount = PlayerCount % QuantumGameContent.MaxPlayers + 1;
+                KeyboardSlots = Math.Min(2, PlayerCount);
+            }
+            Changed?.Invoke();
+        }
+
         public Task StartAsync(bool isOnline)
         {
             if (State == QuantumGameState.Starting || State == QuantumGameState.Playing || State == QuantumGameState.Stopping)
@@ -74,10 +91,10 @@ namespace FlipFriends.Network
         {
             try
             {
-                var config = new RuntimeConfig();
+                var config = new RuntimeConfig { FlipFriendsPlayerCount = PlayerCount };
                 Content = QuantumGameContent.Prepare(SelectedContent, config);
-                Session = new QuantumGameSession();
-                Session.InputSource = (frame, slot) => State == QuantumGameState.Playing ? QuantumPlayerInput.Read(slot) : default;
+                if (!isOnline && !HasLocalDevices) throw new InvalidOperationException("배정할 키보드 또는 게임패드를 연결하세요.");
+                Session = new QuantumGameSession { KeyboardCount = KeyboardSlots, IsInputEnabled = false };
                 if (isOnline)
                 {
                     var settings = new AppSettings(PhotonServerSettings.Global.AppSettings) { AppIdQuantum = releasePhotonAppId };
@@ -89,7 +106,8 @@ namespace FlipFriends.Network
                 await SceneManager.LoadSceneAsync(PlayScene);
                 isSceneTransition = false;
                 if (isDestroyed || State != QuantumGameState.Starting) return;
-                SetState(QuantumGameState.Playing, "도착점에서 위 입력: W / ↑. 메뉴로 종료할 수 있습니다.");
+                Session.IsInputEnabled = true;
+                SetState(QuantumGameState.Playing, "도착점에서 위를 입력하세요. 메뉴로 종료할 수 있습니다.");
             }
             catch (Exception error)
             {

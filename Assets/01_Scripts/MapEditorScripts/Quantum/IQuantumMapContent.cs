@@ -6,6 +6,7 @@ namespace FlipFriends.Maps
     public interface IQuantumMapContent
     {
         string DisplayName { get; }
+        int MinimumPlayers { get; }
         QuantumMapConversion ValidateAndApply(RuntimeConfig config);
         void ApplyRespawn(RuntimeConfig config, QuantumMapConversion conversion);
     }

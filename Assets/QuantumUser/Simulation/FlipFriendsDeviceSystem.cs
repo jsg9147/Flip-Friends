@@ -24,12 +24,12 @@ namespace Quantum
                 {
                     if (device->ContentIndex != index) continue;
                     Contacts(frame, config, out int players, out ulong boxes);
-                    int entered = players & ~device->PlayerContacts;
+                    uint entered = (uint)(players & ~device->PlayerContacts);
                     ulong boxEntered = boxes & ~device->BoxContacts;
                     device->PlayerContacts = players; device->BoxContacts = boxes;
-                    for (int player = 0; player < frame.PlayerCount; player++)
+                    for (int player = 0; entered != 0; player++, entered >>= 1)
                     {
-                        if ((entered & (1 << player)) == 0) continue;
+                        if ((entered & 1) == 0) continue;
                         var query = frame.Filter<FlipFriendsPlayer>();
                         while (query.NextUnsafe(out var entity, out var state))
                         {

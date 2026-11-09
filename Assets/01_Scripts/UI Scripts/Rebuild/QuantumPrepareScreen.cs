@@ -3,6 +3,7 @@ using FlipFriends.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public sealed class QuantumPrepareScreen : NavigableScreen
 {
@@ -19,6 +20,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     private Button deviceMapButton;
     private Button tilemapButton;
     private Button officialStageButton;
+    private Button participantButton;
     private System.Collections.Generic.IReadOnlyList<FlipFriends.Maps.QuantumOfficialStageAsset> officialStages = Array.Empty<FlipFriends.Maps.QuantumOfficialStageAsset>();
 
     protected override void Awake()
@@ -92,6 +94,16 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             }
         }
         AddOfficialStageButton();
+        participantButton = Instantiate(offlineButton, offlineButton.transform.parent);
+        participantButton.name = "참가 인원 및 장치 배정";
+        var participantRect = (RectTransform)participantButton.transform;
+        participantRect.anchoredPosition = new Vector2(0, -45);
+        participantRect.sizeDelta = new Vector2(540, 54);
+        status.rectTransform.anchoredPosition = new Vector2(0, 100);
+        status.rectTransform.sizeDelta = new Vector2(1150, 145);
+        offlineButton.GetComponentInChildren<TMP_Text>().text = "오프라인 플레이 시작";
+        participantButton.onClick.AddListener(() => flow.CycleParticipants());
+        GetComponent<ButtonSelectController>().tagetButtonList.Insert(0, participantButton);
         staticMapButton.onClick.AddListener(() => flow.SelectMap(0));
         ropeMapButton.onClick.AddListener(() => flow.SelectMap(1));
         offlineButton.onClick.AddListener(() => StartGame(false));
@@ -134,11 +146,13 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     {
         flow = QuantumGameFlow.Instance;
         flow.Changed += Refresh;
+        InputSystem.onDeviceChange += OnDeviceChange;
         Refresh();
     }
 
     protected override void OnHide()
     {
+        InputSystem.onDeviceChange -= OnDeviceChange;
         if (flow != null) flow.Changed -= Refresh;
     }
 
@@ -159,10 +173,19 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         catch (Exception error) { Debug.LogException(error); }
     }
 
+    private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+    {
+        if (device is Keyboard || device is Gamepad) Refresh();
+    }
+
     private void Refresh()
     {
         bool isBusy = flow.State == QuantumGameState.Starting || flow.State == QuantumGameState.Stopping;
-        offlineButton.interactable = onlineButton.interactable = legacyButton.interactable = !isBusy;
+        bool hasMinimum = flow.PlayerCount >= flow.SelectedContent.MinimumPlayers;
+        offlineButton.interactable = !isBusy && hasMinimum && flow.HasLocalDevices;
+        onlineButton.interactable = !isBusy && hasMinimum;
+        legacyButton.interactable = participantButton.interactable = !isBusy;
+        participantButton.GetComponentInChildren<TMP_Text>().text = $"참가 {flow.PlayerCount}명 · 키보드 {flow.KeyboardSlots}명 · 패드 {flow.PlayerCount - flow.KeyboardSlots}명";
         staticMapButton.interactable = ropeMapButton.interactable = !isBusy;
         if (interactionMapButton != null) interactionMapButton.interactable = !isBusy;
         if (respawnMapButton != null) respawnMapButton.interactable = !isBusy;
@@ -176,8 +199,9 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         }
         cancelButton.interactable = flow.State != QuantumGameState.Stopping;
         status.text = flow.Message + "\n선택 맵: " + (flow.SelectedMap == 0 ? "정적 지형" : flow.SelectedMap == 1 ? "로프" : flow.SelectedMap == 2 ? "밟기/운반/상자" : flow.SelectedMap == 3 ? "리셋/추락 복귀" : flow.SelectedMap == 4 ? "체크포인트/구간/소환" : isOfficial ? "공식 스테이지 " + flow.SelectedContent.DisplayName : "Tilemap 사용례 (전체 스테이지 아님)") +
-            "\n2인 / 이동/로프/운반/상자/체크포인트/구간/소환/도착 지원\n리셋 1P R / 2P Backspace | 전체 스테이지는 미지원";
+            $"\n최소 {flow.SelectedContent.MinimumPlayers}명 · 최대 {QuantumGameContent.MaxPlayers}명 | 연결된 게임패드 {Gamepad.all.Count}개" +
+            (!hasMinimum ? "\n최소 인원에 도달해야 시작할 수 있습니다." : !flow.HasLocalDevices ? "\n오프라인 플레이에 필요한 입력 장치를 연결하세요." : "\n배정을 확인하고 플레이를 시작하세요.");
     }
 
-    private void OnDestroy() { if (flow != null) flow.Changed -= Refresh; }
+    private void OnDestroy() => OnHide();
 }

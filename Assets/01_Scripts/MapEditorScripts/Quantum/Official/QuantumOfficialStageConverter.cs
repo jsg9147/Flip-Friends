@@ -33,8 +33,8 @@ namespace FlipFriends.Maps
             if (data == null || !IsValidStageId(data.stageId))
                 throw new InvalidOperationException("공식 스테이지 ID는 소문자·숫자·하이픈(1~48자)이어야 합니다.");
             if (terrain == null) throw new InvalidOperationException($"공식 스테이지 {data.stageId}: Ground Tilemap 지형이 필요합니다.");
-            if (data.spawns == null || data.spawns.Length != 2)
-                throw new InvalidOperationException($"공식 스테이지 {data.stageId}: 현재 2인 전제라 시작점이 정확히 2개여야 합니다.");
+            if (data.spawns == null || data.spawns.Length < 1 || data.spawns.Length > Quantum.RuntimeConfig.FlipFriendsMaxPlayers)
+                throw new InvalidOperationException($"공식 스테이지 {data.stageId}: 시작점이 1~4개여야 합니다.");
             if (data.goals == null || data.goals.Length == 0 || data.goals.Length > MaxGoals)
                 throw new InvalidOperationException($"공식 스테이지 {data.stageId}: 도착점은 1~{MaxGoals}개여야 합니다.");
             if ((data.ropes?.Length ?? 0) > MaxRopes || (data.boxes?.Length ?? 0) > MaxBoxes)

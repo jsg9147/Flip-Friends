@@ -54,7 +54,7 @@ public static class QuantumInteractionChecks
         Reject(box => box.position.y = -0.25f);
         Reject(box => box.prefabID = "obstacle.cannon");
         var config = Config();
-        Require(config.CustomMapAgreement.StartsWith("3:3:") && config.CustomMapAgreement.Contains(":제품14:"), "상자/제품 합의 버전");
+        Require(config.CustomMapAgreement.StartsWith("3:3:") && config.CustomMapAgreement.Contains(":제품15:"), "상자/제품 합의 버전");
     }
 
     public static RuntimeConfig Config()
@@ -72,7 +72,7 @@ public static class QuantumInteractionChecks
         Transform2D position = default, partnerPosition = default;
         FlipFriendsPlayer state = default;
         while (players.Next(out var entity, out var transform, out var item))
-            if ((int)item.Player == player) { mine = entity; position = transform; state = item; } else partnerPosition = transform;
+            if ((int)item.Player == player) { mine = entity; position = transform; state = item; } else if ((int)item.Player == 1) partnerPosition = transform;
         if (!mine.IsValid || player != 0) return default;
         var input = new Quantum.Input();
         FP Aim(FP x) => FPMath.Clamp((x - position.Position.X) * 4 - state.Velocity.X * 2, -FP._1, FP._1);

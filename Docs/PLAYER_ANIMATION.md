@@ -11,7 +11,7 @@
 - Quantum 복귀 시 Shrink/운반/등반/접촉을 프레임에서 정리하고 복귀 대기 중 표시를 숨긴다. Animator/Unity 콜라이더는 복귀 판정에 사용하지 않는다. [복귀 구현·검증](Notes/2026-11-08-quantum-respawn.md)을 따른다.
 
 - Quantum 제품의 Shrink는30틱과 크기(0.8,0.5)/오프셋(0,-0.25)을 프레임에 저장하고 눌린 Sprite를 표시한다. 기존 Quantum 기본 판정으로 복원하며 Animator/Unity 콜라이더를 판정에 쓰지 않는다. Mirror 애니메이션 경로는 아래와 같이 보존한다. [실제 차이·검증](Notes/2026-11-07-quantum-interactions.md).
-- 아래 서버/SyncVar/Animator 설명은 기존 Mirror 경로다. Quantum의 전체 애니메이션·피격 연출 연결은 후속 작업이다.
+- Quantum 제품15는 예측 프레임 상태에서 걷기·점프·낙하·등반·피격·Shrink와 대기 Sprite 클립을 샘플한다. 점프·밟힘·도착 효과음은 확정 틱에서 한 번 처리한다. 아래 서버/SyncVar/Animator 설명은 기존 Mirror 경로다.
 - 바라보는 방향은 지상·공중 모두 서버가 받은 좌우 입력으로 정하며, 입력이 없으면 유지한다. 피격 시에는 넉백의 X 방향을 바라보고 조작 제한 중에는 입력으로 바뀌지 않는다. 수직 피격은 기존 방향을 유지한다.
 - 지속 상태(Idle, Walk, Jump, Climb, ClimbIdle, Carried)는 서버가 `PlayerController2D.UpdatePlayerState`에서 매 틱 이동 결과로 정하고 `PlayerStateController`의 SyncVar로 보낸다. 값이 바뀔 때만 전송되고 늦게 들어온 클라이언트도 현재 값을 받는다.
 - 순간 연출(Damaged, Shrink)은 `RpcPlayOneShot`으로 보낸다. SyncVar에 실으면 같은 틱의 다음 상태에 덮여 클라이언트가 놓칠 수 있다. 피격은 `MovementHandler.OnDamaged`가 실제로 피해를 적용했을 때만 보낸다.
@@ -32,7 +32,7 @@
 
 ## 검증
 
-- Quantum Shrink 판정·운반/복귀 대기 표시와 재생/Photon 결과는 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. Sprite 축소 표시이며 기존 Shrink 클립 전체 재생 이식은 아니다.
+- Quantum Shrink 판정·운반/복귀 대기 표시와 재생/Photon 결과는 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. 제품15의 4인 Main에서 카메라 범위와 동일 확정 틱 효과음 재처리 차단을 검사했다. [실행 범위](Notes/2026-11-09-quantum-multiplayer.md).
 - Mirror: 피격 점멸의 최신 색상 복원·비활성화 정리·1인 이동/등반/피격/밟힘/운반을 확인했다. [측정·재현](Notes/2026-10-15-player-damage-flash.md).
 - 실제 다인 애니메이션·피격 색상/방향 동기화는 미검증이다. 이전 세부 측정과 빌드 기록은 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존한다.
 

@@ -7,8 +7,10 @@ namespace Quantum
             if (!frame.RuntimeConfig.EnableGoals || frame.Global->FlipFriendsCompletedFrame != 0) return;
             if (frame.RuntimeConfig.Devices != null && frame.RuntimeConfig.Devices.Length > 0)
             {
-                for (int index = 0; index < frame.PlayerCount; index++)
+                uint registered = frame.FlipFriendsRegisteredPlayerMask();
+                for (int index = 0; registered != 0; index++, registered >>= 1)
                 {
+                    if ((registered & 1) == 0) continue;
                     var query = frame.Filter<Transform2D, FlipFriendsPlayer>();
                     while (query.NextUnsafe(out var entity, out var transform, out var state))
                     {
@@ -26,7 +28,7 @@ namespace Quantum
                 if (!player.IsFinished) return;
                 count++;
             }
-            if (count == frame.PlayerCount) frame.Global->FlipFriendsCompletedFrame = frame.Number;
+            if (count == frame.MaxPlayerCount) frame.Global->FlipFriendsCompletedFrame = frame.Number;
         }
     }
 }

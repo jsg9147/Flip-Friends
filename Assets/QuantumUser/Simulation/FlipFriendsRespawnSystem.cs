@@ -16,8 +16,10 @@ namespace Quantum
         public override void Update(Frame frame)
         {
             if (!frame.RuntimeConfig.EnableRespawn || frame.Global->FlipFriendsCompletedFrame > 0) return;
-            for (int index = 0; index < frame.PlayerCount; index++)
+            uint registered = frame.FlipFriendsRegisteredPlayerMask();
+            for (int index = 0; registered != 0; index++, registered >>= 1)
             {
+                if ((registered & 1) == 0) continue;
                 var players = frame.Filter<Transform2D, FlipFriendsPlayer>();
                 while (players.NextUnsafe(out var entity, out var transform, out var state))
                 {

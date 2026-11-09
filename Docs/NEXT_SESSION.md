@@ -10,8 +10,8 @@
 
 ## 현재 상태
 
-- 제품14/ff-product-14. Main 사용례6종과 공식 시험8종(`official-test`, `official-slope-test`, `official-hazard-test`, `official-launcher-test`, `official-motion-test`, `official-switch-test`, `official-conveyor-test`, `official-cannon-test`)이 있다. 공식 작성기의 FP 변환과 스위치/문·수동 전환·컨베이어·대포의 제품 경로는 [현재 범위](QUANTUM_MIGRATION.md#현재-상태)를 따른다.
-- 기존21개 스테이지·일반 장치·MapEditor 테스트·친구 맵 전송·Steam 로비/초대는 Mirror다. 현재 제품은2인 전제이며 목표4인 확장이 남아 있다.
+- 제품15/ff-product-15. Main 사용례6종과 공식 시험8종(`official-test`, `official-slope-test`, `official-hazard-test`, `official-launcher-test`, `official-motion-test`, `official-switch-test`, `official-conveyor-test`, `official-cannon-test`)이 있다. 공식 작성기의 FP 변환과 스위치/문·수동 전환·컨베이어·대포의 제품 경로는 [현재 범위](QUANTUM_MIGRATION.md#현재-상태)를 따른다.
+- 기존21개 스테이지·일반 장치·MapEditor 테스트·친구 맵 전송·Steam 로비/초대는 Mirror다. Quantum 제품은 맵별 최소 인원과 최대 4인, 시작점 부족 시 옆 칸 생성, 입력 장치 배정과 프레임 기반 연출을 지원한다.
 - 기존21개 스테이지는 사용자가 새로 구성해 프리팹 기반 공식 맵으로 등록할 예정이다. 원본 프리팹은 보존한다.
 - 최신 검증과 미실행 환경은 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. 문서 정리로 새 실행 통과를 주장하지 않는다.
 - 실제 프로젝트 버전은 ProjectSettings/ProjectVersion.txt의6000.6.8f1, SDK는 Quantum3.0.14 Stable2241이다. 임의 업그레이드하지 않는다.
@@ -25,7 +25,7 @@
 
 ## 다음 작업
 
-사용자가 새로 구성한 공식 스테이지를 작성 컴포넌트로 등록하고 인원·선택/완료/복귀를 연결한다(전체 교체 순서 4). 장치 이식 묶음(제품9~14)은 끝났다. 원본 프리팹은 보존한다.
+사용자가 새로 구성한 공식 스테이지 등록을 이어가고, MapEditor 검증·베이크와 Quantum 테스트 플레이를 연결한다(전체 교체 순서 6).
 - `QuantumProductChecks.RunOffline`은 새 플레이 세션에서 다른 Main 검사보다 먼저 돌린다.
 
 ## 전체 교체 순서
@@ -34,7 +34,7 @@
 2. ~~경사 이동과 작성기의 경사 수용~~ (완료, 제품8; 실제 프리팹30/45도).
 3. ~~피격/넉백(정적 트랩)~~ (제품9) → ~~스프링/바운스~~ (제품10) → ~~이동 발판·자동 전환 지형·이동/회전 트랩~~ (제품11) → ~~스위치/문·수동 전환~~ (제품12) → ~~컨베이어~~ (제품13) → ~~대포/투사체~~ (제품14). 각 장치는 작성 전용 컴포넌트에서 변환한다.
 4. 사용자가 새로 구성한 공식 스테이지를 등록하고 인원·선택/완료/복귀를 연결한다. 원본 프리팹은 보존한다.
-5. 최대4인 전제, 키 재설정/게임패드·장치 배정, 애니메이션/효과음/카메라 연결.
+5. ~~최대4인 전제, 키 재설정/게임패드·장치 배정, 애니메이션/효과음/카메라 연결~~ (제품15).
 6. MapEditor 검증/베이크·Quantum 테스트 플레이·커스텀 맵 선택/친구 전송/실패 복구.
 7. Steam 로비/초대→Quantum 세션, 준비/취소/이탈/재시도·진행 중 입장 제한.
 8. 제품 경로 교체와 검증 후 Mirror 전용 참조/진입점·패키지 정리 여부 결정.

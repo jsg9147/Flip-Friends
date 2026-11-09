@@ -36,12 +36,12 @@ public static class QuantumMotionChecks
             var asset = AssetDatabase.LoadAssetAtPath<QuantumOfficialStageAsset>(QuantumMotionSetup.StagePath);
             QuantumMapConversion Convert() => QuantumOfficialStageConverter.Convert(read.Data, terrain, null);
             Require(Convert().ContentHash == asset.ContentHash && Convert().Motions.Count == 7 && Convert().MotionResets.Count == 1, "작성/재로드/해시/7장치/리셋");
-            Require(Config().CustomMapAgreement.Contains(":제품14:") && QuantumGameContent.NetworkVersion == "ff-product-14", "제품14 합의");
+            Require(Config().CustomMapAgreement.Contains(":제품15:") && QuantumGameContent.NetworkVersion == "ff-product-15", "제품15 합의");
             read.Data.motions = read.Data.motions.Reverse().ToArray(); Require(Convert().ContentHash == asset.ContentHash, "ID 정렬 해시");
             var s = read.Data.motions.First(m => m.kind == 0);
             float saved = s.speed; s.speed += .125f; Require(Convert().ContentHash != asset.ContentHash, "속도 해시"); s.speed = saved;
             var point = s.waypoints[1]; s.waypoints[1] += Vector2.up; Require(Convert().ContentHash != asset.ContentHash, "경유점 해시"); s.waypoints[1] = point;
-            results.Add("프리팹 재로드·ID순 독립·속도/경유점 해시·제품14");
+            results.Add("프리팹 재로드·ID순 독립·속도/경유점 해시·제품15");
             foreach (var test in new[] { "속도", "대기", "경유점", "크기", "랜덤", "참조" })
             {
                 var copy = JsonUtility.FromJson<QuantumOfficialStageData>(JsonUtility.ToJson(read.Data));

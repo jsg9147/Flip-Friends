@@ -4,6 +4,8 @@
 
 ## 현재 상태
 
+- 제품15/`ff-product-15`는 맵별 최소 인원(기본 2명)부터 공통 최대 4명까지 지원한다. 시작점이 부족한 슬롯은 기존 시작점의 빈 옆 칸을 결정론적으로 고른다. 준비 화면에서 참가 인원과 키보드 최대 두 슬롯·게임패드 배정을 확인한다. [규칙·기준 해시](Notes/2026-11-09-quantum-multiplayer.md).
+
 - 제품14/ff-product-14는 **대포/투사체**를 지원한다. `QuantumStageCannon`(+몸체 `QuantumStageTrap`)의 지연·간격을 초×60 FP 틱으로 두고 k번째 발사를 `지연+k×간격` 이상인 첫 틱에 해 누적 오차가 없다. 탄은 원본처럼 지형·플레이어·상자를 통과하고 발사점 거리 초과를 6틱(0.1초) 간격으로 검사해 사라지며, 맞혀도 남는다. 피격은 제품9 경로(정적 트랩 뒤 (발사 틱, 대포 ID) 첫 탄, 탄→플레이어 단위 벡터)다. 생성 틱은 판정하지 않고, 동시 탄 상한128·틱당 변위≤지름(터널링 방지)을 변환기가 검사한다. 상자는 대포·탄 비대상(사용자 결정). `official-cannon-test`는 `공식4:<해시>`이며 기존 공식1~3 해시7종은 유지한다. [원본 근거·검증](Notes/2026-11-09-quantum-cannon.md).
 - 제품13은 **컨베이어 벨트**(고정·이동, OnOff 그룹 연결)를 지원한다. `QuantumStageConveyor`는 같은 ID의 고체 Platform 발판(고정 벨트는 속도0 발판)을 판정으로 쓰고, 이동 뒤 위·아래 접촉한 플레이어의 외부 속도를 초당1 가속·±1 상한·지면/공중 감쇠5/1로 갱신해 원본 50Hz 틱 가산을 `×50×DeltaTime`으로 더한다. 발판 변위가 먼저, 외부 속도는 이동 시스템 속도로 한 번만 적용된다. 상자는 고체로 서되 외부 속도가 없다(원본 통과와 의도적 차이). 지형 그룹 벨트는 지형의 적용 상태를, 벨트 전용 그룹은 첫 벨트의 홀짝+자동 위상을 따른다. `official-conveyor-test`는 `공식3:<해시>`이며 기존 공식1/2 해시는 유지한다. [원본 근거·검증](Notes/2026-11-09-quantum-conveyor.md).
 - 제품12는 **OnOff 버튼, 수동·자동 혼합 전환 지형, 문**을 지원한다. `official-switch-test`는 새 `공식2:<해시>`를 쓰고 기존 공식1 해시는 유지한다. OnOff 버튼은 아래에서 머리가 닿은 동안 쿨다운(기본30틱)마다 그룹을 반전한다. 한 버튼의 동시 접촉은 한 요청이며, 다른 버튼과 자동 위상의 반전을 합산한 뒤 그룹을 한 번 적용한다. 문은 작성한 플레이어/상자 감지 조건의 마지막 접촉이 끝나면 닫힌다. 새로 활성화되는 부품에 플레이어·상자(운반 포함)·발판이 겹치면 그룹을 보류하고 최신 목표 상태를 다시 계산한다. 리셋 틱의 이전 접촉을 소비하거나 요청을 큐에 쌓지 않는다.
@@ -14,13 +16,13 @@
 - **피격·넉백**은 이동 뒤 접촉으로 판정하고 방향×(20,20)·무적60·조작 제한60·로프 차단60틱·운반자 넉백 쪽 내려놓기를 적용한다. 지정 방향(정규화 없음) 또는 트랩→플레이어 단위 벡터, 동일 틱 ID 순 첫 접촉, 들린 플레이어·상자 제외를 유지한다. `QuantumStageTrap`의 트리거 Box·볼록 Polygon과 이동 장치의 원형을 지원한다. 정적 트랩은 `official-hazard-test`에서 검증한다. [피격 기준](Notes/2026-11-08-quantum-hazards.md).
 - 이전 묶음: 제품8 경사(실제 Player.prefab30도·Box.prefab45도, 작성기45도 이하 허용, `official-slope-test`)([기록](Notes/2026-11-08-quantum-slopes.md)), 제품7 공식 스테이지 변환·목록·Main 선택과 Composite 8raw 미세 단차 수정([기록](Notes/2026-11-08-quantum-official-stage.md)), 제품6 Tilemap 윤곽 지형·사각 조각 Reset([기록](Notes/2026-11-08-quantum-tilemap.md)), 제품5 복귀·체크포인트·구간 Reset·상자 소환([복귀](Notes/2026-11-08-quantum-respawn.md)·[장치](Notes/2026-11-08-quantum-devices.md)).
 - Stage7 Ground/ResetTile은 작성기를 통과하지만 MapData 배치 범위(x−50~50) 밖이라 사용례를 만들지 않았고 규칙도 완화하지 않았다([Stage7 검사](Notes/2026-11-08-quantum-stage7-tilemap.md)).
-- Main Start → `QuantumPrepareScreen`의 사용례 6종 또는 공식 스테이지 선택(시험7종 순환) → 오프라인 2인 → QuantumPlay → 전원 도착/메뉴 종료 → Main·재진입이 제품 경로다. 시험 Bootstrap이나 Mirror 플레이어가 전제 조건이 아니다.
-- 이동·로프·밟기·운반·던지기·상자·복귀·장치·경사·피격·스프링/바운스·벨트·대포는 Quantum FP/DeltaTime과 프레임 상태로만 처리하며 Unity는 입력 수집·표시를 맡는다. Mirror 이동·물리·Animator는 생성하지 않는다.
+- Main Start → `QuantumPrepareScreen`의 사용례 6종 또는 공식 스테이지 선택(시험8종 순환) → 오프라인 최대 4인 → QuantumPlay → 전원 도착/메뉴 종료 → Main·재진입이 제품 경로다. 시험 Bootstrap이나 Mirror 플레이어가 전제 조건이 아니다.
+- 이동·로프·밟기·운반·던지기·상자·복귀·장치·경사·피격·스프링/바운스·벨트·대포는 Quantum FP/DeltaTime과 프레임 상태로만 처리하며 Unity는 입력 수집·표시를 맡는다. 스프라이트와 전체 플레이어 카메라 범위는 예측 프레임에서, 효과음은 중복을 막는 확정 틱에서 계산한다.
 - 60Hz 이동의 걷기4·달리기5.5·SmoothDamp0.4/반전0.7·공중 제어·가변 점프·조건부 달리기 점프 보너스·로프18틱과 충돌 순서를 보존했다. 벽 미끄럼/벽 점프·일반 BlockJump 차단은 원본에 활성 경로가 없어 켜지 않았다.
 - 밟기13.2(점프 유지×1.2)+X차×0.5, 반복 차단18틱·밟힌 쪽9틱·Shrink30틱. 기본 판정은 Quantum (0.8,1)/오프셋0(Mirror (0.9,0.8)/(0,-0.1)과 차이)이며 피격 판정도 이 몸체를 쓴다.
 - 운반: 플레이어 우선 탐색·0.2 레이10개·머리 위 점유 검사·양방향 관계, 같은 틱 전역 PlayerRef 순서, 운반 위치(0,0.95)·해제9틱·탈출90/15틱·플레이어 던지기(7,12)/24틱·상자 던지기(6,6)·중력9.8/감속1.5초/낙하12. 놓기는 앞→머리 위→운반자 자리, 모두 막히면 운반 유지(기존 무검사 fallback과 의도적 차이).
-- 고정 키: 1P A/D·W/S·Space·왼쪽 Shift·E·R, 2P 방향키·오른쪽 Ctrl·오른쪽 Shift·Enter·Backspace. 아래+들기는 놓기. 온라인 키보드는 각 연결의 로컬슬롯0이다. 키 재설정/게임패드는 미연결.
-- MapData2.1 유지. 정적/로프2:2·상호작용3:3·복귀4:4·장치5:5·Tilemap6:6의 원본/베이크/해시를 보존한다. 공식 스테이지 해시는 동작1/전환1/리셋1/스위치1 작성 값을 포함한다. 벨트는 벨트1/벨트규칙1, 대포는 대포1 작성 값을 더한다. 규칙 서명은 `제품14`·온라인 `ff-product-14`이다.
+- 키보드 1P와 게임패드는 기존 `bindings` 저장값을 적용한다. 분할 2P는 방향키·오른쪽 Ctrl·오른쪽 Shift·Enter·Backspace를 사용한다. 패드 연결 해제 시 빈 슬롯에 대체 장치를 배정한다.
+- MapData2.1 유지. 정적/로프2:2·상호작용3:3·복귀4:4·장치5:5·Tilemap6:6의 원본/베이크/해시를 보존한다. 공식 스테이지 해시는 동작1/전환1/리셋1/스위치1 작성 값을 포함한다. 벨트는 벨트1/벨트규칙1, 대포는 대포1 작성 값을 더한다. 규칙 서명은 `제품15`·온라인 `ff-product-15`이다.
 - 제품 전용 FlipFriendsProductSimulationConfig의 자동 씬 로딩 Disabled를 유지하며 QuantumGameFlow가 씬 수명을 소유한다.
 - 실제 Unity6000.6.8f1·Quantum3.0.14 Stable2241·Steamworks.NET2024.8.0이다. 버전은 변경하지 않았다. [공식 지원 표](https://doc.photonengine.com/quantum/v3/getting-started/initial-setup)의6000.6 미명시와 프로젝트 실행 성공은 별개다.
 - 기존 Steam 게임 버튼·Steam 로비/초대·MapEditor 테스트·친구 맵 전송·21개 스테이지는 Mirror다. 출시 온라인은 별도 출시 Photon 앱/실제 Steam 티켓이 필수이며 미설정 실패 UI·익명 폴백 없음이다. 개발 익명 연결은 UNITY_EDITOR에만 있다. 보안 문서는 Draft다.
@@ -29,10 +31,12 @@
 
 - Main Start → `QuantumPrepareScreen` → `QuantumGameFlow` → `QuantumGameSession` → 입력 → 복귀/상호작용/이동/상자/운반/장치/대포/피격/스프링·바운스/완료 시스템 → 확정 프레임 → `QuantumGameView` → Main.
 - 공식 스테이지: 프리팹 루트 `QuantumOfficialStage`+작성 컴포넌트 → `Tools/Flip Friends/Quantum/선택한 공식 스테이지 변환`(`QuantumOfficialStageWriter`) → `QuantumOfficialStageConverter`(FP 변환·해시) → 공식 목록.
-- 온라인: `SteamPhotonTicket` → Photon Steam 인증 → 2명 대기 → 방 닫기 → Quantum 시작. 초기 시험은 최대 2명이며 제품 목표 4명 검증은 남아 있다.
+- 온라인: `SteamPhotonTicket` → Photon Steam 인증 → 선택한 세션 인원과 맵 합의 대기 → 방 닫기 → Quantum 시작.
 - `QuantumCloudCheck`·각 `*Checks.RunCloud`는 특정 개발 앱만 쓰는 에디터 전용 익명 2연결 시험이다. 출시 구매 인증의 증거가 아니다.
 
 ## 검증
+
+- 제품15 지정 SDK 런타임·에디터 빌드와 Unity 컴파일 오류 0. 새 Play 첫 Main 검사 `RunOffline`, 기존 2인 콘텐츠 9종 재생·Main 왕복, 공식 해시 8종 재검증을 통과했다. 3·4인 오프라인은 각각 확정 721프레임·체크섬 25개와 운반·밟기·피격·완료 틱이 일치했다. 가상 입력 장치·4인 Main·카메라·효과음 중복 방지, 동일 PC 개발 Photon 2·3·4연결을 확인했다. [실행 범위와 미실행 항목](Notes/2026-11-09-quantum-multiplayer.md).
 
 - 제품14 지정 dotnet 런타임·에디터 빌드와 Unity 컴파일 오류0. 기존 공식 해시7종 유지, 변환 거부13종·작성기 거부7종. 별도 러너 재생 확정20개·2281프레임 대포/탄/피격 상태·상대 틱 사건148개 일치, 직접33종. 새 Play에서 `RunOffline` 먼저 통과 후 Tilemap·공식·경사·피격·스프링/바운스·이동 발판·스위치·벨트 재생과 Main 왕복 회귀, 새 맵 Main 선택/완료/복귀/재진입/종료·러너/입력/탄 표시0. 개발 Photon 동일 PC asia RTT104/114ms 확정19개·대포/탄/피격 상태·완료 프레임 일치, 정리 True.
 - 제품13 지정 dotnet 런타임·에디터 빌드와 Unity 컴파일 오류0. 새 맵 재변환·순서 독립·방향 해시, 변환 거부9종·작성기 거부7종, 기존 공식 해시6종 유지. 별도 러너 재생 확정20개 체크섬·확정 2281프레임의 벨트 접촉/적용 외부속도·방향 전이 일치, 직접28종. 새 Play에서 `RunOffline` 먼저 통과 후 Tilemap·공식·경사·피격·스프링/바운스·이동 발판·스위치 재생과 Main 왕복 회귀, 새 맵 Main 선택/완료/복귀/재진입/종료·러너/입력0. 개발 Photon 동일 PC asia RTT116/120ms 확정19개·벨트/스위치/지형 상태·완료 프레임 일치, 정리 True.
@@ -56,8 +60,7 @@
 - Steam 앱 발급 후 별도 출시 Photon 앱에서 Publisher Web API 키를 등록하고 공급자 `version=2`, `identity=photon`, `verifyOwnership=true`, 익명 거부를 설정·검증한다. [보안 기준](QUANTUM_SECURITY.md)을 따른다.
 - 45도 초과 경사/미지원 동적 판정, 친구 맵 전송은 별도 이식 범위다. 이동 대포는 원본에 없어 지원하지 않는다.
 - 공식 맵은 Unity 프리팹(Tilemap)+Quantum 작성 전용 컴포넌트로 만들고 변환한다. 21개 스테이지는 사용자가 새로 구성해 등록한다. MapEditor는 유저·친구 맵용이며 MapData 규칙을 유지한다. 원본 프리팹은 보존한다.
-- 현재2인 전제를 최대4인으로 확장하고 키 재설정/게임패드·애니메이션/효과음/카메라를 연결한다.
 
 ## 다음 작업
 
-[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 사용자가 새로 구성한 공식 스테이지를 등록한다. 원본 Stage7 이식은 보류한다.
+[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 공식 스테이지를 등록하고 MapEditor 검증·베이크와 Quantum 테스트 플레이를 연결한다.

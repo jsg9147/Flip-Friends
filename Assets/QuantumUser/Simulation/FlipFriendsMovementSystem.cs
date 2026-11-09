@@ -28,12 +28,41 @@ namespace Quantum
         public void OnPlayerAdded(Frame frame, PlayerRef player, bool firstTime)
         {
             if (!firstTime) return;
-            var entity = frame.Create();
             var spawns = frame.RuntimeConfig.CustomMapSpawns;
-            var position = spawns != null && spawns.Length == 2
-                ? spawns[(int)player % 2] : new FPVector2((int)player * 2 - 3, 2);
+            int slot = player;
+            bool hasPosition = true;
+            var position = new FPVector2(slot * 2 - 3, 2);
+            if (spawns != null && spawns.Length > 0)
+            {
+                position = spawns[slot % spawns.Length];
+                if (slot >= spawns.Length) hasPosition = TryFindExtraSpawn(frame, spawns, ref position);
+            }
+            var entity = frame.Create();
             frame.Add(entity, new Transform2D { Position = position });
-            frame.Add(entity, new FlipFriendsPlayer { Player = player, HomePosition = position });
+            frame.Add(entity, new FlipFriendsPlayer { Player = player, HomePosition = position, RespawnPosition = hasPosition ? default : position, RespawnPending = !hasPosition });
+        }
+
+        private static bool TryFindExtraSpawn(Frame frame, FPVector2[] authored, ref FPVector2 position)
+        {
+            var half = new FPVector2(HalfWidth, HalfHeight);
+            FlipFriendsMotionSystem.Initialize(frame);
+            FlipFriendsInteractionSystem.InitializeBoxes(frame);
+            const int searchDistance = 16;
+            for (int distance = 1; distance <= searchDistance; distance++)
+            {
+                for (int direction = 1; direction >= -1; direction -= 2)
+                {
+                    var candidate = position + new FPVector2(distance * direction, 0);
+                    if (FlipFriendsRespawnSystem.IsOutside(frame.RuntimeConfig, candidate)) continue;
+                    bool isReserved = false;
+                    foreach (var spawn in authored)
+                        isReserved |= FlipFriendsMotionSystem.Overlap(candidate, half, spawn, half);
+                    if (isReserved || !FlipFriendsInteractionSystem.CanOccupy(frame, candidate, half, default, default)) continue;
+                    position = candidate;
+                    return true;
+                }
+            }
+            return false;
         }
 
         public override void Update(Frame frame, ref Filter filter)

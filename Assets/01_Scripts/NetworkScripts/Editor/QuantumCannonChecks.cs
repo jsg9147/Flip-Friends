@@ -16,7 +16,7 @@ public static class QuantumCannonChecks
 {
     private const int Horizon = 2400;
     private const int ChecksumInterval = 120;
-    // 제품13까지의 공식 시험 7종 해시. 제품14 변환기에서도 그대로여야 한다.
+    // 제품13까지의 공식 시험 7종 해시. 제품15 변환기에서도 그대로여야 한다.
     public static readonly (string id, string agreement)[] ExistingStages =
     {
         ("official-test", "공식1:f7695175f228c1e20b9481517d73898374aab6ea96eaedde885bf36cf49442c9"),
@@ -64,7 +64,7 @@ public static class QuantumCannonChecks
             QuantumMapConversion Convert(QuantumOfficialStageData data) => QuantumOfficialStageConverter.Convert(data, terrain, null);
             var converted = Convert(read.Data);
             Require(converted.ContentHash == Asset.ContentHash && Asset.Agreement.StartsWith("공식4:") && converted.Cannons.Count == 4, "재변환 해시/공식4/대포4");
-            Require(Config().CustomMapAgreement.StartsWith(Asset.Agreement + ":제품14:") && QuantumGameContent.NetworkVersion == "ff-product-14", "제품14 합의");
+            Require(Config().CustomMapAgreement.StartsWith(Asset.Agreement + ":제품15:") && QuantumGameContent.NetworkVersion == "ff-product-15", "제품15 합의");
             var fast = converted.Cannons.Single(c => c.Id.EndsWith("/빠른 대포"));
             Require(fast.IntervalTicks == FP.FromString("7.5") && fast.Velocity == new FPVector2(-30, 0) && fast.Muzzle == new FPVector2(19, 3), "빠른 대포 7.5틱·속도·포구");
             var down = converted.Cannons.Single(c => c.Id.EndsWith("/하강 대포"));
@@ -75,7 +75,7 @@ public static class QuantumCannonChecks
             Require(Convert(read.Data).ContentHash != Asset.ContentHash, "간격 해시");
             read.Data.cannons[0].interval -= 0.5f;
             Require(Convert(read.Data).ContentHash == Asset.ContentHash, "복원 해시");
-            results.Add("재변환·순서 독립·간격 해시·공식4·제품14·7.5틱/지연 환산");
+            results.Add("재변환·순서 독립·간격 해시·공식4·제품15·7.5틱/지연 환산");
 
             var mutations = new (string name, Action<QuantumOfficialStageData> apply)[]
             {

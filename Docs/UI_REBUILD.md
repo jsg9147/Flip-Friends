@@ -11,7 +11,7 @@
 - Main 준비 화면에 여섯 번째 `Tilemap 지형/Reset` 사용례를 등록했다. 원본 전체 스테이지 지원과 구분해 안내하며 기존 시작 전 검증·실패/취소·완료/종료·재진입 수명을 사용한다. Main 미저장 씬은 보존하고 별도 작성 씬/콘텐츠만 저장했다. [Tilemap 기록](Notes/2026-11-08-quantum-tilemap.md).
 
 - Main 준비 화면에 다섯 번째 체크포인트/구간/소환 맵을 런타임 등록했다. 다섯 버튼의 배치·선택 목록과 지원 안내를 갱신하고 Main 미저장 씬은 보존했다. 플레이 화면의 체크포인트/구간 표지와 소환 버튼/남은 초는 프레임 상태를 표시한다. [장치 구현·검증](Notes/2026-11-08-quantum-devices.md)을 따른다.
-- Quantum 고정Reset은1P R·2P Backspace다. 기존 UI 키 재설정/게임패드 저장은 Quantum 게임 입력에 아직 미연결이다.
+- Quantum 제품15 준비 화면에서 참가 인원과 키보드 최대 두 슬롯·게임패드 배정을 확인한다. 최소 인원 또는 오프라인 장치 수가 부족하면 시작을 차단한다. 키보드 1P와 패드는 기존 `bindings` 저장값을 적용한다.
 - `InputManager`가 공통 `UIInputModeController`를 생성한다. 마우스 이동(3px 누적)·클릭·휠은 포인터 모드, 기존 Move/Navigate·Submit·Cancel·Menu 액션은 탐색 모드로 전환한다(방향 입력 임계값 0.5). 포인터 모드는 버튼 포커스를 해제하고 텍스트 입력 포커스는 유지하며, 탐색 모드는 커서와 uGUI 포인터 판정을 쉬고 마지막 유효 선택을 복원한다. 화면 기본 선택과 `ButtonSelectController` 자동 복원도 모드를 따른다. 확정 맵·열린 탭의 표시는 변경하지 않는다.
 - 키 설정은 높이 100의 2열 목록이며, 본문·입력값은 기호를 포함한 CC0 Kenney Mini 도트 글꼴과 짙은 청록색을 쓴다. 옅은 배경 위 입력 버튼은 기존 StageControlFrame의 하늘색 프레임이며 호버·선택 시 연두색으로 바뀐다. 스크롤바는 각진 청록 손잡이·옅은 트랙을 쓰고 제목 이미지는 유지한다. 한 줄 표시·자동 크기 조절을 유지하며 Pick Up / Throw, Respawn, Previous/Next Camera, Run, Confirm, Back을 표시한다. 저장값은 바인딩 ID로 행을 찾고, 그룹이 비어 있는 게임패드 Respawn/Menu도 장치 경로로 분류한다.
 - 타이틀 메뉴는 Start → Settings → Map Editor → Exit 순서로 화면 배치와 `ButtonSelectController` 선택 목록을 맞춘다. 런타임 생성되는 Map Editor도 Exit 바로 앞에 배치한다.
@@ -19,7 +19,7 @@
 - 커스텀 탭은 `StageCustomMapItem` 전용 프리팹과 두께가 고정되는 `StageControlFrame`을 쓴다. `MapListUI.isTabbedLayout`에서는 임시 조작 버튼을 생성하지 않고, 맵 선택 후에도 탭을 유지한다. 빈 목록 안내와 `ScrollViewController`의 선택 추적을 연결했다.
 - 열린 탭은 연두색 배경과 밑줄로 계속 표시하고, 버튼의 입력 포커스·마우스 호버는 별도 주황색 바깥 테두리로 표시한다. 탭 배경은 Button의 색상 전환 대상에서 분리했다.
 - 기본/커스텀 맵의 `MapChoiceFeedback`은 동기화된 맵 종류·ID와 `SelectionChanged`를 따라 확정 맵에 연두색 배경·선택됨 배지를 유지한다. 입력 포커스·호버는 독립 주황색 테두리이며, 커스텀 목록 재생성 시에도 맵 ID로 표시를 복원한다.
-- Main Start는 `quantum-prepare`로 전환해 지원6종 맵과 `공식 스테이지 선택`(공식 목록을 누를 때마다 차례로 고름, 7번째 버튼) 선택 → 오프라인 2인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
+- Main Start는 `quantum-prepare`로 전환해 지원6종 맵과 `공식 스테이지 선택`(공식 목록을 누를 때마다 차례로 고름, 7번째 버튼) 선택 → 오프라인 최대 4인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. `기존 Steam 게임 (Mirror)`·MapEditor·친구 초대/로비는 기존 경로로 남아 있다.
 - `Assets/01_Scripts/UI Scripts/Rebuild`에 공통 화면·내비게이션과 Main, ModeSelect, HostRoom, PublicLobby, PrivateJoin, Settings, KeyBinding 전용 화면이 있다.
 - `Main.unity`의 `MainUIManager` 오브젝트에 새 내비게이터가 연결되어 있다.
 - `Main.unity`의 화면 전환은 전부 `ScreenNavigator` 한 곳을 지난다. `UIScreen` 11개(`main-menu`, `mode-select`, `host-room`, `public-lobby`, `private-join`, `settings`, `settings-graphics-audio`, `settings-color`, `key-binding`, `key-binding-keyboard`, `key-binding-gamepad`)가 `ScreenNavigator.screens`에 명시적으로 등록되어 있고, 화면을 여닫는 버튼은 모두 `ScreenNavigationButton` 18개다.
@@ -63,6 +63,8 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 검증
 
+- 제품15에서 가상 입력 장치로 키 설정 호환·패드 재배정을 확인하고, 실제 버튼 콜백으로 4인 참가·최소 인원 차단·완료·복귀·재진입·종료와 구독 정리를 확인했다. [실행 범위](Notes/2026-11-09-quantum-multiplayer.md).
+
 - Quantum 제품13: Main에서 컨베이어 벨트 시험 선택, 전원 완료 후 복귀, 재진입과 메뉴 종료, 러너·입력 구독0을 확인했다. [검증 범위](QUANTUM_MIGRATION.md#검증).
 - Quantum 제품12: Main에서 스위치·문 시험 선택, 전원 완료 후 복귀, 재진입과 메뉴 종료, 러너·입력 구독0을 확인했다. [검증 범위](QUANTUM_MIGRATION.md#검증).
 - Quantum 제품11: 실제 버튼 콜백으로 이동 발판·트랩 시험 선택, 전원 완료 문구와 Main 복귀, 재진입 후 메뉴 종료, 러너·입력 구독0을 확인했다. [실행 범위](Notes/2026-11-09-quantum-motion.md).
@@ -78,4 +80,4 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 다음 작업
 
-제품 Quantum 준비/플레이 화면의 실제 두 사람·마우스/게임패드 조작을 확인하고, 이동/스테이지 이식 뒤 Steam 로비·초대의 실제 진입점을 교체한다. 기존 설정·GameRoom의 실조작/키 저장 복원도 별도 회귀로 남긴다. 새 스테이지 선택 UI를 실제 Steam 방에서 열고 방장 맵 선택·시작, 참가자 선택 정보 표시와 게임패드 탭/목록 이동을 확인한다.
+제품 Quantum 준비/플레이 화면의 실제 다인·마우스/게임패드 조작을 확인하고, 이동/스테이지 이식 뒤 Steam 로비·초대의 실제 진입점을 교체한다. 기존 설정·GameRoom의 실조작/키 저장 복원도 별도 회귀로 남긴다. 새 스테이지 선택 UI를 실제 Steam 방에서 열고 방장 맵 선택·시작, 참가자 선택 정보 표시와 게임패드 탭/목록 이동을 확인한다.

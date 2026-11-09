@@ -55,6 +55,109 @@ public static class QuantumProductChecks
         Debug.Log("[Quantum 제품] " + Status);
     }
 
+    [MenuItem("Tools/Flip Friends/Quantum/Check Three And Four Player Replay")]
+    public static async void RunMultiplayerReplay()
+    {
+        try
+        {
+            Require(EditorApplication.isPlaying, "Play 모드 필요");
+            var results = new List<string>();
+            foreach (int count in new[] { 3, 4 }) results.Add(await CheckMultiplayerReplay(count));
+            File.WriteAllLines("Logs/QuantumMultiplayerReplay.txt", results);
+            Debug.Log(string.Join("\n", results));
+        }
+        catch (Exception error)
+        {
+            File.WriteAllText("Logs/QuantumMultiplayerReplay.txt", error.ToString());
+            Debug.LogException(error);
+        }
+    }
+
+    private static async Task<string> CheckMultiplayerReplay(int count)
+    {
+        const int firstSample = 120;
+        const int target = 840;
+        var expected = new Dictionary<int, (ulong checksum, string events)>();
+        var actual = new Dictionary<int, (ulong checksum, string events)>();
+        var session = new QuantumGameSession();
+        session.InputSource = (tick, slot) =>
+        {
+            if (tick >= 720) return new Quantum.Input { Vertical = 1 };
+            if (slot >= 2) return tick < 150 ? new Quantum.Input { Horizontal = slot == 2 ? -1 : 1 } : default;
+            return QuantumInteractionChecks.InputFor(session.Runner?.Game.Frames.Verified, tick, slot);
+        };
+        var config = new RuntimeConfig { FlipFriendsPlayerCount = count };
+        QuantumGameContent.Prepare(AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(QuantumInteractionSetup.ManifestPath), config);
+        config.Traps = new[] { new FlipFriendsTrapConfig
+        {
+            Id = "다인 피격 시험", Center = new FPVector2(-2, FP.FromString("0.75")),
+            Radius = FP.FromString("0.15"), Direction = new FPVector2(FP.FromString("-0.2"), 0)
+        } };
+        config.GoalCenters = new[] { new FPVector2(0, 1) };
+        config.GoalSizes = new[] { new FPVector2(17, 8) };
+        bool hasCarry = false, hasStomp = false, hasDamage = false;
+        int completion = 0;
+        QuantumRunner replay = null;
+        try
+        {
+            using var observer = QuantumCallback.SubscribeManual<CallbackSimulateFinished>(callback =>
+            {
+                var frame = callback.Frame;
+                if (!frame.IsVerified || frame.Number < firstSample || frame.Number > target) return;
+                var evidence = callback.Game == session.Runner?.Game ? expected : callback.Game == replay?.Game ? actual : null;
+                if (evidence == null) return;
+                var query = frame.Filter<FlipFriendsPlayer>();
+                var states = new string[count];
+                var homes = new HashSet<FPVector2>();
+                while (query.Next(out _, out var player))
+                {
+                    homes.Add(player.HomePosition);
+                    states[(int)player.Player] = $"{player.PickupCount}/{player.StompCount}/{player.DamageCount}/{player.DamageFrame}/{player.FinishedFrame}";
+                    if (evidence == expected)
+                    {
+                        hasCarry |= player.PickupCount > 0;
+                        hasStomp |= player.StompCount > 0;
+                        hasDamage |= player.DamageCount > 0;
+                    }
+                }
+                if (states.All(value => value != null))
+                    Require(homes.Count == count, "부족한 시작점 주변에 서로 다른 초기 위치 배정");
+                if (evidence == expected) completion = frame.FlipFriendsCompletedFrame;
+                evidence[frame.Number] = (frame.Number % 30 == 0 ? frame.CalculateChecksum() : 0,
+                    frame.FlipFriendsCompletedFrame + ":" + string.Join(",", states));
+            });
+            await session.StartLocalAsync(config);
+            var original = session.Runner;
+            original.IsSessionUpdateDisabled = true;
+            for (int i = 0; i < target + 240 && !expected.ContainsKey(target); i++) original.Service(1f / 60);
+            Require(expected.ContainsKey(target), "다인 기록 확정 프레임");
+            var record = original.Game.GetRecordedReplay(includeChecksums: true);
+            File.WriteAllText($"Logs/QuantumMultiplayer{count}Replay.json", JsonUtility.ToJson(record));
+            var serializer = new QuantumUnityJsonSerializer();
+            replay = QuantumRunner.StartGame(new SessionRunner.Arguments
+            {
+                RunnerId = "FF_MULTIPLAYER_REPLAY",
+                RuntimeConfig = serializer.ConfigFromByteArray<RuntimeConfig>(record.RuntimeConfigData.Decode(), compressed: true),
+                SessionConfig = record.DeterministicConfig, ReplayProvider = record.CreateInputProvider(),
+                InitialTick = record.InitialTick, FrameData = record.InitialFrameData,
+                GameMode = DeterministicGameMode.Replay, PlayerCount = count
+            });
+            replay.IsSessionUpdateDisabled = true;
+            for (int i = 0; i < target + 240 && !actual.ContainsKey(target); i++) replay.Service(1f / 60);
+            int mismatch = expected.Keys.FirstOrDefault(tick => !actual.TryGetValue(tick, out var value) || value != expected[tick]);
+            Require(expected.Count == actual.Count && mismatch == 0,
+                $"다인 기록·재생 일치 ({count}인 기록 {expected.Count}, 재생 {actual.Count}, 첫 불일치 {mismatch})");
+            Require(hasCarry && hasStomp && hasDamage && completion > 0,
+                $"다인 사건 재현 (운반 {hasCarry}, 밟기 {hasStomp}, 피격 {hasDamage}, 완료 {completion})");
+            return $"{count}인: 확정 {actual.Count}프레임, 체크섬 {actual.Count(pair => pair.Value.checksum != 0)}개, 운반/밟기/피격/완료 틱 일치. 완료 {completion}";
+        }
+        finally
+        {
+            if (replay != null) await replay.ShutdownAsync();
+            await session.StopAsync();
+        }
+    }
+
     private static async Task CheckReplay(bool rope)
     {
         var session = new QuantumGameSession { InputSource = rope ? QuantumRopeChecks.InputFor : QuantumCustomMapChecks.InputFor };
@@ -397,9 +500,9 @@ public static class QuantumProductChecks
         return default;
     }
 
-    private static RuntimeConfig Config(bool rope)
+    private static RuntimeConfig Config(bool rope, int playerCount = 2)
     {
-        var config = new RuntimeConfig();
+        var config = new RuntimeConfig { FlipFriendsPlayerCount = playerCount };
         QuantumGameContent.Prepare(AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(rope ? QuantumRopeTestSetup.ManifestPath : QuantumCustomMapSetup.ManifestPath), config);
         return config;
     }

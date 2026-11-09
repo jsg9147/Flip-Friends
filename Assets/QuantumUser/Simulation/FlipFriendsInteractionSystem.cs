@@ -24,8 +24,10 @@ namespace Quantum
                 if (state->InvincibleTicks > 0 && !state->Carrier.IsValid) state->InvincibleTicks--;
             }
             // 동일 틱의 접촉은 전역 PlayerRef 순서로 처리해 생성/접속 순서와 분리한다.
-            for (int player = 0; player < frame.PlayerCount; player++)
+            uint registered = frame.FlipFriendsRegisteredPlayerMask();
+            for (int player = 0; registered != 0; player++, registered >>= 1)
             {
+                if ((registered & 1) == 0) continue;
                 players = frame.Filter<Transform2D, FlipFriendsPlayer>();
                 while (players.NextUnsafe(out var entity, out var transform, out var state))
                 {
@@ -91,7 +93,7 @@ namespace Quantum
             return frame.Number >= state->ReleaseFrame && Release(frame, entity, isPutDown);
         }
 
-        private static void InitializeBoxes(Frame frame)
+        internal static void InitializeBoxes(Frame frame)
         {
             if (frame.Global->FlipFriendsBoxesInitialized) return;
             frame.Global->FlipFriendsBoxesInitialized = true;

@@ -1,14 +1,24 @@
 using System;
+using System.Collections.Generic;
+using Quantum;
 using FlipFriends.Maps;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using Button = UnityEngine.UI.Button;
 
 namespace FlipFriends.Network
 {
     public sealed class QuantumGameView : MonoBehaviour
     {
         [SerializeField] private Sprite playerSprite;
+        [SerializeField] private AnimationClip[] playerClips;
+        [SerializeField] private AudioClip jumpClip;
+        [SerializeField] private AudioClip shrinkClip;
+        [SerializeField] private AudioClip finishClip;
+        private AudioSource effects;
+        private IDisposable verifiedSubscription;
+        private readonly Dictionary<EntityRef, FlipFriendsPlayer> verifiedPlayers = new();
+        private int lastVerifiedFrame = -1;
         [SerializeField] private TMP_Text status;
         [SerializeField] private Button returnButton;
         private QuantumPlayerViews players;
@@ -24,7 +34,14 @@ namespace FlipFriends.Network
         {
             var flow = QuantumGameFlow.Instance;
             if (flow?.Content == null) { ReturnToMenu(); return; }
-            players = new QuantumPlayerViews(transform, playerSprite);
+            players = new QuantumPlayerViews(transform, playerSprite, playerClips);
+            effects = gameObject.AddComponent<AudioSource>();
+            effects.playOnAwake = false;
+            effects.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+            verifiedSubscription = QuantumCallback.SubscribeManual<CallbackSimulateFinished>(callback =>
+            {
+                if (callback.Game == flow.Session?.Runner?.Game && callback.Frame.IsVerified) PlayEffects(callback.Frame);
+            });
             whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one / 2, 1);
             boxes = new QuantumBoxViews(transform, whiteSprite);
             devices = new QuantumDeviceViews(transform, whiteSprite, status.font, flow.Content);
@@ -54,7 +71,26 @@ namespace FlipFriends.Network
             returnButton.onClick.AddListener(ReturnToMenu);
             inputManager = InputManager.instance;
             if (inputManager != null) inputManager.OnMenuEvent += ReturnToMenu;
-            status.text = "1P A/D/W/S/Space/왼쪽 Shift/E | 2P 방향키/오른쪽 Ctrl/오른쪽 Shift/Enter\nR/Backspace: 리셋 | E/Enter: 들기/던지기 | 아래+들기: 놓기 | 1.5초 후 이동/점프: 탈출 | 도착점 위: 도착";
+            status.text = "키보드 또는 배정된 게임패드로 플레이합니다.\n아래+들기: 놓기 | 1.5초 후 이동/점프: 탈출 | 도착점에서 위: 도착";
+        }
+
+        private void PlayEffects(Frame frame)
+        {
+            if (frame.Number <= lastVerifiedFrame) return;
+            lastVerifiedFrame = frame.Number;
+            var query = frame.Filter<FlipFriendsPlayer>();
+            while (query.Next(out var entity, out var player))
+            {
+                if (verifiedPlayers.TryGetValue(entity, out var previous))
+                {
+                    if (jumpClip != null && (player.StompCount > previous.StompCount ||
+                        (!previous.WasJumpHeld && player.WasJumpHeld && player.Velocity.Y > 0 &&
+                         (previous.IsGrounded || previous.IsClimbed) && !player.IsGrounded))) effects.PlayOneShot(jumpClip);
+                    if (shrinkClip != null && player.ShrinkTicks > previous.ShrinkTicks) effects.PlayOneShot(shrinkClip);
+                    if (finishClip != null && player.IsFinished && !previous.IsFinished) effects.PlayOneShot(finishClip);
+                }
+                verifiedPlayers[entity] = player;
+            }
         }
 
         private void AddTrap(QuantumTrapSource trap)
@@ -104,7 +140,7 @@ namespace FlipFriends.Network
             if (frame.Predicted != null) devices?.Draw(frame.Predicted);
             if (frame.Predicted != null) motions?.Draw(frame.Predicted);
             if (frame.Predicted != null) cannons?.Draw(frame.Predicted);
-            if (flow.Content.HasTerrain && frame.Predicted != null && Camera.main != null)
+            if (frame.Predicted != null && Camera.main != null)
             {
                 var query = frame.Predicted.Filter<Quantum.Transform2D, Quantum.FlipFriendsPlayer>();
                 var min = new Vector2(float.MaxValue, float.MaxValue); var max = new Vector2(float.MinValue, float.MinValue); int count = 0;
@@ -113,13 +149,13 @@ namespace FlipFriends.Network
                 if (count > 0)
                 {
                     var center = (min + max) / 2; var camera = Camera.main;
-                    camera.transform.position = new Vector3(center.x, center.y + 2, -20);
+                    camera.transform.position = new Vector3(center.x, center.y, -20);
                     camera.orthographicSize = Mathf.Max(6, (max.x - min.x + 4) / (2 * camera.aspect), (max.y - min.y) / 2 + 4);
                 }
             }
             if (frame.Verified != null && frame.Verified.FlipFriendsCompletedFrame > 0)
                 Finish("전원 도착! 지원 맵을 완료했습니다.");
-            else if (session.Client != null && (!session.Client.IsConnectedAndReady || session.Client.CurrentRoom?.PlayerCount != 2))
+            else if (session.Client != null && (!session.Client.IsConnectedAndReady || session.Client.CurrentRoom?.PlayerCount != session.PlayerCount))
                 Finish("참가자 연결이 종료되어 준비 화면으로 돌아왔습니다. 다시 시작할 수 있습니다.");
         }
 
@@ -141,6 +177,7 @@ namespace FlipFriends.Network
         {
             if (inputManager != null) inputManager.OnMenuEvent -= ReturnToMenu;
             if (returnButton != null) returnButton.onClick.RemoveListener(ReturnToMenu);
+            verifiedSubscription?.Dispose();
             players?.Dispose();
             boxes?.Dispose();
             devices?.Dispose();

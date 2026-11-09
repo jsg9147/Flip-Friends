@@ -149,6 +149,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Network.QuantumGameView
   playerSprite: {fileID: 21300000, guid: dd308fd9013882041bfa7934d5bf101b, type: 3}
+  playerClips:
+  - {fileID: 7400000, guid: 06e6168b2562fd24ebc67785e4ac23af, type: 2}
+  - {fileID: 7400000, guid: 4b524c03ff2548646b8c9e97e39751fe, type: 2}
+  - {fileID: 7400000, guid: e9979a28c28309f4586b4597d95bcdad, type: 2}
+  - {fileID: 7400000, guid: 9a0086f83be66b14384e56a89b0ccde1, type: 2}
+  - {fileID: 7400000, guid: 2cd6279c024091340b1bd952dd99c8cf, type: 2}
+  - {fileID: 7400000, guid: 81c417ff9af99834abac0d1b3f0cf745, type: 2}
+  - {fileID: 7400000, guid: 8fad234c723386c4ab15a6513cfb1113, type: 2}
+  jumpClip: {fileID: 8300000, guid: f741aec410173784ea7b4a1173b5cace, type: 3}
+  shrinkClip: {fileID: 8300000, guid: 89189582c9b313a4682c9ee27760adc3, type: 3}
+  finishClip: {fileID: 8300000, guid: 61bbb79df60179e4f9d624bdd3124efa, type: 3}
   status: {fileID: 1624276969}
   returnButton: {fileID: 2028742769}
 --- !u!4 &311721676
@@ -176,6 +187,7 @@ GameObject:
   m_Component:
   - component: {fileID: 674733003}
   - component: {fileID: 674733002}
+  - component: {fileID: 674733004}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -249,6 +261,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &674733004
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674733001}
+  m_Enabled: 1
 --- !u!1 &1266414095
 GameObject:
   m_ObjectHideFlags: 0

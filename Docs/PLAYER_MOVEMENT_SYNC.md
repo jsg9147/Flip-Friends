@@ -15,7 +15,7 @@
 - Quantum 제품5의 구간 Reset은 플레이어/상자 운반 관계를 유지하고 전체 목적지가 막히면 두 대상을 함께 대기·복귀시킨다. 대기 입력/탈출/직접Reset·그룹상자 소환은 소비/거부한다. 수동Reset/추락은 DropAll 후 플레이어별 체크포인트/최초 위치로 복귀한다. 소환 성공만 관계·속도·쿨다운을 원자적으로 갱신한다. [장치 구현·검증](Notes/2026-11-08-quantum-devices.md)을 따른다.
 - Quantum 제품5에 수동 Reset·플레이어/상자 추락 복귀와 프레임 초기 위치/입력엣지·원자적 관계/속도/타이머 정리를 추가했다. 들린 플레이어 직접 복귀는 소비·무시하며, 놓기 불가/목적지 점유에는 안전 복귀 대기를 쓴다. 고정 Reset은1P R·2P Backspace, 재설정/패드는 미연결이다. [복귀 구현·검증](Notes/2026-11-08-quantum-respawn.md)을 따른다.
 - Quantum 제품 경로에 밟기·운반/탈출·던지기/놓기·상자 충돌/중력을 이식했다. 관계/타이머/Shrink 판정은 프레임에 두고 PlayerRef 순서로 처리한다. 제품5/ff-product-5, 기존 상자 콘텐츠3:3이며 기존 정적/로프2:2와 이동/로프18틱을 보존한다. 기본 Quantum 판정과 Mirror 루트 판정 차이·일반 점프에 미연결인 BlockJump·안전한 놓기 정책은 [상세 기록](Notes/2026-11-07-quantum-interactions.md)을 따른다. 일반 장치·전체 스테이지는 미이식이다.
-- 현재 키는 1P A/D·W/S·Space·왼쪽 Shift·E, 2P 방향키·오른쪽 Ctrl·오른쪽 Shift·Enter다. 기존 단일 Player 액션과 `bindings` 저장은 로컬 2슬롯에 미연결이며 키 재설정·게임패드를 지원한다고 표시하지 않는다. Jump/Run/Interact·아래 조합과 이동·상호작용 상태를 기록/재생한다.
+- Quantum 제품15는 등록된 플레이어를 PlayerRef 순으로 처리한다. 키보드 1P·게임패드는 기존 `bindings`를 적용하고 분할 2P 고정 키를 유지한다. 시작점이 부족한 슬롯은 맵의 작성 시작점을 기준으로 빈 옆 칸을 찾는다.
 - Mirror 발판은 시작 시각 기반으로 위치를 평가한다. 입력의 platformTime과 상태의 탑승 부품/세대/시각으로 운반 이동을 Simulate에서 처리하며 재시뮬레이션도 같은 발판 위치·충돌을 사용한다. 기존 발판의 외부 Controller2D.Move 호출은 제거했다.
 - Mirror 리셋: Reset 태그 접촉은 서버 RespawnHandler가 구간 목적지로 Teleport하며 운반 상태를 유지한다. 리셋 키·추락은 기존처럼 DropAll 후 체크포인트/시작점으로 복귀한다. 체크포인트는 서버에서 더 큰 ID만 받는다.
 - 상자 재소환은 PickupObj.ServerReset으로 운반자 참조·표시·충돌 무시·속도·동기화 위치를 초기화한다. 기본 스테이지 자식 상자 참조는 루트 Identity의 부품 참조로 전송한다.
@@ -64,6 +64,8 @@
 
 ## 검증
 
+- 제품15 3·4인 오프라인 기록·재생에서 확정 체크섬과 운반·밟기·피격·완료 틱을 비교했다. 동일 PC 개발 Photon 2·3·4연결의 확정 결과도 확인했다. [실행 범위](Notes/2026-11-09-quantum-multiplayer.md).
+
 - Quantum 제품5의 이동·로프·밟기/운반·복귀·장치 재생과 Main/Photon 검증은 [공통 검증 요약](QUANTUM_MIGRATION.md#검증)을 따른다. 세부 수치·실패 분석은 [장치 기록](Notes/2026-11-08-quantum-devices.md)과 해당 이동/상호작용 Notes에 있다.
 - Mirror: 2026-10-26 KCP 지연0/60ms의 Stage1~21 생성·API 완료·씬 왕복과 상자 복귀/소환을 확인했다. 실조작 전체 클리어·연속 발판/운반은 별도 미실행이다. [실행 범위](Notes/2026-10-26-stage-live-validation.md).
 - Mirror 상태/발판/Weaver 격리 검사는 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존했다. 일반 EditMode asmdef는 Assembly-CSharp를 직접 참조하지 않으며 에디터 검사 메뉴를 사용한다.
@@ -71,7 +73,7 @@
 
 ## 남은 작업
 
-- Quantum: 최대4인·키 재설정/게임패드·이동/전환 발판·실제 스테이지 연결은 [전환 순서](NEXT_SESSION.md)를 따른다.
+- Quantum 실제 스테이지 연결은 [전환 순서](NEXT_SESSION.md)를 따른다.
 - Mirror 미완료 실조작: 연속 발판 탑승/점프 분리·머리 위 장애물/리셋·운반/밟기·피격·운반자 이탈과 지연 조건을 확인한다. 수치 변경은 재현 근거를 확보한 뒤 판단한다.
 - Mirror의 원격 과거 위치와 트랩 predictedTime 차이, 던진 상자 표시 보정, 해제 후0.3초 보간/지연 보상 차이는 관찰할 위험이다. 현재 결함으로 단정하지 않는다.
 

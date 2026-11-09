@@ -6,6 +6,8 @@
 
 ## 현재 상태
 
+- 제품15의 Quantum 변환기는 공식 스테이지와 MapData 맵에서 시작점 1~4개를 받는다. 최소 인원은 Quantum 맵 에셋에서 설정하며, 부족한 시작점은 실행 중 기존 시작점 옆에서 해결한다. 공식 시험 맵 8종과 기존 MapData 2.1 데이터는 보존했다. [규칙·검증](Notes/2026-11-09-quantum-multiplayer.md).
+
 - Quantum 공식2 작성은 `QuantumStageSwitch`에 같은 프리팹의 `QuantumStageTerrainToggle` 참조를 연결한다. OnOff는 고체 Box, 문 스위치는 감지용 Box 트리거를 쓴다. 전환 간격0은 수동 전용이며 양수는 자동 위상에 수동 반전을 합산한다. 문 그룹은 처음 활성인 Box 하나와 전용 스위치 하나를 요구한다. 중복 ID·참조 누락·지원하지 않는 조합은 변환을 거부한다. [최신 범위·검증](QUANTUM_MIGRATION.md).
 - Quantum 제품11 공식 프리팹은 `QuantumStageMotion`(Box 발판 또는 `QuantumStageTrap`과 함께 이동/회전 트랩), `QuantumStageMotionReset`(감지 발판 연결), `QuantumStageTerrainToggle`(자동 전환 그룹)을 쓴다. 변환기는 지원하지 않는 형상·회전/배율·잘못된 참조·초기 겹침을 거부한다. 경유점과 이동/회전 표시 범위는 추락 경계에 포함한다. 기존 MapData2.1·팔레트·친구 맵 전송은 그대로다. [작성 예](Notes/2026-11-09-quantum-motion.md).
 - Quantum 제품10 공식 작성기는 `QuantumStageLauncher`의 스프링/바운스 종류·정적 원/Box/볼록 Polygon 트리거를 변환한다. 별도 공식 `official-launcher-test`를 등록했으며 일반 MapEditor 팔레트·테스트·친구 전송은 기존 Mirror 경로다. MapData2.1 규칙은 바꾸지 않았다. [작성·검증](Notes/2026-11-09-quantum-launchers.md).

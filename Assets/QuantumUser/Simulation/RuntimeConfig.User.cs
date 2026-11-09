@@ -3,6 +3,8 @@
     public partial class RuntimeConfig
     {
         public string CustomMapAgreement;
+        public const int FlipFriendsMaxPlayers = 4;
+        public int FlipFriendsPlayerCount = 2;
         public bool EnableRespawn;
         public Photon.Deterministic.FP FallMinX;
         public Photon.Deterministic.FP FallMaxX;

@@ -50,8 +50,8 @@ public static class QuantumCloudCheck
                 });
             clients[0].CurrentRoom.IsOpen = false;
             if (isCustomMap)
-                await Task.WhenAll(QuantumMapAgreement.WaitAsync(clients[0], bootstrap.Config.CustomMapAgreement, System.Threading.CancellationToken.None),
-                    QuantumMapAgreement.WaitAsync(clients[1], bootstrap.Config.CustomMapAgreement, System.Threading.CancellationToken.None));
+                await Task.WhenAll(QuantumMapAgreement.WaitAsync(clients[0], bootstrap.Config.CustomMapAgreement, 2, System.Threading.CancellationToken.None),
+                    QuantumMapAgreement.WaitAsync(clients[1], bootstrap.Config.CustomMapAgreement, 2, System.Threading.CancellationToken.None));
             var session = JsonUtility.FromJson<DeterministicSessionConfig>(JsonUtility.ToJson(QuantumDeterministicSessionConfigAsset.DefaultConfig));
             session.UpdateFPS = 60;
             session.PlayerCount = 2;

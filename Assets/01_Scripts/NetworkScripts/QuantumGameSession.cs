@@ -12,12 +12,16 @@ namespace FlipFriends.Network
     {
         private readonly CancellationTokenSource lifetime = new();
         private IDisposable inputSubscription;
+        private QuantumPlayerInput playerInput;
+        public int KeyboardCount { get; set; } = 2;
+        public bool IsInputEnabled { get; set; } = true;
         private SteamPhotonTicket ticket;
         private Task starting;
         private Task stopping;
         private bool hasStarted;
         public QuantumRunner Runner { get; private set; }
         public RealtimeClient Client { get; private set; }
+        public int PlayerCount { get; private set; }
         public bool HasInputSubscription => inputSubscription != null;
         public static int ActiveInputSubscriptions { get; private set; }
         public Func<int, int, Quantum.Input> InputSource { get; set; }
@@ -32,7 +36,7 @@ namespace FlipFriends.Network
                 ticket = new SteamPhotonTicket();
                 var auth = await ticket.AcquireAsync(steamAppId, lifetime.Token);
                 var versionedSettings = new AppSettings(settings) { AppVersion = QuantumGameContent.NetworkVersion };
-                await ConnectAsync(versionedSettings, room, auth, null, false);
+                await ConnectAsync(config.FlipFriendsPlayerCount, versionedSettings, room, auth, null, false);
                 ticket.Dispose();
                 ticket = null;
                 await StartRunnerAsync(config, true);
@@ -45,7 +49,7 @@ namespace FlipFriends.Network
         public Task StartDevelopmentAsync(RuntimeConfig config, string room, bool joinOnly)
             => StartOnce(async () =>
             {
-                await ConnectAsync(new AppSettings
+                await ConnectAsync(config.FlipFriendsPlayerCount, new AppSettings
                 {
                     AppIdQuantum = DevelopmentAppId, AppVersion = QuantumGameContent.NetworkVersion, FixedRegion = "asia", UseNameServer = true
                 }, room, null, Guid.NewGuid().ToString("N"), joinOnly);
@@ -61,7 +65,7 @@ namespace FlipFriends.Network
             return starting;
         }
 
-        private async Task ConnectAsync(AppSettings settings, string room, AuthenticationValues auth, string userId, bool joinOnly)
+        private async Task ConnectAsync(int playerCount, AppSettings settings, string room, AuthenticationValues auth, string userId, bool joinOnly)
         {
             Client = new RealtimeClient();
             var asyncConfig = AsyncConfig.CreateUnityAsyncConfig();
@@ -69,7 +73,7 @@ namespace FlipFriends.Network
             await MatchmakingExtensions.ConnectToRoomAsync(new MatchmakingArguments
             {
                 NetworkClient = Client, PhotonSettings = settings, AuthValues = auth, UserId = userId,
-                RoomName = room, PluginName = "QuantumPlugin", MaxPlayers = 2, CanOnlyJoin = joinOnly,
+                RoomName = room, PluginName = "QuantumPlugin", MaxPlayers = playerCount, CanOnlyJoin = joinOnly,
                 PlayerTtlInSeconds = 0, AsyncConfig = asyncConfig
             });
         }
@@ -77,20 +81,23 @@ namespace FlipFriends.Network
         private async Task StartRunnerAsync(RuntimeConfig config, bool isOnline)
         {
             lifetime.Token.ThrowIfCancellationRequested();
+            PlayerCount = config.FlipFriendsPlayerCount;
+            if (PlayerCount < 1 || PlayerCount > QuantumGameContent.MaxPlayers)
+                throw new InvalidOperationException("Quantum 참가 인원 범위를 벗어났습니다.");
             if (isOnline)
             {
-                await QuantumMapAgreement.WaitAsync(Client, config.CustomMapAgreement, lifetime.Token);
+                await QuantumMapAgreement.WaitAsync(Client, config.CustomMapAgreement, PlayerCount, lifetime.Token);
                 if (Client.LocalPlayer.IsMasterClient) Client.CurrentRoom.IsOpen = false;
             }
             var session = JsonUtility.FromJson<DeterministicSessionConfig>(JsonUtility.ToJson(QuantumDeterministicSessionConfigAsset.DefaultConfig));
             session.UpdateFPS = 60;
-            session.PlayerCount = 2;
+            session.PlayerCount = PlayerCount;
             var args = new SessionRunner.Arguments
             {
                 RunnerId = "FF_GAME_" + Guid.NewGuid().ToString("N"),
                 RunnerFactory = QuantumRunnerUnityFactory.DefaultFactory,
                 GameParameters = QuantumRunnerUnityFactory.CreateGameParameters,
-                RuntimeConfig = config, SessionConfig = session, PlayerCount = 2,
+                RuntimeConfig = config, SessionConfig = session, PlayerCount = session.PlayerCount,
                 GameMode = isOnline ? DeterministicGameMode.Multiplayer : DeterministicGameMode.Local,
                 ClientId = isOnline ? Client.UserId : "ff-local",
                 Communicator = isOnline ? new QuantumNetworkCommunicator(Client) : null,
@@ -103,15 +110,16 @@ namespace FlipFriends.Network
             }
             else Runner = await QuantumRunner.StartGameAsync(args);
             lifetime.Token.ThrowIfCancellationRequested();
+            int localPlayers = isOnline ? 1 : PlayerCount;
+            playerInput = new QuantumPlayerInput(localPlayers, Math.Min(localPlayers, KeyboardCount));
             inputSubscription = QuantumCallback.SubscribeManual<CallbackPollInput>(callback =>
             {
                 if (callback.Game != Runner?.Game) return;
-                callback.SetInput(InputSource?.Invoke(callback.Frame, callback.PlayerSlot) ?? QuantumPlayerInput.Read(callback.PlayerSlot),
+                callback.SetInput(InputSource?.Invoke(callback.Frame, callback.PlayerSlot) ?? (IsInputEnabled ? playerInput.ReadSlot(callback.PlayerSlot) : default),
                     DeterministicInputFlags.Repeatable);
             });
             ActiveInputSubscriptions++;
-            Runner.Game.AddPlayer(0, new RuntimePlayer());
-            if (!isOnline) Runner.Game.AddPlayer(1, new RuntimePlayer());
+            for (int slot = 0; slot < localPlayers; slot++) Runner.Game.AddPlayer(slot, new RuntimePlayer());
         }
 
         public Task StopAsync()
@@ -138,6 +146,8 @@ namespace FlipFriends.Network
                 ActiveInputSubscriptions--;
             }
             inputSubscription = null;
+            playerInput?.Dispose();
+            playerInput = null;
             ticket?.Dispose();
             ticket = null;
             try

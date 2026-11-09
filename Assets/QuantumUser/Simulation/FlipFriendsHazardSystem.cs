@@ -22,8 +22,10 @@ namespace Quantum
             var query = frame.Filter<FlipFriendsPlayer>();
             while (query.Next(out _, out var player))
                 if (player.Carrier.IsValid) carriedMask |= 1UL << (int)player.Player;
-            for (int index = 0; index < frame.PlayerCount; index++)
+            uint registered = frame.FlipFriendsRegisteredPlayerMask();
+            for (int index = 0; registered != 0; index++, registered >>= 1)
             {
+                if ((registered & 1) == 0) continue;
                 if ((carriedMask & (1UL << index)) != 0) continue;
                 var players = frame.Filter<Transform2D, FlipFriendsPlayer>();
                 while (players.NextUnsafe(out var entity, out _, out var state))

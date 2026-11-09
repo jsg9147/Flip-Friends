@@ -89,6 +89,7 @@ public static class QuantumProductSetup
         new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
         var view = new GameObject("QuantumGameView").AddComponent<QuantumGameView>();
         Set(view, "playerSprite", sprite);
+        SetPresentation(view);
         Set(view, "status", hud);
         Set(view, "returnButton", back);
         EditorSceneManager.SaveScene(scene, PlayPath);
@@ -101,6 +102,25 @@ public static class QuantumProductSetup
         EditorSceneManager.OpenScene(MainPath);
         if (UnityEngine.Object.FindAnyObjectByType<QuantumGameFlow>() == null) throw new InvalidOperationException("Main 재로드 실패");
         Debug.Log("[Quantum 제품] Main/플레이 씬 저장·재로드 완료. 첫 빌드 씬=" + EditorBuildSettings.scenes[0].path);
+    }
+
+    public static void SetPresentation(QuantumGameView view)
+    {
+        var camera = view.gameObject.scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<Camera>(true)).Single(item => item.CompareTag("MainCamera"));
+        if (camera.GetComponent<AudioListener>() == null) Undo.AddComponent<AudioListener>(camera.gameObject);
+        const string animationPath = "Assets/02_Sprites/PlayerSprites/Animation/";
+        const string soundPath = "Assets/08_Sound/Player/";
+        var serialized = new SerializedObject(view);
+        var clips = serialized.FindProperty("playerClips");
+        string[] names = { "Idle", "Walk", "Jump", "Falling", "Climb", "Damaged", "Shrink" };
+        clips.arraySize = names.Length;
+        for (int i = 0; i < names.Length; i++)
+            clips.GetArrayElementAtIndex(i).objectReferenceValue = AssetDatabase.LoadAssetAtPath<AnimationClip>(animationPath + names[i] + ".anim");
+        serialized.FindProperty("jumpClip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(soundPath + "Jump.wav");
+        serialized.FindProperty("shrinkClip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(soundPath + "Shrink.wav");
+        serialized.FindProperty("finishClip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(soundPath + "Enter.wav");
+        serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
     private static RectTransform Rect(string name, Transform parent, Vector2 position, Vector2 size)

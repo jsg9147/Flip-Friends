@@ -9,6 +9,14 @@ namespace Quantum
         public int FlipFriendsProjectileExpired => Global->FlipFriendsProjectileExpired;
         public int FlipFriendsDroppedShots { get => Global->FlipFriendsDroppedShots; set => Global->FlipFriendsDroppedShots = value; }
         public bool FlipFriendsDevicesInitialized { get => Global->FlipFriendsDevicesInitialized; set => Global->FlipFriendsDevicesInitialized = value; }
+        public uint FlipFriendsRegisteredPlayerMask()
+        {
+            uint registered = 0;
+            var players = Filter<FlipFriendsPlayer>();
+            while (players.Next(out _, out var player)) registered |= 1u << (int)player.Player;
+            return registered;
+        }
+
         public Input FlipFriendsInput(PlayerRef player)
         {
             var input = GetPlayerInput(player);

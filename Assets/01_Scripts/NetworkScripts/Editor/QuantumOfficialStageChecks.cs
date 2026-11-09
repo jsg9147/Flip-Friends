@@ -86,7 +86,7 @@ public static class QuantumOfficialStageChecks
     private static void CheckContent()
     {
         var stage = Stage(); var config = Config(); var conversion = stage.ValidateAndApply(new RuntimeConfig());
-        Require(config.CustomMapAgreement.StartsWith(stage.Agreement + ":제품14:") && stage.Agreement.StartsWith("공식1:"), "공식1/제품14 합의");
+        Require(config.CustomMapAgreement.StartsWith(stage.Agreement + ":제품15:") && stage.Agreement.StartsWith("공식1:"), "공식1/제품15 합의");
         Require(conversion.TerrainContours.Length == 4 && conversion.Devices.Count == 3 && conversion.Devices.Single(d => d.Kind == 1).ContactCenters.Length == 2, "시험 프리팹 윤곽4·장치3·Reset 조각2");
         Require(config.CustomMapSpawns.All(s => s.X > 50) && config.FallMinX > 50, "MapData 배치 범위 밖 공식 배치·렌더러 경계");
         Require(QuantumOfficialStageCatalog.LoadStages().Contains(stage), "공식 목록 등록");
@@ -109,7 +109,7 @@ public static class QuantumOfficialStageChecks
         var moved = Clone(); moved.goals[0].center.x += 1; Require(Hash(moved) != stage.ContentHash, "도착 위치 해시 반영");
 
         var inTerrain = Clone(); inTerrain.spawns[0].y = -1.5f; Reject(() => Hash(inTerrain), "지형 안 시작점");
-        var third = Clone(); third.spawns = third.spawns.Append(new Vector2(106, 0.6f)).ToArray(); Reject(() => Hash(third), "시작점 3개");
+        var fifth = Clone(); fifth.spawns = Enumerable.Repeat(fifth.spawns[0], 5).ToArray(); Reject(() => Hash(fifth), "시작점 5개");
         var zero = Clone(); zero.goals[0].size = Vector2.zero; Reject(() => Hash(zero), "크기0 도착");
         var nan = Clone(); nan.boxes[0].x = float.NaN; Reject(() => Hash(nan), "비유한 상자 좌표");
         var badId = Clone(); badId.stageId = "Bad ID"; Reject(() => Hash(badId), "잘못된 스테이지 ID");

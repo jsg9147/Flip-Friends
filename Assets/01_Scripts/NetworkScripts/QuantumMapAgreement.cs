@@ -15,7 +15,7 @@ namespace FlipFriends.Network
                 throw new InvalidOperationException("맵 해시·변환 버전·팔레트 버전이 다릅니다.");
         }
 
-        public static async Task WaitAsync(RealtimeClient client, string agreement, CancellationToken cancellation)
+        public static async Task WaitAsync(RealtimeClient client, string agreement, int playerCount, CancellationToken cancellation)
         {
             if (string.IsNullOrEmpty(agreement)) throw new InvalidOperationException("로컬 맵 확인이 끝나지 않았습니다.");
             client.LocalPlayer.SetCustomProperties(new Photon.Client.PhotonHashtable { [Property] = agreement });
@@ -25,10 +25,10 @@ namespace FlipFriends.Network
             while (true)
             {
                 timeout.Token.ThrowIfCancellationRequested();
-                if (!client.IsConnectedAndReady || client.CurrentRoom == null || client.CurrentRoom.PlayerCount > 2)
-                    throw new InvalidOperationException("맵 확인 중 연결 또는 두 참가자가 유지되지 않았습니다.");
-                // 두 번째 입장 이벤트가 아직 전달되지 않은 경우에는 시작하지 않고 기다린다.
-                bool isReady = client.CurrentRoom.PlayerCount == 2;
+                if (!client.IsConnectedAndReady || client.CurrentRoom == null || client.CurrentRoom.PlayerCount > playerCount)
+                    throw new InvalidOperationException("맵 확인 중 연결 또는 참가 인원이 유지되지 않았습니다.");
+                // 마지막 입장 이벤트가 아직 전달되지 않은 경우에는 시작하지 않고 기다린다.
+                bool isReady = client.CurrentRoom.PlayerCount == playerCount;
                 foreach (var player in client.CurrentRoom.Players.Values)
                 {
                     if (!player.CustomProperties.TryGetValue(Property, out var value)) { isReady = false; continue; }

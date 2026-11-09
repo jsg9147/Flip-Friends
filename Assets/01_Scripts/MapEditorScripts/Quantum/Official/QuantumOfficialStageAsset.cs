@@ -13,6 +13,8 @@ namespace FlipFriends.Maps
         [SerializeField] private QuantumMapTerrain terrain;
         [SerializeField] private QuantumMapDevices devices;
         [SerializeField] private string contentHash;
+        [SerializeField, Range(1, RuntimeConfig.FlipFriendsMaxPlayers)] private int minimumPlayers = 2;
+        public int MinimumPlayers => minimumPlayers;
 
         public string DisplayName => displayName;
         public string StageId => data?.stageId;

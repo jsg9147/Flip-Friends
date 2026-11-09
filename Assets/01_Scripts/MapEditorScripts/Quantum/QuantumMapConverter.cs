@@ -170,8 +170,8 @@ namespace FlipFriends.Maps
                     throw new InvalidOperationException(Describe(item, data.objects.IndexOf(item)) + error.Message, error);
                 }
             }
-            if (result.Spawns.Count != 2 || result.Boxes.Count == 0)
-                throw new InvalidOperationException("현재 Quantum 경로는 시작점 정확히 2개와 정적 지형이 필요합니다.");
+            if (result.Spawns.Count < 1 || result.Spawns.Count > Quantum.RuntimeConfig.FlipFriendsMaxPlayers || result.Boxes.Count == 0)
+                throw new InvalidOperationException("현재 Quantum 경로는 시작점 1~4개와 정적 지형이 필요합니다.");
             foreach (var spawn in result.Spawns)
             foreach (var box in result.Boxes)
                 if (FPMath.Abs(spawn.X - box.Center.X) < box.Size.X / 2 + Q(0.4f) &&
