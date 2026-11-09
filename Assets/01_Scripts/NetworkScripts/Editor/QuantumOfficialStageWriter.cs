@@ -25,7 +25,7 @@ public static class QuantumOfficialStageWriter
         typeof(QuantumStageBox), typeof(QuantumStageRope), typeof(QuantumStageReset), typeof(QuantumStageCheckpoint), typeof(QuantumStageBoxSpawner),
         typeof(QuantumStageTrap), typeof(QuantumStageLauncher), typeof(BoxCollider2D), typeof(PolygonCollider2D), typeof(CircleCollider2D),
         typeof(QuantumStageMotion), typeof(QuantumStageMotionReset),
-        typeof(QuantumStageTerrainToggle), typeof(QuantumStageSwitch), typeof(QuantumStageConveyor),
+        typeof(QuantumStageTerrainToggle), typeof(QuantumStageSwitch), typeof(QuantumStageConveyor), typeof(QuantumStageCannon),
     };
 
     public sealed class ReadResult
@@ -157,6 +157,7 @@ public static class QuantumOfficialStageWriter
             conveyors = Authoring<QuantumStageConveyor>(root, id).Select(belt => ReadConveyor(belt, root, id)).ToArray(),
             motionResets = Authoring<QuantumStageMotionReset>(root, id).Select(button => ReadMotionReset(button, root, id)).ToArray(),
             switches = Authoring<QuantumStageSwitch>(root, id).Select(button => ReadSwitch(button, root, id)).ToArray(),
+            cannons = Authoring<QuantumStageCannon>(root, id).Select(cannon => ReadCannon(cannon, root, id)).ToArray(),
             renderBounds = bounds,
         };
         foreach (var motion in result.Data.motions)
@@ -245,6 +246,21 @@ public static class QuantumOfficialStageWriter
         var s = toggle.Read(id, c.size); s.renderCenter = r.bounds.center; s.renderSize = r.bounds.size; s.sprite = r.sprite; return s;
     }
 
+    // 원본 Cannon.prefab: 몸체 트리거 Box(Trap 태그)+CannonShooter. 탄 표시 스프라이트가 없으면 위치를 알 수 없으므로 거부한다.
+    private static QuantumCannonSource ReadCannon(QuantumStageCannon cannon, GameObject root, string stageId)
+    {
+        string id = stageId + "/" + PathOf(cannon.transform, root);
+        string at = $"{id} 위치={(Vector2)cannon.transform.position}";
+        if (cannon.GetComponent<QuantumStageTrap>() == null || !(cannon.GetComponent<Collider2D>() is BoxCollider2D))
+            throw new InvalidOperationException($"{at}: 대포에는 몸체 판정 QuantumStageTrap과 트리거 BoxCollider2D가 필요합니다.");
+        if (cannon.GetComponent<QuantumStageMotion>() != null || cannon.GetComponent<QuantumStageLauncher>() != null || cannon.GetComponent<QuantumStageSwitch>() != null ||
+            cannon.GetComponent<QuantumStageConveyor>() != null || cannon.GetComponent<QuantumStageTerrainToggle>() != null || cannon.GetComponent<QuantumStageMotionReset>() != null)
+            throw new InvalidOperationException($"{at}: 대포는 이동·발사·스위치·벨트·전환 지형과 혼합할 수 없습니다(원본에 이동 대포 없음).");
+        var source = cannon.Read(id);
+        if (source.projectileSprite == null) throw new InvalidOperationException($"{at}: 탄 표시 스프라이트가 필요합니다.");
+        return source;
+    }
+
     private static QuantumMotionResetSource ReadMotionReset(QuantumStageMotionReset button, GameObject root, string stageId)
     {
         string id = stageId + "/" + PathOf(button.transform, root);
@@ -325,7 +341,7 @@ public static class QuantumOfficialStageWriter
         return new QuantumTrapSource { id = id, origin = trap.transform.position, direction = direction,
             radius = radius, center = center,
             vertices = local.Select(p => (Vector2)trap.transform.TransformPoint(p + collider.offset)).ToArray(),
-            renderCenter = renderer.bounds.center, renderSize = renderer.bounds.size, sprite = renderer.sprite };
+            renderCenter = renderer.bounds.center, renderSize = renderer.bounds.size, sprite = renderer.sprite, flipX = renderer.flipX };
     }
 
     private static QuantumLauncherSource ReadLauncher(QuantumStageLauncher launcher, GameObject root, string stageId)

@@ -23,6 +23,7 @@
         public FlipFriendsMotionResetConfig[] MotionResets;
         public FlipFriendsStageSwitchConfig[] StageSwitches;
         public FlipFriendsConveyorConfig[] Conveyors;
+        public FlipFriendsCannonConfig[] Cannons;
     }
 
     [System.Serializable]
@@ -60,6 +61,17 @@
         public string Id, Group;
         public int Motion, TerrainAnchor, BeltAnchor, GroupTicks;
         public bool InitialClockwise;
+    }
+
+    // 원본 CannonShooter/CannonProjectile. 발사 시각은 시작 틱 기준 FP 틱(지연+k×간격)이라 정수 틱으로 나눠지지 않아도 오차가 누적되지 않는다.
+    // 탄은 지형·플레이어·상자를 통과하는 원형 피격 판정이며 발사점에서 MaxDistance를 넘으면 6틱(원본0.1초) 간격 검사로 사라진다.
+    [System.Serializable]
+    public struct FlipFriendsCannonConfig
+    {
+        public string Id;
+        public Photon.Deterministic.FPVector2 Muzzle, Velocity;
+        public Photon.Deterministic.FP Radius, MaxDistanceSquared, DelayTicks, IntervalTicks;
+        public int MaxAlive;
     }
 
     [System.Serializable]

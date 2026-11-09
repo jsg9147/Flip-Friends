@@ -15,7 +15,8 @@ namespace Quantum
         public override void Update(Frame frame)
         {
             var traps = frame.RuntimeConfig.Traps;
-            if (traps == null || traps.Length == 0 || frame.Global->FlipFriendsCompletedFrame > 0) return;
+            bool hasCannons = frame.RuntimeConfig.Cannons != null && frame.RuntimeConfig.Cannons.Length > 0;
+            if ((traps == null || traps.Length == 0) && !hasCannons || frame.Global->FlipFriendsCompletedFrame > 0) return;
             // 이번 틱 시작 시 들려 있던 플레이어는 운반자가 같은 틱에 맞아 내려놓아도 다음 틱부터 판정한다. PlayerRef 처리 순서와 무관하게 하기 위함이다.
             ulong carriedMask = 0;
             var query = frame.Filter<FlipFriendsPlayer>();
@@ -34,8 +35,7 @@ namespace Quantum
         {
             var state = frame.Unsafe.GetPointer<FlipFriendsPlayer>(entity);
             if (state->IsFinished || state->Carrier.IsValid || state->InvincibleTicks > 0 || FlipFriendsRespawnSystem.IsBlocked(frame, *state)) return false;
-            var traps = frame.RuntimeConfig.Traps;
-            if (traps == null) return false;
+            var traps = frame.RuntimeConfig.Traps ?? System.Array.Empty<FlipFriendsTrapConfig>();
             var position = frame.Get<Transform2D>(entity).Position;
             var center = position + FlipFriendsInteractionSystem.Offset(*state);
             var half = FlipFriendsInteractionSystem.HalfSize(*state);
@@ -45,6 +45,14 @@ namespace Quantum
                 var trap = FlipFriendsMotionSystem.TrapAt(frame, traps[i]);
                 if (!Overlaps(trap, center, half)) continue;
                 Apply(frame, entity, Direction(trap, position));
+                return true;
+            }
+            // 원본 CannonBall은 BasicTrap이 없는 Trap 태그 트리거라 탄→플레이어 단위 벡터로 넉백한다. 탄은 맞혀도 사라지지 않는다.
+            if (FlipFriendsCannonSystem.TryFindHit(frame, center, half, out var shot, out var shotCenter))
+            {
+                var away = position - shotCenter;
+                Apply(frame, entity, away == default ? default : away.Normalized);
+                frame.Unsafe.GetPointer<FlipFriendsProjectile>(shot)->HitCount++;
                 return true;
             }
             return false;

@@ -54,7 +54,7 @@ public static class QuantumInteractionChecks
         Reject(box => box.position.y = -0.25f);
         Reject(box => box.prefabID = "obstacle.cannon");
         var config = Config();
-        Require(config.CustomMapAgreement.StartsWith("3:3:") && config.CustomMapAgreement.Contains(":제품13:"), "상자/제품 합의 버전");
+        Require(config.CustomMapAgreement.StartsWith("3:3:") && config.CustomMapAgreement.Contains(":제품14:"), "상자/제품 합의 버전");
     }
 
     public static RuntimeConfig Config()

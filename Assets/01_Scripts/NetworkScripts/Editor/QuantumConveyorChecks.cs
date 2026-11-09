@@ -43,7 +43,7 @@ public static class QuantumConveyorChecks
             QuantumMapConversion Convert(QuantumOfficialStageData data) => QuantumOfficialStageConverter.Convert(data, terrain, null);
             var converted = Convert(read.Data);
             Require(converted.ContentHash == Asset.ContentHash && Asset.Agreement.StartsWith("공식3:") && converted.Conveyors.Count == 4, "재변환 해시/공식3/벨트4");
-            Require(Config().CustomMapAgreement.StartsWith(Asset.Agreement + ":제품13:") && QuantumGameContent.NetworkVersion == "ff-product-13", "제품13 합의");
+            Require(Config().CustomMapAgreement.StartsWith(Asset.Agreement + ":제품14:") && QuantumGameContent.NetworkVersion == "ff-product-14", "제품14 합의");
             var belts = converted.Conveyors;
             Require(belts.Count(b => b.TerrainAnchor >= 0) == 1 && belts.Count(b => b.BeltAnchor >= 0) == 1 && belts.Count(b => b.Group == "") == 2 &&
                 converted.StageSwitches.Single().Target < 0, "고정2·지형그룹1·벨트전용그룹1·벨트 스위치");
@@ -52,7 +52,7 @@ public static class QuantumConveyorChecks
             read.Data.conveyors.First(c => c.group == "").initialClockwise ^= true;
             Require(Convert(read.Data).ContentHash != Asset.ContentHash, "방향 해시");
             read.Data.conveyors.First(c => c.group == "").initialClockwise ^= true;
-            results.Add("재변환·순서 독립·방향 해시·공식3·제품13");
+            results.Add("재변환·순서 독립·방향 해시·공식3·제품14");
 
             var mutations = new (string name, Action<QuantumOfficialStageData> apply)[]
             {

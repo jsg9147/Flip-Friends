@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20383465417881e4faa925e49e8018fc, type: 3}
+  m_Name: Stage
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumOfficialStageAsset
+  displayName: "\uB300\uD3EC \uC2DC\uD5D8"
+  data:
+    stageId: official-cannon-test
+    spawns:
+    - {x: -4, y: 0.6}
+    - {x: -2, y: 0.6}
+    boxes:
+    - {x: -6, y: 0.5}
+    goals:
+    - center: {x: -14, y: 1}
+      size: {x: 2, y: 1}
+    ropes: []
+    traps:
+    - id: "official-cannon-test/\uC67C\uCABD \uB300\uD3EC"
+      origin: {x: -19, y: 0.5}
+      direction: {x: 0, y: 0}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: -19.5, y: 0}
+      - {x: -18.5, y: 0}
+      - {x: -18.5, y: 0.81040955}
+      - {x: -19.5, y: 0.81040955}
+      renderCenter: {x: -19, y: 0.5}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 73d84cbed98011845993eae6ebbbb6ef, type: 3}
+      flipX: 0
+    - id: "official-cannon-test/\uBCBD \uAD00\uD1B5 \uB300\uD3EC"
+      origin: {x: 28, y: 0.5}
+      direction: {x: 0, y: 0}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: 27.5, y: 0}
+      - {x: 28.5, y: 0}
+      - {x: 28.5, y: 0.81040955}
+      - {x: 27.5, y: 0.81040955}
+      renderCenter: {x: 28, y: 0.5}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 73d84cbed98011845993eae6ebbbb6ef, type: 3}
+      flipX: 1
+    - id: "official-cannon-test/\uD558\uAC15 \uB300\uD3EC"
+      origin: {x: 10, y: 8}
+      direction: {x: 0, y: 0}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: 9.5, y: 7.5}
+      - {x: 10.5, y: 7.5}
+      - {x: 10.5, y: 8.31041}
+      - {x: 9.5, y: 8.31041}
+      renderCenter: {x: 10, y: 8}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 73d84cbed98011845993eae6ebbbb6ef, type: 3}
+      flipX: 0
+    - id: "official-cannon-test/\uBE60\uB978 \uB300\uD3EC"
+      origin: {x: 20, y: 3}
+      direction: {x: 0, y: 0}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: 19.5, y: 2.5}
+      - {x: 20.5, y: 2.5}
+      - {x: 20.5, y: 3.3104095}
+      - {x: 19.5, y: 3.3104095}
+      renderCenter: {x: 20, y: 3}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 73d84cbed98011845993eae6ebbbb6ef, type: 3}
+      flipX: 1
+    launchers: []
+    motions: []
+    motionResets: []
+    switches: []
+    conveyors: []
+    cannons:
+    - id: "official-cannon-test/\uC67C\uCABD \uB300\uD3EC"
+      origin: {x: -19, y: 0.5}
+      direction: {x: 1, y: 0}
+      delay: 0
+      interval: 2
+      speed: 10
+      distance: 20
+      radius: 0.25
+      projectileSprite: {fileID: 21300000, guid: d9118376f675c14438ab1859cb4622cd, type: 3}
+    - id: "official-cannon-test/\uBCBD \uAD00\uD1B5 \uB300\uD3EC"
+      origin: {x: 28, y: 0.5}
+      direction: {x: -1, y: 0}
+      delay: 0.6
+      interval: 3
+      speed: 8
+      distance: 15
+      radius: 0.25
+      projectileSprite: {fileID: 21300000, guid: d9118376f675c14438ab1859cb4622cd, type: 3}
+    - id: "official-cannon-test/\uD558\uAC15 \uB300\uD3EC"
+      origin: {x: 10, y: 8}
+      direction: {x: 0, y: -1}
+      delay: 1.2
+      interval: 3
+      speed: 8
+      distance: 20
+      radius: 0.25
+      projectileSprite: {fileID: 21300000, guid: d9118376f675c14438ab1859cb4622cd, type: 3}
+    - id: "official-cannon-test/\uBE60\uB978 \uB300\uD3EC"
+      origin: {x: 20, y: 3}
+      direction: {x: -1, y: 0}
+      delay: 0
+      interval: 0.125
+      speed: 30
+      distance: 5
+      radius: 0.25
+      projectileSprite: {fileID: 21300000, guid: d9118376f675c14438ab1859cb4622cd, type: 3}
+    renderBounds:
+      m_Center: {x: 5, y: 3.25, z: 0.45000002}
+      m_Extent: {x: 26, y: 5.25, z: 0.55}
+  bakedMap: {fileID: 11400000, guid: e769c8cf7f02b0f49986bc273beac0b0, type: 2}
+  terrain: {fileID: 11400000, guid: eb9a587d055c5be4e81735cad351571c, type: 2}
+  devices: {fileID: 0}
+  contentHash: 65a51a85e15dcb0eca0eae55ef43956898fcf2cda342a001631955c05477f239

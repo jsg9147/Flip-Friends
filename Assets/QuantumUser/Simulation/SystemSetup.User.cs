@@ -15,6 +15,7 @@
             systems.Add(new FlipFriendsCarryFollowSystem());
             systems.Add(new FlipFriendsRespawnSystem(true));
             systems.Add(new FlipFriendsDeviceSystem());
+            systems.Add(new FlipFriendsCannonSystem());
             systems.Add(new FlipFriendsHazardSystem());
             systems.Add(new FlipFriendsLauncherSystem());
             systems.Add(new FlipFriendsCompletionSystem());

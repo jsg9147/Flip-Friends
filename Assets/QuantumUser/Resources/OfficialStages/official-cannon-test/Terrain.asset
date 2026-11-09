@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e064d949a3f6b543bb50c6be840d476, type: 3}
+  m_Name: Terrain
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumMapTerrain
+  contours:
+  - id: official-cannon-test/Grid/Ground/0c7cd5cf7213ac396f29b22970f2f200577ae63abd9d3f2bde896236783a3bbb
+    vertices:
+    - {x: -20, y: 0.0000294}
+    - {x: -20.000029, y: 7}
+    - {x: -21, y: 6.9999704}
+    - {x: -20.999971, y: -2}
+    - {x: 30.999971, y: -2}
+    - {x: 30.999971, y: 7}
+    - {x: 30, y: 6.9999704}
+    - {x: 29.999971, y: 0}
+    - {x: 26, y: 0.0000294}
+    - {x: 25.999971, y: 7}
+    - {x: 25, y: 6.9999704}
+    - {x: 24.999971, y: 0}
+  renderCenter: {x: 5, y: 2.5}
+  renderSize: {x: 52, y: 9}
+  authoringSignature: "official-cannon-test/Grid/Ground;Merge;Outlines;Kinematic;Ground;\uBC18\uACBD0;37990680fdd99de29f31cfa06e56eec8a8887022c6d82e96bed13464c492a894"

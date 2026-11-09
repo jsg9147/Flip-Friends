@@ -83,6 +83,25 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsCannon))]
+  public unsafe partial class FlipFriendsCannonPrototype : ComponentPrototype<Quantum.FlipFriendsCannon> {
+    public Int32 ContentIndex;
+    public Int32 ShotCount;
+    public Int32 LastShotFrame;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsCannon result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsCannon component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsCannon result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.ShotCount = this.ShotCount;
+        result.LastShotFrame = this.LastShotFrame;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsConveyor))]
   public unsafe class FlipFriendsConveyorPrototype : ComponentPrototype<Quantum.FlipFriendsConveyor> {
     public Int32 ContentIndex;
@@ -318,6 +337,31 @@ namespace Quantum.Prototypes {
         result.LaunchKind = this.LaunchKind;
         result.ConveyorVelocityX = this.ConveyorVelocityX;
         result.ConveyorContact = this.ConveyorContact;
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsProjectile))]
+  public unsafe partial class FlipFriendsProjectilePrototype : ComponentPrototype<Quantum.FlipFriendsProjectile> {
+    public Int32 Cannon;
+    public Int32 Shot;
+    public Int32 SpawnFrame;
+    public FPVector2 Origin;
+    public FPVector2 Position;
+    public Int32 HitCount;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsProjectile result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsProjectile component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsProjectile result, in PrototypeMaterializationContext context = default) {
+        result.Cannon = this.Cannon;
+        result.Shot = this.Shot;
+        result.SpawnFrame = this.SpawnFrame;
+        result.Origin = this.Origin;
+        result.Position = this.Position;
+        result.HitCount = this.HitCount;
+        MaterializeUser(frame, ref result, in context);
     }
   }
   [System.SerializableAttribute()]

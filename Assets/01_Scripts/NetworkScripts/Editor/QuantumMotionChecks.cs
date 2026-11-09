@@ -36,12 +36,12 @@ public static class QuantumMotionChecks
             var asset = AssetDatabase.LoadAssetAtPath<QuantumOfficialStageAsset>(QuantumMotionSetup.StagePath);
             QuantumMapConversion Convert() => QuantumOfficialStageConverter.Convert(read.Data, terrain, null);
             Require(Convert().ContentHash == asset.ContentHash && Convert().Motions.Count == 7 && Convert().MotionResets.Count == 1, "작성/재로드/해시/7장치/리셋");
-            Require(Config().CustomMapAgreement.Contains(":제품13:") && QuantumGameContent.NetworkVersion == "ff-product-13", "제품13 합의");
+            Require(Config().CustomMapAgreement.Contains(":제품14:") && QuantumGameContent.NetworkVersion == "ff-product-14", "제품14 합의");
             read.Data.motions = read.Data.motions.Reverse().ToArray(); Require(Convert().ContentHash == asset.ContentHash, "ID 정렬 해시");
             var s = read.Data.motions.First(m => m.kind == 0);
             float saved = s.speed; s.speed += .125f; Require(Convert().ContentHash != asset.ContentHash, "속도 해시"); s.speed = saved;
             var point = s.waypoints[1]; s.waypoints[1] += Vector2.up; Require(Convert().ContentHash != asset.ContentHash, "경유점 해시"); s.waypoints[1] = point;
-            results.Add("프리팹 재로드·ID순 독립·속도/경유점 해시·제품13");
+            results.Add("프리팹 재로드·ID순 독립·속도/경유점 해시·제품14");
             foreach (var test in new[] { "속도", "대기", "경유점", "크기", "랜덤", "참조" })
             {
                 var copy = JsonUtility.FromJson<QuantumOfficialStageData>(JsonUtility.ToJson(read.Data));
@@ -226,7 +226,17 @@ public static class QuantumMotionChecks
                 IntegrationStatus = $"통과: 동일PC 두 연결·지역={sessions[0].Client.CurrentRegion}·RTT={sessions[0].Client.RealtimePeer.Stats.RoundtripTime}/{sessions[1].Client.RealtimePeer.Stats.RoundtripTime}ms·확정19개·장치 상태 일치·완료={complete}·지연/손실 주입 없음\n" + string.Join("\n", samples.Select(p => p.Key + ": " + p.Value + " " + states[0][p.Key]));
             }
         }
-        catch (Exception e) { IntegrationStatus = "실패: " + e; Debug.LogException(e); }
+        catch (Exception e)
+        {
+            // 제한시간 실패 원인을 보려고 두 연결의 마지막 확정 프레임 상태를 남긴다.
+            IntegrationStatus = "실패: " + e;
+            foreach (var s in sessions)
+            {
+                var f = s.Runner?.Game?.Frames?.Verified;
+                IntegrationStatus += Environment.NewLine + (f == null ? "확정 프레임 없음" : $"확정{f.Number} 완료{f.FlipFriendsCompletedFrame} {state(f)}");
+            }
+            Debug.LogException(e);
+        }
         finally { foreach (var s in sessions) await s.StopAsync(); IntegrationStatus += "\n러너/연결/입력 정리=" + sessions.All(s => s.Runner == null && s.Client == null && !s.HasInputSubscription); File.WriteAllText("Logs/" + logName + ".txt", IntegrationStatus); }
     }
 

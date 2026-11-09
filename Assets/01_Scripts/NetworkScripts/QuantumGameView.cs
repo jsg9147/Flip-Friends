@@ -16,6 +16,7 @@ namespace FlipFriends.Network
         private QuantumBoxViews boxes;
         private QuantumDeviceViews devices;
         private QuantumMotionViews motions;
+        private QuantumCannonViews cannons;
         private bool isReturning;
         private InputManager inputManager;
 
@@ -28,6 +29,7 @@ namespace FlipFriends.Network
             boxes = new QuantumBoxViews(transform, whiteSprite);
             devices = new QuantumDeviceViews(transform, whiteSprite, status.font, flow.Content);
             motions = new QuantumMotionViews(transform, whiteSprite, flow.Content);
+            cannons = new QuantumCannonViews(transform, whiteSprite, flow.Content);
             foreach (var box in flow.Content.Boxes) AddBox(box, new Color(0.2f, 0.4f, 0.4f), "정적 지형 표시");
             foreach (var box in flow.Content.Ropes) AddBox(box, new Color(0.85f, 0.65f, 0.3f), "로프 표시");
             foreach (var box in flow.Content.Goals) AddBox(box, new Color(0.3f, 0.9f, 0.4f, 0.6f), "도착점 표시");
@@ -57,10 +59,11 @@ namespace FlipFriends.Network
 
         private void AddTrap(QuantumTrapSource trap)
         {
-            AddSprite("트랩 표시 " + trap.id, trap.renderCenter, trap.renderSize, trap.sprite);
+            var view = AddSprite("트랩 표시 " + trap.id, trap.renderCenter, trap.renderSize, trap.sprite);
+            view.flipX = trap.flipX;
         }
 
-        private void AddSprite(string name, Vector2 center, Vector2 renderSize, Sprite sprite)
+        private SpriteRenderer AddSprite(string name, Vector2 center, Vector2 renderSize, Sprite sprite)
         {
             var view = new GameObject(name);
             view.transform.SetParent(transform, false);
@@ -71,6 +74,7 @@ namespace FlipFriends.Network
             if (sprite == null) renderer.color = new Color(0.9f, 0.1f, 0.1f, 0.7f);
             var size = renderer.sprite.bounds.size;
             view.transform.localScale = new Vector3(renderSize.x / size.x, renderSize.y / size.y, 1);
+            return renderer;
         }
 
         private void AddBox(QuantumMapBox box, Color color, string label)
@@ -99,6 +103,7 @@ namespace FlipFriends.Network
             if (frame.Predicted != null) boxes?.Draw(frame.Predicted);
             if (frame.Predicted != null) devices?.Draw(frame.Predicted);
             if (frame.Predicted != null) motions?.Draw(frame.Predicted);
+            if (frame.Predicted != null) cannons?.Draw(frame.Predicted);
             if (flow.Content.HasTerrain && frame.Predicted != null && Camera.main != null)
             {
                 var query = frame.Predicted.Filter<Quantum.Transform2D, Quantum.FlipFriendsPlayer>();
@@ -140,6 +145,7 @@ namespace FlipFriends.Network
             boxes?.Dispose();
             devices?.Dispose();
             motions?.Dispose();
+            cannons?.Dispose();
             if (whiteSprite != null) Destroy(whiteSprite);
         }
     }

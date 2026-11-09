@@ -14,6 +14,11 @@ global {
     bool FlipFriendsLaunchersInitialized;
     bool FlipFriendsMotionsInitialized;
     int FlipFriendsMotionStartedFrame;
+    bool FlipFriendsCannonsInitialized;
+    int FlipFriendsProjectileCount;
+    int FlipFriendsProjectileSpawned;
+    int FlipFriendsProjectileExpired;
+    int FlipFriendsDroppedShots;
 }
 
 component FlipFriendsMotion {
@@ -52,6 +57,21 @@ component FlipFriendsConveyor {
     int Cycle;
     int Revision;
     bool Clockwise;
+}
+
+component FlipFriendsCannon {
+    int ContentIndex;
+    int ShotCount;
+    int LastShotFrame;
+}
+
+component FlipFriendsProjectile {
+    int Cannon;
+    int Shot;
+    int SpawnFrame;
+    FPVector2 Origin;
+    FPVector2 Position;
+    int HitCount;
 }
 
 component FlipFriendsPlayer {

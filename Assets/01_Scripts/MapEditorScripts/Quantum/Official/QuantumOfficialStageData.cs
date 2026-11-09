@@ -22,6 +22,17 @@ namespace FlipFriends.Maps
         public Vector2[] vertices;
         public Vector2 renderCenter, renderSize;
         public Sprite sprite;
+        // 표시 전용. 원본 대포는 좌우 반전 배율로 방향을 보였고 작성 경로는 SpriteRenderer.flipX로 대신한다(해시 제외).
+        public bool flipX;
+    }
+
+    [Serializable]
+    public sealed class QuantumCannonSource
+    {
+        public string id;
+        public Vector2 origin, direction;
+        public float delay, interval, speed, distance, radius;
+        public Sprite projectileSprite;
     }
 
     [Serializable]
@@ -51,6 +62,7 @@ namespace FlipFriends.Maps
         public QuantumMotionResetSource[] motionResets;
         public QuantumStageSwitchSource[] switches;
         public QuantumConveyorSource[] conveyors;
+        public QuantumCannonSource[] cannons;
         public Bounds renderBounds;
     }
 }

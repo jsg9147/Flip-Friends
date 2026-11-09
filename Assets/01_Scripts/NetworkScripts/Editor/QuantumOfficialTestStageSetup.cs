@@ -101,6 +101,8 @@ public static class QuantumOfficialTestStageSetup
         {
             case string text: property.stringValue = text; break;
             case int number: property.intValue = number; break;
+            case float number: property.floatValue = number; break;
+            case bool flag: property.boolValue = flag; break;
             case Vector2 vector: property.vector2Value = vector; break;
             case UnityEngine.Object reference: property.objectReferenceValue = reference; break;
             default: throw new ArgumentException(field);

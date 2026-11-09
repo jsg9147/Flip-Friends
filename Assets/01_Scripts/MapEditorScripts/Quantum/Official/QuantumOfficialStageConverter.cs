@@ -13,10 +13,11 @@ namespace FlipFriends.Maps
         public const int FormatVersion = 1;
         public const int SwitchFormatVersion = 2;
         public const int ConveyorFormatVersion = 3;
+        public const int CannonFormatVersion = 4;
 
         // 새 장치가 없는 기존 콘텐츠는 이전 형식 번호와 해시를 그대로 유지한다.
         public static int FormatFor(QuantumOfficialStageData data) =>
-            data?.conveyors?.Length > 0 ? ConveyorFormatVersion : data?.switches?.Length > 0 ? SwitchFormatVersion : FormatVersion;
+            data?.cannons?.Length > 0 ? CannonFormatVersion : data?.conveyors?.Length > 0 ? ConveyorFormatVersion : data?.switches?.Length > 0 ? SwitchFormatVersion : FormatVersion;
         private const int MaxGoals = 16;
         private const int MaxRopes = 64;
         private const int MaxBoxes = 64;
@@ -60,6 +61,7 @@ namespace FlipFriends.Maps
             AddTraps(result, lines, data.traps, data.stageId, data.motions);
             AddLaunchers(result, lines, data.launchers, data.stageId);
             QuantumMotionConverter.Add(result, lines, data);
+            QuantumCannonConverter.Add(result, lines, data);
             var boundary = new FallBoundary(data.renderBounds);
             result.MinX = QuantumMapConverter.Q(boundary.MinX); result.MaxX = QuantumMapConverter.Q(boundary.MaxX); result.MinY = QuantumMapConverter.Q(boundary.MinY);
             lines.Add($"복귀={Raw(result.MinX)},{Raw(result.MaxX)},{Raw(result.MinY)};여백10;위쪽제외");
