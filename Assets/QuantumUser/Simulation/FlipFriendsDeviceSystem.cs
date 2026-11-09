@@ -98,6 +98,7 @@ namespace Quantum
 
         public static bool CanPlace(Frame frame, FPVector2 center, FPVector2 half, EntityRef ignored, EntityRef held)
         {
+            if (FlipFriendsMotionSystem.Overlaps(frame, center, half)) return false;
             if (FlipFriendsTerrain.Overlaps(frame.RuntimeConfig.TerrainContours, center, half)) return false;
             foreach (var box in frame.Map.StaticColliders2D)
                 if (Overlaps(center, half, box.Position, box.BoxExtents)) return false;

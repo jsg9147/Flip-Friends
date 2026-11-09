@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20383465417881e4faa925e49e8018fc, type: 3}
+  m_Name: Stage
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumOfficialStageAsset
+  displayName: "\uC2A4\uC704\uCE58\xB7\uBB38 \uC2DC\uD5D8"
+  data:
+    stageId: official-switch-test
+    spawns:
+    - {x: -3, y: 0.55}
+    - {x: -5, y: 0.55}
+    boxes:
+    - {x: -7, y: 0.55}
+    goals:
+    - center: {x: 11, y: 1}
+      size: {x: 4, y: 2}
+    ropes: []
+    traps: []
+    launchers: []
+    motions:
+    - id: "official-switch-test/\uC218\uB3D9 \uC9C0\uD615 A"
+      kind: 4
+      origin: {x: 1, y: 1.75}
+      size: {x: 0.5, y: 3.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 0}
+      speed: 0
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: 1, y: 1.75}
+      renderSize: {x: 0.5, y: 3.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: manual
+      toggleInterval: 0
+      initialActive: 1
+    - id: "official-switch-test/\uC218\uB3D9 \uC9C0\uD615 B"
+      kind: 4
+      origin: {x: 1, y: 4}
+      size: {x: 2, y: 0.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 0}
+      speed: 0
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: 1, y: 4}
+      renderSize: {x: 2, y: 0.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: manual
+      toggleInterval: 0
+      initialActive: 0
+    - id: "official-switch-test/\uBB38"
+      kind: 4
+      origin: {x: 6, y: 1.75}
+      size: {x: 0.5, y: 3.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 0}
+      speed: 0
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: 6, y: 1.75}
+      renderSize: {x: 0.5, y: 3.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: door
+      toggleInterval: 0
+      initialActive: 1
+    - id: "official-switch-test/\uC790\uB3D9 \uC218\uB3D9 \uD63C\uD569 \uC9C0\uD615"
+      kind: 4
+      origin: {x: 0, y: 6}
+      size: {x: 2, y: 0.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 0}
+      speed: 0
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: 0, y: 6}
+      renderSize: {x: 2, y: 0.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: mixed
+      toggleInterval: 3
+      initialActive: 1
+    motionResets: []
+    switches:
+    - id: "official-switch-test/\uC218\uB3D9 \uBC84\uD2BC"
+      targetGroup: manual
+      center: {x: -3, y: 1.6}
+      size: {x: 1.25, y: 0.4}
+      cooldown: 0.5
+      isDoor: 0
+      detectPlayers: 1
+      detectBoxes: 0
+    - id: "official-switch-test/\uBB38 \uAC10\uC9C0"
+      targetGroup: door
+      center: {x: 6, y: 0.35}
+      size: {x: 3, y: 0.7}
+      cooldown: 0
+      isDoor: 1
+      detectPlayers: 1
+      detectBoxes: 1
+    - id: "official-switch-test/\uD63C\uD569 \uBC84\uD2BC"
+      targetGroup: mixed
+      center: {x: -9, y: 1.6}
+      size: {x: 1.25, y: 0.4}
+      cooldown: 0.5
+      isDoor: 0
+      detectPlayers: 1
+      detectBoxes: 0
+    renderBounds:
+      m_Center: {x: 2.5, y: 2.5153885, z: 0.45000002}
+      m_Extent: {x: 14.5, y: 4.5153885, z: 0.55}
+  bakedMap: {fileID: 11400000, guid: ca4ca2dbef40a2f4b9364216cdb2ade9, type: 2}
+  terrain: {fileID: 11400000, guid: 4debfc5b9db0c1b4fa423aee503499c1, type: 2}
+  devices: {fileID: 0}
+  contentHash: 1505d624064ea08219dd263ccf445283857e87d1e408ffcf34bacd4e3bed5ad1

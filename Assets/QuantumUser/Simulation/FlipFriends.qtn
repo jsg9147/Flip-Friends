@@ -12,6 +12,38 @@ global {
     bool FlipFriendsBoxesInitialized;
     bool FlipFriendsDevicesInitialized;
     bool FlipFriendsLaunchersInitialized;
+    bool FlipFriendsMotionsInitialized;
+    int FlipFriendsMotionStartedFrame;
+}
+
+component FlipFriendsMotion {
+    int ContentIndex;
+    int ElapsedTicks;
+    int Revision;
+    int ReadyFrame;
+    int Phase;
+    int Cycle;
+    int LastUpdateFrame;
+    int BlockedTicks;
+    bool Collidable;
+    bool ResetPending;
+    bool HasReturned;
+    FP RotationSpeed;
+    FP Angle;
+    FPVector2 Position;
+    FPVector2 Delta;
+}
+
+component FlipFriendsMotionReset {
+    int ContentIndex;
+    int Contacts;
+}
+
+component FlipFriendsStageSwitch {
+    int ContentIndex;
+    int Contacts;
+    int ReadyFrame;
+    bool Active;
 }
 
 component FlipFriendsPlayer {

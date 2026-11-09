@@ -42,8 +42,9 @@ namespace Quantum
             // 원본은 먼저 처리된 트랩 하나만 맞고 나머지는 무적으로 무시된다. 변환기가 ID 순으로 정렬한 첫 접촉 트랩을 쓴다.
             for (int i = 0; i < traps.Length; i++)
             {
-                if (!Overlaps(traps[i].Vertices, center, half)) continue;
-                Apply(frame, entity, Direction(traps[i], position));
+                var trap = FlipFriendsMotionSystem.TrapAt(frame, traps[i]);
+                if (!Overlaps(trap, center, half)) continue;
+                Apply(frame, entity, Direction(trap, position));
                 return true;
             }
             return false;
@@ -55,6 +56,14 @@ namespace Quantum
             if (trap.Direction != default) return trap.Direction;
             var away = playerPosition - trap.Origin;
             return away == default ? default : away.Normalized;
+        }
+
+        public static bool Overlaps(FlipFriendsTrapConfig trap, FPVector2 center, FPVector2 half)
+        {
+            if (trap.Radius <= 0) return Overlaps(trap.Vertices, center, half);
+            var d = trap.Center - center;
+            var x = FPMath.Max(0, FPMath.Abs(d.X) - half.X); var y = FPMath.Max(0, FPMath.Abs(d.Y) - half.Y);
+            return x * x + y * y < trap.Radius * trap.Radius;
         }
 
         public static void Apply(Frame frame, EntityRef entity, FPVector2 direction)

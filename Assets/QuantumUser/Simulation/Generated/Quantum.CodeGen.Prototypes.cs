@@ -127,6 +127,66 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsMotion))]
+  public unsafe partial class FlipFriendsMotionPrototype : ComponentPrototype<Quantum.FlipFriendsMotion> {
+    public Int32 ContentIndex;
+    public Int32 ElapsedTicks;
+    public Int32 Revision;
+    public Int32 ReadyFrame;
+    public Int32 Phase;
+    public Int32 Cycle;
+    public Int32 LastUpdateFrame;
+    public Int32 BlockedTicks;
+    public QBoolean Collidable;
+    public QBoolean ResetPending;
+    public QBoolean HasReturned;
+    public FP RotationSpeed;
+    public FP Angle;
+    public FPVector2 Position;
+    public FPVector2 Delta;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsMotion result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsMotion component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsMotion result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.ElapsedTicks = this.ElapsedTicks;
+        result.Revision = this.Revision;
+        result.ReadyFrame = this.ReadyFrame;
+        result.Phase = this.Phase;
+        result.Cycle = this.Cycle;
+        result.LastUpdateFrame = this.LastUpdateFrame;
+        result.BlockedTicks = this.BlockedTicks;
+        result.Collidable = this.Collidable;
+        result.ResetPending = this.ResetPending;
+        result.HasReturned = this.HasReturned;
+        result.RotationSpeed = this.RotationSpeed;
+        result.Angle = this.Angle;
+        result.Position = this.Position;
+        result.Delta = this.Delta;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsMotionReset))]
+  public unsafe partial class FlipFriendsMotionResetPrototype : ComponentPrototype<Quantum.FlipFriendsMotionReset> {
+    public Int32 ContentIndex;
+    public Int32 Contacts;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsMotionReset result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsMotionReset component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsMotionReset result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.Contacts = this.Contacts;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsPlayer))]
   public unsafe class FlipFriendsPlayerPrototype : ComponentPrototype<Quantum.FlipFriendsPlayer> {
     public PlayerRef Player;
@@ -233,6 +293,27 @@ namespace Quantum.Prototypes {
         result.LaunchCount = this.LaunchCount;
         result.LaunchFrame = this.LaunchFrame;
         result.LaunchKind = this.LaunchKind;
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsStageSwitch))]
+  public unsafe partial class FlipFriendsStageSwitchPrototype : ComponentPrototype<Quantum.FlipFriendsStageSwitch> {
+    public Int32 ContentIndex;
+    public Int32 Contacts;
+    public Int32 ReadyFrame;
+    public QBoolean Active;
+    partial void MaterializeUser(Frame frame, ref Quantum.FlipFriendsStageSwitch result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsStageSwitch component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsStageSwitch result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        result.Contacts = this.Contacts;
+        result.ReadyFrame = this.ReadyFrame;
+        result.Active = this.Active;
+        MaterializeUser(frame, ref result, in context);
     }
   }
   [System.SerializableAttribute()]

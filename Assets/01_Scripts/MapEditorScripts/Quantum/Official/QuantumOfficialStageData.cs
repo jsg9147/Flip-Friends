@@ -17,6 +17,8 @@ namespace FlipFriends.Maps
         public string id;
         public Vector2 origin;
         public Vector2 direction;
+        public Vector2 center;
+        public float radius;
         public Vector2[] vertices;
         public Vector2 renderCenter, renderSize;
         public Sprite sprite;
@@ -45,6 +47,9 @@ namespace FlipFriends.Maps
         public QuantumStageArea[] ropes;
         public QuantumTrapSource[] traps;
         public QuantumLauncherSource[] launchers;
+        public QuantumMotionSource[] motions;
+        public QuantumMotionResetSource[] motionResets;
+        public QuantumStageSwitchSource[] switches;
         public Bounds renderBounds;
     }
 }

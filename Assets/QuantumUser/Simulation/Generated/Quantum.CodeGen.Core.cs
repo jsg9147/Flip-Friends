@@ -574,7 +574,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 1032;
+    public const Int32 SIZE = 1040;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public AssetRef<Map> Map;
@@ -603,12 +603,16 @@ namespace Quantum {
     public BitSet6 PlayerLastConnectionState;
     [FieldOffset(1016)]
     public Int32 FlipFriendsCompletedFrame;
-    [FieldOffset(1020)]
-    public QBoolean FlipFriendsBoxesInitialized;
     [FieldOffset(1024)]
-    public QBoolean FlipFriendsDevicesInitialized;
+    public QBoolean FlipFriendsBoxesInitialized;
     [FieldOffset(1028)]
+    public QBoolean FlipFriendsDevicesInitialized;
+    [FieldOffset(1032)]
     public QBoolean FlipFriendsLaunchersInitialized;
+    [FieldOffset(1036)]
+    public QBoolean FlipFriendsMotionsInitialized;
+    [FieldOffset(1020)]
+    public Int32 FlipFriendsMotionStartedFrame;
     public readonly FixedArray<Input> input {
       get {
         fixed (byte* p = _input_) { return new FixedArray<Input>(p, 64, 6); }
@@ -633,6 +637,8 @@ namespace Quantum {
         hash = hash * 31 + FlipFriendsBoxesInitialized.GetHashCode();
         hash = hash * 31 + FlipFriendsDevicesInitialized.GetHashCode();
         hash = hash * 31 + FlipFriendsLaunchersInitialized.GetHashCode();
+        hash = hash * 31 + FlipFriendsMotionsInitialized.GetHashCode();
+        hash = hash * 31 + FlipFriendsMotionStartedFrame.GetHashCode();
         return hash;
       }
     }
@@ -651,9 +657,11 @@ namespace Quantum {
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
         Quantum.BitSet6.Serialize(&p->PlayerLastConnectionState, serializer);
         serializer.Stream.Serialize(&p->FlipFriendsCompletedFrame);
+        serializer.Stream.Serialize(&p->FlipFriendsMotionStartedFrame);
         QBoolean.Serialize(&p->FlipFriendsBoxesInitialized, serializer);
         QBoolean.Serialize(&p->FlipFriendsDevicesInitialized, serializer);
         QBoolean.Serialize(&p->FlipFriendsLaunchersInitialized, serializer);
+        QBoolean.Serialize(&p->FlipFriendsMotionsInitialized, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -765,7 +773,7 @@ namespace Quantum {
     [FieldOffset(4)]
     public Int32 PlayerContacts;
     public override readonly Int32 GetHashCode() {
-      unchecked {
+      unchecked { 
         var hash = 14543;
         hash = hash * 31 + ContentIndex.GetHashCode();
         hash = hash * 31 + PlayerContacts.GetHashCode();
@@ -776,6 +784,102 @@ namespace Quantum {
         var p = (FlipFriendsLauncher*)ptr;
         serializer.Stream.Serialize(&p->ContentIndex);
         serializer.Stream.Serialize(&p->PlayerContacts);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct FlipFriendsMotion : Quantum.IComponent {
+    public const Int32 SIZE = 96;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(4)]
+    public Int32 ContentIndex;
+    [FieldOffset(12)]
+    public Int32 ElapsedTicks;
+    [FieldOffset(28)]
+    public Int32 Revision;
+    [FieldOffset(24)]
+    public Int32 ReadyFrame;
+    [FieldOffset(20)]
+    public Int32 Phase;
+    [FieldOffset(8)]
+    public Int32 Cycle;
+    [FieldOffset(16)]
+    public Int32 LastUpdateFrame;
+    [FieldOffset(0)]
+    public Int32 BlockedTicks;
+    [FieldOffset(32)]
+    public QBoolean Collidable;
+    [FieldOffset(40)]
+    public QBoolean ResetPending;
+    [FieldOffset(36)]
+    public QBoolean HasReturned;
+    [FieldOffset(56)]
+    public FP RotationSpeed;
+    [FieldOffset(48)]
+    public FP Angle;
+    [FieldOffset(80)]
+    public FPVector2 Position;
+    [FieldOffset(64)]
+    public FPVector2 Delta;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 8123;
+        hash = hash * 31 + ContentIndex.GetHashCode();
+        hash = hash * 31 + ElapsedTicks.GetHashCode();
+        hash = hash * 31 + Revision.GetHashCode();
+        hash = hash * 31 + ReadyFrame.GetHashCode();
+        hash = hash * 31 + Phase.GetHashCode();
+        hash = hash * 31 + Cycle.GetHashCode();
+        hash = hash * 31 + LastUpdateFrame.GetHashCode();
+        hash = hash * 31 + BlockedTicks.GetHashCode();
+        hash = hash * 31 + Collidable.GetHashCode();
+        hash = hash * 31 + ResetPending.GetHashCode();
+        hash = hash * 31 + HasReturned.GetHashCode();
+        hash = hash * 31 + RotationSpeed.GetHashCode();
+        hash = hash * 31 + Angle.GetHashCode();
+        hash = hash * 31 + Position.GetHashCode();
+        hash = hash * 31 + Delta.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (FlipFriendsMotion*)ptr;
+        serializer.Stream.Serialize(&p->BlockedTicks);
+        serializer.Stream.Serialize(&p->ContentIndex);
+        serializer.Stream.Serialize(&p->Cycle);
+        serializer.Stream.Serialize(&p->ElapsedTicks);
+        serializer.Stream.Serialize(&p->LastUpdateFrame);
+        serializer.Stream.Serialize(&p->Phase);
+        serializer.Stream.Serialize(&p->ReadyFrame);
+        serializer.Stream.Serialize(&p->Revision);
+        QBoolean.Serialize(&p->Collidable, serializer);
+        QBoolean.Serialize(&p->HasReturned, serializer);
+        QBoolean.Serialize(&p->ResetPending, serializer);
+        FP.Serialize(&p->Angle, serializer);
+        FP.Serialize(&p->RotationSpeed, serializer);
+        FPVector2.Serialize(&p->Delta, serializer);
+        FPVector2.Serialize(&p->Position, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct FlipFriendsMotionReset : Quantum.IComponent {
+    public const Int32 SIZE = 8;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(4)]
+    public Int32 ContentIndex;
+    [FieldOffset(0)]
+    public Int32 Contacts;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 7559;
+        hash = hash * 31 + ContentIndex.GetHashCode();
+        hash = hash * 31 + Contacts.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (FlipFriendsMotionReset*)ptr;
+        serializer.Stream.Serialize(&p->Contacts);
+        serializer.Stream.Serialize(&p->ContentIndex);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -988,6 +1092,36 @@ namespace Quantum {
         FPVector2.Serialize(&p->Velocity, serializer);
     }
   }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct FlipFriendsStageSwitch : Quantum.IComponent {
+    public const Int32 SIZE = 16;
+    public const Int32 ALIGNMENT = 4;
+    [FieldOffset(4)]
+    public Int32 ContentIndex;
+    [FieldOffset(0)]
+    public Int32 Contacts;
+    [FieldOffset(8)]
+    public Int32 ReadyFrame;
+    [FieldOffset(12)]
+    public QBoolean Active;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 19759;
+        hash = hash * 31 + ContentIndex.GetHashCode();
+        hash = hash * 31 + Contacts.GetHashCode();
+        hash = hash * 31 + ReadyFrame.GetHashCode();
+        hash = hash * 31 + Active.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (FlipFriendsStageSwitch*)ptr;
+        serializer.Stream.Serialize(&p->Contacts);
+        serializer.Stream.Serialize(&p->ContentIndex);
+        serializer.Stream.Serialize(&p->ReadyFrame);
+        QBoolean.Serialize(&p->Active, serializer);
+    }
+  }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
@@ -1014,8 +1148,14 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsDevice>();
       BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsLauncher>();
       BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsLauncher>();
+      BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsMotion>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsMotion>();
+      BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsMotionReset>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsMotionReset>();
       BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsPlayer>();
       BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsPlayer>();
+      BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsStageSwitch>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsStageSwitch>();
       BuildSignalsArrayOnComponentAdded<MapEntityLink>();
       BuildSignalsArrayOnComponentRemoved<MapEntityLink>();
       BuildSignalsArrayOnComponentAdded<NavMeshAvoidanceAgent>();
@@ -1113,7 +1253,10 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.FlipFriendsBox), Quantum.FlipFriendsBox.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsDevice), Quantum.FlipFriendsDevice.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsLauncher), Quantum.FlipFriendsLauncher.SIZE);
+      typeRegistry.Register(typeof(Quantum.FlipFriendsMotion), Quantum.FlipFriendsMotion.SIZE);
+      typeRegistry.Register(typeof(Quantum.FlipFriendsMotionReset), Quantum.FlipFriendsMotionReset.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsPlayer), Quantum.FlipFriendsPlayer.SIZE);
+      typeRegistry.Register(typeof(Quantum.FlipFriendsStageSwitch), Quantum.FlipFriendsStageSwitch.SIZE);
       typeRegistry.Register(typeof(FrameMetaData), FrameMetaData.SIZE);
       typeRegistry.Register(typeof(FrameTimer), FrameTimer.SIZE);
       typeRegistry.Register(typeof(HingeJoint), HingeJoint.SIZE);
@@ -1169,12 +1312,15 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
     static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 4)
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 7)
         .AddBuiltInComponents()
         .Add<Quantum.FlipFriendsBox>(Quantum.FlipFriendsBox.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsDevice>(Quantum.FlipFriendsDevice.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsLauncher>(Quantum.FlipFriendsLauncher.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.FlipFriendsMotion>(Quantum.FlipFriendsMotion.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.FlipFriendsMotionReset>(Quantum.FlipFriendsMotionReset.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsPlayer>(Quantum.FlipFriendsPlayer.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.FlipFriendsStageSwitch>(Quantum.FlipFriendsStageSwitch.Serialize, null, null, ComponentFlags.None)
         .Finish();
     }
     [Preserve()]

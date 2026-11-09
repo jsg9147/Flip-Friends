@@ -11,6 +11,10 @@ namespace FlipFriends.Maps
     public static class QuantumOfficialStageConverter
     {
         public const int FormatVersion = 1;
+        public const int SwitchFormatVersion = 2;
+
+        public static int FormatFor(QuantumOfficialStageData data) =>
+            data?.switches?.Length > 0 ? SwitchFormatVersion : FormatVersion;
         private const int MaxGoals = 16;
         private const int MaxRopes = 64;
         private const int MaxBoxes = 64;
@@ -36,7 +40,7 @@ namespace FlipFriends.Maps
                 throw new InvalidOperationException($"공식 스테이지 {data.stageId}: 추락 경계를 계산할 렌더러 범위가 없습니다.");
 
             var result = new QuantumMapConversion { HasRespawn = true };
-            var lines = new List<string> { $"공식={FormatVersion};스테이지={data.stageId}" };
+            var lines = new List<string> { $"공식={FormatFor(data)};스테이지={data.stageId}" };
             foreach (var spawn in data.spawns.Select(Q).OrderBy(p => p.X.RawValue).ThenBy(p => p.Y.RawValue))
             {
                 result.Spawns.Add(spawn);
@@ -51,8 +55,9 @@ namespace FlipFriends.Maps
                 result.MovableBoxes.Add(box);
                 lines.Add($"상자={Key(box.Center)}/{Key(box.Size)};중력9.8;감속1.5;낙하12");
             }
-            AddTraps(result, lines, data.traps, data.stageId);
+            AddTraps(result, lines, data.traps, data.stageId, data.motions);
             AddLaunchers(result, lines, data.launchers, data.stageId);
+            QuantumMotionConverter.Add(result, lines, data);
             var boundary = new FallBoundary(data.renderBounds);
             result.MinX = QuantumMapConverter.Q(boundary.MinX); result.MaxX = QuantumMapConverter.Q(boundary.MaxX); result.MinY = QuantumMapConverter.Q(boundary.MinY);
             lines.Add($"복귀={Raw(result.MinX)},{Raw(result.MaxX)},{Raw(result.MinY)};여백10;위쪽제외");
@@ -62,6 +67,7 @@ namespace FlipFriends.Maps
             // 장치 목적지를 지형과 대조하려면 장치를 먼저 변환해야 한다(MapData 경로와 같은 순서).
             if (devices != null) devices.Apply(result);
             terrain.Apply(result);
+            QuantumMotionConverter.ValidatePlacement(result, data.stageId);
             return result;
         }
 
@@ -75,7 +81,7 @@ namespace FlipFriends.Maps
         }
 
         // 트랩은 ID(프리팹 경로) 순으로 정렬한다. 같은 틱에 여러 개에 닿으면 이 순서의 첫 트랩만 적용된다.
-        private static void AddTraps(QuantumMapConversion result, List<string> lines, QuantumTrapSource[] traps, string stageId)
+        private static void AddTraps(QuantumMapConversion result, List<string> lines, QuantumTrapSource[] traps, string stageId, QuantumMotionSource[] motions)
         {
             if ((traps?.Length ?? 0) > MaxTraps) throw new InvalidOperationException($"공식 스테이지 {stageId}: 트랩 {MaxTraps}개 상한을 초과했습니다.");
             var ids = new HashSet<string>(StringComparer.Ordinal);
@@ -84,13 +90,17 @@ namespace FlipFriends.Maps
                 string at = $"공식 스테이지 {stageId}: 트랩 {source?.id} 위치={source?.origin}";
                 if (source == null || string.IsNullOrWhiteSpace(source.id) || !ids.Add(source.id)) throw new InvalidOperationException(at + ": 안정적인 트랩 ID가 없거나 중복입니다.");
                 if (!Finite(source.origin) || !Finite(source.direction)) throw new InvalidOperationException(at + ": 기준점/넉백 방향이 유한하지 않습니다.");
-                if (source.vertices == null || source.vertices.Length < 3 || source.vertices.Length > MaxTrapVertices || !source.vertices.All(Finite))
+                bool isCircle = source.radius > 0;
+                if (!float.IsFinite(source.radius) || source.radius < 0 || !Finite(source.center) ||
+                    source.vertices == null || (isCircle ? source.vertices.Length != 0 : source.vertices.Length < 3 || source.vertices.Length > MaxTrapVertices || !source.vertices.All(Finite)))
                     throw new InvalidOperationException(at + $": 판정 꼭짓점은 유한한 3~{MaxTrapVertices}개여야 합니다.");
                 if (source.renderSize.x <= 0 || source.renderSize.y <= 0) throw new InvalidOperationException(at + ": 표시할 렌더러 범위가 없습니다.");
-                var vertices = ConvexVertices(source.vertices, at);
-                var config = new Quantum.FlipFriendsTrapConfig { Id = source.id, Origin = Q(source.origin), Direction = Q(source.direction), Vertices = vertices };
+                var vertices = isCircle ? Array.Empty<FPVector2>() : ConvexVertices(source.vertices, at);
+                var config = new Quantum.FlipFriendsTrapConfig { Id = source.id, Origin = Q(source.origin), Direction = Q(source.direction), Vertices = vertices, Center = Q(source.center), Radius = QuantumMapConverter.Q(source.radius) };
+                if (isCircle && (config.Radius <= 0 || !(motions ?? Array.Empty<QuantumMotionSource>()).Any(m => m != null && m.id == source.id && m.kind >= 1 && m.kind <= 3))) throw new InvalidOperationException(at + ": 이동 원형 트랩 참조/FP 반지름 오류");
                 result.Traps.Add(config);
                 result.TrapVisuals.Add(source);
+                if (isCircle) lines.Add($"이동원형트랩1={source.id};원={Key(config.Center)}/{Raw(config.Radius)}");
                 lines.Add($"트랩={source.id.Length}:{source.id};기준={Key(config.Origin)};방향={Key(config.Direction)};꼭짓점={string.Join("/", vertices.Select(Key))};표시={Key(Q(source.renderCenter))}/{Key(Q(source.renderSize))}");
             }
         }

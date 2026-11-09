@@ -223,6 +223,7 @@ namespace Quantum
 
         public static bool CanOccupy(Frame frame, FPVector2 center, FPVector2 half, EntityRef carrier, EntityRef target)
         {
+            if (FlipFriendsMotionSystem.Overlaps(frame, center, half)) return false;
             if (FlipFriendsTerrain.Overlaps(frame.RuntimeConfig.TerrainContours, center, half)) return false;
             var map = frame.Map.StaticColliders2D;
             for (int i = 0; i < map.Length; i++)

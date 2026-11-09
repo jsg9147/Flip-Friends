@@ -19,6 +19,43 @@
         public FlipFriendsTerrainContour[] TerrainContours;
         public FlipFriendsTrapConfig[] Traps;
         public FlipFriendsLauncherConfig[] Launchers;
+        public FlipFriendsMotionConfig[] Motions;
+        public FlipFriendsMotionResetConfig[] MotionResets;
+        public FlipFriendsStageSwitchConfig[] StageSwitches;
+    }
+
+    [System.Serializable]
+    public struct FlipFriendsMotionConfig
+    {
+        public string Id;
+        public int Kind;
+        public Photon.Deterministic.FPVector2 Origin, HalfSize;
+        public Photon.Deterministic.FPVector2[] Points;
+        public Photon.Deterministic.FP[] Ease;
+        public Photon.Deterministic.FP Speed, RotationSpeed, RandomRange;
+        public int SegmentTicks, WaitTicks, ReturnTicks, InitialTicks;
+        public bool Cyclic, Repeat, DetectPlayer, Disappear, DisableOnComplete, RandomRotation;
+        public string ToggleGroup;
+        public int ToggleTicks;
+        public bool InitialActive;
+    }
+
+    [System.Serializable]
+    public struct FlipFriendsStageSwitchConfig
+    {
+        public string Id;
+        public int Target, CooldownTicks;
+        public bool IsDoor, DetectPlayers, DetectBoxes;
+        public Photon.Deterministic.FPVector2 Center, HalfSize;
+    }
+
+    [System.Serializable]
+    public struct FlipFriendsMotionResetConfig
+    {
+        public string Id;
+        public int Target;
+        public Photon.Deterministic.FPVector2 Center, HalfSize;
+        public bool IsTrigger;
     }
 
     [System.Serializable]
@@ -37,6 +74,8 @@
     {
         public string Id;
         public Photon.Deterministic.FPVector2 Origin, Direction;
+        public Photon.Deterministic.FPVector2 Center;
+        public Photon.Deterministic.FP Radius;
         public Photon.Deterministic.FPVector2[] Vertices;
     }
 

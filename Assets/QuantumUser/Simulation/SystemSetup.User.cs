@@ -8,6 +8,7 @@
         static partial void AddSystemsUser(ICollection<SystemBase> systems, RuntimeConfig gameConfig, SimulationConfig simulationConfig, SystemsConfig systemsConfig)
         {
             systems.Add(new FlipFriendsRespawnSystem(false));
+            systems.Add(new FlipFriendsMotionSystem());
             systems.Add(new FlipFriendsInteractionSystem());
             systems.Add(new FlipFriendsMovementSystem());
             systems.Add(new FlipFriendsBoxSystem());

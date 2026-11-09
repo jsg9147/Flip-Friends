@@ -5,7 +5,7 @@
 
 ## 현재 상태
 
-- Quantum 제품10은 Tilemap 윤곽·경사·정적 피격 트랩·스프링/바운스(정적 원/Box/볼록 Polygon)를 지원한다. 원형 지원은 스프링/바운스에 한정하며 동적/전환 지형·통과 지형·여러 Collider 장치와 전체21개 스테이지는 미지원이다. [최신 범위·검증](QUANTUM_MIGRATION.md).
+- Quantum 제품12는 OnOff 버튼과 수동·자동 혼합 Box 전환 그룹, 초기 닫힘 문과 전용 감지 스위치 하나를 지원한다. 원본 Stage 7~19 문에는 Player/Pickable 마스크 사용례가 있고, Stage 11~21 OnOff 버튼의 설정 쿨다운은 0.5초다. Quantum 문은 감지 해제 후 점유가 해소될 때 닫힌다. 컨베이어·통과 지형·다중 Collider 장치·원본21개 스테이지 직접 변환은 후속 범위다. [최신 범위·검증](QUANTUM_MIGRATION.md).
 
 - Quantum 체크포인트·구간Reset·상자소환은 별도 Main 지원 맵에 있다. onlyBoxReset의 기존 상자 운반 조건과 실제5초 쿨다운·점유 대기/소환 실패 불변을 보존한다. 기존 단일 박스 지원에 위 Tilemap 사용례를 추가했으며 전체21개 스테이지는 Mirror다. [장치 정책](Notes/2026-11-08-quantum-devices.md)을 따른다.
 
@@ -48,6 +48,8 @@
 
 ## 검증
 
+- 제품12 직접19종에서 문 다중 접촉과 마지막 이탈, 플레이어·상자·운반 중 몸체 점유, 이동 발판의 문 통과 방지, 수동 그룹의 원자적 대기와 요청 상쇄, 버튼 쿨다운과 동시 반전을 확인했다. [재생·Main·Photon 기록](QUANTUM_MIGRATION.md#검증).
+- 제품11 직접 검사에서 다중 승객·점프 분리·들린 플레이어/상자·느슨한 상자·벽/천장·동일 틱 리셋·전환 점유·이동/회전/원형 피격을 확인했다. [검증 기록](Notes/2026-11-09-quantum-motion.md).
 - Quantum 지원 맵의 장치/복귀/운반·Main/Photon 검증은 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. 기존21개 스테이지의 Quantum 통과를 의미하지 않는다.
 - Mirror: 2026-10-26 KCP 호스트+별도 클라이언트, 지연0/60ms에서 Stage1~21 생성·API 완료 후 GameRoom 복귀·정리, 탄환 비행·수명, 1~4인 배치·이탈 후 재시작을 확인했다. 실조작 클리어는 아니다. [실행 기록](Notes/2026-10-26-stage-live-validation.md).
 - 참조 검사21개 지적0개와 단계별 격리/Weaver·빌드 결과, Stage8 좌표 조사 등은 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존한다. 원본 조사 데이터는 [착수 전 조사](Notes/2026-10-22-stage-audit.md)에 있다.
@@ -62,4 +64,4 @@
 
 ## 다음 작업
 
-[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 기존 스테이지의 Tilemap/장치 판정을 작은 묶음부터 이식하고 해당 영역의 동작 문제와 회귀를 함께 확인한다.
+[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 컨베이어의 외부 속도와 OnOff 그룹 연결을 이식한다.

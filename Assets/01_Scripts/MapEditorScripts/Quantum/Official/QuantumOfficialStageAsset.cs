@@ -17,7 +17,7 @@ namespace FlipFriends.Maps
         public string DisplayName => displayName;
         public string StageId => data?.stageId;
         public string ContentHash => contentHash;
-        public string Agreement => $"공식{QuantumOfficialStageConverter.FormatVersion}:{contentHash}";
+        public string Agreement => $"공식{QuantumOfficialStageConverter.FormatFor(data)}:{contentHash}";
 
         public void Configure(string name, QuantumOfficialStageData value, Quantum.Map map, QuantumMapTerrain stageTerrain, QuantumMapDevices stageDevices)
         {

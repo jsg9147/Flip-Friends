@@ -125,7 +125,7 @@ public static class QuantumTilemapChecks
         for (int x = -22; x <= 22; x++) for (int y = -5; y <= 62; y++)
             Require(FlipFriendsTerrain.Overlaps(contours, new FPVector2(x, y), half) == FlipFriendsTerrain.Overlaps(reversed, new FPVector2(x, y), half), "윤곽 순서/방향 독립");
         var manifest = AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(QuantumTilemapSetup.ManifestPath);
-        Require(config.CustomMapAgreement.StartsWith(manifest.Agreement + ":제품10:"), "제품10/6:6 합의");
+        Require(config.CustomMapAgreement.StartsWith(manifest.Agreement + ":제품12:"), "제품12/6:6 합의");
         CheckContent();
     }
     private static void CheckContent()

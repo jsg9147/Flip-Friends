@@ -15,6 +15,7 @@ namespace FlipFriends.Network
         private Sprite whiteSprite;
         private QuantumBoxViews boxes;
         private QuantumDeviceViews devices;
+        private QuantumMotionViews motions;
         private bool isReturning;
         private InputManager inputManager;
 
@@ -26,10 +27,14 @@ namespace FlipFriends.Network
             whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one / 2, 1);
             boxes = new QuantumBoxViews(transform, whiteSprite);
             devices = new QuantumDeviceViews(transform, whiteSprite, status.font, flow.Content);
+            motions = new QuantumMotionViews(transform, whiteSprite, flow.Content);
             foreach (var box in flow.Content.Boxes) AddBox(box, new Color(0.2f, 0.4f, 0.4f), "정적 지형 표시");
             foreach (var box in flow.Content.Ropes) AddBox(box, new Color(0.85f, 0.65f, 0.3f), "로프 표시");
             foreach (var box in flow.Content.Goals) AddBox(box, new Color(0.3f, 0.9f, 0.4f, 0.6f), "도착점 표시");
-            foreach (var trap in flow.Content.TrapVisuals) AddTrap(trap);
+            foreach (var trap in flow.Content.TrapVisuals)
+                if (!flow.Content.MotionVisuals.Exists(m => m.id == trap.id)) AddTrap(trap);
+            foreach (var button in flow.Content.MotionResets)
+                AddBox(new QuantumMapBox { Center = button.Center, Size = button.HalfSize * 2 }, new Color(0.9f, 0.6f, 0.2f), "발판 리셋 버튼");
             foreach (var launcher in flow.Content.LauncherVisuals)
                 AddSprite("스프링/바운스 표시 " + launcher.id, launcher.renderCenter, launcher.renderSize, launcher.sprite);
             if (flow.Content.TerrainContours != null)
@@ -93,6 +98,7 @@ namespace FlipFriends.Network
             if (frame.Predicted != null) players?.Draw(frame.Predicted);
             if (frame.Predicted != null) boxes?.Draw(frame.Predicted);
             if (frame.Predicted != null) devices?.Draw(frame.Predicted);
+            if (frame.Predicted != null) motions?.Draw(frame.Predicted);
             if (flow.Content.HasTerrain && frame.Predicted != null && Camera.main != null)
             {
                 var query = frame.Predicted.Filter<Quantum.Transform2D, Quantum.FlipFriendsPlayer>();
@@ -133,6 +139,7 @@ namespace FlipFriends.Network
             players?.Dispose();
             boxes?.Dispose();
             devices?.Dispose();
+            motions?.Dispose();
             if (whiteSprite != null) Destroy(whiteSprite);
         }
     }

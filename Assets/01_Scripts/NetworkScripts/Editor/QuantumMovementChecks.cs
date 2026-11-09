@@ -30,9 +30,9 @@ public static class QuantumMovementChecks
     {
         var config = new RuntimeConfig();
         QuantumGameContent.Prepare(AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(QuantumRopeTestSetup.ManifestPath), config);
-        Require(config.CustomMapAgreement.Contains(":제품10:") && QuantumGameContent.NetworkVersion == "ff-product-10", "새 이동 규칙 버전");
+        Require(config.CustomMapAgreement.Contains(":제품12:") && QuantumGameContent.NetworkVersion == "ff-product-12", "새 이동 규칙 버전");
         bool hasRejectedOldRules = false;
-        try { QuantumMapAgreement.RequireMatch(config.CustomMapAgreement, config.CustomMapAgreement.Replace(":제품10:", ":제품1:")); }
+        try { QuantumMapAgreement.RequireMatch(config.CustomMapAgreement, config.CustomMapAgreement.Replace(":제품12:", ":제품1:")); }
         catch (InvalidOperationException) { hasRejectedOldRules = true; }
         Require(hasRejectedOldRules, "이전 제품 규칙 합의 거부");
         var session = new QuantumGameSession { InputSource = InputFor };

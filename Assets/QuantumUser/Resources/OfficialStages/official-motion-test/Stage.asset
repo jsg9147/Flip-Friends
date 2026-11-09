@@ -1,0 +1,261 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20383465417881e4faa925e49e8018fc, type: 3}
+  m_Name: Stage
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumOfficialStageAsset
+  displayName: "\uC774\uB3D9 \uBC1C\uD310\xB7\uD2B8\uB7A9 \uC2DC\uD5D8"
+  data:
+    stageId: official-motion-test
+    spawns:
+    - {x: -1, y: 1.8}
+    - {x: 1, y: 1.8}
+    boxes:
+    - {x: -1.9, y: 1.8}
+    goals:
+    - center: {x: 16, y: 1}
+      size: {x: 4, y: 2}
+    ropes: []
+    traps:
+    - id: "official-motion-test/\uC774\uB3D9 \uD2B8\uB7A9"
+      origin: {x: 9, y: 1}
+      direction: {x: 0, y: 0}
+      center: {x: 9, y: 1}
+      radius: 0.5
+      vertices: []
+      renderCenter: {x: 9, y: 1}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+    - id: "official-motion-test/\uB79C\uB364 \uD68C\uC804 \uD2B8\uB7A9"
+      origin: {x: 12, y: 2}
+      direction: {x: 0, y: 0}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: 10.5, y: 1.85}
+      - {x: 13.5, y: 1.85}
+      - {x: 13.5, y: 2.15}
+      - {x: 10.5, y: 2.15}
+      renderCenter: {x: 12, y: 2}
+      renderSize: {x: 3, y: 0.3}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+    - id: "official-motion-test/\uACBD\uB85C \uD2B8\uB7A9"
+      origin: {x: -16, y: 5}
+      direction: {x: 0, y: 0}
+      center: {x: 0, y: 0}
+      radius: 0
+      vertices:
+      - {x: -16.5, y: 4.5}
+      - {x: -15.5, y: 4.5}
+      - {x: -15.5, y: 5.5}
+      - {x: -16.5, y: 5.5}
+      renderCenter: {x: -16, y: 5}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+    launchers: []
+    motions:
+    - id: "official-motion-test/\uC655\uBCF5 \uBC1C\uD310"
+      kind: 0
+      origin: {x: 0, y: 1}
+      size: {x: 6, y: 0.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 6, y: 0}
+      speed: 0.25
+      waitTime: 0.2
+      returnDelay: 0
+      easeAmount: 0.2
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 1
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: 0, y: 1}
+      renderSize: {x: 6, y: 0.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: 
+      toggleInterval: 0
+      initialActive: 0
+    - id: "official-motion-test/\uAC10\uC9C0 \uC804\uD658 \uBC1C\uD310"
+      kind: 0
+      origin: {x: -10, y: 1}
+      size: {x: 4, y: 0.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 3}
+      - {x: 4, y: 3}
+      speed: 1
+      waitTime: 0
+      returnDelay: 0.5
+      easeAmount: 0
+      initialWaitTime: 0.3
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 1
+      disappearAfterComplete: 1
+      disableColliderWhenFalling: 1
+      randomRotation: 0
+      renderCenter: {x: -10, y: 1}
+      renderSize: {x: 4, y: 0.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: 
+      toggleInterval: 0
+      initialActive: 0
+    - id: "official-motion-test/\uC774\uB3D9 \uD2B8\uB7A9"
+      kind: 1
+      origin: {x: 9, y: 1}
+      size: {x: 0, y: 0}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 3}
+      speed: 2
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 180
+      randomRange: 0
+      cyclic: 1
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: 9, y: 1}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: 
+      toggleInterval: 0
+      initialActive: 0
+    - id: "official-motion-test/\uB79C\uB364 \uD68C\uC804 \uD2B8\uB7A9"
+      kind: 2
+      origin: {x: 12, y: 2}
+      size: {x: 3, y: 0.3}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 4, y: 0}
+      speed: 1
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 120
+      randomRange: 20
+      cyclic: 1
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 1
+      renderCenter: {x: 12, y: 2}
+      renderSize: {x: 3, y: 0.3}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: 
+      toggleInterval: 0
+      initialActive: 0
+    - id: "official-motion-test/\uACBD\uB85C \uD2B8\uB7A9"
+      kind: 3
+      origin: {x: -16, y: 5}
+      size: {x: 1, y: 1}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 3, y: 0}
+      - {x: 3, y: 2}
+      speed: 0.5
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 1
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: -16, y: 5}
+      renderSize: {x: 1, y: 1}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: 
+      toggleInterval: 0
+      initialActive: 0
+    - id: "official-motion-test/\uC790\uB3D9 \uC804\uD658 \uC9C0\uD615 0"
+      kind: 4
+      origin: {x: -7, y: 4}
+      size: {x: 3, y: 0.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 0}
+      speed: 0
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: -7, y: 4}
+      renderSize: {x: 3, y: 0.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: terrain
+      toggleInterval: 3
+      initialActive: 1
+    - id: "official-motion-test/\uC790\uB3D9 \uC804\uD658 \uC9C0\uD615 1"
+      kind: 4
+      origin: {x: -3, y: 4}
+      size: {x: 3, y: 0.5}
+      waypoints:
+      - {x: 0, y: 0}
+      - {x: 0, y: 0}
+      speed: 0
+      waitTime: 0
+      returnDelay: 0
+      easeAmount: 0
+      initialWaitTime: 0
+      rotationSpeed: 0
+      randomRange: 0
+      cyclic: 0
+      repeat: 0
+      detectPlayer: 0
+      disappearAfterComplete: 0
+      disableColliderWhenFalling: 0
+      randomRotation: 0
+      renderCenter: {x: -3, y: 4}
+      renderSize: {x: 3, y: 0.5}
+      sprite: {fileID: 21300000, guid: 3b8d0918704bb1f46b4c9882a162c60b, type: 3}
+      toggleGroup: terrain
+      toggleInterval: 3
+      initialActive: 0
+    motionResets:
+    - id: "official-motion-test/\uBC1C\uD310 \uB9AC\uC14B"
+      target: "official-motion-test/\uAC10\uC9C0 \uC804\uD658 \uBC1C\uD310"
+      center: {x: -14, y: 1}
+      size: {x: 1, y: 1}
+      isTrigger: 1
+    renderBounds:
+      m_Center: {x: 0.5, y: 2.848354, z: 0.45000002}
+      m_Extent: {x: 20.5, y: 4.8587527, z: 0.55}
+  bakedMap: {fileID: 11400000, guid: f6a6ce55f0181484b81183db04daf9ed, type: 2}
+  terrain: {fileID: 11400000, guid: aff8dfa4cce4d2a488a63580e27c8159, type: 2}
+  devices: {fileID: 0}
+  contentHash: c9bd60ef653e25285cfe6d41c67b758d33582a45977e5ee34ac24b57b592354b

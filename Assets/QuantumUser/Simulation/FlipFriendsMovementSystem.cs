@@ -269,7 +269,7 @@ namespace Quantum
             return count;
         }
 
-        public static FP LimitAxis(Frame frame, FPVector2 center, FP distance, bool isHorizontal, FPVector2 half)
+        public static FP LimitAxis(Frame frame, FPVector2 center, FP distance, bool isHorizontal, FPVector2 half, int ignoredMotion = -1)
         {
             if (distance == 0) return 0;
             FP sign = distance > 0 ? FP._1 : -FP._1;
@@ -288,7 +288,8 @@ namespace Quantum
                 if (hit.HasValue)
                     allowed = FPMath.Min(allowed, FPMath.Max(0, (hit.Value.Point - origin).Magnitude - Skin));
             }
-            return FlipFriendsTerrain.Limit(frame.RuntimeConfig.TerrainContours, center, half, allowed * sign, isHorizontal);
+            var terrain = FlipFriendsTerrain.Limit(frame.RuntimeConfig.TerrainContours, center, half, allowed * sign, isHorizontal);
+            return FlipFriendsMotionSystem.Limit(frame, center, half, terrain, isHorizontal, ignoredMotion);
         }
 
         // Composite가 만든 미세 기울기(작성기 허용 8raw 이하)가 수평 이동의 벽이 되지 않게, 막혔을 때만 그 높이까지 올라서 다시 잰다.
