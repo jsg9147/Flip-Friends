@@ -22,6 +22,7 @@
         public FlipFriendsMotionConfig[] Motions;
         public FlipFriendsMotionResetConfig[] MotionResets;
         public FlipFriendsStageSwitchConfig[] StageSwitches;
+        public FlipFriendsConveyorConfig[] Conveyors;
     }
 
     [System.Serializable]
@@ -45,8 +46,20 @@
     {
         public string Id;
         public int Target, CooldownTicks;
+        // Target이 -1이면 벨트만 있는 그룹이며, 그 그룹 첫 벨트(Conveyors 색인)가 수동 반전 홀짝을 저장한다.
+        public int ConveyorAnchor;
         public bool IsDoor, DetectPlayers, DetectBoxes;
         public Photon.Deterministic.FPVector2 Center, HalfSize;
+    }
+
+    // 벨트 판정은 Motion 색인의 고체 발판(고정 벨트는 속도0 발판)을 그대로 쓴다.
+    // Group이 비면 고정 방향, TerrainAnchor>=0이면 그 전환 지형의 적용 상태, 아니면 BeltAnchor 벨트의 그룹 상태를 따른다.
+    [System.Serializable]
+    public struct FlipFriendsConveyorConfig
+    {
+        public string Id, Group;
+        public int Motion, TerrainAnchor, BeltAnchor, GroupTicks;
+        public bool InitialClockwise;
     }
 
     [System.Serializable]

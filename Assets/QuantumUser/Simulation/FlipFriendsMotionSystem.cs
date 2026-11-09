@@ -21,6 +21,7 @@ namespace Quantum
             Buttons(frame);
             SampleSwitches(frame);
             ToggleTerrain(frame);
+            FlipFriendsConveyorSystem.Update(frame);
             var configs = frame.RuntimeConfig.Motions;
             if (configs == null) return;
             // 콘텐츠 ID 순으로 생성한 엔티티 순서를 유지한다. 모든 승객의 가능 여부를 먼저 조사한 뒤 한 번에 이동한다.
@@ -84,6 +85,7 @@ namespace Quantum
                 var entity = frame.Create();
                 frame.Add(entity, new FlipFriendsStageSwitch { ContentIndex = i });
             }
+            FlipFriendsConveyorSystem.Initialize(frame);
             frame.Global->FlipFriendsMotionsInitialized = true;
         }
 
@@ -126,6 +128,7 @@ namespace Quantum
                 }
                 if (contacts == 0 || frame.Number < state->ReadyFrame) continue;
                 state->ReadyFrame = frame.Number + config.CooldownTicks;
+                if (config.Target < 0) { FlipFriendsConveyorSystem.Toggle(frame, config.ConveyorAnchor); continue; }
                 var motions = frame.Filter<FlipFriendsMotion>();
                 while (motions.NextUnsafe(out _, out var target))
                     if (target->ContentIndex == config.Target) { target->Cycle ^= 1; break; }

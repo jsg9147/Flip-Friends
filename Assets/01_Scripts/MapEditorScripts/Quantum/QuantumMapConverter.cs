@@ -28,6 +28,7 @@ namespace FlipFriends.Maps
         public readonly List<Quantum.FlipFriendsMotionConfig> Motions = new();
         public readonly List<Quantum.FlipFriendsMotionResetConfig> MotionResets = new();
         public readonly List<Quantum.FlipFriendsStageSwitchConfig> StageSwitches = new();
+        public readonly List<Quantum.FlipFriendsConveyorConfig> Conveyors = new();
         public readonly List<QuantumMotionSource> MotionVisuals = new();
         public FP MinX, MaxX, MinY;
         public int Version => HasTerrain ? 6 : HasDevices ? 5 : HasRespawn ? 4 : MovableBoxes.Count > 0 ? 3 : 2;
@@ -51,6 +52,7 @@ namespace FlipFriends.Maps
             config.Motions = Motions.ToArray();
             config.MotionResets = MotionResets.ToArray();
             config.StageSwitches = StageSwitches.ToArray();
+            config.Conveyors = Conveyors.ToArray();
         }
 
         public void ApplyFallBoundary(Quantum.RuntimeConfig config)

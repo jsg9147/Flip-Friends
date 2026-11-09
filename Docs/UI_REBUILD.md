@@ -6,7 +6,7 @@
 
 ## 현재 상태
 
-- Quantum 제품12 공식 목록은 `이동 발판·트랩 시험`과 `스위치·문 시험`을 포함한 6종을 기존 공식 선택 버튼으로 순환한다. [콘텐츠·검증](QUANTUM_MIGRATION.md).
+- Quantum 제품13 공식 목록은 `이동 발판·트랩 시험`, `스위치·문 시험`, `컨베이어 벨트 시험`을 포함한 7종을 기존 공식 선택 버튼으로 순환한다. [콘텐츠·검증](QUANTUM_MIGRATION.md).
 
 - Main 준비 화면에 여섯 번째 `Tilemap 지형/Reset` 사용례를 등록했다. 원본 전체 스테이지 지원과 구분해 안내하며 기존 시작 전 검증·실패/취소·완료/종료·재진입 수명을 사용한다. Main 미저장 씬은 보존하고 별도 작성 씬/콘텐츠만 저장했다. [Tilemap 기록](Notes/2026-11-08-quantum-tilemap.md).
 
@@ -63,6 +63,7 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 검증
 
+- Quantum 제품13: Main에서 컨베이어 벨트 시험 선택, 전원 완료 후 복귀, 재진입과 메뉴 종료, 러너·입력 구독0을 확인했다. [검증 범위](QUANTUM_MIGRATION.md#검증).
 - Quantum 제품12: Main에서 스위치·문 시험 선택, 전원 완료 후 복귀, 재진입과 메뉴 종료, 러너·입력 구독0을 확인했다. [검증 범위](QUANTUM_MIGRATION.md#검증).
 - Quantum 제품11: 실제 버튼 콜백으로 이동 발판·트랩 시험 선택, 전원 완료 문구와 Main 복귀, 재진입 후 메뉴 종료, 러너·입력 구독0을 확인했다. [실행 범위](Notes/2026-11-09-quantum-motion.md).
 - Quantum 제품7: 준비 화면 7개 버튼(182 간격)·TMP overflow0, 공식 스테이지 선택→플레이/완료/재진입/메뉴 종료를 실제 Button 콜백으로 확인했다. 픽셀 클릭·게임패드 탐색은 미확인이다. [기록](Notes/2026-11-08-quantum-official-stage.md).

@@ -46,6 +46,14 @@ component FlipFriendsStageSwitch {
     bool Active;
 }
 
+component FlipFriendsConveyor {
+    int ContentIndex;
+    EntityRef Motion;
+    int Cycle;
+    int Revision;
+    bool Clockwise;
+}
+
 component FlipFriendsPlayer {
     player_ref Player;
     FPVector2 HomePosition;
@@ -96,6 +104,8 @@ component FlipFriendsPlayer {
     int LaunchCount;
     int LaunchFrame;
     int LaunchKind;
+    FP ConveyorVelocityX;
+    int ConveyorContact;
 }
 
 component FlipFriendsLauncher {

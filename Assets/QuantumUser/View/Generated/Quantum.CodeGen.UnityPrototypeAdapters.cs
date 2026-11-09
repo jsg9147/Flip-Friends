@@ -81,6 +81,25 @@ namespace Quantum.Prototypes.Unity {
     }
   }
   [System.SerializableAttribute()]
+  public unsafe partial class FlipFriendsConveyorPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.FlipFriendsConveyorPrototype> {
+    public Int32 ContentIndex;
+    public Quantum.QuantumEntityPrototype Motion;
+    public Int32 Cycle;
+    public Int32 Revision;
+    public QBoolean Clockwise;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.FlipFriendsConveyorPrototype prototype);
+    public override Quantum.Prototypes.FlipFriendsConveyorPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.FlipFriendsConveyorPrototype();
+      converter.Convert(this.ContentIndex, out result.ContentIndex);
+      converter.Convert(this.Motion, out result.Motion);
+      converter.Convert(this.Cycle, out result.Cycle);
+      converter.Convert(this.Revision, out result.Revision);
+      converter.Convert(this.Clockwise, out result.Clockwise);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
+  [System.SerializableAttribute()]
   public unsafe partial class FlipFriendsPlayerPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.FlipFriendsPlayerPrototype> {
     public PlayerRef Player;
     public FPVector2 HomePosition;
@@ -131,6 +150,8 @@ namespace Quantum.Prototypes.Unity {
     public Int32 LaunchCount;
     public Int32 LaunchFrame;
     public Int32 LaunchKind;
+    public FP ConveyorVelocityX;
+    public Int32 ConveyorContact;
     partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.FlipFriendsPlayerPrototype prototype);
     public override Quantum.Prototypes.FlipFriendsPlayerPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
       var result = new Quantum.Prototypes.FlipFriendsPlayerPrototype();
@@ -183,6 +204,8 @@ namespace Quantum.Prototypes.Unity {
       converter.Convert(this.LaunchCount, out result.LaunchCount);
       converter.Convert(this.LaunchFrame, out result.LaunchFrame);
       converter.Convert(this.LaunchKind, out result.LaunchKind);
+      converter.Convert(this.ConveyorVelocityX, out result.ConveyorVelocityX);
+      converter.Convert(this.ConveyorContact, out result.ConveyorContact);
       ConvertUser(converter, ref result);
       return result;
     }

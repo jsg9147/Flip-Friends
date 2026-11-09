@@ -12,9 +12,11 @@ namespace FlipFriends.Maps
     {
         public const int FormatVersion = 1;
         public const int SwitchFormatVersion = 2;
+        public const int ConveyorFormatVersion = 3;
 
+        // 새 장치가 없는 기존 콘텐츠는 이전 형식 번호와 해시를 그대로 유지한다.
         public static int FormatFor(QuantumOfficialStageData data) =>
-            data?.switches?.Length > 0 ? SwitchFormatVersion : FormatVersion;
+            data?.conveyors?.Length > 0 ? ConveyorFormatVersion : data?.switches?.Length > 0 ? SwitchFormatVersion : FormatVersion;
         private const int MaxGoals = 16;
         private const int MaxRopes = 64;
         private const int MaxBoxes = 64;

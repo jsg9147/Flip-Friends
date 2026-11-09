@@ -28,6 +28,14 @@ namespace FlipFriends.Maps
     }
 
     [Serializable]
+    public sealed class QuantumConveyorSource
+    {
+        public string id, group;
+        public float interval;
+        public bool initialClockwise;
+    }
+
+    [Serializable]
     public sealed class QuantumStageSwitchSource
     {
         public string id, targetGroup;

@@ -50,6 +50,7 @@ namespace FlipFriends.Maps
         public QuantumMotionSource[] motions;
         public QuantumMotionResetSource[] motionResets;
         public QuantumStageSwitchSource[] switches;
+        public QuantumConveyorSource[] conveyors;
         public Bounds renderBounds;
     }
 }

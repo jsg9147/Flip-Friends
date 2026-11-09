@@ -723,6 +723,40 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct FlipFriendsConveyor : Quantum.IComponent {
+    public const Int32 SIZE = 24;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public Int32 ContentIndex;
+    [FieldOffset(16)]
+    public EntityRef Motion;
+    [FieldOffset(4)]
+    public Int32 Cycle;
+    [FieldOffset(8)]
+    public Int32 Revision;
+    [FieldOffset(12)]
+    public QBoolean Clockwise;
+    public override readonly Int32 GetHashCode() {
+      unchecked { 
+        var hash = 2357;
+        hash = hash * 31 + ContentIndex.GetHashCode();
+        hash = hash * 31 + Motion.GetHashCode();
+        hash = hash * 31 + Cycle.GetHashCode();
+        hash = hash * 31 + Revision.GetHashCode();
+        hash = hash * 31 + Clockwise.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (FlipFriendsConveyor*)ptr;
+        serializer.Stream.Serialize(&p->ContentIndex);
+        serializer.Stream.Serialize(&p->Cycle);
+        serializer.Stream.Serialize(&p->Revision);
+        QBoolean.Serialize(&p->Clockwise, serializer);
+        EntityRef.Serialize(&p->Motion, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct FlipFriendsDevice : Quantum.IComponent {
     public const Int32 SIZE = 32;
     public const Int32 ALIGNMENT = 8;
@@ -884,106 +918,110 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct FlipFriendsPlayer : Quantum.IComponent {
-    public const Int32 SIZE = 280;
+    public const Int32 SIZE = 288;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(104)]
-    public PlayerRef Player;
-    [FieldOffset(216)]
-    public FPVector2 HomePosition;
     [FieldOffset(108)]
+    public PlayerRef Player;
+    [FieldOffset(224)]
+    public FPVector2 HomePosition;
+    [FieldOffset(112)]
     public QBoolean HasCheckpoint;
     [FieldOffset(0)]
     public Int32 CheckpointId;
-    [FieldOffset(200)]
+    [FieldOffset(208)]
     public FPVector2 CheckpointPosition;
-    [FieldOffset(248)]
+    [FieldOffset(256)]
     public FPVector2 RespawnPosition;
-    [FieldOffset(140)]
+    [FieldOffset(144)]
     public QBoolean SectionPending;
-    [FieldOffset(80)]
+    [FieldOffset(84)]
     public Int32 SectionCount;
-    [FieldOffset(152)]
+    [FieldOffset(156)]
     public QBoolean WasResetHeld;
-    [FieldOffset(136)]
+    [FieldOffset(140)]
     public QBoolean RespawnPending;
-    [FieldOffset(72)]
-    public Int32 RespawnFrame;
-    [FieldOffset(68)]
-    public Int32 RespawnCount;
-    [FieldOffset(264)]
-    public FPVector2 Velocity;
-    [FieldOffset(192)]
-    public FP VelocityXSmoothing;
-    [FieldOffset(148)]
-    public QBoolean WasJumpHeld;
-    [FieldOffset(120)]
-    public QBoolean IsGrounded;
-    [FieldOffset(128)]
-    public QBoolean IsTouchingLeft;
-    [FieldOffset(132)]
-    public QBoolean IsTouchingRight;
-    [FieldOffset(124)]
-    public QBoolean IsTouchingCeiling;
-    [FieldOffset(112)]
-    public QBoolean IsClimbed;
     [FieldOffset(76)]
+    public Int32 RespawnFrame;
+    [FieldOffset(72)]
+    public Int32 RespawnCount;
+    [FieldOffset(272)]
+    public FPVector2 Velocity;
+    [FieldOffset(200)]
+    public FP VelocityXSmoothing;
+    [FieldOffset(152)]
+    public QBoolean WasJumpHeld;
+    [FieldOffset(124)]
+    public QBoolean IsGrounded;
+    [FieldOffset(132)]
+    public QBoolean IsTouchingLeft;
+    [FieldOffset(136)]
+    public QBoolean IsTouchingRight;
+    [FieldOffset(128)]
+    public QBoolean IsTouchingCeiling;
+    [FieldOffset(116)]
+    public QBoolean IsClimbed;
+    [FieldOffset(80)]
     public Int32 RopeContactCount;
     [FieldOffset(4)]
     public Int32 ClimbBlockTicks;
-    [FieldOffset(116)]
+    [FieldOffset(120)]
     public QBoolean IsFinished;
-    [FieldOffset(32)]
+    [FieldOffset(36)]
     public Int32 FinishedFrame;
-    [FieldOffset(232)]
+    [FieldOffset(240)]
     public FPVector2 PreviousPosition;
     [FieldOffset(176)]
     public EntityRef StompTarget;
-    [FieldOffset(40)]
+    [FieldOffset(44)]
     public Int32 JumpBlockTicks;
-    [FieldOffset(84)]
-    public Int32 ShrinkTicks;
     [FieldOffset(88)]
-    public Int32 StompCount;
+    public Int32 ShrinkTicks;
     [FieldOffset(92)]
+    public Int32 StompCount;
+    [FieldOffset(96)]
     public Int32 StompFrame;
-    [FieldOffset(184)]
+    [FieldOffset(192)]
     public FP StompPushX;
     [FieldOffset(160)]
     public EntityRef Carrier;
     [FieldOffset(168)]
     public EntityRef Held;
-    [FieldOffset(144)]
+    [FieldOffset(148)]
     public QBoolean WasInteractHeld;
-    [FieldOffset(28)]
+    [FieldOffset(32)]
     public Int32 Facing;
-    [FieldOffset(64)]
+    [FieldOffset(68)]
     public Int32 ReleaseFrame;
-    [FieldOffset(20)]
-    public Int32 EscapeFrame;
     [FieldOffset(24)]
+    public Int32 EscapeFrame;
+    [FieldOffset(28)]
     public Int32 EscapeRequestFrame;
-    [FieldOffset(100)]
+    [FieldOffset(104)]
     public Int32 UncontrollableTicks;
-    [FieldOffset(56)]
-    public Int32 PickupCount;
-    [FieldOffset(96)]
-    public Int32 ThrowCount;
     [FieldOffset(60)]
+    public Int32 PickupCount;
+    [FieldOffset(100)]
+    public Int32 ThrowCount;
+    [FieldOffset(64)]
     public Int32 PutDownCount;
-    [FieldOffset(16)]
+    [FieldOffset(20)]
     public Int32 EscapeCount;
-    [FieldOffset(36)]
+    [FieldOffset(40)]
     public Int32 InvincibleTicks;
-    [FieldOffset(8)]
-    public Int32 DamageCount;
     [FieldOffset(12)]
+    public Int32 DamageCount;
+    [FieldOffset(16)]
     public Int32 DamageFrame;
-    [FieldOffset(44)]
-    public Int32 LaunchCount;
     [FieldOffset(48)]
-    public Int32 LaunchFrame;
+    public Int32 LaunchCount;
     [FieldOffset(52)]
+    public Int32 LaunchFrame;
+    [FieldOffset(56)]
     public Int32 LaunchKind;
+    [FieldOffset(184)]
+    public FP ConveyorVelocityX;
+    [FieldOffset(8)]
+    public Int32 ConveyorContact;
     public override readonly Int32 GetHashCode() {
       unchecked { 
         var hash = 4139;
@@ -1036,6 +1074,8 @@ namespace Quantum {
         hash = hash * 31 + LaunchCount.GetHashCode();
         hash = hash * 31 + LaunchFrame.GetHashCode();
         hash = hash * 31 + LaunchKind.GetHashCode();
+        hash = hash * 31 + ConveyorVelocityX.GetHashCode();
+        hash = hash * 31 + ConveyorContact.GetHashCode();
         return hash;
       }
     }
@@ -1043,6 +1083,7 @@ namespace Quantum {
         var p = (FlipFriendsPlayer*)ptr;
         serializer.Stream.Serialize(&p->CheckpointId);
         serializer.Stream.Serialize(&p->ClimbBlockTicks);
+        serializer.Stream.Serialize(&p->ConveyorContact);
         serializer.Stream.Serialize(&p->DamageCount);
         serializer.Stream.Serialize(&p->DamageFrame);
         serializer.Stream.Serialize(&p->EscapeCount);
@@ -1083,6 +1124,7 @@ namespace Quantum {
         EntityRef.Serialize(&p->Carrier, serializer);
         EntityRef.Serialize(&p->Held, serializer);
         EntityRef.Serialize(&p->StompTarget, serializer);
+        FP.Serialize(&p->ConveyorVelocityX, serializer);
         FP.Serialize(&p->StompPushX, serializer);
         FP.Serialize(&p->VelocityXSmoothing, serializer);
         FPVector2.Serialize(&p->CheckpointPosition, serializer);
@@ -1144,6 +1186,8 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<CharacterController3D>();
       BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsBox>();
       BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsBox>();
+      BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsConveyor>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsConveyor>();
       BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsDevice>();
       BuildSignalsArrayOnComponentRemoved<Quantum.FlipFriendsDevice>();
       BuildSignalsArrayOnComponentAdded<Quantum.FlipFriendsLauncher>();
@@ -1251,6 +1295,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(FPVector2), FPVector2.SIZE);
       typeRegistry.Register(typeof(FPVector3), FPVector3.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsBox), Quantum.FlipFriendsBox.SIZE);
+      typeRegistry.Register(typeof(Quantum.FlipFriendsConveyor), Quantum.FlipFriendsConveyor.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsDevice), Quantum.FlipFriendsDevice.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsLauncher), Quantum.FlipFriendsLauncher.SIZE);
       typeRegistry.Register(typeof(Quantum.FlipFriendsMotion), Quantum.FlipFriendsMotion.SIZE);
@@ -1312,9 +1357,10 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
     static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 7)
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 8)
         .AddBuiltInComponents()
         .Add<Quantum.FlipFriendsBox>(Quantum.FlipFriendsBox.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.FlipFriendsConveyor>(Quantum.FlipFriendsConveyor.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsDevice>(Quantum.FlipFriendsDevice.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsLauncher>(Quantum.FlipFriendsLauncher.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.FlipFriendsMotion>(Quantum.FlipFriendsMotion.Serialize, null, null, ComponentFlags.None)

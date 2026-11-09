@@ -41,8 +41,8 @@ public static class QuantumLauncherChecks
             Require(converted.Launchers.Single(l => l.Kind == 0).Radius == 1 && converted.Launchers.Single(l => l.Kind == 1).Vertices.Length == 4, "원본 원형 바운스/Box 스프링");
             read.Data.launchers = read.Data.launchers.Reverse().ToArray();
             Require(QuantumOfficialStageConverter.Convert(read.Data, terrain, null).ContentHash == asset.ContentHash, "ID 순 독립 해시");
-            Require(Config().CustomMapAgreement.Contains(":제품12:") && QuantumGameContent.NetworkVersion == "ff-product-12", "제품12 합의");
-            lines.Add("프리팹 재로드·원형/Box·ID순 독립 해시·제품12 합의");
+            Require(Config().CustomMapAgreement.Contains(":제품13:") && QuantumGameContent.NetworkVersion == "ff-product-13", "제품13 합의");
+            lines.Add("프리팹 재로드·원형/Box·ID순 독립 해시·제품13 합의");
             var first = read.Data.launchers[0];
             var original = (first.kind, first.radius, first.center, first.origin);
             foreach (var field in new[] { "종류", "반지름", "중심", "기준" })

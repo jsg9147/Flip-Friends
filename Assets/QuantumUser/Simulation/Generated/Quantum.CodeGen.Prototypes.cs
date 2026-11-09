@@ -83,6 +83,27 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsConveyor))]
+  public unsafe class FlipFriendsConveyorPrototype : ComponentPrototype<Quantum.FlipFriendsConveyor> {
+    public Int32 ContentIndex;
+    public MapEntityId Motion;
+    public Int32 Cycle;
+    public Int32 Revision;
+    public QBoolean Clockwise;
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.FlipFriendsConveyor component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.FlipFriendsConveyor result, in PrototypeMaterializationContext context = default) {
+        result.ContentIndex = this.ContentIndex;
+        PrototypeValidator.FindMapEntity(this.Motion, in context, out result.Motion);
+        result.Cycle = this.Cycle;
+        result.Revision = this.Revision;
+        result.Clockwise = this.Clockwise;
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.FlipFriendsDevice))]
   public unsafe partial class FlipFriendsDevicePrototype : ComponentPrototype<Quantum.FlipFriendsDevice> {
     public Int32 ContentIndex;
@@ -238,6 +259,8 @@ namespace Quantum.Prototypes {
     public Int32 LaunchCount;
     public Int32 LaunchFrame;
     public Int32 LaunchKind;
+    public FP ConveyorVelocityX;
+    public Int32 ConveyorContact;
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.FlipFriendsPlayer component = default;
         Materialize((Frame)f, ref component, in context);
@@ -293,6 +316,8 @@ namespace Quantum.Prototypes {
         result.LaunchCount = this.LaunchCount;
         result.LaunchFrame = this.LaunchFrame;
         result.LaunchKind = this.LaunchKind;
+        result.ConveyorVelocityX = this.ConveyorVelocityX;
+        result.ConveyorContact = this.ConveyorContact;
     }
   }
   [System.SerializableAttribute()]

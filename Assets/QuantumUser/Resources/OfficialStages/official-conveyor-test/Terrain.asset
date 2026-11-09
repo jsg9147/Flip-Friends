@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e064d949a3f6b543bb50c6be840d476, type: 3}
+  m_Name: Terrain
+  m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumMapTerrain
+  contours:
+  - id: official-conveyor-test/Grid/Ground/1412aa55fc79ef7cc934683a881ef37e1dbc2210f24b250e8970f237eda26acb
+    vertices:
+    - {x: -1, y: -0.9999706}
+    - {x: -1.0000293, y: 0}
+    - {x: -12, y: -0.000029300001}
+    - {x: -11.99997, y: -2}
+    - {x: 28.999971, y: -2}
+    - {x: 28.999971, y: 0}
+    - {x: 12, y: -0.000029300001}
+    - {x: 11.99997, y: -1}
+    - {x: 9, y: -0.9999706}
+    - {x: 8.99997, y: 0}
+    - {x: 7, y: -0.000029300001}
+    - {x: 6.9999704, y: -1}
+    - {x: 4, y: -0.9999706}
+    - {x: 3.999971, y: 0}
+    - {x: 2, y: -0.000029300001}
+    - {x: 1.9999707, y: -1}
+  renderCenter: {x: 8.5, y: -1}
+  renderSize: {x: 41, y: 2}
+  authoringSignature: "official-conveyor-test/Grid/Ground;Merge;Outlines;Kinematic;Ground;\uBC18\uACBD0;752f9c2d7df64330f69d86ab198062900edd7eb5f5d52f7faa37e0531af1da17"

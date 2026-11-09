@@ -11,6 +11,8 @@ namespace FlipFriends.Network
         private readonly SpriteRenderer[] switches;
         private readonly bool[] doors;
         private readonly QuantumMapConversion content;
+        private static readonly Color ClockwiseColor = new(.35f, .43f, .88f, 1);
+        private static readonly Color CounterclockwiseColor = new(.86f, .29f, .3f, 1);
 
         public QuantumMotionViews(Transform parent, Sprite fallback, QuantumMapConversion source)
         {
@@ -20,7 +22,7 @@ namespace FlipFriends.Network
             for (int i = 0; i < switches.Length; i++)
             {
                 var button = source.StageSwitches[i];
-                if (button.IsDoor) doors[button.Target] = true;
+                if (button.IsDoor && button.Target >= 0) doors[button.Target] = true;
                 var go = new GameObject("스위치 표시 " + button.Id);
                 go.transform.SetParent(parent, false);
                 go.transform.position = new Vector3(button.Center.X.AsFloat, button.Center.Y.AsFloat);
@@ -54,6 +56,14 @@ namespace FlipFriends.Network
                 if (source.kind == 4) alpha = s.Collidable ? 1 : doors[s.ContentIndex] ? 0 : .15f;
                 if (source.disableColliderWhenFalling && s.Phase != 0) alpha *= 1 - Mathf.Clamp01(s.ElapsedTicks / 30f);
                 r.color = new Color(1, 1, 1, alpha);
+            }
+            // 원본 Conveyor 색: 시계(왼쪽) 파랑, 반시계(오른쪽) 빨강. 판정이 꺼진 발판의 투명도는 유지한다.
+            var belts = frame.Filter<FlipFriendsConveyor>();
+            while (belts.Next(out _, out var belt))
+            {
+                var r = views[content.Conveyors[belt.ContentIndex].Motion];
+                var color = belt.Clockwise ? ClockwiseColor : CounterclockwiseColor;
+                color.a = r.color.a; r.color = color;
             }
             var buttons = frame.Filter<FlipFriendsStageSwitch>();
             while (buttons.Next(out _, out var button))

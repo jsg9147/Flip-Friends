@@ -64,6 +64,8 @@ namespace Quantum
                     state.FinishedFrame = frame.Number;
                     state.Velocity = default;
                     state.VelocityXSmoothing = 0;
+                    state.ConveyorVelocityX = 0;
+                    state.ConveyorContact = 0;
                     state.IsClimbed = false;
                     state.StompTarget = default;
                     state.ShrinkTicks = state.JumpBlockTicks = state.ClimbBlockTicks = state.UncontrollableTicks = state.InvincibleTicks = 0;
@@ -126,6 +128,7 @@ namespace Quantum
             }
             // 기존 로프는 중심 고정이나 끝점 클램프 없이 양 축을 걷기 속도로 덮어쓴다.
             if (state.IsClimbed && state.UncontrollableTicks == 0) state.Velocity = new FPVector2(horizontal, verticalInput) * WalkSpeed;
+            FlipFriendsConveyorSystem.ApplyExternal(frame, ref state);
             var delta = state.Velocity * frame.DeltaTime;
             var position = transform.Position;
             var half = FlipFriendsInteractionSystem.HalfSize(state);
@@ -154,6 +157,7 @@ namespace Quantum
             state.IsTouchingLeft = LimitAxis(frame, position + offset, -Skin, true, half) != -Skin;
             state.IsTouchingRight = LimitAxis(frame, position + offset, Skin, true, half) != Skin;
             transform.Position = position;
+            state.ConveyorContact = FlipFriendsConveyorSystem.Contact(frame, position + offset, half, state.IsGrounded, state.IsTouchingCeiling);
         }
 
         public static FP SmoothHorizontal(FP current, FP target, ref FP smoothing, FP smoothTime, FP deltaTime)

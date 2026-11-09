@@ -108,7 +108,46 @@ namespace FlipFriends.Maps
                 result.MotionResets.Add(c);
                 lines.Add(FormattableString.Invariant($"발판리셋1={s.id};대상={s.target};위치={c.Center.X.RawValue},{c.Center.Y.RawValue};반크기={c.HalfSize.X.RawValue},{c.HalfSize.Y.RawValue};트리거={c.IsTrigger}"));
             }
+            var beltIds = AddConveyors(result, lines, data);
             AddSwitches(result, lines, data, ids, resetIds);
+            foreach (var belt in result.Conveyors.Where(c => c.TerrainAnchor < 0 && c.BeltAnchor == result.Conveyors.IndexOf(c) && c.GroupTicks == 0 && !string.IsNullOrEmpty(c.Group)))
+                if (!result.StageSwitches.Any(b => b.Target < 0 && b.ConveyorAnchor == result.Conveyors.IndexOf(belt)))
+                    throw new InvalidOperationException($"{data.stageId}/{belt.Id} 위치={result.Motions[belt.Motion].Origin}: 벨트만 있는 수동 그룹 '{belt.Group}'에 스위치가 없습니다.");
+        }
+
+        // 벨트는 같은 ID의 고체 발판(Kind0)을 판정으로 쓴다. 그룹은 전환 지형 이름을 공유하거나 벨트끼리만 묶는다.
+        private static HashSet<string> AddConveyors(QuantumMapConversion result, List<string> lines, QuantumOfficialStageData data)
+        {
+            var sources = data.conveyors ?? Array.Empty<QuantumConveyorSource>();
+            if (sources.Length > 64) throw new InvalidOperationException($"{data.stageId}: 벨트 최대64개 초과");
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var s in sources.OrderBy(s => s?.id, StringComparer.Ordinal))
+            {
+                int motion = s == null ? -1 : result.Motions.FindIndex(m => m.Id == s.id);
+                string at = $"{data.stageId}/{s?.id} 위치={(motion >= 0 ? result.Motions[motion].Origin.ToString() : "?")}";
+                void Check(bool valid, string why) { if (!valid) throw new InvalidOperationException(at + ": " + why); }
+                Check(s != null && !string.IsNullOrWhiteSpace(s.id) && ids.Add(s.id), "벨트 ID 누락/중복");
+                Check(motion >= 0 && result.Motions[motion].Kind == 0, "벨트 판정 발판(같은 ID의 고체 Platform) 참조 누락");
+                string group = s.group ?? "";
+                Check(group.Length <= 64 && group.Trim() == group, "그룹 이름은 앞뒤 공백 없이 64자 이하");
+                Check(float.IsFinite(s.interval) && (s.interval == 0 || s.interval >= .1f && s.interval <= 60), "간격은 0(수동) 또는 0.1~60초");
+                Check(group.Length > 0 || s.interval == 0, "그룹 없는 고정 벨트에는 간격을 둘 수 없음");
+                int ticks = s.interval == 0 ? 0 : checked((int)Math.Ceiling(s.interval * 60.0 - 0.00001));
+                int terrain = group.Length == 0 ? -1 : result.Motions.FindIndex(m => m.Kind == 4 && m.ToggleGroup == group);
+                if (terrain >= 0) Check(result.Motions[terrain].ToggleTicks == ticks, $"지형 그룹 '{group}' 간격과 벨트 간격이 다름");
+                int anchor = group.Length == 0 || terrain >= 0 ? -1 : result.Conveyors.FindIndex(c => c.TerrainAnchor < 0 && c.Group == group);
+                if (anchor >= 0) Check(result.Conveyors[anchor].GroupTicks == ticks, $"벨트 그룹 '{group}'의 간격이 서로 다름");
+                var c = new FlipFriendsConveyorConfig
+                {
+                    Id = s.id, Group = group, Motion = motion, TerrainAnchor = terrain, GroupTicks = ticks,
+                    BeltAnchor = group.Length == 0 || terrain >= 0 ? -1 : anchor >= 0 ? anchor : result.Conveyors.Count,
+                    InitialClockwise = s.initialClockwise,
+                };
+                result.Conveyors.Add(c);
+                lines.Add(FormattableString.Invariant($"벨트1={c.Id.Length}:{c.Id};그룹={group.Length}:{group};틱={ticks};시계={c.InitialClockwise}"));
+            }
+            if (result.Conveyors.Count > 0) lines.Add("벨트규칙1=속도1;가속1;지면감쇠5;공중감쇠1;틱가산50Hz;위아래접촉;오른쪽우선;플레이어전용");
+            return ids;
         }
 
         private static void AddSwitches(QuantumMapConversion result, List<string> lines, QuantumOfficialStageData data,
@@ -123,28 +162,35 @@ namespace FlipFriends.Maps
                 void Check(bool valid, string why) { if (!valid) throw new InvalidOperationException(at + ": " + why); }
                 Check(s != null && !string.IsNullOrWhiteSpace(s.id) && ids.Add(s.id) && !motionIds.Contains(s.id) && !resetIds.Contains(s.id), "스위치 ID 누락/중복");
                 int target = result.Motions.FindIndex(c => c.Kind == 4 && c.ToggleGroup == s.targetGroup);
-                Check(target >= 0, $"전환 그룹 '{s.targetGroup}' 참조 누락");
+                int belt = target >= 0 ? -1 : result.Conveyors.FindIndex(c => c.TerrainAnchor < 0 && !string.IsNullOrEmpty(c.Group) && c.Group == s.targetGroup);
+                Check(target >= 0 || belt >= 0, $"전환 그룹 '{s.targetGroup}' 참조 누락");
+                Check(belt < 0 || !s.isDoor, "문은 벨트만 있는 그룹을 대상으로 할 수 없음");
                 Check(Finite(s.center) && Finite(s.size) && s.size.x > 0 && s.size.y > 0, "스위치 위치/크기 오류");
                 var half = Q(s.size) / 2;
                 Check(half.X > 0 && half.Y > 0, "스위치 FP 크기0");
                 Check(s.isDoor ? (s.detectPlayers || s.detectBoxes) && s.cooldown == 0 :
                     s.detectPlayers && !s.detectBoxes && float.IsFinite(s.cooldown) && s.cooldown >= 0 && s.cooldown <= 60,
                     "문은 플레이어/상자 감지 필요, OnOff는 플레이어 전용과 쿨다운0~60초 필요");
-                var group = result.Motions[target];
-                Check(!s.isDoor || group.ToggleTicks == 0 && group.InitialActive &&
-                    result.Motions.Count(c => c.Kind == 4 && c.ToggleGroup == group.ToggleGroup) == 1, "문은 처음 닫힌 수동 단일 Box 필요");
-                Check(!result.StageSwitches.Any(c => c.Target == target && (c.IsDoor || s.isDoor)), "문 그룹은 전용 스위치 하나만 지원");
+                string groupName = target >= 0 ? result.Motions[target].ToggleGroup : result.Conveyors[belt].Group;
+                if (target >= 0)
+                {
+                    var group = result.Motions[target];
+                    Check(!s.isDoor || group.ToggleTicks == 0 && group.InitialActive &&
+                        result.Motions.Count(c => c.Kind == 4 && c.ToggleGroup == group.ToggleGroup) == 1, "문은 처음 닫힌 수동 단일 Box 필요");
+                    Check(!s.isDoor || !result.Conveyors.Any(c => c.TerrainAnchor == target), "문 그룹에는 벨트를 연결할 수 없음");
+                    Check(!result.StageSwitches.Any(c => c.Target == target && (c.IsDoor || s.isDoor)), "문 그룹은 전용 스위치 하나만 지원");
+                }
                 var c = new FlipFriendsStageSwitchConfig
                 {
-                    Id = s.id, Target = target, IsDoor = s.isDoor, DetectPlayers = s.detectPlayers,
+                    Id = s.id, Target = target, ConveyorAnchor = belt, IsDoor = s.isDoor, DetectPlayers = s.detectPlayers,
                     DetectBoxes = s.detectBoxes, CooldownTicks = Math.Max(s.isDoor ? 0 : 1, Ticks(s.cooldown)),
                     Center = Q(s.center), HalfSize = half,
                 };
                 result.StageSwitches.Add(c);
-                lines.Add(FormattableString.Invariant($"스위치1={c.Id.Length}:{c.Id};그룹={group.ToggleGroup.Length}:{group.ToggleGroup};문={c.IsDoor};감지={c.DetectPlayers},{c.DetectBoxes};시간={c.CooldownTicks};위치={c.Center.X.RawValue},{c.Center.Y.RawValue};반크기={half.X.RawValue},{half.Y.RawValue}"));
+                lines.Add(FormattableString.Invariant($"스위치1={c.Id.Length}:{c.Id};그룹={groupName.Length}:{groupName};문={c.IsDoor};감지={c.DetectPlayers},{c.DetectBoxes};시간={c.CooldownTicks};위치={c.Center.X.RawValue},{c.Center.Y.RawValue};반크기={half.X.RawValue},{half.Y.RawValue}"));
             }
             foreach (var motion in result.Motions.Where(c => c.Kind == 4 && c.ToggleTicks == 0))
-                if (!result.StageSwitches.Any(s => result.Motions[s.Target].ToggleGroup == motion.ToggleGroup))
+                if (!result.StageSwitches.Any(s => s.Target >= 0 && result.Motions[s.Target].ToggleGroup == motion.ToggleGroup))
                     throw new InvalidOperationException($"{data.stageId}/{motion.Id} 위치={motion.Origin}: 수동 그룹에 스위치가 없습니다.");
         }
     }

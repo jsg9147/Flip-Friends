@@ -25,7 +25,7 @@ public static class QuantumOfficialStageWriter
         typeof(QuantumStageBox), typeof(QuantumStageRope), typeof(QuantumStageReset), typeof(QuantumStageCheckpoint), typeof(QuantumStageBoxSpawner),
         typeof(QuantumStageTrap), typeof(QuantumStageLauncher), typeof(BoxCollider2D), typeof(PolygonCollider2D), typeof(CircleCollider2D),
         typeof(QuantumStageMotion), typeof(QuantumStageMotionReset),
-        typeof(QuantumStageTerrainToggle), typeof(QuantumStageSwitch),
+        typeof(QuantumStageTerrainToggle), typeof(QuantumStageSwitch), typeof(QuantumStageConveyor),
     };
 
     public sealed class ReadResult
@@ -119,7 +119,7 @@ public static class QuantumOfficialStageWriter
             bool isReset = collider is TilemapCollider2D && collider.GetComponent<QuantumStageReset>() != null;
             bool isTrap = collider.GetComponent<QuantumStageTrap>() != null;
             bool isLauncher = collider.GetComponent<QuantumStageLauncher>() != null;
-            bool isMotion = collider.GetComponent<QuantumStageMotion>() != null || collider.GetComponent<QuantumStageTerrainToggle>() != null;
+            bool isMotion = collider.GetComponent<QuantumStageMotion>() != null || collider.GetComponent<QuantumStageTerrainToggle>() != null || collider.GetComponent<QuantumStageConveyor>() != null;
             bool isMotionReset = collider.GetComponent<QuantumStageMotionReset>() != null;
             bool isSwitch = collider.GetComponent<QuantumStageSwitch>() != null;
             if (isSwitch && (isGround || isReset || isTrap || isLauncher || isMotion || isMotionReset))
@@ -151,7 +151,10 @@ public static class QuantumOfficialStageWriter
             traps = Authoring<QuantumStageTrap>(root, id).Select(trap => ReadTrap(trap, root, id, trap.KnockbackDirection)).ToArray(),
             launchers = Authoring<QuantumStageLauncher>(root, id).Select(launcher => ReadLauncher(launcher, root, id)).ToArray(),
             motions = Authoring<QuantumStageMotion>(root, id).Select(motion => ReadMotion(motion, root, id))
-                .Concat(Authoring<QuantumStageTerrainToggle>(root, id).Select(toggle => ReadToggle(toggle, root, id))).ToArray(),
+                .Concat(Authoring<QuantumStageTerrainToggle>(root, id).Select(toggle => ReadToggle(toggle, root, id)))
+                .Concat(Authoring<QuantumStageConveyor>(root, id).Where(belt => belt.GetComponent<QuantumStageMotion>() == null)
+                    .Select(belt => ReadFixedConveyor(belt, root, id))).ToArray(),
+            conveyors = Authoring<QuantumStageConveyor>(root, id).Select(belt => ReadConveyor(belt, root, id)).ToArray(),
             motionResets = Authoring<QuantumStageMotionReset>(root, id).Select(button => ReadMotionReset(button, root, id)).ToArray(),
             switches = Authoring<QuantumStageSwitch>(root, id).Select(button => ReadSwitch(button, root, id)).ToArray(),
             renderBounds = bounds,
@@ -205,6 +208,33 @@ public static class QuantumOfficialStageWriter
         return s;
     }
 
+    // 원본 벨트는 오프셋(1.5,0)인 트리거 Box였지만 플레이어 레이에는 고체였다. 작성 경로는 오프셋0 고체 Box로 판정을 명시한다.
+    private static QuantumConveyorSource ReadConveyor(QuantumStageConveyor belt, GameObject root, string stageId)
+    {
+        string id = stageId + "/" + PathOf(belt.transform, root);
+        string at = $"{id} 위치={belt.transform.position}";
+        var c = belt.GetComponent<BoxCollider2D>();
+        if (belt.GetComponent<QuantumStageTerrainToggle>() != null || belt.GetComponent<QuantumStageTrap>() != null)
+            throw new InvalidOperationException($"{at}: 벨트에는 전환 지형·트랩을 함께 둘 수 없습니다.");
+        if (c == null || belt.GetComponents<Collider2D>().Length != 1 || !c.enabled || c.isTrigger || c.offset != Vector2.zero || c.edgeRadius != 0 || c.usedByEffector || c.compositeOperation != Collider2D.CompositeOperation.None)
+            throw new InvalidOperationException($"{at}: 벨트는 오프셋0인 활성 단일 고체 Box·Effector/Composite 없음만 지원합니다.");
+        var motion = belt.GetComponent<QuantumStageMotion>();
+        if (motion != null && motion.Read(id, c.size).kind != 0) throw new InvalidOperationException($"{at}: 이동 벨트의 QuantumStageMotion은 Platform 종류여야 합니다.");
+        return belt.Read(id);
+    }
+
+    private static QuantumMotionSource ReadFixedConveyor(QuantumStageConveyor belt, GameObject root, string stageId)
+    {
+        string id = stageId + "/" + PathOf(belt.transform, root);
+        var c = belt.GetComponent<BoxCollider2D>();
+        var r = belt.GetComponent<SpriteRenderer>();
+        if (r == null || r.sprite == null || !r.enabled) throw new InvalidOperationException($"{id} 위치={belt.transform.position}: 활성 SpriteRenderer 필요");
+        // 고정 벨트는 원본 Stage20 속도0 이동 벨트와 같은 정지 발판으로 변환한다.
+        return new QuantumMotionSource { id = id, kind = 0, origin = belt.transform.position, size = c != null ? c.size : Vector2.zero,
+            waypoints = new[] { Vector2.zero, Vector2.zero }, cyclic = true,
+            renderCenter = r.bounds.center, renderSize = r.bounds.size, sprite = r.sprite };
+    }
+
     private static QuantumMotionSource ReadToggle(QuantumStageTerrainToggle toggle, GameObject root, string stageId)
     {
         string id = stageId + "/" + PathOf(toggle.transform, root); var c = toggle.GetComponent<BoxCollider2D>();
@@ -229,8 +259,11 @@ public static class QuantumOfficialStageWriter
         string id = stageId + "/" + PathOf(button.transform, root);
         string at = $"{id} 위치={button.transform.position}";
         var collider = button.GetComponent<BoxCollider2D>();
-        if (button.Target == null || !button.Target.transform.IsChildOf(root.transform))
-            throw new InvalidOperationException($"{at}: 이 스테이지의 전환 지형 참조가 필요합니다.");
+        var reference = button.Target != null ? (Component)button.Target : button.Conveyor;
+        if ((button.Target == null) == (button.Conveyor == null) || !reference.transform.IsChildOf(root.transform))
+            throw new InvalidOperationException($"{at}: 이 스테이지의 전환 지형 또는 그룹 벨트 중 하나만 참조해야 합니다.");
+        if (button.Conveyor != null && string.IsNullOrEmpty(button.Conveyor.Group))
+            throw new InvalidOperationException($"{at}: 참조한 벨트에 그룹이 없습니다.");
         if (collider == null || !collider.enabled || button.GetComponents<Collider2D>().Length != 1 ||
             collider.offset != Vector2.zero || collider.edgeRadius != 0 || collider.usedByEffector ||
             collider.compositeOperation != Collider2D.CompositeOperation.None)

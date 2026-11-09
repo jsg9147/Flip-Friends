@@ -148,6 +148,9 @@ namespace Quantum
                 carried->EscapeRequestFrame = frame.Number;
                 carried->Velocity = default;
                 carried->VelocityXSmoothing = 0;
+                // 원본 ApplyCarried·Teleport의 Launch처럼 외부 속도와 접촉을 버린다.
+                carried->ConveyorVelocityX = 0;
+                carried->ConveyorContact = 0;
                 carried->IsClimbed = false;
                 carried->StompTarget = default;
             }
@@ -206,6 +209,8 @@ namespace Quantum
                 carried->PreviousPosition = release;
                 carried->Velocity = isPutDown ? default : new FPVector2(state->Facing * 7, 12);
                 carried->VelocityXSmoothing = 0;
+                carried->ConveyorVelocityX = 0;
+                carried->ConveyorContact = 0;
                 carried->UncontrollableTicks = isPutDown ? 0 : 24;
                 carried->IsGrounded = false;
                 carried->IsClimbed = false;
