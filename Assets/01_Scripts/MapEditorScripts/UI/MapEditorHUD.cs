@@ -33,6 +33,7 @@ public class MapEditorHUD : MonoBehaviour
     private TMP_Text overwriteMessage;
     private ConfirmationAction pendingConfirmation;
     private string pendingDeleteMapName;
+    private bool isStartingTestPlay;
 
     private void Start()
     {
@@ -118,8 +119,9 @@ public class MapEditorHUD : MonoBehaviour
         MapEditorManager.instance.ReturnToMain();
     }
 
-    public void OnTestPlayButtonClicked()
+    public async void OnTestPlayButtonClicked()
     {
+        if (isStartingTestPlay) return;
         MapEditorManager manager = MapEditorManager.instance;
         if (manager == null)
         {
@@ -128,10 +130,22 @@ public class MapEditorHUD : MonoBehaviour
         }
 
         ShowCurrentValidation();
-        if (manager.TryStartTestPlay(out string error))
+        isStartingTestPlay = true;
+        try
+        {
             ShowStatus("테스트 플레이를 시작합니다...", Color.white);
-        else
-            ShowError(error);
+            string error = await manager.StartTestPlayAsync();
+            if (this != null && error != null) ShowError(error);
+        }
+        catch (System.Exception error)
+        {
+            Debug.LogException(error, this);
+            if (this != null) ShowError("테스트 플레이를 시작하지 못했습니다.");
+        }
+        finally
+        {
+            isStartingTestPlay = false;
+        }
     }
 
     public void OnRotateButtonClicked()

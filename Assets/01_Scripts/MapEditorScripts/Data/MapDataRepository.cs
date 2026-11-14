@@ -191,7 +191,12 @@ public static class MapDataRepository
         string mapName,
         out MapData mapData,
         out string json,
-        out MapRepositoryFailure failure)
+        out MapRepositoryFailure failure) =>
+        TryLoadWithJson(mapName, out mapData, out json, out failure, true);
+
+    public static bool TryLoadWithJson(
+        string mapName, out MapData mapData, out string json,
+        out MapRepositoryFailure failure, bool persistMigration)
     {
         mapData = null;
         json = null;
@@ -212,13 +217,13 @@ public static class MapDataRepository
                     $"맵 파일 '{mapName}'",
                     out mapData,
                     out failure,
-                    out bool wasMigrated))
+                    out bool wasMigrated, allowLegacy: persistMigration))
                 return false;
 
             if (wasMigrated)
             {
                 json = JsonUtility.ToJson(mapData, prettyPrint: true);
-                WriteSafely(path, json);
+                if (persistMigration) WriteSafely(path, json);
             }
 
             return true;
@@ -633,7 +638,7 @@ public static class MapDataRepository
         string context,
         out MapData mapData,
         out MapRepositoryFailure failure,
-        out bool wasMigrated)
+        out bool wasMigrated, bool allowLegacy = true)
     {
         mapData = null;
         wasMigrated = false;
@@ -651,6 +656,9 @@ public static class MapDataRepository
                     MapRepositoryFailureKind.InvalidJson,
                     $"{context}의 JSON을 맵 데이터로 변환할 수 없습니다.",
                     out failure);
+            if (!allowLegacy && source.version == MapData.PreviousVersion)
+                return FailLoad(MapRepositoryFailureKind.UnsupportedVersion,
+                    "맵 에디터에서 2.0 맵을 먼저 열어 2.1로 변환하세요.", out failure);
             if (!TryMigrate(source, out mapData, out string error, out wasMigrated))
                 return FailLoad(
                     source.version == MapData.CurrentVersion

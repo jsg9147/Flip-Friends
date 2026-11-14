@@ -5,7 +5,7 @@
 
 ## 현재 상태
 
-- Main Start의 오프라인 2인 지원 맵 경로는 Quantum으로 연결했다. 기존 Steam 로비·초대·전체 스테이지는 Mirror/FizzySteamworks로 남아 있다. 제품 `QuantumGameSession`은 별도 출시 Photon App ID와 `SteamPhotonTicket`을 요구하며, 미설정·개발 앱 선택은 실패 UI로 끝난다. 서버 구매 인증·차단은 미완료이고 이 문서는 출시 보호 기능의 구현 증거가 아니다.
+- Steam 로비 모드에 따라 Mirror/FizzySteamworks 또는 Quantum으로 분기한다. Quantum 생성·참가는 출시 App ID와 로그인 상태를 먼저 확인한다. 세션은 별도 출시 Photon App ID와 `SteamPhotonTicket`을 요구하며 미설정·개발 앱 선택을 거부한다. Photon이 반환한 계정과 확정한 Steam 로비 참가자를 대조한다. 서버 구매 인증·차단은 출시 공급자 설정 후 확인한다.
 - Steamworks.NET 2024.8.0의 `GetAuthTicketForWebApi`·응답 콜백·`CancelAuthTicket`을 사용한다. 공급자는 `version=2`, `identity=photon`, `verifyOwnership=true`가 필요하다. 사용자가 Steam 출시 앱 미발급을 확인해 실제 공급자 설정과 실계정 검증은 차단됐다.
 - 개발 Quantum 앱은 생성했으며 에디터 전용 클라우드 시험에 사용한다. 출시 앱·Publisher 키·Steam 공급자는 미설정이다. 게임 온라인 경로는 Steam 티켓 실패 시 익명 접속으로 대체하지 않는다.
 - 목표는 Steam 이용 권한이 없는 사용자의 공식 Photon 온라인 접속을 차단하는 것이다. 로컬 복제·변조 실행과 비공식 서버까지 완전히 차단한다고 보장하지 않는다.
@@ -44,6 +44,8 @@
 - 최초 전환에서는 진행 중 신규 입장·재입장 제한을 유지한다. 방장 이탈 정책은 실제 기존 동작을 확인해 이식하고 별도 정책 변경은 분리한다.
 
 ## 검증
+
+- Steam Quantum 로비 생성 전 출시 설정 누락을 차단했다. 에디터 모의 로비의 확정 참가자와 실제 개발 Photon 두 연결의 사용자 ID 대조 및 입장 잠금을 확인했다. 출시 Steam 티켓·실계정 소유권·공급자 익명 차단은 미실행이다.
 
 - 제품5/ff-product-5 새 개발 Photon 장치 맵 두 연결은 asia·같은 PC·주입 없음, 확정19개/완료2687·RTT114/115ms 일치와 종료 정리를 통과했다. [장치 기록](Notes/2026-11-08-quantum-devices.md)은 출시 Steam 공급자/소유권/익명 차단 검증이 아니다. 출시 앱 미발급·보안 Draft를 유지한다.
 

@@ -239,8 +239,15 @@ public static class QuantumProductChecks
             UnityEngine.Object.Destroy(badSource);
         }
         Click("온라인 시작");
+        var codeField = UnityEngine.Object.FindObjectsByType<TMPro.TMP_InputField>()
+            .Single(field => field.name == "방 코드 입력");
+        codeField.text = "1234";
+        Click("참가");
+        Require(codeField.text == "1234" && flow.Message.Contains("8자리"), "잘못된 코드 안내 및 입력 유지");
+        Click("방 만들기");
         await Wait(() => flow.State == QuantumGameState.Failed, "출시 설정 실패 표시");
         Require(flow.Session == null && flow.Message.Contains("출시 Photon"), "출시 익명 폴백 없음");
+        Click("취소");
         Click("로프 맵 선택");
         Click("오프라인 시작");
         var duplicate = flow.StartAsync(false);
@@ -512,6 +519,214 @@ public static class QuantumProductChecks
         var button = UnityEngine.Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude).Single(x => x.name == name);
         Require(button.interactable, "버튼 활성: " + name);
         button.onClick.Invoke();
+    }
+
+    [MenuItem("Tools/Flip Friends/Quantum/Check Saved Map Sharing")]
+    public static async void RunSavedMapSharing()
+    {
+        if (isRunning) return;
+        isRunning = true;
+        string directory = Path.Combine(Path.GetTempPath(), "ff-saved-map-" + Guid.NewGuid().ToString("N"));
+        var saveDirectory = typeof(MapDataRepository).GetProperty("SaveDirectoryOverride",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        var previousDirectory = saveDirectory.GetValue(null);
+        var flow = QuantumGameFlow.Instance;
+        var evidence = new List<string>();
+        try
+        {
+            Require(EditorApplication.isPlaying && flow != null && !flow.IsBusy && SceneManager.GetActiveScene().name == "Main", "Main 유휴 상태 필요");
+            Directory.CreateDirectory(directory);
+            saveDirectory.SetValue(null, directory);
+            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+            var data = MapDataRepository.FromJson(Resources.Load<TextAsset>("FlipFriendsCustomMap").text);
+            data.mapId = Guid.NewGuid().ToString("N");
+            data.mapName = "친구 맵 검사";
+            for (int index = 0; index < 240; index++)
+                data.objects.Add(new PlacedObjectData("terrain.ground.basic",
+                    new Vector3(index % 80 - 40, 20 + index / 80, 0), 0, Vector3.one));
+            Require(MapDataRepository.TryCreate(data, false, out _), "격리한 저장 맵 생성");
+            string path = Directory.GetFiles(directory, "*.json").Single();
+            byte[] original = File.ReadAllBytes(path);
+            Require(MapSessionSnapshot.TryCreate(0, MapDataRepository.ToJson(data), MapSessionSnapshot.MaximumContentBytes,
+                palette, out var source, out _), "전송 스냅샷 생성");
+
+            flow.SelectNextSavedMap();
+            Require(flow.SavedMapName == data.mapName, "저장 맵 선택");
+            if (flow.PlayerCount != flow.KeyboardSlots)
+                while (flow.PlayerCount != flow.KeyboardSlots) flow.CycleParticipants();
+            var localStart = flow.StartAsync(false);
+            Require(ReferenceEquals(localStart, flow.StartAsync(false)), "중복 시작 공유");
+            await localStart;
+            Require(flow.State == QuantumGameState.Playing && flow.Content != null, "저장 맵 오프라인 시작");
+            await flow.ReturnAsync("저장 맵 검사");
+            Require(flow.Session == null && flow.Content == null && flow.SavedMapName == null &&
+                QuantumGameSession.ActiveInputSubscriptions == 0, "저장 맵 오프라인 정리");
+
+            var unsupported = JsonUtility.FromJson<MapData>(MapDataRepository.ToJson(data));
+            unsupported.objects[0].prefabID = "unknown.prefab";
+            File.WriteAllText(path, MapDataRepository.ToJson(unsupported));
+            flow.SelectNextSavedMap();
+            Require(flow.SavedMapName == null && flow.State == QuantumGameState.Failed, "미지원 맵 거부");
+            File.WriteAllText(path, MapDataRepository.ToJson(data).Replace("\"2.1\"", "\"9.0\""));
+            flow.SelectNextSavedMap();
+            Require(flow.SavedMapName == null && flow.State == QuantumGameState.Failed, "다른 MapData 버전 거부");
+            string legacy = MapDataRepository.ToJson(data).Replace("\"2.1\"", "\"2.0\"");
+            File.WriteAllText(path, legacy);
+            flow.SelectNextSavedMap();
+            Require(flow.SavedMapName == null && File.ReadAllText(path) == legacy, "2.0 맵 선택 거부 및 파일 보존");
+            File.WriteAllBytes(path, original);
+            flow.SelectNextSavedMap();
+            Require(flow.SavedMapName == data.mapName, "실패 후 다시 선택");
+            evidence.Add("저장 맵 선택·오프라인 시작/중복·정리·미지원/버전 거부·재선택");
+
+            var bad = new QuantumGameSession();
+            try
+            {
+                source.Content[0] ^= 1;
+                await ExpectSavedMapFailure(bad.StartSavedMapDevelopmentAsync(new RuntimeConfig { FlipFriendsPlayerCount = 2 },
+                    "ff-saved-check-" + Guid.NewGuid().ToString("N"), palette, source), "해시");
+            }
+            finally
+            {
+                source.Content[0] ^= 1;
+                await bad.StopAsync();
+            }
+            evidence.Add("잘못된 스냅샷 해시 거부");
+
+            var release = new QuantumGameSession();
+            try
+            {
+                await ExpectSavedMapFailure(release.StartOnlineAsync(new RuntimeConfig { FlipFriendsPlayerCount = 2 },
+                    new Photon.Realtime.AppSettings { AppIdQuantum = QuantumGameSession.DevelopmentAppId.ToUpperInvariant() },
+                    0, "ff-release-check"), "출시 Photon");
+            }
+            finally { await release.StopAsync(); }
+            Require(release.Client == null, "출시 경로에서 개발 앱 접속 차단");
+            evidence.Add("출시 경로에서 개발 앱 접속 차단");
+
+            await CheckSavedMapPair(palette, source, false);
+            Require(File.ReadAllBytes(path).SequenceEqual(original), "보유 맵 바이트 보존");
+            evidence.Add("동일 PC 개발 Photon 2연결 보유 맵 합의·시작·정리");
+
+            File.Delete(path);
+            await CheckSavedMapPair(palette, source, true);
+            Require(Directory.GetFiles(directory).Length == 0, "자동 수신 파일 없음");
+            evidence.Add("동일 PC 개발 Photon 2연결 필요 청크 전송·합의·시작·정리 및 수신 파일 없음");
+
+            var waiting = new QuantumGameSession();
+            try
+            {
+                bool connected = false;
+                var start = waiting.StartSavedMapDevelopmentAsync(new RuntimeConfig { FlipFriendsPlayerCount = 2 },
+                    "ff-saved-check-" + Guid.NewGuid().ToString("N"), palette, source, () => connected = true);
+                await Wait(() => connected || start.IsCompleted, "취소 전 방 연결", 20000);
+                if (start.IsCompleted) await start;
+                var client = waiting.Client;
+                await waiting.StopAsync();
+                Require(start.IsCanceled && client != null && !client.IsConnected &&
+                    waiting.Client == null && waiting.Runner == null && !waiting.HasInputSubscription, "취소 정리");
+            }
+            finally { await waiting.StopAsync(); }
+            evidence.Add("맵 보유 확인 대기 중 취소·Photon 정리");
+
+            await CheckSavedMapPair(palette, source, true, true);
+            evidence.Add("여러 청크 중 첫 수신 뒤 취소·참가자 이탈로 시작 거부 및 정리");
+            await CheckSavedMapPair(palette, source, true, corrupt: true);
+            evidence.Add("수신 콘텐츠 해시 불일치로 시작 거부");
+            var timeout = new QuantumGameSession();
+            try
+            {
+                var start = timeout.StartSavedMapDevelopmentAsync(new RuntimeConfig { FlipFriendsPlayerCount = 2 },
+                    "ff-saved-check-" + Guid.NewGuid().ToString("N"), palette, source);
+                await ExpectSavedMapFailure(start, "초과");
+            }
+            finally { await timeout.StopAsync(); }
+            Require(timeout.Client == null && timeout.Runner == null && !timeout.HasInputSubscription, "제한 시간 초과 정리");
+            await CheckSavedMapPair(palette, source, true);
+            evidence.Add("시간 초과·정리 뒤 새 방에서 전송 재시도");
+            Status = "통과";
+        }
+        catch (Exception error) { Status = "실패: " + error; Debug.LogException(error); }
+        finally
+        {
+            if (flow != null && flow.IsBusy) await flow.ReturnAsync("저장 맵 검사 종료");
+            flow?.ClearSavedSelection();
+            saveDirectory.SetValue(null, previousDirectory);
+            if (Directory.Exists(directory)) Directory.Delete(directory, true);
+            File.WriteAllLines("Logs/QuantumSavedMapSharing.txt", evidence.Append(Status));
+            isRunning = false;
+        }
+    }
+
+    private static async Task CheckSavedMapPair(MapEditorPalette palette, MapSessionSnapshot source, bool needsTransfer, bool leaves = false, bool corrupt = false)
+    {
+        var host = new QuantumGameSession();
+        var guest = new QuantumGameSession();
+        Photon.Realtime.RealtimeClient hostClient = null, guestClient = null;
+        var dynamicMap = typeof(QuantumGameSession).GetField("dynamicMap",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        var maps = new UnityEngine.Object[2];
+        byte originalByte = source.Content[0];
+        try
+        {
+            string room = "ff-saved-check-" + Guid.NewGuid().ToString("N");
+            bool connected = false;
+            var hostStart = host.StartSavedMapDevelopmentAsync(new RuntimeConfig { FlipFriendsPlayerCount = 2 },
+                room, palette, source, () => connected = true);
+            await Wait(() => connected || hostStart.IsCompleted, "방장 개발 연결", 20000);
+            if (hostStart.IsCompleted) await hostStart;
+            hostClient = host.Client;
+            if (corrupt) source.Content[0] ^= 1;
+            int chunks = 0;
+            var guestStart = guest.StartSavedMapDevelopmentAsync(new RuntimeConfig { FlipFriendsPlayerCount = 2 },
+                room, palette, null, () =>
+                {
+                    guestClient = guest.Client;
+                    guestClient.EventReceived += message => { if (message.Code == 75) chunks++; };
+                });
+            if (leaves)
+            {
+                await Wait(() => chunks > 0 || guestStart.IsCompleted, "이탈 전 첫 청크 수신", 20000);
+                if (guestStart.IsCompleted) await guestStart;
+                await guest.StopAsync();
+                Require(guestStart.IsCanceled, "전송 중 수신 취소");
+                await ExpectSavedMapFailure(hostStart, "나갔습니다");
+                return;
+            }
+
+            if (corrupt)
+            {
+                await ExpectSavedMapFailure(guestStart, "해시");
+                await guest.StopAsync();
+                await ExpectSavedMapFailure(hostStart, "나갔습니다");
+                return;
+            }
+
+            await Task.WhenAll(hostStart, guestStart);
+            maps[0] = (UnityEngine.Object)dynamicMap.GetValue(host);
+            maps[1] = (UnityEngine.Object)dynamicMap.GetValue(guest);
+            Require(maps.All(map => map != null), "동적 맵 생성");
+            Require((needsTransfer ? chunks > 1 : chunks == 0) && host.Runner != null && guest.Runner != null &&
+                !hostClient.CurrentRoom.IsOpen && !guestClient.CurrentRoom.IsOpen, "필요한 경우만 전송하고 방을 닫은 뒤 시작");
+            await Wait(() => host.Runner.Game.Frames.Verified?.Number > 120 && guest.Runner.Game.Frames.Verified?.Number > 120,
+                "두 러너의 확정 프레임", 15000);
+        }
+        finally
+        {
+            source.Content[0] = originalByte;
+            await Task.WhenAll(host.StopAsync(), guest.StopAsync());
+            await Wait(() => maps.All(map => map == null), "동적 맵 파괴");
+            Require(hostClient?.IsConnected != true && guestClient?.IsConnected != true &&
+                host.Runner == null && guest.Runner == null && host.Client == null && guest.Client == null &&
+                QuantumGameSession.ActiveInputSubscriptions == 0 && QuantumPlayerInput.ActiveDeviceSubscriptions == 0, "두 러너·Photon·입력 정리");
+        }
+    }
+
+    private static async Task ExpectSavedMapFailure(Task start, string reason)
+    {
+        try { await start; }
+        catch (InvalidOperationException error) when (error.Message.Contains(reason)) { return; }
+        throw new InvalidOperationException("예상한 저장 맵 실패 사유가 없습니다: " + reason);
     }
 
     private static async Task Wait(Func<bool> ready, string label, int timeout = 10000)

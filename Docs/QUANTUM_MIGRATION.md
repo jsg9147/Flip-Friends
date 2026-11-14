@@ -25,7 +25,8 @@
 - MapData2.1 유지. 정적/로프2:2·상호작용3:3·복귀4:4·장치5:5·Tilemap6:6의 원본/베이크/해시를 보존한다. 공식 스테이지 해시는 동작1/전환1/리셋1/스위치1 작성 값을 포함한다. 벨트는 벨트1/벨트규칙1, 대포는 대포1 작성 값을 더한다. 규칙 서명은 `제품15`·온라인 `ff-product-15`이다.
 - 제품 전용 FlipFriendsProductSimulationConfig의 자동 씬 로딩 Disabled를 유지하며 QuantumGameFlow가 씬 수명을 소유한다.
 - 실제 Unity6000.6.8f1·Quantum3.0.14 Stable2241·Steamworks.NET2024.8.0이다. 버전은 변경하지 않았다. [공식 지원 표](https://doc.photonengine.com/quantum/v3/getting-started/initial-setup)의6000.6 미명시와 프로젝트 실행 성공은 별개다.
-- 기존 Steam 게임 버튼·Steam 로비/초대·MapEditor 테스트·친구 맵 전송·21개 스테이지는 Mirror다. 출시 온라인은 별도 출시 Photon 앱/실제 Steam 티켓이 필수이며 미설정 실패 UI·익명 폴백 없음이다. 개발 익명 연결은 UNITY_EDITOR에만 있다. 보안 문서는 Draft다.
+- Main의 Steam Quantum 로비는 기존 Steam 생성·참가·초대를 재사용한다. Steam은 방장·멤버·선택 맵·준비 세대·시작 시도를 소유한다. 방장 시작 시 Steam 신규 입장을 닫고 참가자와 맵을 확정하며, 시도별 숨김 Photon 방에서 전원 콘텐츠 합의 후 입장을 닫고 QuantumPlay를 연다. 완료·메뉴 종료·시작 실패·이탈 시 정리 후 같은 Steam 로비 준비 화면으로 돌아온다. 로비가 사라지면 Main 준비 화면에 사유를 표시한다.
+- 기존 Steam 게임 버튼의 Mirror GameRoom·친구 맵 전송·21개 스테이지를 유지한다. MapEditor HUD 테스트는 Quantum 오프라인이다. 별도 저장 맵 친구 방도 출시 Photon 인증과 세션 한정 전송을 계속 사용한다. 개발 익명 연결은 UNITY_EDITOR 검사에만 있다. [커스텀 맵 검증](CUSTOM_MAP_NETWORK.md#검증).
 
 ## 핵심 흐름
 
@@ -35,6 +36,9 @@
 - `QuantumCloudCheck`·각 `*Checks.RunCloud`는 특정 개발 앱만 쓰는 에디터 전용 익명 2연결 시험이다. 출시 구매 인증의 증거가 아니다.
 
 ## 검증
+
+- 2026-11-10 Unity 재컴파일과 지정 SDK 런타임 빌드 오류 0건. 새 Play의 첫 Main `QuantumProductChecks.RunOffline` 통과 후 `QuantumLobbyChecks.Run`을 통과했다. Steam 모의는 준비 미완료·해제 시 시작 거부, 입장 잠금·중복 시작·취소, 제한 시간, 참가자·방장 이탈과 로비 소멸 후 Main 안내를 확인했다.
+- 같은 PC의 실제 개발 Photon 두 연결은 공식 맵 불일치 후 복구, 공식 맵과 미보유 저장 맵의 양쪽 확정 프레임, 메뉴 종료·같은 로비 복귀·저장 맵 재시작을 확인했다. Photon 방 닫기와 러너·연결·입력 구독·맵 정리를 검사했다. 전원 도착 자동 복귀는 오프라인에서 검사했다. Steam 실계정 초대·소유권 인증, 다른 PC·실제 다인 조작·배포 빌드는 미실행이다.
 
 - 제품15 지정 SDK 런타임·에디터 빌드와 Unity 컴파일 오류 0. 새 Play 첫 Main 검사 `RunOffline`, 기존 2인 콘텐츠 9종 재생·Main 왕복, 공식 해시 8종 재검증을 통과했다. 3·4인 오프라인은 각각 확정 721프레임·체크섬 25개와 운반·밟기·피격·완료 틱이 일치했다. 가상 입력 장치·4인 Main·카메라·효과음 중복 방지, 동일 PC 개발 Photon 2·3·4연결을 확인했다. [실행 범위와 미실행 항목](Notes/2026-11-09-quantum-multiplayer.md).
 
@@ -58,9 +62,9 @@
 ## 남은 작업
 
 - Steam 앱 발급 후 별도 출시 Photon 앱에서 Publisher Web API 키를 등록하고 공급자 `version=2`, `identity=photon`, `verifyOwnership=true`, 익명 거부를 설정·검증한다. [보안 기준](QUANTUM_SECURITY.md)을 따른다.
-- 45도 초과 경사/미지원 동적 판정, 친구 맵 전송은 별도 이식 범위다. 이동 대포는 원본에 없어 지원하지 않는다.
+- 45도 초과 경사와 미지원 동적 판정은 별도 이식 범위다. 이동 대포는 원본에 없어 지원하지 않는다.
 - 공식 맵은 Unity 프리팹(Tilemap)+Quantum 작성 전용 컴포넌트로 만들고 변환한다. 21개 스테이지는 사용자가 새로 구성해 등록한다. MapEditor는 유저·친구 맵용이며 MapData 규칙을 유지한다. 원본 프리팹은 보존한다.
 
 ## 다음 작업
 
-[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 공식 스테이지를 등록하고 MapEditor 검증·베이크와 Quantum 테스트 플레이를 연결한다.
+[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 출시 Steam 앱과 Photon 공급자를 설정하고 실계정 로비 왕복을 확인한다.

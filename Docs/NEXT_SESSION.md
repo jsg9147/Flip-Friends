@@ -11,10 +11,20 @@
 ## 현재 상태
 
 - 제품15/ff-product-15. Main 사용례6종과 공식 시험8종(`official-test`, `official-slope-test`, `official-hazard-test`, `official-launcher-test`, `official-motion-test`, `official-switch-test`, `official-conveyor-test`, `official-cannon-test`)이 있다. 공식 작성기의 FP 변환과 스위치/문·수동 전환·컨베이어·대포의 제품 경로는 [현재 범위](QUANTUM_MIGRATION.md#현재-상태)를 따른다.
-- 기존21개 스테이지·일반 장치·MapEditor 테스트·친구 맵 전송·Steam 로비/초대는 Mirror다. Quantum 제품은 맵별 최소 인원과 최대 4인, 시작점 부족 시 옆 칸 생성, 입력 장치 배정과 프레임 기반 연출을 지원한다.
+- 기존 21개 스테이지와 GameRoom은 Mirror 경로다. Steam 로비는 생성 시 선택한 모드에 따라 Mirror GameRoom 또는 Main의 Quantum 로비 준비 화면으로 연결한다. Quantum 제품은 맵별 최소 인원과 최대 4인, 시작점 부족 시 옆 칸 생성, 입력 장치 배정과 프레임 기반 연출을 지원한다.
+- Quantum 준비 화면은 저장 맵 선택과 출시 Steam 인증을 거치는 Photon 친구 방의 Steam 오버레이 초대·코드 참가를 지원한다. [콘텐츠 검증과 전송](CUSTOM_MAP_NETWORK.md#현재-상태).
+- MapEditor HUD는 미저장 편집본을 QuantumPlay 오프라인 1인 세션으로 실행한다. 지원 범위와 실제 실행 결과는 [맵 에디터 문서](MAP_EDITOR.md#검증)를 따른다.
 - 기존21개 스테이지는 사용자가 새로 구성해 프리팹 기반 공식 맵으로 등록할 예정이다. 원본 프리팹은 보존한다.
 - 최신 검증과 미실행 환경은 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. 문서 정리로 새 실행 통과를 주장하지 않는다.
 - 실제 프로젝트 버전은 ProjectSettings/ProjectVersion.txt의6000.6.8f1, SDK는 Quantum3.0.14 Stable2241이다. 임의 업그레이드하지 않는다.
+
+## 검증
+
+- Steam Quantum 로비 변경 후 Unity 재컴파일 오류 0건. 새 Play에서 첫 Main 검사 `QuantumProductChecks.RunOffline`을 통과한 뒤 `QuantumLobbyChecks.Run`을 실행했다. Steam 모의에서 준비·입장 잠금·취소·이탈·제한 시간·소멸을, 동일 PC의 실제 개발 Photon 두 연결에서 공식 및 저장 맵 시작·복귀·재시작과 정리를 확인했다. [실행 범위](QUANTUM_MIGRATION.md#검증).
+
+- 새 Play 첫 Main `RunOffline` 이후 저장 맵 선택·미지원/버전 거부, 개발 Photon 2연결 보유 확인·필요 전송·합의·시작, 취소·이탈·해시 불일치·제한 시간·재시도 및 정리를 확인했다. Steam 출시 인증·다른 PC·실제 다인 조작은 미실행이다. [실행 범위](CUSTOM_MAP_NETWORK.md#검증).
+
+- 2026-11-10 Unity 재컴파일과 새 Play 세션 첫 Main `QuantumProductChecks.RunOffline` 통과. HUD 오프라인 1인 지형 표시·착지·도착/메뉴 복귀, 편집 JSON·파일명·저장 파일 바이트 보존, 미지원/시작 실패/중복 클릭 후 정리 및 재시도를 자동 확인했다. 수동 조작·별도 빌드·친구 전송·Steam은 미실행이다.
 
 ## 확정 방향 (2026-11-08 사용자 결정)
 
@@ -25,7 +35,7 @@
 
 ## 다음 작업
 
-사용자가 새로 구성한 공식 스테이지 등록을 이어가고, MapEditor 검증·베이크와 Quantum 테스트 플레이를 연결한다(전체 교체 순서 6).
+출시 Steam 앱과 Photon 소유권 공급자를 설정한 뒤 실계정 초대·참가·콘텐츠 합의와 Quantum 왕복을 확인한다. 공식 스테이지 등록은 별도로 이어간다.
 - `QuantumProductChecks.RunOffline`은 새 플레이 세션에서 다른 Main 검사보다 먼저 돌린다.
 
 ## 전체 교체 순서

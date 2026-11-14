@@ -9,8 +9,10 @@ using UnityEngine;
 /// <summary>
 /// Steam 로비 생성/참가/목록 조회만 담당한다.
 /// </summary>
-public sealed class SteamLobbyMatchmaking
+public sealed class SteamLobbyMatchmaking : IDisposable
 {
+    internal const string QuantumModeKey = "ff.mode";
+    internal const string QuantumMode = "quantum-v1";
     private const string HostAddressKey = "FlipFriends";
     private const string PrivateLobbyKey = "FlipFriendsLobbyKey";
     private const string RoomTypeKey = "FlipFriendsRoomType";
@@ -23,9 +25,15 @@ public sealed class SteamLobbyMatchmaking
     public List<SteamLobbyInfo> LobbyInfos { get; } = new List<SteamLobbyInfo>();
 
     public event Action LobbyCreateFailed;
+    public event Action LobbyJoinFailed;
     public event Action<CSteamID, string> LobbyEntered;
 
     private RoomType pendingRoomType;
+    private bool isCreating;
+    private bool isJoining;
+    private bool isCreatingQuantum;
+    public bool IsPending => isCreating || isJoining || isFindingQuantumLobby;
+    private bool isFindingQuantumLobby;
     private Action<LobbyMatchList_t> pendingLobbyMatchHandler;
 
     private Callback<LobbyCreated_t> lobbyCreated;
@@ -41,14 +49,19 @@ public sealed class SteamLobbyMatchmaking
         lobbyMatchList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
     }
 
-    public void CreateLobby(RoomType roomType, int maxPlayer)
+    public void CreateLobby(RoomType roomType, int maxPlayer, bool isQuantum = false)
     {
+        if (IsPending || CurrentLobbyId != CSteamID.Nil) return;
+        isCreating = true;
+        isCreatingQuantum = isQuantum;
         pendingRoomType = roomType;
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxPlayer);
     }
 
     public void JoinLobby(CSteamID joinId)
     {
+        if (IsPending || CurrentLobbyId != CSteamID.Nil) return;
+        isJoining = true;
         SteamMatchmaking.JoinLobby(joinId);
     }
 
@@ -62,7 +75,34 @@ public sealed class SteamLobbyMatchmaking
             }
 
             Debug.LogWarning("매칭되는 로비를 찾을 수 없습니다.");
+            LobbyJoinFailed?.Invoke();
         });
+    }
+
+    public async Task JoinQuantumLobbyByCodeAsync(string code)
+    {
+        if (IsPending || CurrentLobbyId != CSteamID.Nil) return;
+        isFindingQuantumLobby = true;
+        var match = new TaskCompletionSource<CSteamID>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var result = CallResult<LobbyMatchList_t>.Create((value, failed) =>
+            match.TrySetResult(!failed && value.m_nLobbiesMatching > 0 ? SteamMatchmaking.GetLobbyByIndex(0) : CSteamID.Nil));
+        CSteamID target = CSteamID.Nil;
+        try
+        {
+            SteamMatchmaking.AddRequestLobbyListStringFilter(QuantumModeKey, QuantumMode, ELobbyComparison.k_ELobbyComparisonEqual);
+            SteamMatchmaking.AddRequestLobbyListStringFilter(PrivateLobbyKey, code, ELobbyComparison.k_ELobbyComparisonEqual);
+            SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterWorldwide);
+            result.Set(SteamMatchmaking.RequestLobbyList());
+            if (await Task.WhenAny(match.Task, Task.Delay(TimeSpan.FromSeconds(LobbyListTimeoutSeconds))) == match.Task)
+                target = await match.Task;
+        }
+        finally
+        {
+            isFindingQuantumLobby = false;
+        }
+
+        if (target == CSteamID.Nil) LobbyJoinFailed?.Invoke();
+        else JoinLobby(target);
     }
 
     public void LeaveLobby()
@@ -76,6 +116,7 @@ public sealed class SteamLobbyMatchmaking
         SteamMatchmaking.LeaveLobby(CurrentLobbyId);
         Debug.Log("로비를 떠납니다: " + CurrentLobbyId);
         CurrentLobbyId = CSteamID.Nil;
+        LobbyKey = null;
     }
 
     // 로비 소유자만 바꿀 수 있다. 입장 불가 로비는 목록 검색과 초대 입장에서 모두 빠진다.
@@ -112,6 +153,8 @@ public sealed class SteamLobbyMatchmaking
 
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
+        if (!isCreating) return;
+        isCreating = false;
         if (callback.m_eResult != EResult.k_EResultOK)
         {
             Debug.LogError($"Steam 로비 생성 실패: {callback.m_eResult}");
@@ -129,8 +172,16 @@ public sealed class SteamLobbyMatchmaking
 
         string playerSteamName = SteamFriends.GetFriendPersonaName(SteamUser.GetSteamID());
 
-        // 클라이언트가 LobbyEntered에서 연결하려면 항상 호스트 주소가 필요
-        SteamMatchmaking.SetLobbyData(CurrentLobbyId, HostAddressKey, SteamUser.GetSteamID().ToString());
+        if (isCreatingQuantum)
+        {
+            if (!SteamMatchmaking.SetLobbyData(CurrentLobbyId, QuantumModeKey, QuantumMode))
+            {
+                LeaveLobby();
+                LobbyCreateFailed?.Invoke();
+                return;
+            }
+        }
+        else SteamMatchmaking.SetLobbyData(CurrentLobbyId, HostAddressKey, SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(CurrentLobbyId, RoomTypeKey, pendingRoomType.ToString());
         SteamMatchmaking.SetLobbyData(CurrentLobbyId, PrivateLobbyKey, LobbyKey);
         SteamMatchmaking.SetLobbyData(CurrentLobbyId, LobbyNameKey, playerSteamName);
@@ -138,12 +189,21 @@ public sealed class SteamLobbyMatchmaking
 
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
     {
-        SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
+        JoinLobby(callback.m_steamIDLobby);
     }
 
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
+        var enteredId = new CSteamID(callback.m_ulSteamIDLobby);
+        if (!isJoining && enteredId != CurrentLobbyId) return;
+        isJoining = false;
+        if (callback.m_EChatRoomEnterResponse != (uint)EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
+        {
+            LobbyJoinFailed?.Invoke();
+            return;
+        }
         CurrentLobbyId = new CSteamID(callback.m_ulSteamIDLobby);
+        LobbyKey = SteamMatchmaking.GetLobbyData(CurrentLobbyId, PrivateLobbyKey);
         string hostAddress = SteamMatchmaking.GetLobbyData(CurrentLobbyId, HostAddressKey);
         LobbyEntered?.Invoke(CurrentLobbyId, hostAddress);
     }
@@ -178,8 +238,7 @@ public sealed class SteamLobbyMatchmaking
                 continue;
             }
 
-            SteamMatchmaking.JoinLobby(lobbyId);
-            LobbyKey = joinCode;
+            JoinLobby(lobbyId);
             return true;
         }
 
@@ -241,5 +300,14 @@ public sealed class SteamLobbyMatchmaking
         }
 
         return result.ToString();
+    }
+
+    public void Dispose()
+    {
+        lobbyCreated?.Dispose();
+        gameLobbyJoinRequested?.Dispose();
+        lobbyEntered?.Dispose();
+        lobbyMatchList?.Dispose();
+        pendingLobbyMatchHandler = null;
     }
 }

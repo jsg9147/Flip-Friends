@@ -79,10 +79,12 @@ public sealed class SavedMapCatalog
     private const float SafePacketRatio = 0.8f;
 
     private readonly MapDataValidator validator;
+    private readonly bool isQuantum;
 
-    public SavedMapCatalog(MapEditorPalette palette)
+    public SavedMapCatalog(MapEditorPalette palette, bool isQuantum = false)
     {
         validator = new MapDataValidator(palette);
+        this.isQuantum = isQuantum;
     }
 
     public IReadOnlyList<SavedMapListEntry> GetEntries()
@@ -116,12 +118,13 @@ public sealed class SavedMapCatalog
                 fileName,
                 out MapData mapData,
                 out string json,
-                out MapRepositoryFailure failure))
+                out MapRepositoryFailure failure, persistMigration: !isQuantum))
             return CreateUnavailableEntry(fileName, failure);
 
         MapValidationReport report = validator.Validate(mapData);
+        if (isQuantum) json = MapDataRepository.ToJson(mapData);
         int byteCount = Encoding.UTF8.GetByteCount(json);
-        if (byteCount >= GetSafeTransferLimit())
+        if (isQuantum ? byteCount > GetSafeTransferLimit() : byteCount >= GetSafeTransferLimit())
             return CreateTransferBlockedEntry(fileName, mapData, json, byteCount, report);
         if (report.HasErrors)
             return CreateValidationBlockedEntry(fileName, mapData, json, byteCount, report);
@@ -238,6 +241,7 @@ public sealed class SavedMapCatalog
 
     private int GetSafeTransferLimit()
     {
+        if (isQuantum) return MapSessionSnapshot.MaximumContentBytes;
         int packetLimit = Transport.active != null
             ? Transport.active.GetMaxPacketSize(Channels.Reliable)
             : FallbackPacketLimit;

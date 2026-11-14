@@ -23,22 +23,37 @@ namespace FlipFriends.Network
             if (map.MinimumPlayers < 1 || map.MinimumPlayers > MaxPlayers ||
                 config.FlipFriendsPlayerCount < map.MinimumPlayers || config.FlipFriendsPlayerCount > MaxPlayers)
                 throw new InvalidOperationException($"이 맵은 {map.MinimumPlayers}~{MaxPlayers}명이 필요합니다 (현재 {config.FlipFriendsPlayerCount}명).");
-            var simulation = UnityEngine.Resources.Load<SimulationConfig>("FlipFriendsProductSimulationConfig");
-            if (simulation == null || simulation.AutoLoadSceneFromMap != SimulationConfig.AutoLoadSceneFromMapMode.Disabled)
-                throw new InvalidOperationException("제품 Quantum 씬 수명 설정이 없거나 자동 씬 로딩이 활성화되어 있습니다.");
-            config.SimulationConfig = simulation;
+            ApplySimulationConfig(config);
             var conversion = map.ValidateAndApply(config);
             if (conversion.Goals.Count == 0) throw new InvalidOperationException("도착점이 없습니다.");
             map.ApplyRespawn(config, conversion);
-            config.EnableGoals = true;
-            config.GoalCenters = conversion.Goals.Select(box => box.Center).ToArray();
-            config.GoalSizes = conversion.Goals.Select(box => box.Size).ToArray();
+            ApplyGoals(config, conversion);
+            AppendProductAgreement(config, conversion, map.MinimumPlayers);
+            return conversion;
+        }
+
+        internal static void AppendProductAgreement(RuntimeConfig config, QuantumMapConversion conversion, int minimumPlayers)
+        {
             var goals = string.Join(";", conversion.Goals.Select(box => string.Join(",", new[]
             {
                 box.Center.X.RawValue, box.Center.Y.RawValue, box.Size.X.RawValue, box.Size.Y.RawValue
             }.Select(value => value.ToString(CultureInfo.InvariantCulture)))));
-            config.CustomMapAgreement += ":제품15:" + QuantumMapConverter.Hash(FormattableString.Invariant($"지형6;FP윤곽;미세단차8raw;플레이어경사30접선FP;급경사법선점프미끄럼;상자경사45;공식1;Reset조각합집합;장치5;CP단조증가;구간운반원자대기;소환진입성공쿨다운;안전점유;복귀4;리셋상승엣지;들림무시;FP경계={config.FallMinX.RawValue},{config.FallMaxX.RawValue},{config.FallMinY.RawValue};여백10;위쪽제외;점유대기;복귀틱입력차단;") + MovementRules + ";상호작용3;밟기13.2x1.2;밀림0.5;차단18/9;축소30;운반0.95;탈출90/15;해제9;던지기7/12/24;상자6/6/9.8/1.5;놓기앞/위/몸/실패유지;PlayerRef순;최대4인;시작점옆칸;위입력도착;" + HazardRules + ";" + LauncherRules + ";" + MotionRules + ";" + ConveyorRules + ";" + CannonRules + FormattableString.Invariant($";최소={map.MinimumPlayers};참가={config.FlipFriendsPlayerCount};") + goals);
-            return conversion;
+            config.CustomMapAgreement += ":제품15:" + QuantumMapConverter.Hash(FormattableString.Invariant($"지형6;FP윤곽;미세단차8raw;플레이어경사30접선FP;급경사법선점프미끄럼;상자경사45;공식1;Reset조각합집합;장치5;CP단조증가;구간운반원자대기;소환진입성공쿨다운;안전점유;복귀4;리셋상승엣지;들림무시;FP경계={config.FallMinX.RawValue},{config.FallMaxX.RawValue},{config.FallMinY.RawValue};여백10;위쪽제외;점유대기;복귀틱입력차단;") + MovementRules + ";상호작용3;밟기13.2x1.2;밀림0.5;차단18/9;축소30;운반0.95;탈출90/15;해제9;던지기7/12/24;상자6/6/9.8/1.5;놓기앞/위/몸/실패유지;PlayerRef순;최대4인;시작점옆칸;위입력도착;" + HazardRules + ";" + LauncherRules + ";" + MotionRules + ";" + ConveyorRules + ";" + CannonRules + FormattableString.Invariant($";최소={minimumPlayers};참가={config.FlipFriendsPlayerCount};") + goals);
+        }
+
+        internal static void ApplySimulationConfig(RuntimeConfig config)
+        {
+            var simulation = UnityEngine.Resources.Load<SimulationConfig>("FlipFriendsProductSimulationConfig");
+            if (simulation == null || simulation.AutoLoadSceneFromMap != SimulationConfig.AutoLoadSceneFromMapMode.Disabled)
+                throw new InvalidOperationException("제품 Quantum 씬 수명 설정이 없거나 자동 씬 로딩이 활성화되어 있습니다.");
+            config.SimulationConfig = simulation;
+        }
+
+        internal static void ApplyGoals(RuntimeConfig config, QuantumMapConversion conversion)
+        {
+            config.EnableGoals = true;
+            config.GoalCenters = conversion.Goals.Select(box => box.Center).ToArray();
+            config.GoalSizes = conversion.Goals.Select(box => box.Size).ToArray();
         }
     }
 }

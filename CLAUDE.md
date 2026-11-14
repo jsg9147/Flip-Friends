@@ -51,6 +51,8 @@ Edit Mode 테스트는 Unity Test Runner로 돌린다. CLI로 돌릴 때는 에�
 
 ## 구조
 
+- Codex가 생성해 프로젝트에 추가하는 이미지 원본은 `Assets/02_Sprites/Generated/Codex/` 아래에 두고 파일명에 `codex_` 접두사를 붙인다. 인게임에서 사용하는 경우 작업 결과에도 경로를 남긴다. 사용자가 만든 원본 이미지와 같은 이름으로 저장하거나 덮어쓰지 않는다.
+
 게임 코드는 `Assets/01_Scripts` 아래 기능별 폴더에 둔다: `NetworkScripts`, `PlayerScripts`, `ObstacleScripts`, `PlayingScripts`, `GameObjScripts`, `MapEditorScripts`, `UI Scripts`, `GameOption`, `Setting`. 프리팹 `Assets/03_Prefabs`, 스프라이트 `Assets/02_Sprites`, 씬 `Assets/00_Scenes`.
 
 기능 스크립트는 기존 폴더에 둔다. 넓은 `Misc` 폴더를 새로 만들지 않는다.

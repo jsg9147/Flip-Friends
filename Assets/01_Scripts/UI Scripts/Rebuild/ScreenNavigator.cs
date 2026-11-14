@@ -21,6 +21,11 @@ public class ScreenNavigator : MonoBehaviour
 
     private void Start()
     {
+        if (FlipFriends.Network.QuantumGameFlow.Instance?.ShouldShowLobbyScreen == true && screenLookup.ContainsKey("quantum-prepare"))
+        {
+            Open("quantum-prepare", false);
+            return;
+        }
         if (initialScreen != null)
         {
             Open(initialScreen, false);

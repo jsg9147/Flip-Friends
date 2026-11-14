@@ -1,5 +1,7 @@
 using System;
-using Mirror;
+using System.Threading.Tasks;
+using FlipFriends.Maps;
+using FlipFriends.Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +18,7 @@ public class MapEditorManager : MonoBehaviour
     public event Action MapDataChanged;
 
     private string currentFileName;
+    private bool isStartingTestPlay;
 
     private void Awake()
     {
@@ -130,41 +133,37 @@ public class MapEditorManager : MonoBehaviour
         return report.CanStartPlay;
     }
 
-    public bool TryStartTestPlay(out string error)
+    public async Task<string> StartTestPlayAsync()
     {
+        if (isStartingTestPlay) return null;
         if (!CanStartTestPlay(out MapValidationReport _))
+            return "플레이 가능성 검증 오류를 먼저 해결하세요.";
+
+        var flow = QuantumGameFlow.Instance;
+        if (flow == null)
+            return "Main 씬에서 맵 에디터로 들어와야 테스트 플레이할 수 있습니다.";
+        if (flow.IsBusy)
+            return "Quantum 세션을 시작하거나 정리하는 중입니다.";
+
+        isStartingTestPlay = true;
+        try
         {
-            error = "플레이 가능성 검증 오류를 먼저 해결하세요.";
-            return false;
+            var snapshot = JsonUtility.FromJson<MapData>(JsonUtility.ToJson(CurrentMapData));
+            var conversion = QuantumMapConverter.Convert(snapshot, palette, enableRespawn: true);
+            ObjectPlacer.instance?.ResetTransientState();
+            MapEditorDraftStore.Store(snapshot, currentFileName);
+            await flow.StartEditorTestAsync(conversion, gameObject.scene.path);
+            return flow.State == QuantumGameState.Failed ? flow.Message : null;
         }
-
-        if (NetworkManager.singleton is not SlimeRoomManager roomManager)
+        catch (InvalidOperationException error)
         {
-            error = "네트워크 매니저가 없습니다. Main 씬에서 맵 에디터로 들어와야 테스트 플레이할 수 있습니다.";
-            return false;
+            Debug.LogWarning(error.Message, this);
+            return error.Message;
         }
-
-        string json = MapDataRepository.ToJson(CurrentMapData);
-        if (!MapSessionSnapshot.TryCreate(
-                0,
-                json,
-                MapSessionSnapshot.MaximumContentBytes,
-                palette,
-                out MapSessionSnapshot snapshot,
-                out error))
-            return false;
-
-        MapEditorDraftStore.Store(CurrentMapData, currentFileName);
-        ObjectPlacer.instance?.ResetTransientState();
-        if (roomManager.TryStartTestPlay(
-                snapshot,
-                palette,
-                SceneManager.GetActiveScene().path,
-                out error))
-            return true;
-
-        MapEditorDraftStore.Clear();
-        return false;
+        finally
+        {
+            isStartingTestPlay = false;
+        }
     }
 
     public void LoadMap(string mapName)
@@ -181,6 +180,7 @@ public class MapEditorManager : MonoBehaviour
 
     public void ReturnToMain()
     {
+        if (isStartingTestPlay) return;
         ObjectPlacer.instance?.ResetTransientState();
         if (!Application.CanStreamedLevelBeLoaded(MainSceneName))
         {

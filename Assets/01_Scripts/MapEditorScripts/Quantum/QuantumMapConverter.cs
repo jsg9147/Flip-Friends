@@ -225,9 +225,11 @@ namespace FlipFriends.Maps
                     FPMath.Abs(a.Center.Y - b.Center.Y) < (a.Size.Y + b.Size.Y) / 2)
                     throw new InvalidOperationException("상자 복귀 초기 위치가 서로 겹칩니다.");
             }
-            if (FPMath.Abs(result.Spawns[0].X - result.Spawns[1].X) < Q(0.8f) &&
-                FPMath.Abs(result.Spawns[0].Y - result.Spawns[1].Y) < 1)
-                throw new InvalidOperationException("플레이어 복귀 초기 위치가 서로 겹칩니다.");
+            for (int i = 0; i < result.Spawns.Count; i++)
+            for (int j = i + 1; j < result.Spawns.Count; j++)
+                if (FPMath.Abs(result.Spawns[i].X - result.Spawns[j].X) < Q(0.8f) &&
+                    FPMath.Abs(result.Spawns[i].Y - result.Spawns[j].Y) < 1)
+                    throw new InvalidOperationException($"플레이어 복귀 위치={result.Spawns[i]}, {result.Spawns[j]}: 초기 위치가 서로 겹칩니다.");
         }
 
         private static void ValidatePrefab(GameObject prefab, string id)

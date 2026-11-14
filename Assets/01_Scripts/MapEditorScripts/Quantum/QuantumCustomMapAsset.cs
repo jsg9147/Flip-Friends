@@ -12,6 +12,7 @@ namespace FlipFriends.Maps
         [SerializeField] private Quantum.Map bakedMap;
         [SerializeField] private string contentHash;
         [SerializeField, Range(1, RuntimeConfig.FlipFriendsMaxPlayers)] private int minimumPlayers = 2;
+        internal MapEditorPalette Palette => palette;
         public int MinimumPlayers => minimumPlayers;
         [SerializeField] private int conversionVersion;
         [SerializeField] private int paletteVersion;

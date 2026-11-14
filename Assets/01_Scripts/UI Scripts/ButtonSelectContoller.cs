@@ -42,26 +42,38 @@ public class ButtonSelectController : MonoBehaviour
 
         if (!IsAnyButtonSelected())
         {
-            tagetButtonList[currentIndex].Select();
+            SelectButton(1);
         }
     }
 
     private void SelectPreviousButton()
     {
-        currentIndex = (currentIndex - 1 + tagetButtonList.Count) % tagetButtonList.Count;
-        tagetButtonList[currentIndex].Select();
+        SelectButton(-1);
     }
 
     private void SelectNextButton()
     {
-        currentIndex = (currentIndex + 1) % tagetButtonList.Count;
-        tagetButtonList[currentIndex].Select();
+        SelectButton(1);
+    }
+
+    private void SelectButton(int direction)
+    {
+        for (int offset = 1; offset <= tagetButtonList.Count; offset++)
+        {
+            int index = (currentIndex + direction * offset + tagetButtonList.Count) % tagetButtonList.Count;
+            var selectable = tagetButtonList[index];
+            if (selectable == null || !selectable.IsActive() || !selectable.IsInteractable()) continue;
+            currentIndex = index;
+            selectable.Select();
+            return;
+        }
     }
 
     private bool IsAnyButtonSelected()
     {
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
-        return selectedObject != null && tagetButtonList.Exists(selectable => selectable != null && selectable.gameObject == selectedObject);
+        return selectedObject != null && tagetButtonList.Exists(selectable => selectable != null &&
+            selectable.gameObject == selectedObject && selectable.IsActive() && selectable.IsInteractable());
     }
 
     public void SelectFirstBtn()
