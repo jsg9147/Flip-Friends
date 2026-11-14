@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public sealed class QuantumPrepareScreen : NavigableScreen
 {
@@ -16,6 +17,14 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     [SerializeField] private Button cancelButton;
     [SerializeField] private Button legacyButton;
     [SerializeField] private TMP_Text status;
+    [SerializeField] private Sprite controlFrame;
+    [SerializeField] private Sprite panelBackground;
+    [SerializeField] private Sprite primaryFrame;
+    [SerializeField] private Sprite secondaryFrame;
+    [SerializeField] private Sprite codeFieldFrame;
+    [SerializeField] private Sprite hostIcon;
+    [SerializeField] private Sprite backIcon;
+    private static readonly Color32 ControlInk = new(7, 53, 56, 255);
     private QuantumGameFlow flow;
     private Button interactionMapButton;
     private Button respawnMapButton;
@@ -30,6 +39,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     private Button inviteButton;
     private Button joinInviteButton;
     private Sprite inviteSprite;
+    private Image inviteFrameFill;
     private TMP_InputField codeInput;
     private TMP_Text lobbyHeader;
     private TMP_Text lobbyNotice;
@@ -41,11 +51,20 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     private bool wasInLobby;
     private float copiedUntil;
     private string onlineMessage;
+    private bool isLobbyView;
+    private bool isViewTransitioning;
+    private bool refreshQueued;
+    private GameObject rememberedOfflineSelection;
+    private GameObject rememberedOnlineSelection;
+    private GameObject pendingTransitionSelection;
+    private CanvasGroup screenGroup;
     private System.Collections.Generic.IReadOnlyList<FlipFriends.Maps.QuantumOfficialStageAsset> officialStages = Array.Empty<FlipFriends.Maps.QuantumOfficialStageAsset>();
 
     protected override void Awake()
     {
         base.Awake();
+        screenGroup = GetComponent<CanvasGroup>();
+        ApplyPanelArtwork();
         if (Resources.Load<FlipFriends.Maps.QuantumCustomMapAsset>("FlipFriendsInteractionMapManifest") != null)
         {
             interactionMapButton = Instantiate(ropeMapButton, ropeMapButton.transform.parent);
@@ -126,6 +145,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             else OpenCodeEntry();
         });
         status.richText = false;
+        status.color = ControlInk;
         status.rectTransform.anchoredPosition = new Vector2(0, 100);
         status.rectTransform.sizeDelta = new Vector2(1150, 145);
         offlineButton.GetComponentInChildren<TMP_Text>().text = "오프라인 플레이 시작";
@@ -141,7 +161,6 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         onlineButton.onClick.AddListener(() =>
         {
             OpenOnlineEntry();
-            Refresh();
         });
         cancelButton.onClick.AddListener(OnCancel);
         legacyButton.onClick.AddListener(() =>
@@ -153,6 +172,14 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         title = GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(label =>
             label.transform.parent == status.transform.parent && label != status);
         offlineTitle = title != null ? title.text : null;
+        if (title != null)
+        {
+            offlineTitle = "플레이 준비";
+            title.text = offlineTitle;
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 36;
+            title.fontSizeMax = 54;
+        }
         offlineLayout = offlineControls.Select(control =>
         {
             var rect = (RectTransform)control.transform;
@@ -162,6 +189,18 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         submitCodeButton = AddLobbyButton("참가", 370, 65, JoinSavedMap);
         inviteButton = AddLobbyButton("친구 초대", 230, 230, InviteFriend);
         joinInviteButton = AddLobbyButton("받은 초대로 참가", 0, -30, InviteFriend);
+        foreach (var control in offlineControls.Concat(new[] { hostLobbyButton, submitCodeButton, inviteButton, joinInviteButton }))
+        {
+            var fill = ApplyControlFrame(control, ((Button)control).image, secondaryFrame != null ? secondaryFrame : controlFrame);
+            if (control == inviteButton) inviteFrameFill = fill;
+            var label = control.GetComponentInChildren<TMP_Text>();
+            label.color = ControlInk;
+            label.enableAutoSizing = true;
+            label.fontSizeMax = control == hostLobbyButton ? 46 : 28;
+        }
+        ApplyControlFrame(hostLobbyButton, hostLobbyButton.image, primaryFrame != null ? primaryFrame : secondaryFrame);
+        AddButtonIcon(hostLobbyButton, hostIcon, 48);
+        AddButtonIcon(cancelButton, backIcon, 34);
         ApplyInviteArtwork();
         lobbyHeader = Instantiate(status, status.transform.parent);
         lobbyHeader.rectTransform.anchoredPosition = new Vector2(0, 285);
@@ -180,6 +219,104 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             button.gameObject.SetActive(false);
     }
 
+    private void ApplyPanelArtwork()
+    {
+        if (panelBackground == null) return;
+        Image panel = GetComponent<Image>();
+        if (panel == null) return;
+        panel.sprite = panelBackground;
+        panel.type = Image.Type.Sliced;
+        panel.pixelsPerUnitMultiplier = 1f;
+        panel.color = Color.white;
+        panel.raycastTarget = false;
+    }
+
+    private Image ApplyControlFrame(Selectable control, Image image, Sprite frame)
+    {
+        if (frame == null) return null;
+        image.sprite = frame;
+        image.type = Image.Type.Sliced;
+        image.pixelsPerUnitMultiplier = 1f;
+        image.color = Color.white;
+        control.transition = Selectable.Transition.ColorTint;
+        var colors = control.colors;
+        colors.normalColor = new Color32(168, 194, 180, 255);
+        colors.highlightedColor = Color.white;
+        colors.selectedColor = colors.highlightedColor;
+        colors.pressedColor = new Color32(135, 190, 160, 255);
+        colors.disabledColor = new Color32(95, 110, 110, 180);
+        control.colors = colors;
+        return null;
+    }
+
+    private void AddButtonIcon(Button button, Sprite sprite, float size)
+    {
+        if (button == null || sprite == null) return;
+        var iconObject = new GameObject("도트 아이콘", typeof(RectTransform), typeof(Image));
+        iconObject.transform.SetParent(button.transform, false);
+        var icon = iconObject.GetComponent<Image>();
+        icon.sprite = sprite;
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
+        var iconRect = icon.rectTransform;
+        iconRect.anchorMin = iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(-((RectTransform)button.transform).sizeDelta.x * 0.5f + size * 0.8f, 0);
+        iconRect.sizeDelta = new Vector2(size, size);
+        TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+        {
+            label.rectTransform.anchoredPosition += new Vector2(size * 0.35f, 0);
+            label.rectTransform.sizeDelta -= new Vector2(size * 0.7f, 0);
+        }
+    }
+
+    private void TransitionView(System.Action swapContent)
+    {
+        if (isViewTransitioning) return;
+        StartCoroutine(TransitionViewRoutine(swapContent));
+    }
+
+    private IEnumerator TransitionViewRoutine(System.Action swapContent)
+    {
+        isViewTransitioning = true;
+        if (screenGroup != null)
+        {
+            screenGroup.interactable = false;
+            screenGroup.blocksRaycasts = false;
+            for (int step = 1; step <= 4; step++)
+            {
+                screenGroup.alpha = 1f - step / 4f;
+                yield return new WaitForSecondsRealtime(0.025f);
+            }
+        }
+
+        swapContent?.Invoke();
+
+        if (screenGroup != null)
+        {
+            screenGroup.interactable = true;
+            screenGroup.blocksRaycasts = true;
+            for (int step = 1; step <= 4; step++)
+            {
+                screenGroup.alpha = step / 4f;
+                yield return new WaitForSecondsRealtime(0.025f);
+            }
+        }
+
+        isViewTransitioning = false;
+        if (pendingTransitionSelection != null)
+        {
+            var pendingTarget = pendingTransitionSelection;
+            pendingTransitionSelection = null;
+            RequestRememberedSelection(pendingTarget, pendingTarget.GetComponent<Selectable>());
+        }
+        if (refreshQueued)
+        {
+            refreshQueued = false;
+            Refresh();
+        }
+    }
+
     private void ApplyInviteArtwork()
     {
         const string artworkPath = "CodexUI/codex_invite_button";
@@ -193,8 +330,9 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         inviteSprite = Sprite.Create(texture, crop, new Vector2(0.5f, 0.5f));
         inviteButton.image.sprite = inviteSprite;
         inviteButton.image.type = Image.Type.Simple;
+        if (inviteFrameFill != null) inviteFrameFill.gameObject.SetActive(false);
         var label = inviteButton.GetComponentInChildren<TMP_Text>();
-        label.color = new Color32(7, 53, 56, 255);
+        label.color = ControlInk;
         label.fontSizeMax = 26;
     }
 
@@ -210,34 +348,43 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         var root = new GameObject("방 코드 입력", typeof(RectTransform), typeof(Image), typeof(TMP_InputField));
         root.transform.SetParent(offlineButton.transform.parent, false);
         var rect = (RectTransform)root.transform;
-        rect.anchoredPosition = new Vector2(-130, 65);
-        rect.sizeDelta = new Vector2(570, 54);
+        rect.anchoredPosition = new Vector2(-137, -25);
+        rect.sizeDelta = new Vector2(590, 88);
         var image = root.GetComponent<Image>();
-        image.sprite = offlineButton.image.sprite;
-        image.type = offlineButton.image.type;
+        image.sprite = codeFieldFrame != null ? codeFieldFrame : offlineButton.image.sprite;
+        image.type = codeFieldFrame != null ? Image.Type.Sliced : offlineButton.image.type;
         var input = root.GetComponent<TMP_InputField>();
         input.targetGraphic = image;
-        input.characterLimit = 41;
+        ApplyControlFrame(input, image, codeFieldFrame);
+        input.characterLimit = 64;
         input.lineType = TMP_InputField.LineType.SingleLine;
         var label = Instantiate(offlineButton.GetComponentInChildren<TextMeshProUGUI>(), root.transform);
         label.text = string.Empty;
         label.richText = false;
         label.raycastTarget = false;
         label.enableAutoSizing = false;
-        label.fontSize = 27;
+        label.fontSize = 32;
         label.alignment = TextAlignmentOptions.MidlineLeft;
         var labelRect = label.rectTransform;
         labelRect.anchorMin = Vector2.zero;
         labelRect.anchorMax = Vector2.one;
-        labelRect.offsetMin = new Vector2(18, 4);
-        labelRect.offsetMax = new Vector2(-18, -4);
+        labelRect.offsetMin = new Vector2(28, 8);
+        labelRect.offsetMax = new Vector2(-28, -8);
         var placeholder = Instantiate(label, root.transform);
         placeholder.text = "방 코드 입력";
         placeholder.alpha = 0.65f;
         input.textComponent = label;
         input.textViewport = labelRect;
         input.placeholder = placeholder;
+        input.onValueChanged.AddListener(HandleCodeChanged);
         return input;
+    }
+
+    private void HandleCodeChanged(string value)
+    {
+        if (submitCodeButton == null) return;
+        bool pending = flow != null && flow.IsBusy || SteamRoomManager.Instance?.IsLobbyRequestPending == true;
+        submitCodeButton.interactable = !pending && !string.IsNullOrWhiteSpace(value);
     }
 
     private Button AddSavedMapControl(string label, float x, UnityEngine.Events.UnityAction click)
@@ -281,17 +428,29 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         catch (Exception error) { Debug.LogException(error, this); }
     }
 
-    private void OpenOnlineEntry()
+    private void OpenOnlineEntry(bool focusCode = false)
     {
+        if (EventSystem.current != null && !UIInputModeController.IsPointerMode)
+        {
+            var current = EventSystem.current.currentSelectedGameObject;
+            var selectedControl = current != null ? current.GetComponent<Selectable>() : null;
+            rememberedOfflineSelection = offlineControls != null && offlineControls.Contains(selectedControl)
+                ? current
+                : onlineButton.gameObject;
+        }
+        else rememberedOfflineSelection = onlineButton.gameObject;
         isOnlineScreen = true;
         onlineMessage = flow.Message;
+        TransitionView(() =>
+        {
+            RefreshContent();
+            pendingTransitionSelection = focusCode ? codeInput.gameObject : hostLobbyButton.gameObject;
+        });
     }
 
     private void OpenCodeEntry()
     {
-        OpenOnlineEntry();
-        Refresh();
-        UIInputModeController.RequestSelection(codeInput.gameObject);
+        OpenOnlineEntry(true);
     }
 
     private async void InviteFriend()
@@ -338,6 +497,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     protected override void OnShow()
     {
         flow = QuantumGameFlow.Instance;
+        isLobbyView = flow.Lobby != null;
         if (flow.ShouldShowLobbyScreen) isOnlineScreen = true;
         flow.AcknowledgeLobbyScreen();
         flow.Changed += Refresh;
@@ -387,8 +547,15 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             if (SteamRoomManager.Instance?.IsLobbyRequestPending == true) return;
             if (isOnlineScreen && !flow.IsBusy)
             {
+                if (EventSystem.current != null) rememberedOnlineSelection = EventSystem.current.currentSelectedGameObject;
                 isOnlineScreen = false;
-                Refresh();
+                TransitionView(() =>
+                {
+                    RefreshContent();
+                    pendingTransitionSelection = rememberedOfflineSelection != null
+                        ? rememberedOfflineSelection
+                        : onlineButton.gameObject;
+                });
                 return;
             }
             await flow.ReturnAsync("시작을 취소했습니다. 다시 시작할 수 있습니다.");
@@ -416,19 +583,42 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     {
         bool searching = SteamRoomManager.Instance?.IsLobbyRequestPending == true;
         bool pending = flow.IsBusy || searching;
-        hostLobbyButton.interactable = submitCodeButton.interactable = codeInput.interactable = !pending;
+        hostLobbyButton.interactable = codeInput.interactable = !pending;
+        submitCodeButton.interactable = !pending && !string.IsNullOrWhiteSpace(codeInput.text);
         cancelButton.interactable = !searching && flow.State != QuantumGameState.Stopping;
         SetLabel(cancelButton, flow.State == QuantumGameState.Starting ? "취소" : "뒤로");
         inviteButton.interactable = !pending || flow.CanInviteSavedMapFriends;
         lobbyHeader.text = title == null ? "온라인 플레이" : string.Empty;
-        if (title != null) title.text = "온라인 플레이";
+        if (title != null)
+        {
+            title.text = "온라인 플레이";
+            title.color = ControlInk;
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 40;
+            title.fontSizeMax = 54;
+        }
+        lobbyHeader.color = ControlInk;
         joinInviteButton.interactable = !pending;
         status.text = string.Empty;
         lobbyNotice.text = !pending && flow.Message == onlineMessage ? string.Empty : flow.Message;
-        SetLayout((hostLobbyButton, 0, 175, 370), (submitCodeButton, 370, 65, 265),
-            (flow.CanInviteSavedMapFriends ? inviteButton : flow.HasSteamInvite ? joinInviteButton : null, 0, -30,
-                flow.CanInviteSavedMapFriends && inviteSprite != null ? 224 : 370),
-            (cancelButton, 0, -150, 265));
+        if (title != null)
+        {
+            title.rectTransform.anchoredPosition = new Vector2(0, 305);
+            title.rectTransform.sizeDelta = new Vector2(1100, 70);
+            title.alignment = TextAlignmentOptions.Center;
+            title.fontSize = 50;
+        }
+        lobbyNotice.rectTransform.anchoredPosition = new Vector2(0, -112);
+        lobbyNotice.rectTransform.sizeDelta = new Vector2(1080, 42);
+        lobbyNotice.fontSizeMin = 18;
+        lobbyNotice.fontSizeMax = 25;
+        lobbyNotice.alignment = TextAlignmentOptions.Center;
+        SetLayout((hostLobbyButton, 0, 130, 900), (submitCodeButton, 305, -25, 270),
+            (flow.CanInviteSavedMapFriends ? inviteButton : flow.HasSteamInvite ? joinInviteButton : null, 0, -185,
+                flow.CanInviteSavedMapFriends && inviteSprite != null ? 360 : 440),
+            (cancelButton, 0, -290, 300));
+        ((RectTransform)codeInput.transform).anchoredPosition = new Vector2(-137, -25);
+        ((RectTransform)codeInput.transform).sizeDelta = new Vector2(590, 88);
         codeInput.gameObject.SetActive(true);
         GetComponent<ButtonSelectController>().tagetButtonList.Insert(1, codeInput);
         EnsureSelection();
@@ -453,15 +643,19 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             if (button == null) continue;
             var rect = (RectTransform)button.transform;
             rect.anchoredPosition = new Vector2(x, y);
-            rect.sizeDelta = new Vector2(width, 54);
+            float height = button == hostLobbyButton ? 124 : button == submitCodeButton ? 88 : button == cancelButton ? 80 : 72;
+            rect.sizeDelta = new Vector2(width, height);
             var label = button.GetComponentInChildren<TMP_Text>();
             label.enableAutoSizing = true;
-            label.rectTransform.sizeDelta = new Vector2(width - 20, 54);
+            label.rectTransform.sizeDelta = new Vector2(width - (button == hostLobbyButton ? 112 : 20), height - 12);
+            label.rectTransform.anchoredPosition = button == hostLobbyButton ? new Vector2(38, 0) : Vector2.zero;
+            if (button == cancelButton) label.rectTransform.anchoredPosition = new Vector2(12, 0);
             if (button == inviteButton && inviteSprite != null)
             {
                 label.rectTransform.anchoredPosition = new Vector2(width * 0.15f, 0);
-                label.rectTransform.sizeDelta = new Vector2(width * 0.62f, 54);
+                label.rectTransform.sizeDelta = new Vector2(width * 0.62f, height - 12);
             }
+            UpdateButtonIcon(button, width);
             navigation.Add(button);
         }
         bool inLobby = flow.Lobby != null;
@@ -514,7 +708,46 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         if (first != null) UIInputModeController.RequestSelection(first.gameObject);
     }
 
+    private void RequestRememberedSelection(GameObject preferred, Selectable fallback)
+    {
+        if (EventSystem.current == null) return;
+        Selectable target = preferred != null ? preferred.GetComponent<Selectable>() : null;
+        if (target == null || !target.gameObject.activeInHierarchy || !target.IsInteractable()) target = fallback;
+        if (target != null && target.gameObject.activeInHierarchy && target.IsInteractable())
+            UIInputModeController.RequestSelection(target.gameObject);
+        else EnsureSelection();
+    }
+
+    private void UpdateButtonIcon(Button button, float width)
+    {
+        Transform iconTransform = button.transform.Find("도트 아이콘");
+        if (iconTransform == null) return;
+        RectTransform rect = (RectTransform)iconTransform;
+        float size = rect.sizeDelta.x;
+        rect.anchoredPosition = new Vector2(-width * 0.5f + size * 0.8f, 0);
+    }
+
     private void Refresh()
+    {
+        if (flow == null) return;
+        if (isViewTransitioning)
+        {
+            refreshQueued = true;
+            return;
+        }
+
+        bool lobbyIsVisible = flow.Lobby != null;
+        if (lobbyIsVisible != isLobbyView)
+        {
+            isLobbyView = lobbyIsVisible;
+            TransitionView(RefreshContent);
+            return;
+        }
+
+        RefreshContent();
+    }
+
+    private void RefreshContent()
     {
         var lobby = flow.Lobby;
         if (lobby != null)
@@ -536,7 +769,12 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             SetLabel(inviteButton, "친구 초대");
             SetLabel(cancelButton, flow.State == QuantumGameState.Starting ? "취소" : "나가기");
             lobbyHeader.text = "방 코드  " + (lobby.Code ?? "발급 중…");
-            if (title != null) title.text = "친구 방";
+            if (title != null)
+            {
+                title.text = "친구 방";
+                title.color = ControlInk;
+            }
+            lobbyHeader.color = ControlInk;
             status.text = $"선택 맵  {lobby.MapName ?? "선택 대기"}\n{lobby.Status}";
             lobbyNotice.text = LobbyMessage(lobby);
             SetLayout(

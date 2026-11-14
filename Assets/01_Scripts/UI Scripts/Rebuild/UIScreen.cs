@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 [DisallowMultipleComponent]
 public class UIScreen : MonoBehaviour
@@ -8,6 +9,7 @@ public class UIScreen : MonoBehaviour
     [SerializeField] private GameObject firstSelectedObject;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private bool hideOnAwake = true;
+    [SerializeField] private float showFadeDuration = 0.14f;
 
     public string ScreenId => screenId;
     public bool IsVisible { get; private set; }
@@ -36,7 +38,7 @@ public class UIScreen : MonoBehaviour
 
         if (canvasGroup != null)
         {
-            canvasGroup.alpha = 1f;
+            canvasGroup.alpha = showFadeDuration > 0f ? 0f : 1f;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
         }
@@ -44,6 +46,7 @@ public class UIScreen : MonoBehaviour
         IsVisible = true;
         OnShow();
         SelectDefault();
+        if (canvasGroup != null && showFadeDuration > 0f) StartCoroutine(FadeIn());
     }
 
     public virtual void Hide()
@@ -96,6 +99,19 @@ public class UIScreen : MonoBehaviour
 
     protected virtual void OnHide()
     {
+    }
+
+    private IEnumerator FadeIn()
+    {
+        float elapsed = 0f;
+        while (elapsed < showFadeDuration && IsVisible && canvasGroup != null)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            canvasGroup.alpha = Mathf.Clamp01(elapsed / showFadeDuration);
+            yield return null;
+        }
+
+        if (IsVisible && canvasGroup != null) canvasGroup.alpha = 1f;
     }
 
     private void LogDeactivate(string sourceMethod)

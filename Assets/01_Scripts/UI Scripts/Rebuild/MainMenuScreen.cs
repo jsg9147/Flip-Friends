@@ -10,10 +10,89 @@ public class MainMenuScreen : UIScreen
     private const string MapEditorSceneName = "MapEditor";
     private const string MapEditorButtonName = "Map Editor Button";
 
+    [SerializeField] private GameObject titleLogo;
+    [SerializeField] private GameObject titleText;
+    private GameObject transitionBackdrop;
+
     protected override void Awake()
     {
         base.Awake();
         CreateMapEditorButton();
+        CreateTransitionBackdrop();
+    }
+
+    protected override void OnShow()
+    {
+        if (titleLogo != null) titleLogo.SetActive(true);
+        if (titleText != null) titleText.SetActive(true);
+        if (transitionBackdrop != null) transitionBackdrop.SetActive(false);
+    }
+
+    protected override void OnHide()
+    {
+        if (titleLogo != null) titleLogo.SetActive(false);
+        if (titleText != null) titleText.SetActive(false);
+        if (transitionBackdrop != null) transitionBackdrop.SetActive(true);
+    }
+
+    private void CreateTransitionBackdrop()
+    {
+        if (transform.parent == null) return;
+        transitionBackdrop = new GameObject("Pixel Menu Backdrop", typeof(RectTransform), typeof(Image));
+        transitionBackdrop.transform.SetParent(transform.parent, false);
+        transitionBackdrop.transform.SetAsFirstSibling();
+        RectTransform backgroundRect = (RectTransform)transitionBackdrop.transform;
+        backgroundRect.anchorMin = Vector2.zero;
+        backgroundRect.anchorMax = Vector2.one;
+        backgroundRect.offsetMin = Vector2.zero;
+        backgroundRect.offsetMax = Vector2.zero;
+        Image backgroundImage = transitionBackdrop.GetComponent<Image>();
+        backgroundImage.color = new Color32(5, 38, 52, 255);
+        backgroundImage.raycastTarget = false;
+
+        AddPixel(0.12f, 0.78f, 14, 14, new Color32(232, 242, 209, 255));
+        AddPixel(0.28f, 0.88f, 10, 10, new Color32(19, 113, 125, 255));
+        AddPixel(0.48f, 0.74f, 12, 12, new Color32(232, 242, 209, 255));
+        AddPixel(0.71f, 0.91f, 14, 14, new Color32(19, 113, 125, 255));
+        AddPixel(0.87f, 0.68f, 10, 10, new Color32(232, 242, 209, 255));
+        AddPlatform(0f, 0.14f, 0.2f);
+        AddPlatform(1f, 0.14f, 0.2f);
+        transitionBackdrop.SetActive(false);
+    }
+
+    private void AddPixel(float x, float y, float width, float height, Color color)
+    {
+        GameObject pixel = new GameObject("Pixel Star", typeof(RectTransform), typeof(Image));
+        pixel.transform.SetParent(transitionBackdrop.transform, false);
+        RectTransform rect = (RectTransform)pixel.transform;
+        rect.anchorMin = rect.anchorMax = new Vector2(x, y);
+        rect.sizeDelta = new Vector2(width, height);
+        Image image = pixel.GetComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+    }
+
+    private void AddPlatform(float x, float y, float width)
+    {
+        GameObject platform = new GameObject("Pixel Platform", typeof(RectTransform));
+        platform.transform.SetParent(transitionBackdrop.transform, false);
+        RectTransform rect = (RectTransform)platform.transform;
+        rect.anchorMin = rect.anchorMax = new Vector2(x, y);
+        rect.pivot = new Vector2(x, 0.5f);
+        rect.sizeDelta = new Vector2(Screen.width * width, 50);
+        Image block = platform.gameObject.AddComponent<Image>();
+        block.color = new Color32(8, 85, 101, 255);
+        block.raycastTarget = false;
+        GameObject top = new GameObject("Lime Platform Edge", typeof(RectTransform), typeof(Image));
+        top.transform.SetParent(platform.transform, false);
+        RectTransform topRect = (RectTransform)top.transform;
+        topRect.anchorMin = new Vector2(0, 1);
+        topRect.anchorMax = new Vector2(1, 1);
+        topRect.pivot = new Vector2(0.5f, 1);
+        topRect.sizeDelta = new Vector2(0, 12);
+        Image topImage = top.GetComponent<Image>();
+        topImage.color = new Color32(183, 239, 53, 255);
+        topImage.raycastTarget = false;
     }
 
     public void OpenMapEditor()
