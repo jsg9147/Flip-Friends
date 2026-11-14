@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: FlipFriendsCustomMapManifest
   m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumCustomMapAsset
   source: {fileID: 4900000, guid: b498807a92dc6c949ac0036700ec5ffd, type: 3}
-  palette: {fileID: 11400000, guid: d0d1b23d6083fcf46868911d60b227e9, type: 2}
+  palette: {fileID: 11400000, guid: c35a088c4a9171246acbd8a88fc23d42, type: 2}
   bakedMap: {fileID: 11400000, guid: 37de6363712cfde4895c0143c7125496, type: 2}
   contentHash: 1853f2f5245ad4570894b368d4953d8e4447a653f688b0e028b8854171b0b052
+  minimumPlayers: 2
   conversionVersion: 2
   paletteVersion: 2
+  devices: {fileID: 0}
+  terrain: {fileID: 0}

@@ -20,11 +20,12 @@
 
 - 경계는 MapRenderBounds+여백10을 FP로 변환하며 제품 시작 때 초기 위치/경계를 재검증한다. 기존2:2 정적/로프·3:3 상호작용·4:4 복귀와 새5:5 장치의 원본/베이크/해시를 보존한다.
 
-- Quantum 변환에서 상자는 원본 `interactive.box` 루트 0.9·중력 9.8·배율 1/회전 0만 지원한다.
+- 팔레트는 두 벌이다. MapEditor 씬·Quantum 매니페스트6종·Quantum 검사는 Mirror 컴포넌트가 없는 `QuantumMapEditorPalette.asset`(`Assets/03_Prefabs/MapEditor/Quantum/Quantum*.prefab`, Transform·SpriteRenderer·BoxCollider2D만)을 쓴다. 경로는 `QuantumMapConverter.PaletteAssetPath`다. 기존 `MapEditorPalette.asset`과 원본 프리팹은 Mirror GameRoom/GamePlay의 커스텀 맵 Spawn 전용이며 Mirror 제거 때 함께 지운다. 두 팔레트의 ID·썸네일·콜라이더는 같아야 하고, Quantum 콘텐츠 해시는 콜라이더만 쓰므로 교체 전후 6종 해시가 같다.
+- Quantum 변환기는 Transform·SpriteRenderer·BoxCollider2D 외 컴포넌트를 거부한다. 상자는 Pickable 루트 0.9·배율 1/회전 0만 지원하며 중력 9.8은 Quantum 규칙에 고정한다.
 - 로프는 수직 루트 박스 트리거이며 오프셋/스케일/180도 회전을 FP로 변환한다. 가로/경사/다중/합성/동적 판정 등 미지원 구성은 위치·원인과 함께 전체 거부한다. [로프 변환 근거](Notes/2026-11-06-quantum-wall-rope.md).
 - 공용 Cannon/MapEditorCannon은 서버에서 탄환을 초기화한 뒤 Spawn하고, CannonProjectile이 거리별 수명을 관리한다. 원격 탄환은 서버 위치만 따르며 팔레트 저장 스키마와 발사 설정은 유지했다.
 
-- 팔레트 `interactive.box`는 공용 Box.prefab을 사용한다. 단계 2의 PickupObj 서버 리셋 API가 추락 복귀·운반 해제에 적용되며 저장 형식/팔레트 연결은 유지한다.
+- Mirror 팔레트의 `interactive.box`는 공용 Box.prefab을 사용한다. PickupObj 서버 리셋 API가 Mirror 추락 복귀·운반 해제에 적용된다. Mirror 팔레트의 NetworkIdentity 누락은 `PlacedObjectFactory`가 Spawn 때 오류로 남긴다.
 
 - `MapData` 스키마는 2.1이며 정규 GUID `N` 형식의 `mapId`를 사용한다.
 - 2.0 로컬 데이터는 최초 로드 시 2.1로 안전하게 마이그레이션한다. 잘못된 2.1 ID는 자동 교체하지 않고 거부한다.
@@ -60,6 +61,7 @@ MapEditorManager
 
 ## 검증
 
+- 2026-11-14 팔레트 분리: Unity 재컴파일 오류0. Quantum 매니페스트6종이 새 팔레트로 변환·`ValidateAndApply`를 통과하고 저장 해시와 일치했다. 기존 Mirror 팔레트는 변환기가 `NetworkIdentity`로 거부한다. 새 Play `RunOffline`은 Main 오프라인 시작·미지원 콘텐츠 거부까지 통과했고, 이후 온라인 화면 단계는 준비 화면 전환 중 클릭이 버려져 멈췄다. MapEditor HUD 테스트 플레이 수동 확인과 Mirror GameRoom 커스텀 맵 Spawn은 미실행이다.
 - Quantum 준비 화면의 저장 맵 선택과 오프라인 시작, 미지원 및 잘못된 버전 거부, 준비 화면에서 2.0 파일 내용 보존, 수신 후 Maps에 파일을 쓰지 않는 동작을 확인했다. [개발 Photon과 미실행 조건](CUSTOM_MAP_NETWORK.md#검증).
 
 - 2026-11-10 Unity 6000.6.8f1 재컴파일 오류 0건. 새 Play 세션의 첫 Main 검사로 `QuantumProductChecks.RunOffline`을 실행해 통과했다.

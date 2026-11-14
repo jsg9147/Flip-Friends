@@ -1201,7 +1201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d12a858cb9e8fca49848022d4a0ac2c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapEditorManager
-  palette: {fileID: 11400000, guid: d0d1b23d6083fcf46868911d60b227e9, type: 2}
+  palette: {fileID: 11400000, guid: c35a088c4a9171246acbd8a88fc23d42, type: 2}
 --- !u!4 &719671538
 Transform:
   m_ObjectHideFlags: 0

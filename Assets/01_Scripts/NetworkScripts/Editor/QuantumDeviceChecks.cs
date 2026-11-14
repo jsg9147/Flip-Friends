@@ -218,7 +218,7 @@ public static class QuantumDeviceChecks
 
     private static void CheckContent()
     {
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var text = AssetDatabase.LoadAssetAtPath<TextAsset>(QuantumDeviceSetup.SourcePath).text;
         var original = AssetDatabase.LoadAssetAtPath<QuantumMapDevices>(QuantumDeviceSetup.DevicesPath);
         QuantumMapConversion Convert(QuantumMapDevices devices, bool reverse = false)

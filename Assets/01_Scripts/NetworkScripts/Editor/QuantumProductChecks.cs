@@ -537,7 +537,7 @@ public static class QuantumProductChecks
             Require(EditorApplication.isPlaying && flow != null && !flow.IsBusy && SceneManager.GetActiveScene().name == "Main", "Main 유휴 상태 필요");
             Directory.CreateDirectory(directory);
             saveDirectory.SetValue(null, directory);
-            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
             var data = MapDataRepository.FromJson(Resources.Load<TextAsset>("FlipFriendsCustomMap").text);
             data.mapId = Guid.NewGuid().ToString("N");
             data.mapName = "친구 맵 검사";

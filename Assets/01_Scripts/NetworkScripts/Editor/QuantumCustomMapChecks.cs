@@ -25,7 +25,7 @@ public static class QuantumCustomMapChecks
     public static void Run()
     {
         if (!EditorApplication.isPlaying) throw new InvalidOperationException("커스텀 맵 시험 씬을 Play한 뒤 실행하세요.");
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var source = AssetDatabase.LoadAssetAtPath<TextAsset>(QuantumCustomMapSetup.SourcePath);
         MapData Fresh() => JsonUtility.FromJson<MapData>(source.text);
         var baseline = QuantumMapConverter.Convert(Fresh(), palette);

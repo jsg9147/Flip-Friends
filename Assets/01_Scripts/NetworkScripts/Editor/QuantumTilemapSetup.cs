@@ -37,7 +37,7 @@ public static class QuantumTilemapSetup
             Add(data, QuantumMapConverter.Spawn, 10, -2.3f); Add(data, QuantumMapConverter.Spawn, 12, -2.3f);
             Add(data, QuantumMapConverter.Finish, -10, -2.4f); Add(data, QuantumMapConverter.Box, 14.5f, -2.4f);
             Add(data, QuantumMapConverter.Ground, -35, -20);
-            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
             var conversion = QuantumMapConverter.Convert(data, palette, true); devices.Apply(conversion); terrain.Apply(conversion);
             // 원본 전체 스테이지를 지원하는 것처럼 저장하지 않고 선택한 사용례만 별도 작성 씬에 둔다.
             Prune(stage1.transform, new[] { terrainObject.transform });
@@ -79,7 +79,7 @@ public static class QuantumTilemapSetup
             terrain.Configure(QuantumTilemapReader.ReadTerrain(ground, "stage-01/Ground"), ground.GetComponent<TilemapRenderer>().bounds,
                 QuantumTilemapReader.TerrainSignature(ground, "stage-01/Ground"));
             var devices = AssetDatabase.LoadAssetAtPath<QuantumMapDevices>(Root + "Devices.asset"); devices.Configure(new[] { QuantumTilemapReader.ReadReset(reset, "stage-09/Grid/First ResetTile") });
-            var source = AssetDatabase.LoadAssetAtPath<TextAsset>(Root + "Map.json"); var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+            var source = AssetDatabase.LoadAssetAtPath<TextAsset>(Root + "Map.json"); var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
             var conversion = QuantumMapConverter.Convert(JsonUtility.FromJson<MapData>(source.text), palette, true); devices.Apply(conversion); terrain.Apply(conversion);
             var manifest = AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(ManifestPath);
             manifest.Configure(source, palette, AssetDatabase.LoadAssetAtPath<Quantum.Map>(Root + "Map.asset"), conversion);

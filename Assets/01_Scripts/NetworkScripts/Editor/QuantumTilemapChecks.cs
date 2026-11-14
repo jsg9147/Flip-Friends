@@ -131,7 +131,7 @@ public static class QuantumTilemapChecks
     private static void CheckContent()
     {
         var source = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/QuantumUser/Resources/FlipFriendsTilemapMap.json");
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var terrain = AssetDatabase.LoadAssetAtPath<QuantumMapTerrain>("Assets/QuantumUser/Resources/FlipFriendsTilemapTerrain.asset");
         var devices = AssetDatabase.LoadAssetAtPath<QuantumMapDevices>("Assets/QuantumUser/Resources/FlipFriendsTilemapDevices.asset");
         var cloneTerrain = UnityEngine.Object.Instantiate(terrain); var cloneDevices = UnityEngine.Object.Instantiate(devices);

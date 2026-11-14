@@ -30,7 +30,7 @@ public static class QuantumRespawnSetup
         Add(data, QuantumMapConverter.Ground, 0, 5.5f, 17, 1);
         Add(data, QuantumMapConverter.Rope, -5, 2, 1, 4);
         Add(data, QuantumMapConverter.Box, 3, 0.5f, 1, 1);
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var conversion = QuantumMapConverter.Convert(data, palette, true);
         File.WriteAllText(SourcePath, JsonUtility.ToJson(data, true));
         AssetDatabase.ImportAsset(SourcePath);

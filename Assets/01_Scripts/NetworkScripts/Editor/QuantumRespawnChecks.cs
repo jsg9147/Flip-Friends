@@ -211,7 +211,7 @@ public static class QuantumRespawnChecks
 
     private static void CheckContent()
     {
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var source = AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(QuantumRespawnSetup.SourcePath).text;
         var data = UnityEngine.JsonUtility.FromJson<MapData>(source);
         var conversion = QuantumMapConverter.Convert(data, palette, true);

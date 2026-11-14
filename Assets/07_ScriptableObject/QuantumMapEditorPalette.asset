@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8700c28fed5bc47adeb1eb34fb05b7, type: 3}
+  m_Name: QuantumMapEditorPalette
+  m_EditorClassIdentifier: Assembly-CSharp::MapEditorPalette
+  entries:
+  - id: essential.player_spawn
+    displayName: "\uD50C\uB808\uC774\uC5B4 \uC2DC\uC791 \uC9C0\uC810"
+    category: 0
+    prefab: {fileID: 1000000000000000002, guid: e0ee8ca611875854ca33afa3d578fd06, type: 3}
+    thumbnail: {fileID: 21300000, guid: e8e34133732eb474db79f939cb15f950, type: 3}
+    validationRule:
+      minimumCount: 1
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 1
+  - id: essential.finish
+    displayName: "\uB3C4\uCC29 \uC9C0\uC810"
+    category: 0
+    prefab: {fileID: 1000000000000000003, guid: cd07afd8567b1804cbb25525380330cd, type: 3}
+    thumbnail: {fileID: 21300000, guid: 40a17abce6d888446bb40f26eedd5d25, type: 3}
+    validationRule:
+      minimumCount: 1
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 1
+  - id: terrain.ground.basic
+    displayName: "\uAE30\uBCF8 \uBC14\uB2E5"
+    category: 1
+    prefab: {fileID: 1000000000000000001, guid: feaa87b9d474de441b7d30b98d5b4c1d, type: 3}
+    thumbnail: {fileID: 1931142719, guid: 3e22bb20af2a89846ab4ef32208ace48, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
+  - id: terrain.rope
+    displayName: "\uB85C\uD504"
+    category: 1
+    prefab: {fileID: 7947001633615829510, guid: 9eb77da89fcd45e4db6fc1ec25b47974, type: 3}
+    thumbnail: {fileID: 321559554, guid: dbda552731c496942b04e67a85b733e2, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
+  - id: interactive.box
+    displayName: "\uC0C1\uC790"
+    category: 3
+    prefab: {fileID: 959400136612832559, guid: e8d82d2aef768684e8f089b7f674f0d4, type: 3}
+    thumbnail: {fileID: 21300000, guid: 6f420fdc6d6f0144d8a2b46a2fb00a6f, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
+  - id: obstacle.cannon
+    displayName: "\uB300\uD3EC"
+    category: 2
+    prefab: {fileID: 3362680424088291413, guid: c735c18569ab7d44791f85230340d363, type: 3}
+    thumbnail: {fileID: 21300000, guid: 73d84cbed98011845993eae6ebbbb6ef, type: 3}
+    validationRule:
+      minimumCount: 0
+      maximumCount: 0
+      disallowPositionOverlap: 1
+      overlapIsCritical: 0
+  validationSettings:
+    minimumPlayerSpawnCount: 1
+    minimumMapPosition: {x: -50, y: -30}
+    maximumMapPosition: {x: 50, y: 30}
+    overlapPositionTolerance: 0.01

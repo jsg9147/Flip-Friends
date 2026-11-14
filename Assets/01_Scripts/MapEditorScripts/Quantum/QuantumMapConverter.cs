@@ -76,6 +76,8 @@ namespace FlipFriends.Maps
     {
         public const int ConversionVersion = 5;
         public const int PaletteVersion = 5;
+        // Mirror 컴포넌트가 없는 Quantum·MapEditor 전용 팔레트. 기존 MapEditorPalette.asset은 Mirror GameRoom 전용이다.
+        public const string PaletteAssetPath = "Assets/07_ScriptableObject/QuantumMapEditorPalette.asset";
         public const string Ground = "terrain.ground.basic";
         public const string Spawn = "essential.player_spawn";
         public const string Finish = "essential.finish";
@@ -235,11 +237,9 @@ namespace FlipFriends.Maps
         private static void ValidatePrefab(GameObject prefab, string id)
         {
             if (prefab == null || !prefab.activeSelf) throw new InvalidOperationException("활성 프리팹이 없습니다.");
-            var allowed = new HashSet<Type> { typeof(Transform), typeof(SpriteRenderer), typeof(Mirror.NetworkIdentity) };
-            if (id == Rope) allowed.Add(typeof(Mirror.NetworkTransformReliable));
-            if (id == Box) { allowed.Add(typeof(PickupObj)); allowed.Add(typeof(Rigidbody2D)); }
-            if (id == Spawn) { allowed.Add(typeof(Mirror.NetworkStartPosition)); allowed.Add(typeof(PlayerSpawnPoint)); }
-            else allowed.Add(typeof(BoxCollider2D));
+            // 런타임 동작은 Quantum 시뮬레이션이 맡으므로 표시와 판정 형상 외의 컴포넌트는 받지 않는다.
+            var allowed = new HashSet<Type> { typeof(Transform), typeof(SpriteRenderer) };
+            if (id != Spawn) allowed.Add(typeof(BoxCollider2D));
             foreach (var component in prefab.GetComponentsInChildren<Component>(true))
                 if (component == null || !allowed.Contains(component.GetType()))
                     throw new InvalidOperationException($"미지원 컴포넌트: {component?.name}/{component?.GetType().Name}");
@@ -247,9 +247,9 @@ namespace FlipFriends.Maps
             if (id == Spawn && colliders.Length != 0) throw new InvalidOperationException("시작점의 콜라이더는 지원하지 않습니다.");
             if (id == Spawn) return;
             if (id == Box && (prefab.layer != LayerMask.NameToLayer("Pickable") || prefab.transform.childCount != 0 ||
-                prefab.transform.localScale != Vector3.one || prefab.GetComponent<PickupObj>().gravity != 9.8f ||
+                prefab.transform.localScale != Vector3.one ||
                 prefab.GetComponent<BoxCollider2D>().offset != Vector2.zero || prefab.GetComponent<BoxCollider2D>().size != new Vector2(0.9f, 0.9f)))
-                throw new InvalidOperationException("상자는 원본 Pickable 루트·0.9 박스·중력9.8만 지원합니다.");
+                throw new InvalidOperationException("상자는 Pickable 루트·0.9 박스만 지원합니다(중력9.8은 Quantum 규칙에 고정).");
             if (id == Finish && (!prefab.CompareTag("Finish") || prefab.transform.childCount != 0))
                 throw new InvalidOperationException("도착점은 Finish 태그의 자식 없는 루트 박스 트리거만 지원합니다.");
             if (colliders.Length != 1 || colliders[0] is not BoxCollider2D box || box.transform != prefab.transform ||
