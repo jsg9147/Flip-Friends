@@ -77,7 +77,7 @@ public class PublicLobbyScreen : NavigableScreen
         ClearLobbyItems();
         SetState(LobbyViewState.Loading, "Loading lobbies...");
 
-        if (SteamRoomManager.Instance == null || !SteamManager.Initialized)
+        if (SteamLobbyService.Instance == null || !SteamManager.Initialized)
         {
             SetState(LobbyViewState.Error, "Steam is not ready.");
             return;
@@ -85,7 +85,7 @@ public class PublicLobbyScreen : NavigableScreen
 
         try
         {
-            List<SteamLobbyInfo> lobbyInfoList = await SteamRoomManager.Instance.GetLobbyListAsync();
+            List<SteamLobbyInfo> lobbyInfoList = await SteamLobbyService.Instance.GetLobbyListAsync();
 
             if (!IsVisible || requestVersion != refreshRequestVersion)
             {
@@ -124,14 +124,15 @@ public class PublicLobbyScreen : NavigableScreen
 
     public void JoinLobby(SteamLobbyInfo lobbyInfo)
     {
-        if (lobbyInfo == null || SteamRoomManager.Instance == null)
+        SteamLobbyService lobbyService = SteamLobbyService.Instance;
+        if (lobbyInfo == null || lobbyService == null)
         {
             SetState(LobbyViewState.Error, "Unable to join the selected lobby.");
             return;
         }
 
         SetState(LobbyViewState.Joining, $"Joining {lobbyInfo.LobbyName}...");
-        SteamRoomManager.Instance.JoinLobby(lobbyInfo.LobbyID);
+        lobbyService.JoinLobby(lobbyInfo.LobbyID);
     }
 
     public void HandleBack()

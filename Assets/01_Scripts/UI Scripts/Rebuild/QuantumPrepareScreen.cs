@@ -383,7 +383,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     private void HandleCodeChanged(string value)
     {
         if (submitCodeButton == null) return;
-        bool pending = flow != null && flow.IsBusy || SteamRoomManager.Instance?.IsLobbyRequestPending == true;
+        bool pending = flow != null && flow.IsBusy || SteamLobbyService.Current?.IsLobbyRequestPending == true;
         submitCodeButton.interactable = !pending && !string.IsNullOrWhiteSpace(value);
     }
 
@@ -415,14 +415,14 @@ public sealed class QuantumPrepareScreen : NavigableScreen
                 Refresh();
                 return;
             }
-            if (flow.IsBusy || SteamRoomManager.Instance?.IsLobbyRequestPending == true) return;
+            if (flow.IsBusy || SteamLobbyService.Current?.IsLobbyRequestPending == true) return;
             onlineMessage = null;
             string code = codeInput.text.Trim();
             if (code.Contains(':')) await flow.JoinSavedMapAsync(code);
             else if (code.Length != 8 || !code.All(character => character >= '0' && character <= '9'))
                 flow.ReportLobby("방 코드 숫자 8자리를 확인해 주세요.");
-            else if (SteamRoomManager.Instance != null)
-                await SteamRoomManager.Instance.JoinQuantumLobbyByCodeAsync(code);
+            else if (SteamLobbyService.Instance != null)
+                await SteamLobbyService.Instance.JoinQuantumLobbyByCodeAsync(code);
             else flow.ReportLobby("Steam에 연결할 수 없어요.");
         }
         catch (Exception error) { Debug.LogException(error, this); }
@@ -518,8 +518,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     private void HostLobby()
     {
         onlineMessage = null;
-        if (SteamRoomManager.Instance != null)
-            SteamRoomManager.Instance.HostQuantumLobby(QuantumGameContent.MaxPlayers);
+        if (SteamLobbyService.Instance != null)
+            SteamLobbyService.Instance.HostQuantumLobby(QuantumGameContent.MaxPlayers);
         else flow.ReportLobby("Steam에 연결할 수 없어요.");
     }
 
@@ -544,7 +544,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
                 else flow.Lobby.Leave("Steam 로비를 나갔습니다.");
                 return;
             }
-            if (SteamRoomManager.Instance?.IsLobbyRequestPending == true) return;
+            if (SteamLobbyService.Current?.IsLobbyRequestPending == true) return;
             if (isOnlineScreen && !flow.IsBusy)
             {
                 if (EventSystem.current != null) rememberedOnlineSelection = EventSystem.current.currentSelectedGameObject;
@@ -581,7 +581,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
 
     private void RefreshOnlineEntry()
     {
-        bool searching = SteamRoomManager.Instance?.IsLobbyRequestPending == true;
+        bool searching = SteamLobbyService.Current?.IsLobbyRequestPending == true;
         bool pending = flow.IsBusy || searching;
         hostLobbyButton.interactable = codeInput.interactable = !pending;
         submitCodeButton.interactable = !pending && !string.IsNullOrWhiteSpace(codeInput.text);

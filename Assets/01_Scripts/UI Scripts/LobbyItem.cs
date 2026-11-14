@@ -48,6 +48,13 @@ public class LobbyItem : MonoBehaviour
             return;
         }
 
-        SteamRoomManager.Instance.JoinLobby(lobbyInfo.LobbyID);
+        SteamLobbyService lobbyService = SteamLobbyService.Instance;
+        if (lobbyService == null)
+        {
+            Debug.LogWarning("LobbyItem could not find SteamLobbyService.", this);
+            return;
+        }
+
+        lobbyService.JoinLobby(lobbyInfo.LobbyID);
     }
 }

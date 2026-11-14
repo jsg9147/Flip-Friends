@@ -80,9 +80,10 @@ public class PrivateJoinScreen : NavigableScreen
 
     public void JoinLobby()
     {
-        if (SteamRoomManager.Instance == null)
+        SteamLobbyService lobbyService = SteamLobbyService.Instance;
+        if (lobbyService == null)
         {
-            Debug.LogWarning("PrivateJoinScreen could not find SteamRoomManager.");
+            Debug.LogWarning("PrivateJoinScreen could not find SteamLobbyService.");
             return;
         }
 
@@ -92,7 +93,7 @@ public class PrivateJoinScreen : NavigableScreen
             return;
         }
 
-        SteamRoomManager.Instance.JoinPrivateLobby(joinCode);
+        lobbyService.JoinPrivateLobby(joinCode);
     }
 
     public void HandleBack()

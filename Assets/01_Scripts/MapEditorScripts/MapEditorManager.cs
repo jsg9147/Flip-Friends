@@ -205,8 +205,8 @@ public class MapEditorManager : MonoBehaviour
     private string GetAuthorName()
     {
         // 제작자 정보를 유지하려면 Main 씬에서 생존한 Steam 이름을 우선 사용해야 한다.
-        if (SteamRoomManager.Instance != null)
-            return SteamRoomManager.Instance.playerName;
+        if (SteamLobbyService.Current != null && !string.IsNullOrEmpty(SteamLobbyService.Current.PlayerName))
+            return SteamLobbyService.Current.PlayerName;
         return "Unknown";
     }
 
