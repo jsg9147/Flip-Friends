@@ -61,7 +61,7 @@ MapEditorManager
 
 ## 검증
 
-- 2026-11-14 팔레트 분리: Unity 재컴파일 오류0. Quantum 매니페스트6종이 새 팔레트로 변환·`ValidateAndApply`를 통과하고 저장 해시와 일치했다. 기존 Mirror 팔레트는 변환기가 `NetworkIdentity`로 거부한다. 새 Play `RunOffline`은 Main 오프라인 시작·미지원 콘텐츠 거부까지 통과했고, 이후 온라인 화면 단계는 준비 화면 전환 중 클릭이 버려져 멈췄다. MapEditor HUD 테스트 플레이 수동 확인과 Mirror GameRoom 커스텀 맵 Spawn은 미실행이다.
+- 2026-11-14 팔레트 분리: Unity 재컴파일 오류0. Quantum 매니페스트6종이 새 팔레트로 변환·`ValidateAndApply`를 통과하고 저장 해시와 일치했다. 기존 Mirror 팔레트는 변환기가 `NetworkIdentity`로 거부한다. 준비 화면 전환 중 클릭이 버려지므로 `QuantumProductChecks.Click`은 버튼이 실제로 누를 수 있을 때까지 기다린다. 이 수정 뒤 새 Play 첫 Main 검사 `RunOffline`이 전체 통과했다(장치·복귀·상호작용·이동·정적/로프 재생, Main 왕복, 잔존·Unity 오류0). MapEditor HUD 테스트 플레이 수동 확인과 Mirror GameRoom 커스텀 맵 Spawn은 미실행이다.
 - Quantum 준비 화면의 저장 맵 선택과 오프라인 시작, 미지원 및 잘못된 버전 거부, 준비 화면에서 2.0 파일 내용 보존, 수신 후 Maps에 파일을 쓰지 않는 동작을 확인했다. [개발 Photon과 미실행 조건](CUSTOM_MAP_NETWORK.md#검증).
 
 - 2026-11-10 Unity 6000.6.8f1 재컴파일 오류 0건. 새 Play 세션의 첫 Main 검사로 `QuantumProductChecks.RunOffline`을 실행해 통과했다.

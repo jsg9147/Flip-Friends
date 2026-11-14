@@ -215,7 +215,7 @@ public static class QuantumProductChecks
     private static async Task CheckMain()
     {
         var flow = QuantumGameFlow.Instance;
-        Click("Start Button");
+        await Click("Start Button");
         Require(UnityEngine.Object.FindAnyObjectByType<ScreenNavigator>().CurrentScreen.ScreenId == "quantum-prepare", "Start 실제 Quantum 연결");
         var valid = flow.SupportedMaps[0];
         var invalid = UnityEngine.Object.Instantiate(valid);
@@ -228,7 +228,7 @@ public static class QuantumProductChecks
             serialized.FindProperty("source").objectReferenceValue = badSource;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             flow.SupportedMaps[0] = invalid;
-            Click("오프라인 시작");
+            await Click("오프라인 시작");
             await Wait(() => flow.State == QuantumGameState.Failed, "미지원 콘텐츠 시작 전 거부");
             Require(flow.Message.Contains("위치=") && flow.Session == null, "미지원 위치·원인 UI 표시 및 부분 시작 없음");
         }
@@ -238,18 +238,19 @@ public static class QuantumProductChecks
             UnityEngine.Object.Destroy(invalid);
             UnityEngine.Object.Destroy(badSource);
         }
-        Click("온라인 시작");
-        var codeField = UnityEngine.Object.FindObjectsByType<TMPro.TMP_InputField>()
-            .Single(field => field.name == "방 코드 입력");
+        await Click("온라인 시작");
+        TMPro.TMP_InputField codeField = null;
+        await Wait(() => (codeField = UnityEngine.Object.FindObjectsByType<TMPro.TMP_InputField>()
+            .SingleOrDefault(field => field.name == "방 코드 입력")) != null && codeField.IsInteractable(), "방 코드 입력란 표시");
         codeField.text = "1234";
-        Click("참가");
+        await Click("참가");
         Require(codeField.text == "1234" && flow.Message.Contains("8자리"), "잘못된 코드 안내 및 입력 유지");
-        Click("방 만들기");
+        await Click("방 만들기");
         await Wait(() => flow.State == QuantumGameState.Failed, "출시 설정 실패 표시");
         Require(flow.Session == null && flow.Message.Contains("출시 Photon"), "출시 익명 폴백 없음");
-        Click("취소");
-        Click("로프 맵 선택");
-        Click("오프라인 시작");
+        await Click("취소");
+        await Click("로프 맵 선택");
+        await Click("오프라인 시작");
         var duplicate = flow.StartAsync(false);
         await Wait(() => flow.State == QuantumGameState.Playing, "오프라인 재시도");
         Require(flow.SelectedMap == 1 && UnityEngine.Object.FindObjectsByType<QuantumGameView>().Length == 1, "로프 선택·표시 단일 생성");
@@ -261,15 +262,15 @@ public static class QuantumProductChecks
         await Wait(() => SceneManager.GetActiveScene().name == "Main" && flow.State == QuantumGameState.Ready, "위 입력·전원 도착·정상 종료", 15000);
         Require(flow.Message.Contains("전원 도착") && !first.HasInputSubscription && first.Runner == null, "정상 종료 콜백 해제");
         await AssertNoResidue();
-        Click("Start Button");
-        Click("정적 맵 선택");
-        Click("오프라인 시작");
+        await Click("Start Button");
+        await Click("정적 맵 선택");
+        await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "종료 후 재진입");
-        Click("플레이 종료");
+        await Click("플레이 종료");
         await Wait(() => flow.State == QuantumGameState.Ready && SceneManager.GetActiveScene().name == "Main", "메뉴 종료");
         await AssertNoResidue();
-        Click("Start Button");
-        Click("오프라인 시작");
+        await Click("Start Button");
+        await Click("오프라인 시작");
         await flow.ReturnAsync("검사 취소");
         Require(flow.State == QuantumGameState.Ready, "시작 중 취소");
         await AssertNoResidue();
@@ -283,9 +284,9 @@ public static class QuantumProductChecks
     private static async Task CheckInteractionMain()
     {
         var flow = QuantumGameFlow.Instance;
-        Click("Start Button");
-        Click("상호작용 맵 선택");
-        Click("오프라인 시작");
+        await Click("Start Button");
+        await Click("상호작용 맵 선택");
+        await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "상호작용 맵 Main 진입");
         Require(flow.SelectedMap == 2 && flow.Content.MovableBoxes.Count == 1, "상자 맵 선택");
         var session = flow.Session;
@@ -302,9 +303,9 @@ public static class QuantumProductChecks
             await Wait(() => flow.State == QuantumGameState.Ready && SceneManager.GetActiveScene().name == "Main", "상자 맵 전원 도착", 20000);
         }
         await AssertNoResidue();
-        Click("Start Button"); Click("상호작용 맵 선택"); Click("오프라인 시작");
+        await Click("Start Button"); await Click("상호작용 맵 선택"); await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "상호작용 맵 재진입");
-        Click("플레이 종료");
+        await Click("플레이 종료");
         await Wait(() => flow.State == QuantumGameState.Ready, "상호작용 재진입 종료");
         await AssertNoResidue();
     }
@@ -312,7 +313,7 @@ public static class QuantumProductChecks
     private static async Task CheckRespawnMain()
     {
         var flow = QuantumGameFlow.Instance;
-        Click("Start Button"); Click("복귀 맵 선택"); Click("오프라인 시작");
+        await Click("Start Button"); await Click("복귀 맵 선택"); await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "복귀 맵 Main 진입");
         Require(flow.SelectedMap == 3 && flow.Content.Version == 4, "새 복귀 콘텐츠 선택");
         var session = flow.Session;
@@ -330,16 +331,16 @@ public static class QuantumProductChecks
             await Wait(() => flow.State == QuantumGameState.Ready && SceneManager.GetActiveScene().name == "Main", "복귀 맵 전원 도착", 25000);
         }
         await AssertNoResidue();
-        Click("Start Button"); Click("복귀 맵 선택"); Click("오프라인 시작");
+        await Click("Start Button"); await Click("복귀 맵 선택"); await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "복귀 맵 재진입");
-        Click("플레이 종료"); await Wait(() => flow.State == QuantumGameState.Ready, "복귀 맵 메뉴 종료");
+        await Click("플레이 종료"); await Wait(() => flow.State == QuantumGameState.Ready, "복귀 맵 메뉴 종료");
         await AssertNoResidue();
     }
 
     private static async Task CheckDeviceMain()
     {
         var flow = QuantumGameFlow.Instance;
-        Click("Start Button"); Click("장치 맵 선택"); Click("오프라인 시작");
+        await Click("Start Button"); await Click("장치 맵 선택"); await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "장치 맵 Main 진입");
         Require(flow.SelectedMap == 4 && flow.Content.Version == 5, "새 장치 콘텐츠 선택");
         var session = flow.Session;
@@ -357,9 +358,9 @@ public static class QuantumProductChecks
             await Wait(() => flow.State == QuantumGameState.Ready && SceneManager.GetActiveScene().name == "Main", "장치 맵 전원 도착", 25000);
         }
         await AssertNoResidue();
-        Click("Start Button"); Click("장치 맵 선택"); Click("오프라인 시작");
+        await Click("Start Button"); await Click("장치 맵 선택"); await Click("오프라인 시작");
         await Wait(() => flow.State == QuantumGameState.Playing, "장치 맵 재진입");
-        Click("플레이 종료"); await Wait(() => flow.State == QuantumGameState.Ready, "장치 맵 메뉴 종료");
+        await Click("플레이 종료"); await Wait(() => flow.State == QuantumGameState.Ready, "장치 맵 메뉴 종료");
         await AssertNoResidue();
     }
 
@@ -514,10 +515,12 @@ public static class QuantumProductChecks
         return config;
     }
 
-    private static void Click(string name)
+    // 준비 화면은 화면 전환 중 CanvasGroup으로 입력을 막고 그동안의 클릭을 버린다. 실제로 누를 수 있을 때까지 기다린다.
+    private static async Task Click(string name)
     {
-        var button = UnityEngine.Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude).Single(x => x.name == name);
-        Require(button.interactable, "버튼 활성: " + name);
+        Button button = null;
+        await Wait(() => (button = UnityEngine.Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+            .SingleOrDefault(x => x.name == name)) != null && button.IsInteractable(), "버튼 활성: " + name);
         button.onClick.Invoke();
     }
 
