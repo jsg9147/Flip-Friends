@@ -21,11 +21,8 @@ public class MapEditorHUD : MonoBehaviour
     [SerializeField] private Transform loadListContainer;
     [SerializeField] private GameObject loadListItemPrefab;
 
-    [Header("도트 공통 프리팹")]
+    [Tooltip("불러오기 목록 항목마다 붙이는 삭제 버튼")]
     [SerializeField] private PixelButton buttonPrefab;
-    [SerializeField] private PixelButton primaryButtonPrefab;
-    [SerializeField] private Image panelPrefab;
-    [SerializeField] private Sprite fieldFrame;
 
     [Header("HUD 버튼")]
     [SerializeField] private PixelButton newMapButton;
@@ -33,45 +30,46 @@ public class MapEditorHUD : MonoBehaviour
     [SerializeField] private PixelButton saveButton;
     [SerializeField] private PixelButton returnButton;
     [SerializeField] private PixelButton testPlayButton;
+    [SerializeField] private PixelButton placeButton;
     [SerializeField] private PixelButton deleteButton;
     [SerializeField] private PixelButton rotateButton;
     [SerializeField] private PixelButton flipButton;
 
+    [Header("상태 표시")]
+    [SerializeField] private TMP_Text validationText;
+    [SerializeField] private TMP_Text selectedObjectText;
+    [SerializeField] private TMP_Text testHintText;
+
+    [Header("팝업")]
+    [SerializeField] private Button loadPopupBlocker;
+    [SerializeField] private GameObject overwritePopup;
+    [SerializeField] private TMP_Text overwriteMessage;
+    [SerializeField] private PixelButton confirmButton;
+    [SerializeField] private PixelButton cancelButton;
+
     [Header("키보드·패드 탐색")]
     [SerializeField] private PaletteUI paletteUI;
 
-    private static readonly Color Ink = new Color32(7, 53, 56, 255);
-    // 메뉴 화면의 남색 도트 배경과 같은 색이라 Main↔MapEditor 전환 때 바탕이 튀지 않는다.
-    private static readonly Color EditorBackground = new Color32(5, 38, 52, 255);
-    private const float ToolButtonHeight = 64f;
-    private const float ToolButtonSpacing = 76f;
-
     private ObjectTransformEditor transformEditor;
-    private PixelButton placeButton;
-    private TMP_Text validationText;
-    private GameObject loadPopupBlocker;
-    private GameObject overwritePopup;
-    private TMP_Text overwriteMessage;
-    private PixelButton confirmButton;
-    private PixelButton cancelButton;
     private GameObject confirmationReturnSelection;
     private bool isCancelSubscribed;
     private ConfirmationAction pendingConfirmation;
     private string pendingDeleteMapName;
     private bool isStartingTestPlay;
-    private TMP_Text selectedObjectText;
-    private TMP_Text testHintText;
     private string selectedObjectLabel = "오브젝트를 선택하세요";
 
+    // 배치는 MapEditor 씬에 있다(1600×900 기준). 여기서는 동작만 연결한다.
     private void Start()
     {
         if (!ValidateReferences()) return;
 
-        ConfigureEditorLayout();
-        InitializeStatusText();
-        InitializeValidationText();
-        InitializeLoadPopupBlocker();
-        InitializeOverwritePopup();
+        placeButton.Button.onClick.AddListener(() => ObjectTransformEditorMode(false));
+        loadPopupBlocker.onClick.AddListener(() => SetLoadPopupVisible(false));
+        confirmButton.Button.onClick.AddListener(ConfirmPendingAction);
+        cancelButton.Button.onClick.AddListener(CancelConfirmation);
+        overwritePopup.SetActive(false);
+        statusText.text = $"배치 도구 | {selectedObjectLabel} 선택됨";
+        ShowCurrentValidation();
         MapDataRepository.OperationFailed += ShowError;
         SubscribeToMapChanges();
         InitializeDeleteModeUI();
@@ -153,195 +151,11 @@ public class MapEditorHUD : MonoBehaviour
             statusText.text = $"배치 도구 | {selectedObjectLabel} 선택됨";
     }
 
-    // 1600×900 기준으로 상단 맵 관리 막대, 왼쪽 팔레트, 오른쪽 도구 패널, 하단 상태 막대를 배치한다.
-    private void ConfigureEditorLayout()
-    {
-        RectTransform canvasRect = transform.parent as RectTransform;
-        if (canvasRect == null) return;
-
-        HorizontalLayoutGroup headerLayout = GetComponent<HorizontalLayoutGroup>();
-        if (headerLayout != null) headerLayout.enabled = false;
-        ApplyPanelFrame(GetComponent<Image>());
-        RectTransform headerRect = (RectTransform)transform;
-        headerRect.anchorMin = new Vector2(0f, 1f);
-        headerRect.anchorMax = new Vector2(1f, 1f);
-        headerRect.pivot = new Vector2(0.5f, 1f);
-        headerRect.anchoredPosition = new Vector2(0f, -8f);
-        headerRect.sizeDelta = new Vector2(-16f, 88f);
-
-        TMP_Text managementTitle = CreateLayoutLabel(canvasRect, "맵 관리", new Vector2(0f, 1f), new Vector2(140f, -52f), new Vector2(120f, 42f), 26f);
-        managementTitle.alignment = TextAlignmentOptions.MidlineLeft;
-        TMP_Text mapNameLabel = CreateLayoutLabel(canvasRect, "맵 이름", new Vector2(0f, 1f), new Vector2(250f, -52f), new Vector2(70f, 42f), 18f);
-        mapNameLabel.alignment = TextAlignmentOptions.MidlineRight;
-        PlaceMapNameInput(canvasRect);
-        PlaceButton(newMapButton, canvasRect, "새 맵", new Vector2(0f, 1f), new Vector2(690f, -52f), new Vector2(130f, ToolButtonHeight));
-        PlaceButton(loadButton, canvasRect, "불러오기", new Vector2(0f, 1f), new Vector2(840f, -52f), new Vector2(160f, ToolButtonHeight));
-        PlaceButton(saveButton, canvasRect, "저장", new Vector2(0f, 1f), new Vector2(995f, -52f), new Vector2(140f, ToolButtonHeight));
-        PlaceButton(returnButton, canvasRect, "나가기", new Vector2(0f, 1f), new Vector2(1150f, -52f), new Vector2(160f, ToolButtonHeight));
-        PlaceButton(testPlayButton, canvasRect, "테스트 플레이", new Vector2(1f, 1f), new Vector2(-150f, -52f), new Vector2(260f, ToolButtonHeight));
-
-        ConfigurePalettePanel(canvasRect);
-
-        Image toolRail = CreatePanel("ToolRail", canvasRect, "도구");
-        SetRect(toolRail.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-132f, 0f), new Vector2(248f, -220f));
-        placeButton = Instantiate(buttonPrefab, toolRail.transform);
-        placeButton.name = "PlaceButton";
-        placeButton.Button.onClick.AddListener(() => ObjectTransformEditorMode(false));
-        PlaceToolButton(placeButton, toolRail.transform, "배치", 0);
-        PlaceToolButton(deleteButton, toolRail.transform, "지우개", 1);
-        PlaceToolButton(rotateButton, toolRail.transform, "회전", 2);
-        PlaceToolButton(flipButton, toolRail.transform, "반전", 3);
-        selectedObjectText = CreateLayoutLabel(toolRail.transform, $"{selectedObjectLabel} 선택됨", new Vector2(0.5f, 1f),
-            new Vector2(0f, -110f - ToolButtonSpacing * 4f), new Vector2(196f, 60f), 18f);
-        selectedObjectText.textWrappingMode = TextWrappingModes.Normal;
-
-        Image statusBar = CreatePanel("StatusBar", canvasRect, null);
-        RectTransform statusRect = statusBar.rectTransform;
-        statusRect.anchorMin = Vector2.zero;
-        statusRect.anchorMax = new Vector2(1f, 0f);
-        statusRect.pivot = new Vector2(0.5f, 0f);
-        statusRect.anchoredPosition = new Vector2(0f, 8f);
-        statusRect.sizeDelta = new Vector2(-16f, 92f);
-        testHintText = CreateLayoutLabel(canvasRect, "도착 지점을 배치하면 테스트할 수 있어요", Vector2.zero, new Vector2(1190f, 54f), new Vector2(560f, 28f), 17f);
-        testHintText.alignment = TextAlignmentOptions.MidlineRight;
-        ConfigureEditorCamera();
-    }
-
-    private void ConfigurePalettePanel(RectTransform canvasRect)
-    {
-        Transform palettePanel = canvasRect.Find("PalettePanel");
-        if (palettePanel == null) return;
-        SetRect((RectTransform)palettePanel, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(132f, 0f), new Vector2(248f, -220f));
-        ApplyPanelFrame(palettePanel.GetComponent<Image>());
-        if (palettePanel.Find("ButtonContainer") is RectTransform containerRect)
-        {
-            containerRect.anchorMin = Vector2.zero;
-            containerRect.anchorMax = Vector2.one;
-            containerRect.offsetMin = new Vector2(24f, 28f);
-            containerRect.offsetMax = new Vector2(-24f, -84f);
-        }
-        if (palettePanel.Find("tile_icon") is RectTransform iconRect)
-            SetRect(iconRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(52f, -52f), new Vector2(28f, 28f));
-        TMP_Text paletteTitle = CreateLayoutLabel(palettePanel, "오브젝트", new Vector2(0f, 1f), new Vector2(144f, -52f), new Vector2(140f, 40f), 24f);
-        paletteTitle.alignment = TextAlignmentOptions.MidlineLeft;
-    }
-
-    private void PlaceMapNameInput(RectTransform canvasRect)
-    {
-        mapNameInput.transform.SetParent(canvasRect, false);
-        // 키보드·패드로 지나가기만 해도 편집이 켜지면 좌우 키가 커서 이동에 묶여 상단 막대를 벗어날 수 없다.
-        // 편집은 확인(Enter·A)이나 클릭으로 시작한다.
-        mapNameInput.shouldActivateOnSelect = false;
-        SetRect((RectTransform)mapNameInput.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(455f, -52f), new Vector2(320f, 60f));
-        if (mapNameInput.image != null && fieldFrame != null)
-        {
-            mapNameInput.image.sprite = fieldFrame;
-            mapNameInput.image.type = Image.Type.Sliced;
-            mapNameInput.image.color = Color.white;
-        }
-        mapNameInput.textComponent.color = Ink;
-        mapNameInput.textComponent.alignment = TextAlignmentOptions.MidlineLeft;
-        mapNameInput.textComponent.fontSize = 22f;
-        mapNameInput.pointSize = 22f;
-        if (mapNameInput.placeholder is TMP_Text placeholder)
-        {
-            placeholder.color = new Color(Ink.r, Ink.g, Ink.b, 0.6f);
-            placeholder.alignment = TextAlignmentOptions.MidlineLeft;
-        }
-        if (mapNameInput.textViewport != null)
-        {
-            mapNameInput.textViewport.offsetMin = new Vector2(20f, 10f);
-            mapNameInput.textViewport.offsetMax = new Vector2(-20f, -10f);
-        }
-    }
-
-    private void PlaceButton(PixelButton button, RectTransform parent, string label, Vector2 anchor, Vector2 position, Vector2 size)
-    {
-        if (button == null) return;
-        button.transform.SetParent(parent, false);
-        SetRect((RectTransform)button.transform, anchor, anchor, position, size);
-        button.Text = label;
-        button.SetFontRange(16f, 24f);
-    }
-
-    private void PlaceToolButton(PixelButton button, Transform rail, string label, int index)
-    {
-        PlaceButton(button, (RectTransform)rail, label, new Vector2(0.5f, 1f),
-            new Vector2(0f, -110f - ToolButtonSpacing * index), new Vector2(196f, ToolButtonHeight));
-    }
-
-    private Image CreatePanel(string panelName, Transform parent, string title)
-    {
-        Image panel = Instantiate(panelPrefab, parent);
-        panel.name = panelName;
-        TMP_Text titleText = panel.GetComponentInChildren<TMP_Text>(true);
-        if (titleText != null)
-        {
-            titleText.gameObject.SetActive(title != null);
-            titleText.text = title ?? string.Empty;
-            titleText.fontSizeMax = 26f;
-            titleText.rectTransform.offsetMin = new Vector2(28f, -76f);
-            titleText.rectTransform.offsetMax = new Vector2(-28f, -28f);
-        }
-        return panel;
-    }
-
-    private void ApplyPanelFrame(Image image)
-    {
-        if (image == null || panelPrefab == null) return;
-        image.sprite = panelPrefab.sprite;
-        image.type = Image.Type.Sliced;
-        image.pixelsPerUnitMultiplier = 1f;
-        image.color = Color.white;
-        image.raycastTarget = false;
-    }
-
-    private void ConfigureEditorCamera()
-    {
-        Camera editorCamera = null;
-        foreach (Camera candidate in FindObjectsByType<Camera>())
-        {
-            if (candidate.gameObject.scene == gameObject.scene)
-            {
-                editorCamera = candidate;
-                break;
-            }
-        }
-        if (editorCamera == null) return;
-        editorCamera.clearFlags = CameraClearFlags.SolidColor;
-        editorCamera.backgroundColor = EditorBackground;
-    }
-
     private void ObjectTransformEditorMode(bool isDeleteMode)
     {
         ObjectTransformEditor editor = GetTransformEditor();
         if (editor == null) return;
         if (editor.IsDeleteMode != isDeleteMode) editor.ToggleDeleteMode();
-    }
-
-    private void SetRect(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
-    {
-        if (rect == null) return;
-        rect.anchorMin = anchorMin;
-        rect.anchorMax = anchorMax;
-        rect.anchoredPosition = position;
-        rect.sizeDelta = size;
-        rect.pivot = new Vector2(0.5f, 0.5f);
-    }
-
-    private TMP_Text CreateLayoutLabel(Transform parent, string label, Vector2 anchor, Vector2 position, Vector2 size, float fontSize)
-    {
-        GameObject labelObject = CreateUIObject($"Label_{label}", parent);
-        RectTransform rect = labelObject.GetComponent<RectTransform>();
-        SetRect(rect, anchor, anchor, position, size);
-        TextMeshProUGUI text = labelObject.AddComponent<TextMeshProUGUI>();
-        text.font = mapNameInput.textComponent.font;
-        text.fontSize = fontSize;
-        text.alignment = TextAlignmentOptions.Center;
-        text.color = Ink;
-        text.raycastTarget = false;
-        text.text = label;
-        return text;
     }
 
     private void OnMapNameChanged(string newName)
@@ -552,6 +366,14 @@ public class MapEditorHUD : MonoBehaviour
         isValid &= ValidateReference(loadPopup, nameof(loadPopup));
         isValid &= ValidateReference(loadListContainer, nameof(loadListContainer));
         isValid &= ValidateReference(loadListItemPrefab, nameof(loadListItemPrefab));
+        isValid &= ValidateReference(buttonPrefab, nameof(buttonPrefab));
+        isValid &= ValidateReference(statusText, nameof(statusText));
+        isValid &= ValidateReference(placeButton, nameof(placeButton));
+        isValid &= ValidateReference(loadPopupBlocker, nameof(loadPopupBlocker));
+        isValid &= ValidateReference(overwritePopup, nameof(overwritePopup));
+        isValid &= ValidateReference(overwriteMessage, nameof(overwriteMessage));
+        isValid &= ValidateReference(confirmButton, nameof(confirmButton));
+        isValid &= ValidateReference(cancelButton, nameof(cancelButton));
         return isValid;
     }
 
@@ -606,118 +428,13 @@ public class MapEditorHUD : MonoBehaviour
             MapEditorManager.instance.MapDataChanged -= ShowCurrentValidation;
     }
 
-    private void InitializeStatusText()
-    {
-        if (statusText == null)
-            statusText = CreateStatusText();
-
-        statusText.text = $"배치 도구 | {selectedObjectLabel} 선택됨";
-    }
-
-    private void InitializeValidationText()
-    {
-        validationText = CreateValidationText();
-        ShowCurrentValidation();
-    }
-
-    private void InitializeOverwritePopup()
-    {
-        overwritePopup = CreateOverwritePopup();
-        overwritePopup.SetActive(false);
-    }
-
-    private void InitializeLoadPopupBlocker()
-    {
-        loadPopupBlocker = CreateUIObject("LoadPopupBlocker", loadPopup.transform.parent);
-        RectTransform blockerRect = loadPopupBlocker.GetComponent<RectTransform>();
-        StretchToParent(blockerRect);
-        Image blockerImage = loadPopupBlocker.AddComponent<Image>();
-        blockerImage.color = Color.clear;
-        Button blockerButton = loadPopupBlocker.AddComponent<Button>();
-        blockerButton.targetGraphic = blockerImage;
-        blockerButton.transition = Selectable.Transition.None;
-        // 화면 전체를 덮는 바깥 클릭 판정이라 키보드·패드 탐색 대상이 되면 안 된다.
-        blockerButton.navigation = new Navigation { mode = Navigation.Mode.None };
-        blockerButton.onClick.AddListener(() => SetLoadPopupVisible(false));
-        loadPopupBlocker.transform.SetSiblingIndex(loadPopup.transform.GetSiblingIndex());
-    }
-
     private void SetLoadPopupVisible(bool isVisible)
     {
         bool wasVisible = loadPopup.activeSelf;
-        loadPopupBlocker?.SetActive(isVisible);
+        loadPopupBlocker.gameObject.SetActive(isVisible);
         loadPopup.SetActive(isVisible);
         if (wasVisible && !isVisible && loadButton != null)
             UIInputModeController.RequestSelection(loadButton.gameObject);
-    }
-
-    private TMP_Text CreateStatusText()
-    {
-        TMP_Text text = CreateLayoutLabel(transform.parent, string.Empty, Vector2.zero, new Vector2(450f, 66f), new Vector2(620f, 26f), 19f);
-        text.name = "StatusText";
-        text.alignment = TextAlignmentOptions.MidlineLeft;
-        return text;
-    }
-
-    private TMP_Text CreateValidationText()
-    {
-        TMP_Text text = CreateLayoutLabel(transform.parent, string.Empty, Vector2.zero, new Vector2(450f, 34f), new Vector2(620f, 36f), 17f);
-        text.name = "ValidationText";
-        text.alignment = TextAlignmentOptions.MidlineLeft;
-        text.textWrappingMode = TextWrappingModes.Normal;
-        return text;
-    }
-
-    private GameObject CreateOverwritePopup()
-    {
-        GameObject blocker = CreateUIObject("OverwritePopup", transform.parent);
-        RectTransform blockerRect = blocker.GetComponent<RectTransform>();
-        StretchToParent(blockerRect);
-        Image blockerImage = blocker.AddComponent<Image>();
-        blockerImage.color = new Color(0f, 0f, 0f, 0.65f);
-
-        Image dialog = CreatePanel("Dialog", blocker.transform, null);
-        SetRect(dialog.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(620f, 280f));
-
-        overwriteMessage = CreateLayoutLabel(dialog.transform, string.Empty, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(540f, 110f), 26f);
-        overwriteMessage.name = "Message";
-        confirmButton = CreatePopupButton(primaryButtonPrefab, dialog.transform, "확인", new Vector2(-120f, -80f), ConfirmPendingAction);
-        cancelButton = CreatePopupButton(buttonPrefab, dialog.transform, "취소", new Vector2(120f, -80f), CancelConfirmation);
-        // 확인 창이 떠 있는 동안 뒤의 HUD 버튼으로 선택이 빠지지 않게 두 버튼끼리만 잇는다.
-        SetExplicitNavigation(confirmButton.Button, null, null, null, cancelButton.Button);
-        SetExplicitNavigation(cancelButton.Button, null, null, confirmButton.Button, null);
-        return blocker;
-    }
-
-    private PixelButton CreatePopupButton(
-        PixelButton prefab,
-        Transform parent,
-        string label,
-        Vector2 position,
-        UnityEngine.Events.UnityAction onClick)
-    {
-        PixelButton button = Instantiate(prefab, parent);
-        button.name = $"{label}Button";
-        SetRect((RectTransform)button.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), position, new Vector2(200f, ToolButtonHeight));
-        button.Text = label;
-        button.Button.onClick.AddListener(onClick);
-        return button;
-    }
-
-    private GameObject CreateUIObject(string objectName, Transform parent)
-    {
-        GameObject uiObject = new(objectName, typeof(RectTransform), typeof(CanvasRenderer));
-        uiObject.layer = gameObject.layer;
-        uiObject.GetComponent<RectTransform>().SetParent(parent, false);
-        return uiObject;
-    }
-
-    private void StretchToParent(RectTransform rectTransform)
-    {
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.one;
-        rectTransform.offsetMin = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
     }
 
     private void ShowOverwritePopup(string mapName)
