@@ -21,8 +21,30 @@ public class MapEditorHUD : MonoBehaviour
     [SerializeField] private Transform loadListContainer;
     [SerializeField] private GameObject loadListItemPrefab;
 
+    [Header("도트 공통 프리팹")]
+    [SerializeField] private PixelButton buttonPrefab;
+    [SerializeField] private PixelButton primaryButtonPrefab;
+    [SerializeField] private Image panelPrefab;
+    [SerializeField] private Sprite fieldFrame;
+
+    [Header("HUD 버튼")]
+    [SerializeField] private PixelButton newMapButton;
+    [SerializeField] private PixelButton loadButton;
+    [SerializeField] private PixelButton saveButton;
+    [SerializeField] private PixelButton returnButton;
+    [SerializeField] private PixelButton testPlayButton;
+    [SerializeField] private PixelButton deleteButton;
+    [SerializeField] private PixelButton rotateButton;
+    [SerializeField] private PixelButton flipButton;
+
+    private static readonly Color Ink = new Color32(7, 53, 56, 255);
+    // 메뉴 화면의 남색 도트 배경과 같은 색이라 Main↔MapEditor 전환 때 바탕이 튀지 않는다.
+    private static readonly Color EditorBackground = new Color32(5, 38, 52, 255);
+    private const float ToolButtonHeight = 64f;
+    private const float ToolButtonSpacing = 76f;
+
     private ObjectTransformEditor transformEditor;
-    private TMP_Text deleteModeLabel;
+    private PixelButton placeButton;
     private TMP_Text validationText;
     private GameObject loadPopupBlocker;
     private GameObject overwritePopup;
@@ -60,6 +82,7 @@ public class MapEditorHUD : MonoBehaviour
             statusText.text = $"배치 도구 | {selectedObjectLabel} 선택됨";
     }
 
+    // 1600×900 기준으로 상단 맵 관리 막대, 왼쪽 팔레트, 오른쪽 도구 패널, 하단 상태 막대를 배치한다.
     private void ConfigureEditorLayout()
     {
         RectTransform canvasRect = transform.parent as RectTransform;
@@ -67,89 +90,135 @@ public class MapEditorHUD : MonoBehaviour
 
         HorizontalLayoutGroup headerLayout = GetComponent<HorizontalLayoutGroup>();
         if (headerLayout != null) headerLayout.enabled = false;
-        Image headerImage = GetComponent<Image>();
-        if (headerImage != null)
-        {
-            headerImage.sprite = null;
-            headerImage.color = Color.white;
-            headerImage.raycastTarget = false;
-        }
-        SetRect(transform as RectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -48f), new Vector2(0f, 96f));
+        ApplyPanelFrame(GetComponent<Image>());
+        RectTransform headerRect = (RectTransform)transform;
+        headerRect.anchorMin = new Vector2(0f, 1f);
+        headerRect.anchorMax = new Vector2(1f, 1f);
+        headerRect.pivot = new Vector2(0.5f, 1f);
+        headerRect.anchoredPosition = new Vector2(0f, -8f);
+        headerRect.sizeDelta = new Vector2(-16f, 88f);
 
-        SetChildRect("MapNameInput", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(420f, -48f), new Vector2(250f, 54f));
-        StyleSecondaryButton(transform.Find("MapNameInput"));
-        SetChildRect("NewMapButton", canvasRect, Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
-        SetCanvasRect("NewMapButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(760f, -48f), new Vector2(124f, 54f));
-        SetCanvasRect("LoadButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(900f, -48f), new Vector2(142f, 54f));
-        SetCanvasRect("SaveButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(1058f, -48f), new Vector2(122f, 54f));
-        SetCanvasRect("ReturnButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(1196f, -48f), new Vector2(132f, 54f));
-        SetCanvasRect("TestPlayButton", canvasRect, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(410f, -132f), new Vector2(250f, 58f));
+        TMP_Text managementTitle = CreateLayoutLabel(canvasRect, "맵 관리", new Vector2(0f, 1f), new Vector2(140f, -52f), new Vector2(120f, 42f), 26f);
+        managementTitle.alignment = TextAlignmentOptions.MidlineLeft;
+        TMP_Text mapNameLabel = CreateLayoutLabel(canvasRect, "맵 이름", new Vector2(0f, 1f), new Vector2(250f, -52f), new Vector2(70f, 42f), 18f);
+        mapNameLabel.alignment = TextAlignmentOptions.MidlineRight;
+        PlaceMapNameInput(canvasRect);
+        PlaceButton(newMapButton, canvasRect, "새 맵", new Vector2(0f, 1f), new Vector2(690f, -52f), new Vector2(130f, ToolButtonHeight));
+        PlaceButton(loadButton, canvasRect, "불러오기", new Vector2(0f, 1f), new Vector2(840f, -52f), new Vector2(160f, ToolButtonHeight));
+        PlaceButton(saveButton, canvasRect, "저장", new Vector2(0f, 1f), new Vector2(995f, -52f), new Vector2(140f, ToolButtonHeight));
+        PlaceButton(returnButton, canvasRect, "나가기", new Vector2(0f, 1f), new Vector2(1150f, -52f), new Vector2(160f, ToolButtonHeight));
+        PlaceButton(testPlayButton, canvasRect, "테스트 플레이", new Vector2(1f, 1f), new Vector2(-150f, -52f), new Vector2(260f, ToolButtonHeight));
 
-        SetPanelRect("PalettePanel", canvasRect, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(132f, 0f), new Vector2(248f, -220f));
-        Transform palettePanel = canvasRect.Find("PalettePanel");
-        StyleWhitePanel(palettePanel);
-        Transform paletteContainer = palettePanel?.Find("ButtonContainer");
-        if (paletteContainer is RectTransform containerRect)
-        {
-            containerRect.anchorMin = Vector2.zero;
-            containerRect.anchorMax = Vector2.one;
-            containerRect.offsetMin = new Vector2(10f, 14f);
-            containerRect.offsetMax = new Vector2(-10f, -72f);
-        }
-        TMP_Text managementTitle = CreateLayoutLabel(canvasRect, "맵 관리", new Vector2(92f, -48f), new Vector2(150f, 42f), 25f);
-        SetRect(managementTitle.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(92f, -48f), new Vector2(150f, 42f));
-        TMP_Text mapNameLabel = CreateLayoutLabel(canvasRect, "맵 이름", new Vector2(215f, -48f), new Vector2(70f, 42f), 18f);
-        SetRect(mapNameLabel.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(215f, -48f), new Vector2(70f, 42f));
-        TMP_Text paletteTitle = CreateLayoutLabel(palettePanel, "오브젝트", new Vector2(74f, -27f), new Vector2(150f, 42f), 23f);
-        SetRect(paletteTitle.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(74f, -27f), new Vector2(150f, 42f));
-        paletteTitle.alignment = TextAlignmentOptions.MidlineLeft;
-        Transform paletteIcon = palettePanel?.Find("tile_icon");
-        if (paletteIcon is RectTransform iconRect)
-            SetRect(iconRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(38f, -27f), new Vector2(28f, 28f));
+        ConfigurePalettePanel(canvasRect);
 
-        GameObject toolRail = CreateUIObject("ToolRail", canvasRect);
-        RectTransform railRect = toolRail.GetComponent<RectTransform>();
-        SetRect(railRect, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-112f, 0f), new Vector2(220f, -220f));
-        Image railImage = toolRail.AddComponent<Image>();
-        railImage.color = Color.white;
-        railImage.raycastTarget = false;
-        AddThinOutline(toolRail, new Color(0.35f, 0.76f, 0.86f, 1f), 1f);
+        Image toolRail = CreatePanel("ToolRail", canvasRect, "도구");
+        SetRect(toolRail.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-132f, 0f), new Vector2(248f, -220f));
+        placeButton = Instantiate(buttonPrefab, toolRail.transform);
+        placeButton.name = "PlaceButton";
+        placeButton.Button.onClick.AddListener(() => ObjectTransformEditorMode(false));
+        PlaceToolButton(placeButton, toolRail.transform, "배치", 0);
+        PlaceToolButton(deleteButton, toolRail.transform, "지우개", 1);
+        PlaceToolButton(rotateButton, toolRail.transform, "회전", 2);
+        PlaceToolButton(flipButton, toolRail.transform, "반전", 3);
+        selectedObjectText = CreateLayoutLabel(toolRail.transform, $"{selectedObjectLabel} 선택됨", new Vector2(0.5f, 1f),
+            new Vector2(0f, -110f - ToolButtonSpacing * 4f), new Vector2(196f, 60f), 18f);
+        selectedObjectText.textWrappingMode = TextWrappingModes.Normal;
 
-        MoveAndPlaceTool("DeleteButton", toolRail.transform, "지우개", new Vector2(0f, -170f));
-        MoveAndPlaceTool("RotateButton", toolRail.transform, "회전", new Vector2(0f, -245f));
-        MoveAndPlaceTool("FlipButton", toolRail.transform, "반전", new Vector2(0f, -320f));
-        CreatePlaceButton(toolRail.transform);
-
-        CreateLayoutLabel(toolRail.transform, "상자 선택됨", new Vector2(0f, -390f), new Vector2(190f, 36f), 18f, out selectedObjectText);
-        selectedObjectText.text = $"{selectedObjectLabel} 선택됨";
-        TMP_Text hint = CreateLayoutLabel(canvasRect, "도착 지점을 배치하면 테스트할 수 있어요", new Vector2(930f, 48f), new Vector2(630f, 28f), 17f);
-        SetRect(hint.rectTransform, Vector2.zero, Vector2.zero, new Vector2(930f, 48f), new Vector2(630f, 28f));
-        hint.alignment = TextAlignmentOptions.MidlineLeft;
-        testHintText = hint;
-        CreateStatusRule(canvasRect);
-        CreateRule(canvasRect, new Vector2(0f, -96f));
+        Image statusBar = CreatePanel("StatusBar", canvasRect, null);
+        RectTransform statusRect = statusBar.rectTransform;
+        statusRect.anchorMin = Vector2.zero;
+        statusRect.anchorMax = new Vector2(1f, 0f);
+        statusRect.pivot = new Vector2(0.5f, 0f);
+        statusRect.anchoredPosition = new Vector2(0f, 8f);
+        statusRect.sizeDelta = new Vector2(-16f, 92f);
+        testHintText = CreateLayoutLabel(canvasRect, "도착 지점을 배치하면 테스트할 수 있어요", Vector2.zero, new Vector2(1190f, 54f), new Vector2(560f, 28f), 17f);
+        testHintText.alignment = TextAlignmentOptions.MidlineRight;
         ConfigureEditorCamera();
     }
 
-    private void CreateStatusRule(Transform parent)
+    private void ConfigurePalettePanel(RectTransform canvasRect)
     {
-        CreateRule(parent, new Vector2(0f, 92f));
+        Transform palettePanel = canvasRect.Find("PalettePanel");
+        if (palettePanel == null) return;
+        SetRect((RectTransform)palettePanel, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(132f, 0f), new Vector2(248f, -220f));
+        ApplyPanelFrame(palettePanel.GetComponent<Image>());
+        if (palettePanel.Find("ButtonContainer") is RectTransform containerRect)
+        {
+            containerRect.anchorMin = Vector2.zero;
+            containerRect.anchorMax = Vector2.one;
+            containerRect.offsetMin = new Vector2(24f, 28f);
+            containerRect.offsetMax = new Vector2(-24f, -84f);
+        }
+        if (palettePanel.Find("tile_icon") is RectTransform iconRect)
+            SetRect(iconRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(52f, -52f), new Vector2(28f, 28f));
+        TMP_Text paletteTitle = CreateLayoutLabel(palettePanel, "오브젝트", new Vector2(0f, 1f), new Vector2(144f, -52f), new Vector2(140f, 40f), 24f);
+        paletteTitle.alignment = TextAlignmentOptions.MidlineLeft;
     }
 
-    private void CreateRule(Transform parent, Vector2 position)
+    private void PlaceMapNameInput(RectTransform canvasRect)
     {
-        GameObject rule = CreateUIObject("StatusRule", parent);
-        RectTransform rect = rule.GetComponent<RectTransform>();
-        SetRect(rect, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-        bool isHeaderRule = position.y < 0f;
-        rect.anchorMin = new Vector2(0f, isHeaderRule ? 1f : 0f);
-        rect.anchorMax = new Vector2(1f, isHeaderRule ? 1f : 0f);
-        rect.pivot = new Vector2(0.5f, isHeaderRule ? 1f : 0f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(-32f, 3f);
-        Image image = rule.AddComponent<Image>();
-        image.color = new Color(0.16f, 0.68f, 0.73f, 1f);
+        mapNameInput.transform.SetParent(canvasRect, false);
+        SetRect((RectTransform)mapNameInput.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(455f, -52f), new Vector2(320f, 60f));
+        if (mapNameInput.image != null && fieldFrame != null)
+        {
+            mapNameInput.image.sprite = fieldFrame;
+            mapNameInput.image.type = Image.Type.Sliced;
+            mapNameInput.image.color = Color.white;
+        }
+        mapNameInput.textComponent.color = Ink;
+        mapNameInput.textComponent.alignment = TextAlignmentOptions.MidlineLeft;
+        mapNameInput.textComponent.fontSize = 22f;
+        mapNameInput.pointSize = 22f;
+        if (mapNameInput.placeholder is TMP_Text placeholder)
+        {
+            placeholder.color = new Color(Ink.r, Ink.g, Ink.b, 0.6f);
+            placeholder.alignment = TextAlignmentOptions.MidlineLeft;
+        }
+        if (mapNameInput.textViewport != null)
+        {
+            mapNameInput.textViewport.offsetMin = new Vector2(20f, 10f);
+            mapNameInput.textViewport.offsetMax = new Vector2(-20f, -10f);
+        }
+    }
+
+    private void PlaceButton(PixelButton button, RectTransform parent, string label, Vector2 anchor, Vector2 position, Vector2 size)
+    {
+        if (button == null) return;
+        button.transform.SetParent(parent, false);
+        SetRect((RectTransform)button.transform, anchor, anchor, position, size);
+        button.Text = label;
+        button.SetFontRange(16f, 24f);
+    }
+
+    private void PlaceToolButton(PixelButton button, Transform rail, string label, int index)
+    {
+        PlaceButton(button, (RectTransform)rail, label, new Vector2(0.5f, 1f),
+            new Vector2(0f, -110f - ToolButtonSpacing * index), new Vector2(196f, ToolButtonHeight));
+    }
+
+    private Image CreatePanel(string panelName, Transform parent, string title)
+    {
+        Image panel = Instantiate(panelPrefab, parent);
+        panel.name = panelName;
+        TMP_Text titleText = panel.GetComponentInChildren<TMP_Text>(true);
+        if (titleText != null)
+        {
+            titleText.gameObject.SetActive(title != null);
+            titleText.text = title ?? string.Empty;
+            titleText.fontSizeMax = 26f;
+            titleText.rectTransform.offsetMin = new Vector2(28f, -76f);
+            titleText.rectTransform.offsetMax = new Vector2(-28f, -28f);
+        }
+        return panel;
+    }
+
+    private void ApplyPanelFrame(Image image)
+    {
+        if (image == null || panelPrefab == null) return;
+        image.sprite = panelPrefab.sprite;
+        image.type = Image.Type.Sliced;
+        image.pixelsPerUnitMultiplier = 1f;
+        image.color = Color.white;
         image.raycastTarget = false;
     }
 
@@ -166,19 +235,7 @@ public class MapEditorHUD : MonoBehaviour
         }
         if (editorCamera == null) return;
         editorCamera.clearFlags = CameraClearFlags.SolidColor;
-        editorCamera.backgroundColor = Color.white;
-    }
-
-    private void StyleWhitePanel(Transform panel)
-    {
-        if (panel == null) return;
-        Image image = panel.GetComponent<Image>();
-        if (image != null)
-        {
-            image.sprite = null;
-            image.color = Color.white;
-        }
-        AddThinOutline(panel.gameObject, new Color(0.35f, 0.76f, 0.86f, 1f), 1f);
+        editorCamera.backgroundColor = EditorBackground;
     }
 
     private void ObjectTransformEditorMode(bool isDeleteMode)
@@ -186,110 +243,6 @@ public class MapEditorHUD : MonoBehaviour
         ObjectTransformEditor editor = GetTransformEditor();
         if (editor == null) return;
         if (editor.IsDeleteMode != isDeleteMode) editor.ToggleDeleteMode();
-    }
-
-    private void CreatePlaceButton(Transform parent)
-    {
-        GameObject placeButton = CreateUIObject("PlaceButton", parent);
-        SetRect(placeButton.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -95f), new Vector2(178f, 62f));
-        Image image = placeButton.AddComponent<Image>();
-        image.color = new Color(0.68f, 0.94f, 0.31f, 1f);
-        AddThinOutline(placeButton, new Color(0f, 0.45f, 0.52f, 1f), 1f);
-        Button button = placeButton.AddComponent<Button>();
-        button.transition = Selectable.Transition.None;
-        button.targetGraphic = image;
-        button.onClick.AddListener(() => ObjectTransformEditorMode(false));
-        TMP_Text label = CreateLayoutLabel(placeButton.transform, "배치", Vector2.zero, new Vector2(165f, 52f), 20f);
-        label.rectTransform.anchorMin = Vector2.zero;
-        label.rectTransform.anchorMax = Vector2.one;
-        label.rectTransform.offsetMin = new Vector2(8f, 4f);
-        label.rectTransform.offsetMax = new Vector2(-8f, -4f);
-        GameObject dot = CreateUIObject("PixelDot", placeButton.transform);
-        SetRect(dot.GetComponent<RectTransform>(), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(18f, 0f), new Vector2(8f, 8f));
-        Image dotImage = dot.AddComponent<Image>();
-        dotImage.color = new Color(0f, 0.247f, 0.282f, 1f);
-        dotImage.raycastTarget = false;
-        label.rectTransform.offsetMin = new Vector2(34f, 4f);
-    }
-
-    private void MoveAndPlaceTool(string childName, Transform parent, string label, Vector2 position, string newName = null)
-    {
-        Transform child = transform.Find(childName);
-        if (child == null) return;
-        child.SetParent(parent, false);
-        if (!string.IsNullOrEmpty(newName)) child.name = newName;
-        SetRect(child as RectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), position, new Vector2(178f, 62f));
-        StyleSecondaryButton(child);
-        SetButtonLabel(child, label);
-    }
-
-    private void MoveAndPlaceTool(string childName, Transform parent, string label, Vector2 anchor, Vector2 position, Vector2 size)
-    {
-        Transform child = transform.Find(childName);
-        if (child == null) return;
-        child.SetParent(parent, false);
-        SetRect(child as RectTransform, anchor, anchor, position, size);
-        if (childName != "TestPlayButton") StyleSecondaryButton(child);
-        SetButtonLabel(child, label);
-    }
-
-    private void SetButtonLabel(Transform button, string label)
-    {
-        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
-        if (text == null) return;
-        text.text = label;
-        RectTransform rect = text.rectTransform;
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        bool hasIcon = button.GetComponentsInChildren<Image>(true).Length > 1;
-        rect.offsetMin = new Vector2(hasIcon ? 42f : 8f, 4f);
-        rect.offsetMax = new Vector2(-8f, -4f);
-        text.alignment = TextAlignmentOptions.Midline;
-        text.color = new Color(0f, 0.247f, 0.282f, 1f);
-        text.fontSize = label == "테스트 플레이" ? 19f : 20f;
-    }
-
-    private void SetChildRect(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
-    {
-        Transform child = transform.Find(name);
-        if (child != null) SetRect(child as RectTransform, anchorMin, anchorMax, position, size);
-    }
-
-    private void SetCanvasRect(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
-    {
-        Transform child = transform.Find(name);
-        if (child == null) return;
-        child.SetParent(parent, false);
-        SetRect(child as RectTransform, anchorMin, anchorMax, position, size);
-        if (name != "TestPlayButton") StyleSecondaryButton(child);
-        SetButtonLabel(child, name == "TestPlayButton" ? "테스트 플레이" : name == "NewMapButton" ? "새 맵" : name == "LoadButton" ? "불러오기" : name == "SaveButton" ? "저장" : "나가기");
-    }
-
-    private void StyleSecondaryButton(Transform button)
-    {
-        if (button == null) return;
-        Image image = button.GetComponent<Image>();
-        if (image == null) return;
-        image.sprite = null;
-        image.color = Color.white;
-        Button control = button.GetComponent<Button>();
-        if (control != null) control.transition = Selectable.Transition.None;
-        AddThinOutline(button.gameObject, new Color(0.35f, 0.76f, 0.86f, 1f), 1f);
-    }
-
-    private void AddThinOutline(GameObject target, Color color, float width)
-    {
-        Outline outline = target.GetComponent<Outline>();
-        if (outline == null) outline = target.AddComponent<Outline>();
-        outline.effectColor = color;
-        outline.effectDistance = new Vector2(width, -width);
-        outline.useGraphicAlpha = true;
-    }
-
-    private void SetPanelRect(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
-    {
-        Transform child = parent.Find(name);
-        if (child != null) SetRect(child as RectTransform, anchorMin, anchorMax, position, size);
     }
 
     private void SetRect(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
@@ -302,21 +255,16 @@ public class MapEditorHUD : MonoBehaviour
         rect.pivot = new Vector2(0.5f, 0.5f);
     }
 
-    private TMP_Text CreateLayoutLabel(Transform parent, string label, Vector2 position, Vector2 size, float fontSize)
-    {
-        return CreateLayoutLabel(parent, label, position, size, fontSize, out _);
-    }
-
-    private TMP_Text CreateLayoutLabel(Transform parent, string label, Vector2 position, Vector2 size, float fontSize, out TMP_Text text)
+    private TMP_Text CreateLayoutLabel(Transform parent, string label, Vector2 anchor, Vector2 position, Vector2 size, float fontSize)
     {
         GameObject labelObject = CreateUIObject($"Label_{label}", parent);
         RectTransform rect = labelObject.GetComponent<RectTransform>();
-        SetRect(rect, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), position, size);
-        text = labelObject.AddComponent<TextMeshProUGUI>();
+        SetRect(rect, anchor, anchor, position, size);
+        TextMeshProUGUI text = labelObject.AddComponent<TextMeshProUGUI>();
         text.font = mapNameInput.textComponent.font;
         text.fontSize = fontSize;
         text.alignment = TextAlignmentOptions.Center;
-        text.color = new Color(0f, 0.247f, 0.282f, 1f);
+        text.color = Ink;
         text.raycastTarget = false;
         text.text = label;
         return text;
@@ -472,24 +420,19 @@ public class MapEditorHUD : MonoBehaviour
     private void AddDeleteButton(GameObject item, TMP_Text label, string mapName)
     {
         RectTransform labelRect = label.rectTransform;
-        labelRect.offsetMax = new Vector2(-88f, labelRect.offsetMax.y);
+        labelRect.offsetMax = new Vector2(-130f, labelRect.offsetMax.y);
 
-        GameObject deleteObject = CreateUIObject("DeleteButton", item.transform);
-        RectTransform deleteRect = deleteObject.GetComponent<RectTransform>();
+        PixelButton deleteItemButton = Instantiate(buttonPrefab, item.transform);
+        deleteItemButton.name = "DeleteButton";
+        RectTransform deleteRect = (RectTransform)deleteItemButton.transform;
         deleteRect.anchorMin = new Vector2(1f, 0.5f);
         deleteRect.anchorMax = new Vector2(1f, 0.5f);
-        deleteRect.anchoredPosition = new Vector2(-42f, 0f);
-        deleteRect.sizeDelta = new Vector2(72f, 32f);
-
-        Image image = deleteObject.AddComponent<Image>();
-        image.color = new Color(0.7f, 0.18f, 0.18f, 1f);
-        Button deleteButton = deleteObject.AddComponent<Button>();
-        deleteButton.targetGraphic = image;
-        deleteButton.onClick.AddListener(() => ShowDeletePopup(mapName));
-
-        TMP_Text deleteLabel = CreateButtonLabel(deleteObject.transform);
-        deleteLabel.text = "삭제";
-        deleteLabel.fontSize = 18f;
+        deleteRect.anchoredPosition = new Vector2(-70f, 0f);
+        deleteRect.sizeDelta = new Vector2(100f, 48f);
+        deleteItemButton.Text = "삭제";
+        deleteItemButton.SetFontRange(14f, 20f);
+        deleteItemButton.SetLabelInsets(18f, 18f);
+        deleteItemButton.Button.onClick.AddListener(() => ShowDeletePopup(mapName));
     }
 
     private bool ValidateReferences()
@@ -515,11 +458,7 @@ public class MapEditorHUD : MonoBehaviour
 
     private void InitializeDeleteModeUI()
     {
-        Transform deleteButton = GameObject.Find("DeleteButton")?.transform;
-        deleteModeLabel = deleteButton?.GetComponentInChildren<TMP_Text>(true);
         transformEditor = GetTransformEditor();
-        if (deleteModeLabel == null)
-            Debug.LogError("삭제 모드 상태를 표시할 DeleteButton의 TMP_Text가 없습니다.", this);
         if (transformEditor == null) return;
 
         transformEditor.DeleteModeChanged += OnDeleteModeChanged;
@@ -528,21 +467,11 @@ public class MapEditorHUD : MonoBehaviour
 
     private void OnDeleteModeChanged(bool isEnabled)
     {
-        if (deleteModeLabel != null)
-            deleteModeLabel.text = "지우개";
-
         if (statusText != null)
             statusText.text = isEnabled ? "지우개 도구 선택됨" : $"배치 도구 | {selectedObjectLabel} 선택됨";
 
-        Transform button = GameObject.Find("DeleteButton")?.transform;
-        Image image = button != null ? button.GetComponent<Image>() : null;
-        if (image != null)
-            image.color = isEnabled ? new Color(0.68f, 0.94f, 0.31f, 1f) : Color.white;
-
-        Transform placeButton = GameObject.Find("PlaceButton")?.transform;
-        Image placeImage = placeButton != null ? placeButton.GetComponent<Image>() : null;
-        if (placeImage != null)
-            placeImage.color = isEnabled ? Color.white : new Color(0.68f, 0.94f, 0.31f, 1f);
+        if (deleteButton != null) deleteButton.SetHighlighted(isEnabled);
+        if (placeButton != null) placeButton.SetHighlighted(!isEnabled);
     }
 
     private void OnDestroy()
@@ -607,44 +536,18 @@ public class MapEditorHUD : MonoBehaviour
 
     private TMP_Text CreateStatusText()
     {
-        GameObject statusObject = new("StatusText", typeof(RectTransform), typeof(CanvasRenderer));
-        statusObject.layer = gameObject.layer;
-        RectTransform rectTransform = statusObject.GetComponent<RectTransform>();
-        rectTransform.SetParent(transform.parent, false);
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.zero;
-        rectTransform.pivot = new Vector2(0f, 0.5f);
-        rectTransform.anchoredPosition = new Vector2(300f, 63f);
-        rectTransform.sizeDelta = new Vector2(610f, 26f);
-
-        TextMeshProUGUI text = statusObject.AddComponent<TextMeshProUGUI>();
-        text.font = mapNameInput.textComponent.font;
-        text.fontSize = 19f;
+        TMP_Text text = CreateLayoutLabel(transform.parent, string.Empty, Vector2.zero, new Vector2(450f, 66f), new Vector2(620f, 26f), 19f);
+        text.name = "StatusText";
         text.alignment = TextAlignmentOptions.MidlineLeft;
-        text.raycastTarget = false;
-        text.color = new Color(0f, 0.247f, 0.282f, 1f);
         return text;
     }
 
     private TMP_Text CreateValidationText()
     {
-        GameObject validationObject = new("ValidationText", typeof(RectTransform), typeof(CanvasRenderer));
-        validationObject.layer = gameObject.layer;
-        RectTransform rectTransform = validationObject.GetComponent<RectTransform>();
-        rectTransform.SetParent(transform.parent, false);
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.zero;
-        rectTransform.pivot = new Vector2(0f, 0.5f);
-        rectTransform.anchoredPosition = new Vector2(300f, 29f);
-        rectTransform.sizeDelta = new Vector2(610f, 42f);
-
-        TextMeshProUGUI text = validationObject.AddComponent<TextMeshProUGUI>();
-        text.font = mapNameInput.textComponent.font;
-        text.fontSize = 17f;
+        TMP_Text text = CreateLayoutLabel(transform.parent, string.Empty, Vector2.zero, new Vector2(450f, 34f), new Vector2(620f, 36f), 17f);
+        text.name = "ValidationText";
         text.alignment = TextAlignmentOptions.MidlineLeft;
         text.textWrappingMode = TextWrappingModes.Normal;
-        text.color = new Color(0f, 0.247f, 0.282f, 1f);
-        text.raycastTarget = false;
         return text;
     }
 
@@ -656,63 +559,28 @@ public class MapEditorHUD : MonoBehaviour
         Image blockerImage = blocker.AddComponent<Image>();
         blockerImage.color = new Color(0f, 0f, 0f, 0.65f);
 
-        GameObject dialog = CreateUIObject("Dialog", blocker.transform);
-        RectTransform dialogRect = dialog.GetComponent<RectTransform>();
-        dialogRect.sizeDelta = new Vector2(560f, 220f);
-        Image dialogImage = dialog.AddComponent<Image>();
-        dialogImage.color = new Color(0.08f, 0.08f, 0.12f, 1f);
+        Image dialog = CreatePanel("Dialog", blocker.transform, null);
+        SetRect(dialog.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(620f, 280f));
 
-        overwriteMessage = CreatePopupMessage(dialog.transform);
-        CreatePopupButton(dialog.transform, "확인", new Vector2(-110f, -70f), ConfirmPendingAction);
-        CreatePopupButton(dialog.transform, "취소", new Vector2(110f, -70f), CancelConfirmation);
+        overwriteMessage = CreateLayoutLabel(dialog.transform, string.Empty, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(540f, 110f), 26f);
+        overwriteMessage.name = "Message";
+        CreatePopupButton(primaryButtonPrefab, dialog.transform, "확인", new Vector2(-120f, -80f), ConfirmPendingAction);
+        CreatePopupButton(buttonPrefab, dialog.transform, "취소", new Vector2(120f, -80f), CancelConfirmation);
         return blocker;
     }
 
-    private TMP_Text CreatePopupMessage(Transform parent)
-    {
-        GameObject messageObject = CreateUIObject("Message", parent);
-        RectTransform rectTransform = messageObject.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = new Vector2(0f, 35f);
-        rectTransform.sizeDelta = new Vector2(500f, 100f);
-
-        TextMeshProUGUI text = messageObject.AddComponent<TextMeshProUGUI>();
-        text.font = mapNameInput.textComponent.font;
-        text.fontSize = 28f;
-        text.alignment = TextAlignmentOptions.Center;
-        text.raycastTarget = false;
-        return text;
-    }
-
     private void CreatePopupButton(
+        PixelButton prefab,
         Transform parent,
         string label,
         Vector2 position,
         UnityEngine.Events.UnityAction onClick)
     {
-        GameObject buttonObject = CreateUIObject($"{label}Button", parent);
-        RectTransform rectTransform = buttonObject.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = position;
-        rectTransform.sizeDelta = new Vector2(180f, 52f);
-        Image image = buttonObject.AddComponent<Image>();
-        image.color = new Color(0.2f, 0.45f, 0.75f, 1f);
-        Button button = buttonObject.AddComponent<Button>();
-        button.targetGraphic = image;
-        button.onClick.AddListener(onClick);
-
-        TMP_Text text = CreateButtonLabel(buttonObject.transform);
-        text.text = label;
-    }
-
-    private TMP_Text CreateButtonLabel(Transform parent)
-    {
-        GameObject labelObject = CreateUIObject("Label", parent);
-        StretchToParent(labelObject.GetComponent<RectTransform>());
-        TextMeshProUGUI text = labelObject.AddComponent<TextMeshProUGUI>();
-        text.font = mapNameInput.textComponent.font;
-        text.fontSize = 24f;
-        text.alignment = TextAlignmentOptions.Center;
-        text.raycastTarget = false;
-        return text;
+        PixelButton button = Instantiate(prefab, parent);
+        button.name = $"{label}Button";
+        SetRect((RectTransform)button.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), position, new Vector2(200f, ToolButtonHeight));
+        button.Text = label;
+        button.Button.onClick.AddListener(onClick);
     }
 
     private GameObject CreateUIObject(string objectName, Transform parent)

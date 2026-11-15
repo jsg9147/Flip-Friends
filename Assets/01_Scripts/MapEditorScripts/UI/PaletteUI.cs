@@ -7,11 +7,13 @@ public class PaletteUI : MonoBehaviour
 {
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject paletteButtonPrefab;
+    [Header("도트 프레임")]
+    [SerializeField] private Sprite normalFrame;
+    [SerializeField] private Sprite selectedFrame;
 
     private Button selectedButton;
     private readonly Dictionary<string, Button> buttonsById = new();
-    private static readonly Color SelectedColor = new(0.68f, 0.94f, 0.31f, 1f);
-    private static readonly Color NormalColor = Color.white;
+    private static readonly Color LabelInk = new Color32(7, 53, 56, 255);
 
     private void Start()
     {
@@ -51,17 +53,16 @@ public class PaletteUI : MonoBehaviour
     private void CreatePaletteButton(PaletteEntry entry)
     {
         GameObject btnObj = Instantiate(paletteButtonPrefab, buttonContainer);
-        btnObj.GetComponentInChildren<TMP_Text>().text = entry.displayName;
+        TMP_Text label = btnObj.GetComponentInChildren<TMP_Text>();
+        label.text = entry.displayName;
+        // 밝은 도트 프레임 위라 짙은 글자를 쓴다. 흰 글자는 흰 바탕에서 보이지 않았다.
+        label.color = LabelInk;
         Image buttonImage = btnObj.GetComponent<Image>();
         if (buttonImage != null)
         {
-            buttonImage.sprite = null;
-            buttonImage.color = NormalColor;
-            Outline outline = btnObj.GetComponent<Outline>();
-            if (outline == null) outline = btnObj.AddComponent<Outline>();
-            outline.effectColor = new Color(0.35f, 0.76f, 0.86f, 1f);
-            outline.effectDistance = new Vector2(1f, -1f);
-            outline.useGraphicAlpha = true;
+            buttonImage.sprite = normalFrame;
+            buttonImage.type = Image.Type.Sliced;
+            buttonImage.color = Color.white;
         }
 
         var icon = btnObj.transform.Find("Icon");
@@ -90,12 +91,10 @@ public class PaletteUI : MonoBehaviour
 
     private void SelectPrefab(string prefabID)
     {
-        if (selectedButton != null && selectedButton.targetGraphic != null)
-            selectedButton.targetGraphic.color = NormalColor;
+        if (selectedButton != null) selectedButton.image.sprite = normalFrame;
 
         buttonsById.TryGetValue(prefabID, out selectedButton);
-        if (selectedButton != null && selectedButton.targetGraphic != null)
-            selectedButton.targetGraphic.color = SelectedColor;
+        if (selectedButton != null) selectedButton.image.sprite = selectedFrame;
 
         MapEditorManager.instance?.SelectPrefab(prefabID);
         ObjectPlacer.instance?.OnPaletteChanged(prefabID);

@@ -11,8 +11,14 @@ public sealed class PixelButton : MonoBehaviour
     [SerializeField] private Image icon;
     [SerializeField] private Vector2 frameInset = new(24, 14);
     [SerializeField] private float iconGap = 8;
+    [Header("선택 상태")]
+    [SerializeField] private Sprite highlightFrame;
+    [SerializeField] private Color highlightLabelColor = new Color32(7, 53, 56, 255);
 
     private Button button;
+    private Sprite normalFrame;
+    private Color normalLabelColor;
+    private bool hasNormalStyle;
 
     public Button Button => button != null ? button : button = GetComponent<Button>();
     public TMP_Text Label => label;
@@ -43,5 +49,18 @@ public sealed class PixelButton : MonoBehaviour
     {
         label.fontSizeMin = min;
         label.fontSizeMax = max;
+    }
+
+    // 맵 에디터의 현재 도구·팔레트처럼 고른 항목을 연두 프레임으로 구분한다.
+    public void SetHighlighted(bool isHighlighted)
+    {
+        if (!hasNormalStyle)
+        {
+            normalFrame = Button.image.sprite;
+            normalLabelColor = label.color;
+            hasNormalStyle = true;
+        }
+        Button.image.sprite = isHighlighted && highlightFrame != null ? highlightFrame : normalFrame;
+        label.color = isHighlighted ? highlightLabelColor : normalLabelColor;
     }
 }

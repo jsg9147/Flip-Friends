@@ -6,7 +6,7 @@
 
 ## 현재 상태
 
-- 도트 프레임 공통 프리팹은 `Assets/03_Prefabs/UI/Common`에 있다. `PixelButton`(짙은 청록 보조 프레임, 크림색 라벨)과 그 Variant `PixelButton Primary`(연두 주 프레임, 짙은 청록 라벨)·`PixelButton Back`(뒤로 아이콘), `PixelCodeField`(코드 입력란)다. `PixelButton` 컴포넌트는 라벨을 프레임 테두리 안쪽(가로 24·세로 14)으로 늘리고, `SetIcon`·`SetLabelInsets`·`SetFontRange`로 아이콘과 라벨 여백·크기 범위를 바꾼다. `PixelPanel`(크림색 도트 패널 + 짙은 청록 제목)은 설정 트리 6개 화면의 바탕이다. Main 메뉴·설정 트리·Quantum 준비·온라인·로비 버튼과 입력란, QuantumPlay의 `플레이 종료` 버튼이 이 프리팹을 쓴다. 친구 초대는 프리팹 위에 전용 슬라임 PNG를 덮는다.
+- 도트 프레임 공통 프리팹은 `Assets/03_Prefabs/UI/Common`에 있다. `PixelButton`(짙은 청록 보조 프레임, 크림색 라벨)과 그 Variant `PixelButton Primary`(연두 주 프레임, 짙은 청록 라벨)·`PixelButton Back`(뒤로 아이콘), `PixelCodeField`(코드 입력란)다. `PixelButton` 컴포넌트는 라벨을 프레임 테두리 안쪽(가로 24·세로 14)으로 늘리고, `SetIcon`·`SetLabelInsets`·`SetFontRange`로 아이콘과 라벨 여백·크기 범위를 바꾼다. `PixelPanel`(크림색 도트 패널 + 짙은 청록 제목)은 설정 트리 6개 화면의 바탕이다. Main 메뉴·설정 트리·Quantum 준비·온라인·로비 버튼과 입력란, QuantumPlay의 `플레이 종료` 버튼, MapEditor HUD([맵 에디터](MAP_EDITOR.md))가 이 프리팹을 쓴다. `SetHighlighted`는 `highlightFrame`(연두 주 프레임)으로 선택 상태를 표시한다. 친구 초대는 프리팹 위에 전용 슬라임 PNG를 덮는다.
 - 2026-11-15 Main·설정 화면 통일: `MainMenuScreen`의 남색 도트 배경(`Pixel Menu Backdrop`)을 항상 켜 두고, 로고는 `Background.png`에서 흰 바탕을 뺀 `UI Sprites/TitleLogo.png`를 쓴다. 옛 `Sling Slimes` 제목은 지웠다. 메뉴·설정 문구는 한국어(단조 글꼴)이고 뒤로/닫기는 모두 `PixelButton Back`의 "뒤로"다. 화면 모드 값은 "창 모드"/"전체 화면"으로 표시한다. 키 설정 목록 행은 아래 Kenney Mini 영어 표기를 유지한다.
 
 - 친구 초대 버튼에 [Codex 생성 PNG](../Assets/02_Sprites/Generated/Codex/Resources/CodexUI/codex_invite_button.png)를 적용한다. 슬라임 아이콘 오른쪽에 Unity 텍스트로 라벨을 표시한다.

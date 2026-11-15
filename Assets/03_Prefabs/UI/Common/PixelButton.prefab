@@ -214,6 +214,8 @@ MonoBehaviour:
   icon: {fileID: 3273862777886274109}
   frameInset: {x: 24, y: 14}
   iconGap: 8
+  highlightFrame: {fileID: 21300000, guid: bca78a4832d0bed49900b13ba24c1dc4, type: 3}
+  highlightLabelColor: {r: 0.02745098, g: 0.20784314, b: 0.21960784, a: 1}
 --- !u!1 &8938073331161771615
 GameObject:
   m_ObjectHideFlags: 0
