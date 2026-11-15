@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3822736727319704922}
   - component: {fileID: 7291173269530927803}
   - component: {fileID: 851221867840278978}
-  - component: {fileID: 9187468966921139240}
   - component: {fileID: 1456514509100524415}
   m_Layer: 7
   m_Name: Fall Platforms (2)
@@ -142,47 +141,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &9187468966921139240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 228413388199315276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 9012130790806424224}
 --- !u!95 &1456514509100524415
 Animator:
   serializedVersion: 7
@@ -3585,7 +3543,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4692943737979222546}
-  - component: {fileID: 4172880324924901612}
   - component: {fileID: 3873899041246643111}
   m_Layer: 16
   m_Name: Conveyor belt (6)
@@ -3612,25 +3569,6 @@ Transform:
   - {fileID: 6251427534682929911}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4172880324924901612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 613222233812617013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 7288801732248655100}
-  - {fileID: 2241859116095064016}
-  - {fileID: 7464477587448897622}
 --- !u!61 &3873899041246643111
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5556,7 +5494,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3034949364053934020}
   - component: {fileID: 822121061304132583}
-  - component: {fileID: 419594185317787793}
   - component: {fileID: 8115460834383676430}
   - component: {fileID: 1071753689249900583}
   m_Layer: 6
@@ -5641,34 +5578,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &419594185317787793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1256269644899684429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &8115460834383676430
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5868,7 +5777,6 @@ GameObject:
   - component: {fileID: 7630597261892172524}
   - component: {fileID: 298308703003385282}
   - component: {fileID: 7014499351707394727}
-  - component: {fileID: 2089351525412296368}
   m_Layer: 0
   m_Name: Box Switch Set
   m_TagString: Untagged
@@ -5997,26 +5905,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.79, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &2089351525412296368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1428392778203587191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e56f5ba816af28479c680f83c2f4341, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  summonLocation: {fileID: 1691638916519726228}
-  cooldownTime: 5
-  targetObjTrans: {fileID: 2160522017821517860}
-  defaultSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  pressedSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
 --- !u!1 &1465298737550803979
 GameObject:
   m_ObjectHideFlags: 0
@@ -6551,7 +6439,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3155028973726763844}
   - component: {fileID: 3322650493098272735}
-  - component: {fileID: 2095117462358111350}
   - component: {fileID: 516652187144917896}
   - component: {fileID: 4681170581831870139}
   m_Layer: 6
@@ -6636,34 +6523,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &2095117462358111350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2407065546076387954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &516652187144917896
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6954,7 +6813,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3436252185198207255}
   - component: {fileID: 8325924991260582578}
-  - component: {fileID: 1555054186582924471}
   - component: {fileID: 243800578717409913}
   - component: {fileID: 1879230625652448861}
   m_Layer: 6
@@ -7039,34 +6897,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &1555054186582924471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2570191472477471813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &243800578717409913
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7520,7 +7350,6 @@ GameObject:
   - component: {fileID: 2066769213688329756}
   - component: {fileID: 9187387558672213964}
   - component: {fileID: 2403267338152900360}
-  - component: {fileID: 5249626796649712466}
   - component: {fileID: 8102381279530358633}
   m_Layer: 7
   m_Name: Fall Platforms (4)
@@ -7651,47 +7480,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &5249626796649712466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3117437880881745749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 1788142736413491839}
 --- !u!95 &8102381279530358633
 Animator:
   serializedVersion: 7
@@ -7724,7 +7512,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4285146714944227543}
   - component: {fileID: 6267270576678994852}
-  - component: {fileID: 6266743382738170782}
   - component: {fileID: 8271368043848747063}
   m_Layer: 0
   m_Name: Point (1)
@@ -7808,19 +7595,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &6266743382738170782
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3230791411100600345}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!61 &8271368043848747063
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7877,7 +7651,6 @@ GameObject:
   m_Component:
   - component: {fileID: 839057505942981400}
   - component: {fileID: 3460628178204510022}
-  - component: {fileID: 138664468444789303}
   - component: {fileID: 8424875581830131224}
   - component: {fileID: 1136157869462138205}
   m_Layer: 6
@@ -7962,34 +7735,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &138664468444789303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3258017928928170618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &8424875581830131224
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8074,7 +7819,6 @@ GameObject:
   - component: {fileID: 3134271543906297511}
   - component: {fileID: 3188141007767661466}
   - component: {fileID: 4012454064372269754}
-  - component: {fileID: 2915875914733715229}
   - component: {fileID: 5006935539676926431}
   m_Layer: 7
   m_Name: Fall Platforms (5)
@@ -8205,47 +7949,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &2915875914733715229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3381875442646189211}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 730873949406422393}
 --- !u!95 &5006935539676926431
 Animator:
   serializedVersion: 7
@@ -8507,7 +8210,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8487991730228298257}
-  - component: {fileID: 7763883947576157330}
   - component: {fileID: 7709006873232262444}
   m_Layer: 16
   m_Name: Conveyor belt (5)
@@ -8534,25 +8236,6 @@ Transform:
   - {fileID: 661760602117646908}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7763883947576157330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3564404018970800420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 8036201778475963346}
-  - {fileID: 4942390077075913632}
-  - {fileID: 2564714218853678202}
 --- !u!61 &7709006873232262444
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8839,7 +8522,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1322304414675043038}
   - component: {fileID: 6152709879024195720}
-  - component: {fileID: 1814097705091820285}
   m_Layer: 0
   m_Name: Stage 19
   m_TagString: Untagged
@@ -8883,23 +8565,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &1814097705091820285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3846973216450071382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 0
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &3973805840710073994
 GameObject:
   m_ObjectHideFlags: 0
@@ -9116,7 +8781,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8542141298835789332}
-  - component: {fileID: 3137785559115521392}
   - component: {fileID: 5228486709537149510}
   m_Layer: 16
   m_Name: Conveyor belt (3)
@@ -9143,25 +8807,6 @@ Transform:
   - {fileID: 9155521965145268781}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3137785559115521392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4331239658347718919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 1332878767463002339}
-  - {fileID: 6827430245155781182}
-  - {fileID: 7077874155892587307}
 --- !u!61 &5228486709537149510
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9218,7 +8863,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6175363047508482426}
   - component: {fileID: 7952754369212349291}
-  - component: {fileID: 6157836086228995670}
   - component: {fileID: 8700999370304395651}
   m_Layer: 0
   m_Name: Point (0)
@@ -9302,19 +8946,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &6157836086228995670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4471715128784188036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!61 &8700999370304395651
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9403,7 +9034,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2160522017821517860}
   - component: {fileID: 8873702619512896399}
-  - component: {fileID: 3029800376473382011}
   - component: {fileID: 3262021283656701249}
   m_Layer: 8
   m_Name: Box
@@ -9487,34 +9117,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &3029800376473382011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4680597875820307313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a350a8654aa1feb4c8c5851ba5c7670f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 3520
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  maxSlopeAngle: 45
-  gravity: 9.8
-  velocity: {x: 0, y: 0}
-  wallSlideSpeedMax: 3
 --- !u!61 &3262021283656701249
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9608,7 +9210,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6199882781887522519}
   - component: {fileID: 7960897736305321197}
-  - component: {fileID: 323083149119479279}
   - component: {fileID: 2899805719629751254}
   - component: {fileID: 8547573297695227577}
   m_Layer: 6
@@ -9693,34 +9294,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &323083149119479279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4746817768292382244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &2899805719629751254
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10034,7 +9607,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5302941812715853257}
   - component: {fileID: 2035552021625923753}
-  - component: {fileID: 1557213602530417186}
   - component: {fileID: 232837123595605711}
   - component: {fileID: 3294330870921782695}
   m_Layer: 6
@@ -10119,34 +9691,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &1557213602530417186
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5231749559627234991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &232837123595605711
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10230,7 +9774,6 @@ GameObject:
   m_Component:
   - component: {fileID: 37375285239757350}
   - component: {fileID: 7119846353990354324}
-  - component: {fileID: 8544031242367181531}
   - component: {fileID: 1967166184602221024}
   - component: {fileID: 751565117543434130}
   m_Layer: 6
@@ -10315,34 +9858,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &8544031242367181531
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5436477841584967571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &1967166184602221024
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10425,7 +9940,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 132466145469692371}
-  - component: {fileID: 5770389449955395469}
   - component: {fileID: 8163186443832867786}
   m_Layer: 16
   m_Name: Conveyor belt
@@ -10453,26 +9967,6 @@ Transform:
   - {fileID: 1925898048713933540}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5770389449955395469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5489518384678297401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 4585186680799575214}
-  - {fileID: 2352666534850007052}
-  - {fileID: 9153520552699399319}
-  - {fileID: 5414773199155853675}
 --- !u!61 &8163186443832867786
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10644,7 +10138,6 @@ GameObject:
   m_Component:
   - component: {fileID: 899318630548221732}
   - component: {fileID: 5756110957982413445}
-  - component: {fileID: 2217197597472277252}
   - component: {fileID: 8902700166434732300}
   - component: {fileID: 3810008547554008170}
   m_Layer: 6
@@ -10729,34 +10222,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &2217197597472277252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5773830320842260875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &8902700166434732300
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10840,7 +10305,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1208297521133780648}
   - component: {fileID: 8585654998505613369}
-  - component: {fileID: 5254564435274145160}
   - component: {fileID: 5833519457035371278}
   - component: {fileID: 7324238645653875679}
   m_Layer: 6
@@ -10925,34 +10389,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &5254564435274145160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5793495608688066200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &5833519457035371278
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11152,7 +10588,6 @@ GameObject:
   - component: {fileID: 8997168696266816790}
   - component: {fileID: 745457117141894996}
   - component: {fileID: 8660405090909091157}
-  - component: {fileID: 6279585573913100632}
   - component: {fileID: 787571124710112150}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (2)
@@ -11283,36 +10718,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &6279585573913100632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5884176143932934147}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 2920387636650339371}
 --- !u!50 &787571124710112150
 Rigidbody2D:
   serializedVersion: 5
@@ -11464,7 +10869,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5375239342265509531}
-  - component: {fileID: 2036550874984532006}
   - component: {fileID: 79969047781257642}
   m_Layer: 16
   m_Name: Conveyor belt (2)
@@ -11491,25 +10895,6 @@ Transform:
   - {fileID: 5677774107540075938}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2036550874984532006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6157107808665218097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 8590045323371643179}
-  - {fileID: 7532842026992338108}
-  - {fileID: 5037092605823229746}
 --- !u!61 &79969047781257642
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11797,7 +11182,6 @@ GameObject:
   - component: {fileID: 6909073306037945170}
   - component: {fileID: 1138497871644211906}
   - component: {fileID: 1186991226402150261}
-  - component: {fileID: 2927300288279527905}
   - component: {fileID: 1277951584408862796}
   m_Layer: 7
   m_Name: Fall Platforms
@@ -11928,47 +11312,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &2927300288279527905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6365379388632788334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 6923920548628720755}
 --- !u!95 &1277951584408862796
 Animator:
   serializedVersion: 7
@@ -12208,7 +11551,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7414599130121267016}
   - component: {fileID: 485180217056748770}
-  - component: {fileID: 8074558588833322799}
   - component: {fileID: 3367355867868704915}
   - component: {fileID: 2660616199447484363}
   m_Layer: 6
@@ -12293,34 +11635,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &8074558588833322799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6744035022223075969}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &3367355867868704915
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12404,7 +11718,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3857972102221922385}
   - component: {fileID: 34443311728813282}
-  - component: {fileID: 1711215024762106577}
   - component: {fileID: 8581998548343243968}
   - component: {fileID: 3755522352593608902}
   m_Layer: 6
@@ -12489,34 +11802,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &1711215024762106577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6770001686542478116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &8581998548343243968
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12754,7 +12039,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8197203433535693095}
   - component: {fileID: 7774747909956704496}
-  - component: {fileID: 8973344103703508613}
   - component: {fileID: 2599292955161587393}
   - component: {fileID: 726583366197816225}
   m_Layer: 6
@@ -12839,34 +12123,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &8973344103703508613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7557778225075134154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 5623832065579630319}
-  toggleCooldown: 0.5
 --- !u!61 &2599292955161587393
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16643,7 +15899,6 @@ GameObject:
   - component: {fileID: 7330272296384570051}
   - component: {fileID: 801382760298263523}
   - component: {fileID: 6043989571356902779}
-  - component: {fileID: 5846404132255274105}
   - component: {fileID: 8919259120734593015}
   m_Layer: 7
   m_Name: Fall Platforms (1)
@@ -16774,47 +16029,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &5846404132255274105
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8237850290576075819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 6260810149451086507}
 --- !u!95 &8919259120734593015
 Animator:
   serializedVersion: 7
@@ -16999,7 +16213,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7772773876752427925}
-  - component: {fileID: 5944224164620138282}
   - component: {fileID: 6753873445400580924}
   m_Layer: 16
   m_Name: Conveyor belt (7)
@@ -17026,25 +16239,6 @@ Transform:
   - {fileID: 6543739123227041579}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5944224164620138282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8381957427355885002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 1221120433008066193}
-  - {fileID: 897381369272624856}
-  - {fileID: 275369705482172255}
 --- !u!61 &6753873445400580924
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17100,7 +16294,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1582098381961041862}
-  - component: {fileID: 6259989462080511317}
   - component: {fileID: 633653138120719060}
   m_Layer: 16
   m_Name: Conveyor belt (4)
@@ -17127,25 +16320,6 @@ Transform:
   - {fileID: 6382830088836514834}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6259989462080511317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8572334216180183771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 6963435005083311367}
-  - {fileID: 2880623326947737988}
-  - {fileID: 7675302776565192803}
 --- !u!61 &633653138120719060
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17234,7 +16408,6 @@ GameObject:
   - component: {fileID: 3613140033911429313}
   - component: {fileID: 4119592761331926683}
   - component: {fileID: 2872648030100842627}
-  - component: {fileID: 3635509350843983285}
   - component: {fileID: 6929938335474080837}
   m_Layer: 7
   m_Name: Fall Platforms (3)
@@ -17365,47 +16538,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &3635509350843983285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8970636302601671519}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 3902899682532887671}
 --- !u!95 &6929938335474080837
 Animator:
   serializedVersion: 7
@@ -17437,7 +16569,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2646390692082689026}
-  - component: {fileID: 5623832065579630319}
   m_Layer: 0
   m_Name: OnOffManager
   m_TagString: Untagged
@@ -17472,47 +16603,6 @@ Transform:
   - {fileID: 6199882781887522519}
   m_Father: {fileID: 1322304414675043038}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5623832065579630319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8998206691465719188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f707691b8dce034bb3f42d2b9d49fd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  switches:
-  - {fileID: 8544031242367181531}
-  - {fileID: 1711215024762106577}
-  - {fileID: 419594185317787793}
-  - {fileID: 1555054186582924471}
-  - {fileID: 138664468444789303}
-  - {fileID: 1557213602530417186}
-  - {fileID: 8973344103703508613}
-  - {fileID: 8074558588833322799}
-  - {fileID: 2217197597472277252}
-  - {fileID: 2095117462358111350}
-  - {fileID: 5254564435274145160}
-  - {fileID: 323083149119479279}
-  conveyorBelts:
-  - {fileID: 5770389449955395469}
-  - {fileID: 8369059087100542540}
-  - {fileID: 2036550874984532006}
-  - {fileID: 3137785559115521392}
-  - {fileID: 6259989462080511317}
-  - {fileID: 7763883947576157330}
-  - {fileID: 4172880324924901612}
-  - {fileID: 5944224164620138282}
-  activeSwitchGround: {fileID: 0}
-  inactiveSwitchGround: {fileID: 0}
-  autoToggleEnabled: 0
-  autoToggleInterval: 3
 --- !u!1 &9023902956532670903
 GameObject:
   m_ObjectHideFlags: 0
@@ -17522,7 +16612,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7165297753093275476}
-  - component: {fileID: 8369059087100542540}
   - component: {fileID: 7490176946616621642}
   m_Layer: 16
   m_Name: Conveyor belt (1)
@@ -17550,26 +16639,6 @@ Transform:
   - {fileID: 5002171921443747749}
   m_Father: {fileID: 2944928932508911262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8369059087100542540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9023902956532670903}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54eead12048b9da49a864837c0b6cf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  beltAnimators:
-  - {fileID: 3540660834202118881}
-  - {fileID: 5348572886551143710}
-  - {fileID: 2238284780526959720}
-  - {fileID: 3124852232997455133}
 --- !u!61 &7490176946616621642
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17891,7 +16960,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18035,7 +17105,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18117,7 +17188,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18199,7 +17271,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18281,7 +17354,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18359,7 +17433,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18437,7 +17512,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// Steam 로비 생성·참가·초대와 Quantum 로비 연결을 맡는다. Mirror에 의존하지 않는다.
-/// 기존 Mirror 방은 외부 세션으로 등록해 로비 진입·생성 실패만 넘겨받는다.
+/// Steam 로비 생성·참가·초대와 Quantum 로비 연결을 맡는다.
 /// </summary>
 public sealed class SteamLobbyService : MonoBehaviour
 {
@@ -16,23 +15,15 @@ public sealed class SteamLobbyService : MonoBehaviour
 
     private static SteamLobbyService instance;
 
-    // 초대 콜백과 +connect_lobby를 놓치지 않으려면 Main에서 일찍 만들어야 한다. 지금은 SteamRoomManager.Start가 만든다.
+    // 초대 콜백과 +connect_lobby를 놓치지 않도록 Main 씬의 SteamLobbyService 오브젝트가 일찍 만든다. 지연 생성은 다른 씬에서 바로 시작했을 때를 위한 대비다.
     public static SteamLobbyService Instance => instance != null ? instance : Create();
     public static SteamLobbyService Current => instance;
 
     private readonly SteamLobbyMatchmaking matchmaking = new SteamLobbyMatchmaking();
-    private Func<bool> isExternalSessionActive;
-    private bool isCreatingExternalLobby;
-
-    public event Action ExternalLobbyCreateFailed;
-    public event Action<CSteamID, string> ExternalLobbyEntered;
-
-    public List<SteamLobbyInfo> LobbyInfos => matchmaking.LobbyInfos;
     public string LobbyKey => matchmaking.LobbyKey;
     public CSteamID CurrentLobbyId => matchmaking.CurrentLobbyId;
     public string PlayerName { get; private set; }
     public bool IsLobbyRequestPending => matchmaking.IsPending;
-    public bool HasExternalSession => isExternalSessionActive?.Invoke() == true;
     public bool CanCreateLobby => CurrentLobbyId == CSteamID.Nil && !matchmaking.IsPending;
 
     private static SteamLobbyService Create()
@@ -50,9 +41,9 @@ public sealed class SteamLobbyService : MonoBehaviour
 
     private void Awake()
     {
+        // Main을 다시 불러올 때마다 씬 오브젝트가 새로 생기므로 이미 살아 있는 인스턴스를 남긴다.
         if (instance != null && instance != this)
         {
-            Debug.LogWarning("중복된 SteamLobbyService가 존재하여 파괴됩니다.", this);
             Destroy(gameObject);
             return;
         }
@@ -82,34 +73,18 @@ public sealed class SteamLobbyService : MonoBehaviour
             JoinLobby(new CSteamID(lobbyId));
     }
 
-    // 외부 세션이 켜져 있으면 Quantum 로비를 만들거나 참가하지 않는다.
-    public void RegisterExternalSession(Func<bool> isActive) => isExternalSessionActive = isActive;
-
-    public void UnregisterExternalSession(Func<bool> isActive)
-    {
-        if (isExternalSessionActive == isActive) isExternalSessionActive = null;
-    }
-
-    public void CreateExternalLobby(RoomType roomType, int maxPlayer)
-    {
-        if (!CanCreateLobby) return;
-        isCreatingExternalLobby = true;
-        matchmaking.CreateLobby(roomType, maxPlayer);
-    }
-
     public void HostQuantumLobby(int maxPlayer)
     {
         var flow = QuantumGameFlow.Instance;
-        if (flow == null || flow.IsBusy || !flow.CheckLobbyRelease() || !CanCreateLobby || HasExternalSession) return;
-        isCreatingExternalLobby = false;
-        matchmaking.CreateLobby(RoomType.Private, maxPlayer, isQuantum: true);
+        if (flow == null || flow.IsBusy || !flow.CheckLobbyRelease() || !CanCreateLobby) return;
+        matchmaking.CreateLobby(maxPlayer);
         flow.ReportLobby("Steam 로비를 만드는 중…");
     }
 
     public Task JoinQuantumLobbyByCodeAsync(string code)
     {
         var flow = QuantumGameFlow.Instance;
-        if (flow == null || flow.IsBusy || !flow.CheckLobbyRelease() || !CanCreateLobby || HasExternalSession)
+        if (flow == null || flow.IsBusy || !flow.CheckLobbyRelease() || !CanCreateLobby)
             return Task.CompletedTask;
 
         var join = matchmaking.JoinQuantumLobbyByCodeAsync(code);
@@ -117,46 +92,30 @@ public sealed class SteamLobbyService : MonoBehaviour
         return join;
     }
 
-    public void JoinPrivateLobby(string joinCode) => matchmaking.JoinPrivateLobby(joinCode);
-
     public void JoinLobby(CSteamID lobbyId) => matchmaking.JoinLobby(lobbyId);
-
-    public Task<List<SteamLobbyInfo>> GetLobbyListAsync() => matchmaking.GetLobbyListAsync();
 
     public void LeaveLobby() => matchmaking.LeaveLobby();
 
-    public void SetLobbyJoinable(bool isJoinable) => matchmaking.SetLobbyJoinable(isJoinable);
-
-    private void HandleLobbyCreateFailed()
-    {
-        bool wasExternal = isCreatingExternalLobby;
-        isCreatingExternalLobby = false;
-        if (wasExternal) ExternalLobbyCreateFailed?.Invoke();
-        else QuantumGameFlow.Instance?.ReportLobby("Steam 로비를 만들 수 없습니다. 다시 시도하세요.");
-    }
+    private void HandleLobbyCreateFailed() =>
+        QuantumGameFlow.Instance?.ReportLobby("Steam 로비를 만들 수 없습니다. 다시 시도하세요.");
 
     private void HandleLobbyJoinFailed() =>
         QuantumGameFlow.Instance?.ShowLobbyNotice("방에 들어갈 수 없어요. 방 코드와 방이 열려 있는지 확인해 주세요.");
 
-    private void HandleLobbyEntered(CSteamID lobbyId, string hostAddress)
+    private void HandleLobbyEntered(CSteamID lobbyId)
     {
-        isCreatingExternalLobby = false;
+        // 이전 Mirror 빌드가 만든 로비나 다른 형식의 로비는 Quantum 세션으로 이어 붙일 수 없다.
         bool isQuantum = SteamMatchmaking.GetLobbyData(lobbyId, SteamLobbyMatchmaking.QuantumModeKey) == SteamLobbyMatchmaking.QuantumMode;
         if (!isQuantum)
         {
-            if (ExternalLobbyEntered != null)
-            {
-                ExternalLobbyEntered.Invoke(lobbyId, hostAddress);
-                return;
-            }
-
-            Debug.LogWarning($"이 로비를 처리할 세션이 없어 나갑니다: lobby={lobbyId}", this);
+            Debug.LogWarning($"Quantum 로비가 아니어서 나갑니다: lobby={lobbyId}", this);
             matchmaking.LeaveLobby();
+            QuantumGameFlow.Instance?.ShowLobbyNotice("지원하지 않는 방입니다. 게임을 최신 버전으로 업데이트했는지 확인해 주세요.");
             return;
         }
 
         var flow = QuantumGameFlow.Instance;
-        if (HasExternalSession || flow == null || flow.IsBusy || !flow.CheckLobbyRelease())
+        if (flow == null || flow.IsBusy || !flow.CheckLobbyRelease())
         {
             matchmaking.LeaveLobby();
             if (flow != null && !flow.IsBusy) flow.ShowLobbyNotice(flow.Message);
