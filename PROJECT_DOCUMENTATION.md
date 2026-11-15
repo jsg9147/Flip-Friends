@@ -22,7 +22,7 @@
 | Steam 구매 인증·온라인 접속 보호 | `Docs/QUANTUM_SECURITY.md`, `Docs/QUANTUM_MIGRATION.md` | 보안 문서는 Draft이며 출시 인증 검증은 미완료 |
 | 플레이어 이동·들기·던지기·애니메이션 | `.claude/rules/network.md`와 `Docs/QUANTUM_MIGRATION.md` | Mirror 시절 원본 근거는 `Docs/PLAYER_MOVEMENT_SYNC.md`·`Docs/PLAYER_ANIMATION.md`(Historical) |
 | 장애물, 스위치, 공식 스테이지 작성, 레이어·태그 | `.claude/rules/gameplay.md`와 `Docs/QUANTUM_MIGRATION.md` | 원본 장치 수치는 `Docs/Notes/2026-11-15-mirror-device-values.md`, 과거 동작은 `Docs/STAGE_COMPONENTS.md`(Historical) |
-| UI, 화면 전환, 설정 | `.claude/rules/ui.md`와 `Docs/UI_REBUILD.md` | 없음 |
+| UI, 화면 전환, 설정 | `.claude/rules/ui.md`와 `Docs/UI_REBUILD.md` | 색·글꼴·크기·포커스 표시나 이미지 생성 지시는 `Docs/UI_STYLE.md` |
 | 맵 에디터, 저장소, 팔레트, 검증 | `.claude/rules/map-editor.md`와 `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
 | Main 메뉴, Steam 로비 | `Docs/UI_REBUILD.md` | 로비·맵 공유 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
@@ -41,6 +41,7 @@
 | `Docs/MAP_EDITOR.md` | Active | 맵 제작·저장·검증의 현재 상태 |
 | `Docs/CUSTOM_MAP_NETWORK.md` | Active | 커스텀 맵 로비 선택·자동 공유·런타임 생성 |
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |
+| `Docs/UI_STYLE.md` | Active | UI 색·글꼴·글자 크기·여백·포커스 표시와 이미지 생성 기준 |
 | `Docs/PLAYER_ANIMATION.md` | Historical | Mirror 플레이어 상태 동기화와 애니메이션 재생(제거됨) |
 | `Docs/PLAYER_MOVEMENT_SYNC.md` | Historical | Mirror 이동 예측·운반·던지기 동기화(제거됨). Quantum 이식 기록 일부 포함 |
 | `Docs/STAGE_COMPONENTS.md` | Historical | Mirror 기본 스테이지 장치·On/Off 동기화(제거됨). Quantum 이식 기록 일부 포함 |
