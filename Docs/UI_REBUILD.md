@@ -6,7 +6,8 @@
 
 ## 현재 상태
 
-- 도트 프레임 공통 프리팹은 `Assets/03_Prefabs/UI/Common`에 있다. `PixelButton`(짙은 청록 보조 프레임, 크림색 라벨)과 그 Variant `PixelButton Primary`(연두 주 프레임, 짙은 청록 라벨)·`PixelButton Back`(뒤로 아이콘), `PixelCodeField`(코드 입력란)다. `PixelButton` 컴포넌트는 라벨을 프레임 테두리 안쪽(가로 24·세로 14)으로 늘리고, `SetIcon`·`SetLabelInsets`·`SetFontRange`로 아이콘과 라벨 여백·크기 범위를 바꾼다. Main의 Quantum 준비·온라인·로비 버튼과 입력란, QuantumPlay의 `플레이 종료` 버튼이 이 프리팹을 쓴다. 친구 초대는 프리팹 위에 전용 슬라임 PNG를 덮는다.
+- 도트 프레임 공통 프리팹은 `Assets/03_Prefabs/UI/Common`에 있다. `PixelButton`(짙은 청록 보조 프레임, 크림색 라벨)과 그 Variant `PixelButton Primary`(연두 주 프레임, 짙은 청록 라벨)·`PixelButton Back`(뒤로 아이콘), `PixelCodeField`(코드 입력란)다. `PixelButton` 컴포넌트는 라벨을 프레임 테두리 안쪽(가로 24·세로 14)으로 늘리고, `SetIcon`·`SetLabelInsets`·`SetFontRange`로 아이콘과 라벨 여백·크기 범위를 바꾼다. `PixelPanel`(크림색 도트 패널 + 짙은 청록 제목)은 설정 트리 6개 화면의 바탕이다. Main 메뉴·설정 트리·Quantum 준비·온라인·로비 버튼과 입력란, QuantumPlay의 `플레이 종료` 버튼이 이 프리팹을 쓴다. 친구 초대는 프리팹 위에 전용 슬라임 PNG를 덮는다.
+- 2026-11-15 Main·설정 화면 통일: `MainMenuScreen`의 남색 도트 배경(`Pixel Menu Backdrop`)을 항상 켜 두고, 로고는 `Background.png`에서 흰 바탕을 뺀 `UI Sprites/TitleLogo.png`를 쓴다. 옛 `Sling Slimes` 제목은 지웠다. 메뉴·설정 문구는 한국어(단조 글꼴)이고 뒤로/닫기는 모두 `PixelButton Back`의 "뒤로"다. 화면 모드 값은 "창 모드"/"전체 화면"으로 표시한다. 키 설정 목록 행은 아래 Kenney Mini 영어 표기를 유지한다.
 
 - 친구 초대 버튼에 [Codex 생성 PNG](../Assets/02_Sprites/Generated/Codex/Resources/CodexUI/codex_invite_button.png)를 적용한다. 슬라임 아이콘 오른쪽에 Unity 텍스트로 라벨을 표시한다.
 
@@ -16,8 +17,8 @@
 - 오프라인 준비 화면은 사용례 6종과 공식 시험 맵 8종을 제공한다. 저장 맵 버튼은 저장 목록을 순환하고 검증 실패를 상태 영역에 표시한다. 플레이 화면의 체크포인트/구간 표지와 소환 버튼/남은 초는 프레임 상태를 표시한다. [콘텐츠·검증](QUANTUM_MIGRATION.md).
 - Quantum 제품15 준비 화면에서 참가 인원과 키보드 최대 두 슬롯·게임패드 배정을 확인한다. 최소 인원 또는 오프라인 장치 수가 부족하면 시작을 차단한다. 키보드 1P와 패드는 기존 `bindings` 저장값을 적용한다.
 - `InputManager`가 공통 `UIInputModeController`를 생성한다. 마우스 이동(3px 누적)·클릭·휠은 포인터 모드, 기존 Move/Navigate·Submit·Cancel·Menu 액션은 탐색 모드로 전환한다(방향 입력 임계값 0.5). 포인터 모드는 버튼 포커스를 해제하고 텍스트 입력 포커스는 유지하며, 탐색 모드는 커서와 uGUI 포인터 판정을 쉬고 마지막 유효 선택을 복원한다. 화면 기본 선택과 `ButtonSelectController` 자동 복원도 모드를 따른다. 확정 맵·열린 탭의 표시는 변경하지 않는다.
-- 키 설정은 높이 100의 2열 목록이며, 본문·입력값은 기호를 포함한 CC0 Kenney Mini 도트 글꼴과 짙은 청록색을 쓴다. 옅은 배경 위 입력 버튼은 기존 StageControlFrame의 하늘색 프레임이며 호버·선택 시 연두색으로 바뀐다. 스크롤바는 각진 청록 손잡이·옅은 트랙을 쓰고 제목 이미지는 유지한다. 한 줄 표시·자동 크기 조절을 유지하며 Pick Up / Throw, Respawn, Previous/Next Camera, Run, Confirm, Back을 표시한다. 저장값은 바인딩 ID로 행을 찾고, 그룹이 비어 있는 게임패드 Respawn/Menu도 장치 경로로 분류한다.
-- 타이틀 메뉴는 Start → Settings → Map Editor → Exit 순서로 화면 배치와 `ButtonSelectController` 선택 목록을 맞춘다. 런타임 생성되는 Map Editor도 Exit 바로 앞에 배치한다.
+- 키 설정은 높이 100의 2열 목록이며, 본문·입력값은 기호를 포함한 CC0 Kenney Mini 도트 글꼴과 짙은 청록색을 쓴다. 옅은 배경 위 입력 버튼은 기존 StageControlFrame의 하늘색 프레임이며 호버·선택 시 연두색으로 바뀐다. 스크롤바는 각진 청록 손잡이·옅은 트랙을 쓴다. 한 줄 표시·자동 크기 조절을 유지하며 Pick Up / Throw, Respawn, Previous/Next Camera, Run, Confirm, Back을 표시한다. 저장값은 바인딩 ID로 행을 찾고, 그룹이 비어 있는 게임패드 Respawn/Menu도 장치 경로로 분류한다.
+- 타이틀 메뉴는 시작 → 설정 → 맵 에디터 → 종료 순서로 화면 배치와 `ButtonSelectController` 선택 목록을 맞춘다. 런타임 생성되는 Map Editor도 Exit 바로 앞에 배치한다.
 - Main Start는 `quantum-prepare`로 전환해 지원6종 맵과 `공식 스테이지 선택`(공식 목록을 누를 때마다 차례로 고름, 7번째 버튼) 선택 → 오프라인 최대 4인 → QuantumPlay → 완료/메뉴 종료 → Main·재진입을 실행한다. 준비 화면은 `ScreenNavigator`·기존 취소 입력을 사용하며 Mirror 방 플레이어/서버 상태가 필요 없다. 미지원 콘텐츠 위치·원인과 출시 설정 미완료를 실패 UI로 표시하고 취소·재시도를 지원한다. MapEditor 진입점을 유지한다.
 - 2026-11-15 Mirror 제거로 모드 선택·호스트·공개 로비·비공개 참가 화면, Quantum 준비 화면의 `기존 Steam 게임 (Mirror)` 버튼, GameRoom 스테이지 선택 UI(`StageMapTabs`·`MapChoiceFeedback`·`StageCustomMapItem`·`StageLoadFailureNotice`)를 지웠다.
 - `Assets/01_Scripts/UI Scripts/Rebuild`에 공통 화면·내비게이션과 Main, Settings, KeyBinding, Quantum 준비 전용 화면이 있다.
@@ -55,6 +56,8 @@ SettingsScreen.OnShow 또는 OnHide
 ```
 
 ## 검증
+
+- 2026-11-15 Main·설정 통일: Unity 재컴파일·Console 오류 0건, 새 Play 첫 Main에서 `RunOffline` 통과. 메인·설정 6개 화면을 1600×900으로 캡처했다. 실제 버튼 콜백으로 메인→설정→각 하위 창→뒤로→메인을 왕복했고 보이는 화면 TMP overflow 0건, 초기화 버튼의 `KeyRebindingManager.ResetBindings` 연결이 유지됨을 확인했다. 패드 포커스 표시와 다른 해상도는 보지 않았다.
 
 - 2026-11-15 공통 프리팹 교체: 지정 SDK 빌드·Unity 재컴파일 오류 0건. 새 Play 첫 Main에서 `QuantumProductChecks.RunOffline` 통과(Unity 오류 0). 준비·온라인 화면 캡처는 교체 전과 같고 TMP overflow 0건, 코드 입력 시 참가 버튼 활성/비활성, QuantumPlay `플레이 종료` 클릭 후 Main 복귀를 확인했다. 로비 화면과 실제 패드 포커스 표시는 확인하지 않았다.
 

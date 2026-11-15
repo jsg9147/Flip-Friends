@@ -10,7 +10,6 @@ public class MainMenuScreen : UIScreen
     private const string MapEditorButtonName = "Map Editor Button";
 
     [SerializeField] private GameObject titleLogo;
-    [SerializeField] private GameObject titleText;
     private GameObject transitionBackdrop;
 
     protected override void Awake()
@@ -23,17 +22,14 @@ public class MainMenuScreen : UIScreen
     protected override void OnShow()
     {
         if (titleLogo != null) titleLogo.SetActive(true);
-        if (titleText != null) titleText.SetActive(true);
-        if (transitionBackdrop != null) transitionBackdrop.SetActive(false);
     }
 
     protected override void OnHide()
     {
         if (titleLogo != null) titleLogo.SetActive(false);
-        if (titleText != null) titleText.SetActive(false);
-        if (transitionBackdrop != null) transitionBackdrop.SetActive(true);
     }
 
+    // 메인·설정·준비 화면이 같은 도트 배경을 공유해야 화면 전환 때 색이 튀지 않는다.
     private void CreateTransitionBackdrop()
     {
         if (transform.parent == null) return;
@@ -56,7 +52,6 @@ public class MainMenuScreen : UIScreen
         AddPixel(0.87f, 0.68f, 10, 10, new Color32(232, 242, 209, 255));
         AddPlatform(0f, 0.14f, 0.2f);
         AddPlatform(1f, 0.14f, 0.2f);
-        transitionBackdrop.SetActive(false);
     }
 
     private void AddPixel(float x, float y, float width, float height, Color color)
@@ -152,7 +147,7 @@ public class MainMenuScreen : UIScreen
             return;
         }
 
-        label.text = "MAP EDITOR";
+        label.text = "맵 에디터";
     }
 
     private void RegisterNavigation(Button button)

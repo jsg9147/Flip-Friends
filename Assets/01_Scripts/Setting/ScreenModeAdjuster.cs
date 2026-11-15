@@ -63,7 +63,7 @@ public class ScreenModeAdjuster : MonoBehaviour
             return;
         }
 
-        screenModeText.text = SelectedMode == FullScreenMode.Windowed ? "Windowed" : "Fullscreen";
+        screenModeText.text = SelectedMode == FullScreenMode.Windowed ? "창 모드" : "전체 화면";
     }
 
     private void LoadScreenMode()
