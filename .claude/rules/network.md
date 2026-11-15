@@ -1,36 +1,40 @@
 ---
 paths:
   - "Assets/01_Scripts/NetworkScripts/**/*.cs"
-  - "Assets/01_Scripts/PlayerScripts/**/*.cs"
+  - "Assets/QuantumUser/**/*.cs"
+  - "Assets/QuantumUser/**/*.qtn"
   - "Assets/01_Scripts/MapEditorScripts/Network/**/*.cs"
 ---
 
-# 네트워크 규칙 (Mirror)
+# 네트워크 규칙 (Quantum)
 
-- **이동은 예측 + 서버 권한**: 소유 클라이언트는 `ClientMover`로 예측하고, 서버는 `ServerMover`가 같은 `MovementHandler.Simulate`를 입력 하나당 한 번 돌려 보정값을 보낸다. 다음 틱에 영향을 주는 값은 모두 `StatePayload`에 넣고, 시뮬레이션 안의 타이머는 코루틴이 아니라 틱 카운터로 둔다.
-- 서버가 위치를 정하는 일(운반 해제, 리스폰)은 `ServerMover.Teleport`로만 한다. 에포크가 바뀌어 이전 입력·보정값이 버려진다. 플레이어 `transform.position`을 직접 바꾸지 않는다. 예외는 `PlayerLagCompensation`이 입력 하나를 시뮬레이션하는 동안 다른 플레이어를 옮겼다가 같은 틱에 되돌리는 것뿐이다.
-- 들기·던지기와 피격은 서버만 판정하고 `SendStateNow`나 RPC로 알린다. 밟기 튕김·스프링·바운스·로프는 소유 클라이언트도 예측하되, 상대에게 주는 효과(Shrink, 점프 차단)는 서버만 낸다. 결과가 갈리면 서버 보정이 덮어쓴다.
-- 보정·재동기화로 생기는 위치 차이는 `ClientMover`의 보이는 위치 오프셋으로 약 0.1초에 걸쳐 따라간다. 판정용 위치(`predictedPosition`)에는 오프셋을 넣지 않는다.
-- 클라이언트 → 서버는 `[Command]`, 서버 → 클라이언트는 `[ClientRpc]`를 쓴다. 서버에 없는 입력(아래 방향 등)은 Command 인자로 보낸다.
-- 상태 동기화는 `[SyncVar(hook = nameof(...))]`로 해서 모든 클라이언트에서 hook이 불리게 한다.
-- `isServer`, `isOwned`, `isLocalPlayer` 분기는 메서드 진입부에서 조기 반환한다.
-- `[Command]`는 `Cmd`, `[ClientRpc]`는 `Rpc`, `[SyncVar]` hook은 `On` + 변수명 + `Changed` 접두사를 붙인다.
-- 새 네트워크 상태를 추가하면 호스트와 늦게 들어온 클라이언트 양쪽에서 값이 맞는지 확인한다. `SyncVar`는 접속 시점에 초기값이 전달된다.
+Mirror·NGO는 2026-11-15에 제거했다. 네트워크는 Photon Quantum 3 결정론 시뮬레이션 하나다. 현재 범위와 검증은 `Docs/QUANTUM_MIGRATION.md`를 따른다.
 
-## 씬 흐름
+## 시뮬레이션
 
-`Main.unity`(메인 메뉴·로비 선택) → `GameRoom.unity`(준비·스테이지 선택) → `GamePlay.unity`(서버 시작 시 `StageManager`가 스테이지 프리팹 생성). 모든 플레이어가 도착 트리거에 들어가면 `GameManager`가 `SlimeRoomManager.ReturnRoomScene()`을 호출해 `GameRoom.unity`로 돌아간다.
+- 게임 규칙은 `Assets/QuantumUser/Simulation`의 `FlipFriends*System`이 FP·`DeltaTime`·프레임 상태로만 처리한다. 타이머·관계·접촉 이력처럼 다음 틱에 영향을 주는 값은 모두 프레임(`FlipFriends.qtn` 컴포넌트·전역)에 둔다. `UnityEngine` 타입, `float`, 실시간, 코루틴, `System.Random`을 시뮬레이션에 넣지 않는다.
+- 같은 틱의 여러 플레이어는 `PlayerRef` 순서로 처리한다. 순서가 결과를 바꾸는 판정(운반 탐색, 동시 피격, 스위치 반전)은 정렬 기준을 코드에 명시한다.
+- Unity 쪽은 입력 수집(`QuantumPlayerInput`)과 표시(`QuantumGameView`, `Quantum*Views`)만 맡는다. 스프라이트·카메라는 예측 프레임, 효과음처럼 중복되면 안 되는 연출은 확정 틱에서 계산한다. 표시 코드가 시뮬레이션 상태를 바꾸지 않는다.
+- 규칙이나 수치를 바꾸면 결정론 합의 문자열이 달라져야 한다. 제품 서명(`QuantumGameContent.NetworkVersion`, 현재 `ff-product-15`)을 올리고 기존 공식·매니페스트 해시가 바뀌는지 확인한다.
 
-맵 에디터 테스트 플레이(`SlimeRoomManager.IsTestPlaying`) 중에는 `ReturnRoomScene()`과 `GameManager.ExitGame()`이 호스트를 끄고 에디터로 돌아간다. 이 동안 `offlineScene`을 비워 둔다. 값이 있으면 Mirror가 종료 시 매니저를 DDOL에서 꺼내 파괴한다. 서버 종료 흐름을 바꿀 때 이 분기를 함께 확인한다.
+## 콘텐츠
 
-게임 진행 중 입장·재입장은 받지 않는다(Mirror가 Room 씬 밖의 새 연결을 끊고, `SteamRoomManager`가 GameRoom 밖에서 로비를 입장 불가로 둔다). Steam 로비 API는 Mirror 비의존 `SteamLobbyService`만 호출하고, `SteamRoomManager`에는 Mirror 연결만 둔다. 이 정책을 바꾸면 `GameManager.FinishCheck`와 커스텀 맵 세션 캐시를 함께 확인한다.
+- 맵 콘텐츠는 `IQuantumMapContent.ValidateAndApply`로 `RuntimeConfig`에 들어간다. 공식 스테이지는 `QuantumOfficialStageAsset`(작성 컴포넌트 → `QuantumOfficialStageConverter`), 사용례·저장 맵은 `QuantumCustomMapAsset`/`QuantumMapConverter`(MapData + `QuantumMapEditorPalette`)다.
+- 저장된 콘텐츠 해시와 재변환 해시가 다르면 시작하지 않는다. 변환 규칙을 바꾸면 변환 버전을 올리고 기존 에셋을 재변환한다.
+- 온라인 시작 전 참가자 전원이 콘텐츠 합의(`QuantumMapAgreement`)를 마친 뒤 Photon 방을 닫고 러너를 시작한다. 저장 맵은 `QuantumSavedMapTransfer`가 보유 확인 후 필요한 참가자에게만 보낸다. 받은 맵은 자동 저장하지 않는다.
 
-`NetworkRoomManager.OnServerAddPlayer`는 `OnRoomServerAddPlayer`를 호출하지 않는다. 방 플레이어 생성 직후에 할 일은 `OnServerAddPlayer`를 오버라이드한다.
+## 세션과 씬
 
-## 입력
+- `QuantumGameFlow`가 세션과 씬 수명을 소유한다(Main ↔ QuantumPlay, MapEditor 테스트 플레이 복귀). 제품 SimulationConfig의 자동 씬 로딩은 Disabled로 유지한다.
+- 세션을 끝낼 때 러너·Photon 연결·입력 구독·동적 맵을 모두 정리한다. 검사는 `QuantumRunner.ActiveRunners`와 `QuantumGameSession.ActiveInputSubscriptions`가 0인지 본다.
+- Steam 로비는 `SteamLobbyService`(Main 씬 오브젝트, DDOL)만 호출한다. `SteamAPI.Init`/`Shutdown`은 Steamworks.NET `SteamManager`에 맡긴다. `quantum-v1` 표시가 없는 로비는 받지 않는다.
+- 진행 중 입장은 받지 않는다. 방장 시작 시 Steam 신규 입장과 Photon 방을 닫는다.
 
-New Input System만 쓴다. `PlayerInputManager`가 콜백으로 입력을 받고, 이동 입력은 `ClientMover`가 `InputPayload`로 서버에 보낸다. 들기·리셋 같은 일회성 입력은 `Consume...`으로 한 번만 읽는다.
+## 인증
+
+출시 경로는 `SteamPhotonTicket`의 Steam 인증만 쓴다. 개발 익명 연결은 `UNITY_EDITOR` 검사 코드에만 둔다. 기준은 `Docs/QUANTUM_SECURITY.md`다.
 
 ## 검증
 
-Steam 클라이언트 로그인이 필요하다. 한 PC에서 2인을 확인할 때는 `LocalNetworkTest`(KCP + 지연 시뮬레이션)를 쓴다: 에디터는 `Tools/Flip Friends/Local Network Test`, 빌드는 `-localhost`/`-localclient` `-latency 60`. Steam 경로가 필요한 항목은 수동 검증으로 남기고 `Docs/CUSTOM_MAP_NETWORK.md`의 `검증`에 환경 제약으로 적는다.
+- 새 Play에서 Main을 열고 `Tools/Flip Friends/Quantum/Check Product Offline And Main`(`QuantumProductChecks.RunOffline`)을 다른 Main 검사보다 먼저 돌린다. 이어서 `Check Steam Lobby With Development Photon`으로 모의 Steam + 개발 Photon 두 연결을 확인한다.
+- 같은 PC의 개발 Photon 연결은 출시 인증 검증이 아니다. Steam 실계정·다른 PC·실제 다인 조작은 실행 여부를 따로 적는다.

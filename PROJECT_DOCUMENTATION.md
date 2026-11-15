@@ -17,16 +17,15 @@
 | 작업 종류 | 필수 문서 | 선택적으로 확인할 항목 |
 |---|---|---|
 | 저장소 공통 규칙, 코딩 스타일, 빌드 | `CLAUDE.md` | 없음 |
-| 네트워크, 플레이어, 씬 전환 | `.claude/rules/network.md` | 커스텀 맵 흐름은 `Docs/CUSTOM_MAP_NETWORK.md` |
+| 네트워크, Quantum 시뮬레이션, 씬 전환 | `.claude/rules/network.md`, `Docs/QUANTUM_MIGRATION.md` | 커스텀 맵 흐름은 `Docs/CUSTOM_MAP_NETWORK.md` |
 | Quantum 전환·다음 구현 묶음 | `Docs/QUANTUM_MIGRATION.md`, `Docs/NEXT_SESSION.md` | 실제 수정 영역 문서만 추가하며 Notes는 관련 규칙/측정이 필요할 때만 읽는다 |
 | Steam 구매 인증·온라인 접속 보호 | `Docs/QUANTUM_SECURITY.md`, `Docs/QUANTUM_MIGRATION.md` | 보안 문서는 Draft이며 출시 인증 검증은 미완료 |
-| 플레이어 이동·예측·들기·던지기 | `.claude/rules/network.md`와 `Docs/PLAYER_MOVEMENT_SYNC.md` | 충돌 판정은 `.claude/rules/gameplay.md` |
-| 플레이어 상태·애니메이션 | `.claude/rules/gameplay.md`와 `Docs/PLAYER_ANIMATION.md` | 없음 |
-| 장애물, 스위치, 충돌, 레이어·태그 | `.claude/rules/gameplay.md`와 `Docs/STAGE_COMPONENTS.md` | 없음 |
+| 플레이어 이동·들기·던지기·애니메이션 | `.claude/rules/network.md`와 `Docs/QUANTUM_MIGRATION.md` | Mirror 시절 원본 근거는 `Docs/PLAYER_MOVEMENT_SYNC.md`·`Docs/PLAYER_ANIMATION.md`(Historical) |
+| 장애물, 스위치, 공식 스테이지 작성, 레이어·태그 | `.claude/rules/gameplay.md`와 `Docs/QUANTUM_MIGRATION.md` | 원본 장치 수치는 `Docs/Notes/2026-11-15-mirror-device-values.md`, 과거 동작은 `Docs/STAGE_COMPONENTS.md`(Historical) |
 | UI, 화면 전환, 설정 | `.claude/rules/ui.md`와 `Docs/UI_REBUILD.md` | 없음 |
 | 맵 에디터, 저장소, 팔레트, 검증 | `.claude/rules/map-editor.md`와 `Docs/MAP_EDITOR.md` | 커스텀 맵 전송도 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 로비 맵 선택, 자동 공유, MapId, 세션 캐시, 런타임 맵 생성 | `Docs/CUSTOM_MAP_NETWORK.md` | 에디터 데이터 형식도 바꾸면 `Docs/MAP_EDITOR.md` |
-| Main 메뉴, 로비 목록 | `Docs/UI_REBUILD.md` | Steam/Mirror 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
+| Main 메뉴, Steam 로비 | `Docs/UI_REBUILD.md` | 로비·맵 공유 흐름을 바꾸면 `Docs/CUSTOM_MAP_NETWORK.md` |
 | 다음에 할 작업 고르기, 세션 인계 | `Docs/NEXT_SESSION.md`(있을 때), 없으면 각 기능 문서의 `다음 작업` | 고른 항목이 속한 기능 문서 |
 | 테스트 추가 또는 실패 조사 | `.claude/rules/tests.md`와 대상 기능 문서의 `검증` 절 | `Assets/Tests`와 Unity Console |
 
@@ -42,9 +41,9 @@
 | `Docs/MAP_EDITOR.md` | Active | 맵 제작·저장·검증의 현재 상태 |
 | `Docs/CUSTOM_MAP_NETWORK.md` | Active | 커스텀 맵 로비 선택·자동 공유·런타임 생성 |
 | `Docs/UI_REBUILD.md` | Active | Main 메뉴/UI 교체 진행 상태 |
-| `Docs/PLAYER_ANIMATION.md` | Active | 플레이어 상태 동기화와 애니메이션 재생 |
-| `Docs/PLAYER_MOVEMENT_SYNC.md` | Active | 이동 예측·운반·던지기 동기화와 로컬 2인 테스트 |
-| `Docs/STAGE_COMPONENTS.md` | Active | 기본 스테이지 장치·On/Off 상태 동기화와 참조 검사 |
+| `Docs/PLAYER_ANIMATION.md` | Historical | Mirror 플레이어 상태 동기화와 애니메이션 재생(제거됨) |
+| `Docs/PLAYER_MOVEMENT_SYNC.md` | Historical | Mirror 이동 예측·운반·던지기 동기화(제거됨). Quantum 이식 기록 일부 포함 |
+| `Docs/STAGE_COMPONENTS.md` | Historical | Mirror 기본 스테이지 장치·On/Off 동기화(제거됨). Quantum 이식 기록 일부 포함 |
 | `Docs/QUANTUM_SECURITY.md` | Draft | Quantum 전환 시 Steam 인증·소유권·온라인 보호 설계와 미실행 검증 |
 | `Docs/QUANTUM_MIGRATION.md` | Active | Quantum SDK·독립 이동 테스트·입력 재생·인증 경계와 외부 차단 항목 |
 | `Docs/NEXT_SESSION.md` | Active | 현재 기준선·우선순위·전체 전환 순서와 외부 조건 |
