@@ -49,7 +49,6 @@ public static class QuantumProductSetup
         var status = Text("준비 중", panel, new Vector2(0, 45), new Vector2(1150, 210), font, 28);
         var offline = Button("오프라인 2인 개발 실행", "오프라인 시작", panel, new Vector2(-270, -130), font);
         var online = Button("Steam 인증 온라인", "온라인 시작", panel, new Vector2(270, -130), font);
-        var legacy = Button("기존 Steam 게임 (Mirror)", "기존 경로", panel, new Vector2(-270, -245), font);
         var cancel = Button("뒤로 / 연결 취소", "취소", panel, new Vector2(270, -245), font);
         var screen = panel.gameObject.AddComponent<QuantumPrepareScreen>();
         Set(screen, "screenId", "quantum-prepare");
@@ -60,10 +59,9 @@ public static class QuantumProductSetup
         Set(screen, "ropeMapButton", ropeButton);
         Set(screen, "offlineButton", offline);
         Set(screen, "onlineButton", online);
-        Set(screen, "legacyButton", legacy);
         Set(screen, "cancelButton", cancel);
         Set(screen, "status", status);
-        panel.gameObject.AddComponent<ButtonSelectController>().tagetButtonList = new List<Selectable> { staticButton, ropeButton, offline, online, legacy, cancel };
+        panel.gameObject.AddComponent<ButtonSelectController>().tagetButtonList = new List<Selectable> { staticButton, ropeButton, offline, online, cancel };
         navigator.Register(screen);
         var start = main.GetComponentsInChildren<ScreenNavigationButton>(true).Single(x => x.name == "Start Button");
         Set(start, "targetScreenId", "quantum-prepare");

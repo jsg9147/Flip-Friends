@@ -15,7 +15,6 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     [SerializeField] private Button offlineButton;
     [SerializeField] private Button onlineButton;
     [SerializeField] private Button cancelButton;
-    [SerializeField] private Button legacyButton;
     [SerializeField] private TMP_Text status;
     [SerializeField] private Sprite controlFrame;
     [SerializeField] private Sprite panelBackground;
@@ -163,11 +162,6 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             OpenOnlineEntry();
         });
         cancelButton.onClick.AddListener(OnCancel);
-        legacyButton.onClick.AddListener(() =>
-        {
-            if (flow.Lobby != null) flow.Lobby.Leave("Steam 로비를 나갔습니다.");
-            else Navigator.Open("mode-select");
-        });
         offlineControls = GetComponent<ButtonSelectController>().tagetButtonList.ToArray();
         title = GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(label =>
             label.transform.parent == status.transform.parent && label != status);
@@ -799,7 +793,6 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             return;
         }
         RestoreOfflineLayout();
-        SetLabel(legacyButton, "기존 Steam 게임 (Mirror)");
         SetLabel(offlineButton, "오프라인 플레이 시작");
         bool isBusy = flow.State == QuantumGameState.Starting || flow.State == QuantumGameState.Stopping;
         bool isSavedMap = flow.SavedMapName != null;
@@ -812,7 +805,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         SetLabel(onlineButton, "온라인 플레이");
         offlineButton.interactable = !isBusy && !flow.HasRejectedSavedMap && hasMinimum && flow.HasLocalDevices;
         onlineButton.interactable = !isBusy && (!isSavedMap || hasMinimum);
-        legacyButton.interactable = participantButton.interactable = !isBusy;
+        participantButton.interactable = !isBusy;
         SetLabel(participantButton, $"참가 {flow.PlayerCount}명 / 키보드 {flow.KeyboardSlots}명 / 패드 {flow.PlayerCount - flow.KeyboardSlots}명");
         staticMapButton.interactable = ropeMapButton.interactable = !isBusy;
         if (interactionMapButton != null) interactionMapButton.interactable = !isBusy;
