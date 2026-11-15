@@ -25,8 +25,9 @@
 - MapData2.1 유지. 정적/로프2:2·상호작용3:3·복귀4:4·장치5:5·Tilemap6:6의 원본/베이크/해시를 보존한다. 공식 스테이지 해시는 동작1/전환1/리셋1/스위치1 작성 값을 포함한다. 벨트는 벨트1/벨트규칙1, 대포는 대포1 작성 값을 더한다. 규칙 서명은 `제품15`·온라인 `ff-product-15`이다.
 - 제품 전용 FlipFriendsProductSimulationConfig의 자동 씬 로딩 Disabled를 유지하며 QuantumGameFlow가 씬 수명을 소유한다.
 - 실제 Unity6000.6.8f1·Quantum3.0.14 Stable2241·Steamworks.NET2024.8.0이다. 버전은 변경하지 않았다. [공식 지원 표](https://doc.photonengine.com/quantum/v3/getting-started/initial-setup)의6000.6 미명시와 프로젝트 실행 성공은 별개다.
+- Steam 로비 생성·참가·코드 검색·초대·`+connect_lobby`와 Quantum 로비 연결은 `SteamLobbyService`(DDOL)가 소유한다. Main 씬의 `SteamLobbyService` 오브젝트가 일찍 만들고, Main을 다시 불러오면 새 오브젝트는 스스로 사라진다. `quantum-v1` 표시가 없는 로비는 나가고 안내한다. `SteamAPI.Init`/`Shutdown`은 Steamworks.NET `SteamManager`가 맡는다.
 - Main의 Steam Quantum 로비는 기존 Steam 생성·참가·초대를 재사용한다. Steam은 방장·멤버·선택 맵·준비 세대·시작 시도를 소유한다. 방장 시작 시 Steam 신규 입장을 닫고 참가자와 맵을 확정하며, 시도별 숨김 Photon 방에서 전원 콘텐츠 합의 후 입장을 닫고 QuantumPlay를 연다. 완료·메뉴 종료·시작 실패·이탈 시 정리 후 같은 Steam 로비 준비 화면으로 돌아온다. 로비가 사라지면 Main 준비 화면에 사유를 표시한다.
-- 기존 Steam 게임 버튼의 Mirror GameRoom·친구 맵 전송·21개 스테이지를 유지한다. MapEditor HUD 테스트는 Quantum 오프라인이다. 별도 저장 맵 친구 방도 출시 Photon 인증과 세션 한정 전송을 계속 사용한다. 개발 익명 연결은 UNITY_EDITOR 검사에만 있다. [커스텀 맵 검증](CUSTOM_MAP_NETWORK.md#검증).
+- 2026-11-15 Mirror·NGO를 제거했다(GameRoom·GamePlay, Mirror 플레이어·장치·방 UI, 기존 팔레트). 원본 Stage·Obstacle 프리팹은 참고용으로 남겼다. MapEditor HUD 테스트는 Quantum 오프라인이다. 별도 저장 맵 친구 방도 출시 Photon 인증과 세션 한정 전송을 계속 사용한다. 개발 익명 연결은 UNITY_EDITOR 검사에만 있다. [커스텀 맵 검증](CUSTOM_MAP_NETWORK.md#검증).
 
 ## 핵심 흐름
 
@@ -37,6 +38,8 @@
 
 ## 검증
 
+- 2026-11-15 Mirror 제거: 지정 SDK 런타임·에디터 빌드와 Unity 재컴파일 오류 0, Win64 플레이어 스크립트 컴파일 통과(빌드 실행은 미실행). 공식 8종·매니페스트 6종 해시와 `ValidateAndApply`가 착수 기준값과 같다. 새 Play 첫 Main `RunOffline` 통과 후 `QuantumLobbyChecks` PASS, MapEditor 진입·HUD 테스트 플레이·복귀·Main 복귀와 `SteamLobbyService` 1개 유지, EditMode 102개 통과. Steam 실계정 로비·초대는 미실행이다. [기준값](Notes/2026-11-15-mirror-removal-baseline.md).
+- 2026-11-14 Steam 로비 분리: 지정 SDK 빌드·Unity 재컴파일 오류 0. Main Play에서 서비스 1개 생성, Steam 이름 조회, Mirror 외부 세션·진입/실패 구독 각 1개, 콘솔 오류 0을 확인했다. 실제 Steam 로비 생성·참가·초대(Mirror·Quantum 모두)와 `QuantumLobbyChecks` 재실행은 미실행이다.
 - 2026-11-10 Unity 재컴파일과 지정 SDK 런타임 빌드 오류 0건. 새 Play의 첫 Main `QuantumProductChecks.RunOffline` 통과 후 `QuantumLobbyChecks.Run`을 통과했다. Steam 모의는 준비 미완료·해제 시 시작 거부, 입장 잠금·중복 시작·취소, 제한 시간, 참가자·방장 이탈과 로비 소멸 후 Main 안내를 확인했다.
 - 같은 PC의 실제 개발 Photon 두 연결은 공식 맵 불일치 후 복구, 공식 맵과 미보유 저장 맵의 양쪽 확정 프레임, 메뉴 종료·같은 로비 복귀·저장 맵 재시작을 확인했다. Photon 방 닫기와 러너·연결·입력 구독·맵 정리를 검사했다. 전원 도착 자동 복귀는 오프라인에서 검사했다. Steam 실계정 초대·소유권 인증, 다른 PC·실제 다인 조작·배포 빌드는 미실행이다.
 
@@ -67,4 +70,4 @@
 
 ## 다음 작업
 
-[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 출시 Steam 앱과 Photon 공급자를 설정하고 실계정 로비 왕복을 확인한다.
+출시 Steam 앱과 Photon 공급자를 설정하고 실계정 로비 왕복을 확인한다([착수 순서](NEXT_SESSION.md#다음-작업)).

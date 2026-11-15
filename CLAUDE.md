@@ -1,6 +1,6 @@
 # Flip Friends — Claude Code 지침
 
-Unity 6 기반 2D 멀티플레이 협동 플랫포머다. 최대 4명이 레벨을 오르고 퍼즐을 풀며, 오브젝트나 다른 플레이어를 들어 옮겨 도착 지점에 도달한다. Mirror/Quantum 전환 상태는 기능 문서, 에디터 버전은 `ProjectSettings/ProjectVersion.txt`를 기준으로 한다.
+Unity 6 기반 2D 멀티플레이 협동 플랫포머다. 최대 4명이 레벨을 오르고 퍼즐을 풀며, 오브젝트나 다른 플레이어를 들어 옮겨 도착 지점에 도달한다. 네트워크는 Photon Quantum 3 하나다(Mirror·NGO는 2026-11-15 제거). 전환 상태는 기능 문서, 에디터 버전은 `ProjectSettings/ProjectVersion.txt`를 기준으로 한다.
 
 식별자는 영어, 주석·문서·커밋 메시지는 한국어로 쓴다. 사용자에게 하는 답변은 한글로 한다. 모든 소스 파일은 **UTF-8**로 저장한다.
 
@@ -44,7 +44,7 @@ Edit Mode 테스트는 Unity Test Runner로 돌린다. CLI로 돌릴 때는 에�
 
 ## 환경 제약
 
-- Mirror Steam 로비와 출시 인증 흐름은 Steam 로그인이 필요하다. `steam_appid.txt`가 프로젝트 루트에 있어야 한다. Quantum 오프라인·에디터 개발 Photon 검증과 구분한다.
+- Steam 로비(실계정)와 출시 인증 흐름은 Steam 로그인이 필요하다. `steam_appid.txt`가 프로젝트 루트에 있어야 한다. Quantum 오프라인·에디터 개발 Photon 검증과 구분한다.
 - 같은 PC의 오프라인2인·개발 Photon 두 연결은 자동 검사할 수 있다. 다른 PC·실제 다인 조작·Steam 다계정·출시 인증은 별도 조건이 필요하며 미실행 검증을 통과로 표시하지 않는다.
 - 대상은 Windows Standalone(1600x900), 제품명 `Slime Climb`, 회사 `MNSGStudio`다.
 - `Library/`, `Temp/`, `Logs/`, `UserSettings/`는 커밋하지 않는다.
@@ -53,11 +53,11 @@ Edit Mode 테스트는 Unity Test Runner로 돌린다. CLI로 돌릴 때는 에�
 
 - Codex가 생성해 프로젝트에 추가하는 이미지 원본은 `Assets/02_Sprites/Generated/Codex/` 아래에 두고 파일명에 `codex_` 접두사를 붙인다. 인게임에서 사용하는 경우 작업 결과에도 경로를 남긴다. 사용자가 만든 원본 이미지와 같은 이름으로 저장하거나 덮어쓰지 않는다.
 
-게임 코드는 `Assets/01_Scripts` 아래 기능별 폴더에 둔다: `NetworkScripts`, `PlayerScripts`, `ObstacleScripts`, `PlayingScripts`, `GameObjScripts`, `MapEditorScripts`, `UI Scripts`, `GameOption`, `Setting`. 프리팹 `Assets/03_Prefabs`, 스프라이트 `Assets/02_Sprites`, 씬 `Assets/00_Scenes`.
+게임 코드는 `Assets/01_Scripts` 아래 기능별 폴더에 둔다: `NetworkScripts`, `MapEditorScripts`, `UI Scripts`, `GameOption`, `Setting`, `PlayingScripts`, `GameObjScripts`. Quantum 시뮬레이션은 `Assets/QuantumUser/Simulation`에 둔다. 프리팹 `Assets/03_Prefabs`, 스프라이트 `Assets/02_Sprites`, 씬 `Assets/00_Scenes`.
 
 기능 스크립트는 기존 폴더에 둔다. 넓은 `Misc` 폴더를 새로 만들지 않는다.
 
-`Assets/Mirror`, `Assets/Plugins/Demigiant`, `Assets/com.rlabrecque.steamworks.net`은 벤더 코드다. 작업이 그 수정을 명시할 때만 고친다.
+`Assets/Photon`, `Assets/Plugins/Demigiant`, `Assets/com.rlabrecque.steamworks.net`은 벤더 코드다. 작업이 그 수정을 명시할 때만 고친다.
 
 ## 코딩 스타일
 
@@ -72,7 +72,7 @@ Edit Mode 테스트는 Unity Test Runner로 돌린다. CLI로 돌릴 때는 에�
 
 - `.meta`의 GUID는 Unity가 만들게 두고 직접 작성하지 않는다.
 - 씬과 프리팹의 YAML은 에디터에서 연결한다. 대량 수동 편집은 피한다.
-- `GameManager`는 `DontDestroyOnLoad`를 쓰지 않는다. 씬 범위이며 씬마다 `Instance`가 초기화된다. `GameManager`, `StageManager`, `SoundManager`, `InputManager`가 싱글톤이다.
+- 싱글톤은 `QuantumGameFlow`, `SteamLobbyService`, `SoundManager`, `InputManager`이고 모두 `DontDestroyOnLoad`다. Main을 다시 불러오면 씬 오브젝트가 새로 생기므로 중복 인스턴스는 스스로 파괴되어야 한다.
 
 ## 커밋과 PR
 

@@ -30,7 +30,7 @@ public static class QuantumRopeChecks
     public static void Run()
     {
         if (!EditorApplication.isPlaying) throw new InvalidOperationException("로프 시험 씬을 Play하세요.");
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var source = AssetDatabase.LoadAssetAtPath<TextAsset>(QuantumRopeTestSetup.SourcePath);
         MapData Fresh() => JsonUtility.FromJson<MapData>(source.text);
         var baseline = QuantumMapConverter.Convert(Fresh(), palette);

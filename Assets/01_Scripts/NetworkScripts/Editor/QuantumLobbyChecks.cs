@@ -27,7 +27,7 @@ public static class QuantumLobbyChecks
             evidence.Add("출시 설정 누락 차단");
 
             var stage = flow.OfficialStages[0];
-            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+            var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
             var data = MapDataRepository.FromJson(Resources.Load<TextAsset>("FlipFriendsCustomMap").text);
             data.mapId = Guid.NewGuid().ToString("N");
             data.mapName = "로비 전송 검사";

@@ -1,6 +1,6 @@
 # 저장소 가이드라인 (Codex)
 
-**Flip Friends**는 Unity 6 기반 2D 멀티플레이 협동 플랫포머다. 최대 4명이 레벨을 오르고 퍼즐을 풀며, 오브젝트나 다른 플레이어를 들어 옮겨 도착 지점에 도달한다. 에디터 버전과 Mirror/Quantum 전환 현황은 아래 공통 지침·기능 문서에서 확인한다.
+**Flip Friends**는 Unity 6 기반 2D 멀티플레이 협동 플랫포머다. 최대 4명이 레벨을 오르고 퍼즐을 풀며, 오브젝트나 다른 플레이어를 들어 옮겨 도착 지점에 도달한다. 에디터 버전과 Quantum 전환 현황(Mirror는 2026-11-15 제거)은 아래 공통 지침·기능 문서에서 확인한다.
 
 사용자에게 하는 답변은 한글로 한다.
 
@@ -14,8 +14,8 @@
 
 | 고치는 대상 | 읽을 파일 |
 |---|---|
-| `Assets/01_Scripts/NetworkScripts`, `PlayerScripts` | `.claude/rules/network.md` |
-| `Assets/01_Scripts/ObstacleScripts`, `PlayingScripts`, `GameObjScripts` | `.claude/rules/gameplay.md` |
+| `Assets/01_Scripts/NetworkScripts`, `Assets/QuantumUser` | `.claude/rules/network.md` |
+| `Assets/QuantumUser/Simulation`, `MapEditorScripts/Quantum`, `03_Prefabs/OfficialStages` | `.claude/rules/gameplay.md` |
 | `Assets/01_Scripts/UI Scripts`, `GameOption`, `Setting` | `.claude/rules/ui.md`, `Docs/UI_REBUILD.md` |
 | `Assets/01_Scripts/MapEditorScripts` | `.claude/rules/map-editor.md`, `Docs/MAP_EDITOR.md` |
 | 커스텀 맵 로비 선택·전송·런타임 생성 | `Docs/CUSTOM_MAP_NETWORK.md` |

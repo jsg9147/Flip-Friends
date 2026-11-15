@@ -4569,7 +4569,6 @@ GameObject:
   - component: {fileID: 6687967578061217470}
   - component: {fileID: 8363190130528951787}
   - component: {fileID: 5209610236278991281}
-  - component: {fileID: 822245260602291062}
   - component: {fileID: 7967976120449197074}
   m_Layer: 7
   m_Name: Fall Platforms (2)
@@ -4700,48 +4699,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &822245260602291062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 437876591624261162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 3298678632387984267}
 --- !u!95 &7967976120449197074
 Animator:
   serializedVersion: 7
@@ -4775,7 +4732,6 @@ GameObject:
   - component: {fileID: 3213825604771789622}
   - component: {fileID: 9132332450119019747}
   - component: {fileID: 1048282159709165181}
-  - component: {fileID: 7134148088548558740}
   m_Layer: 7
   m_Name: Platform
   m_TagString: Through
@@ -4904,51 +4860,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7134148088548558740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 444667438451083137}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 1
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 8, y: 0, z: 0}
-  - {x: 8, y: -3, z: 0}
-  - {x: 0, y: -3, z: 0}
-  - {x: 0, y: 0, z: 0}
-  speed: 4
-  cyclic: 0
-  isRepeat: 1
-  originalPositionDelay: 1
-  waitTime: 0.5
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 9132332450119019747}
 --- !u!1 &559882701952081071
 GameObject:
   m_ObjectHideFlags: 0
@@ -5168,7 +5079,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5792546651667672911}
   - component: {fileID: 1616905277921455122}
-  - component: {fileID: 6903073179980371226}
   - component: {fileID: 4184653417272221104}
   - component: {fileID: 2807744931093656994}
   m_Layer: 6
@@ -5253,34 +5163,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &6903073179980371226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759477603662419337}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 4979584362988707360}
-  toggleCooldown: 0.5
 --- !u!61 &4184653417272221104
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5613,7 +5495,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6480813911755194855}
-  - component: {fileID: 7504980879702793922}
   - component: {fileID: 1057662670509908371}
   - component: {fileID: 574951099607552585}
   m_Layer: 0
@@ -5638,36 +5519,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3512400449191416435}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7504980879702793922
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1144978826798914642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e83ca2b0e15cda147a829a3a906829b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  detectPlatform: {fileID: 7134148088548558740}
 --- !u!212 &1057662670509908371
 SpriteRenderer:
   serializedVersion: 3
@@ -5785,7 +5636,6 @@ GameObject:
   - component: {fileID: 7818123041166437037}
   - component: {fileID: 2819490467925128597}
   - component: {fileID: 4132179736726129957}
-  - component: {fileID: 3612181369461387128}
   - component: {fileID: 7951075294777264420}
   m_Layer: 7
   m_Name: Fall Platforms
@@ -5916,48 +5766,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &3612181369461387128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1266971515259429014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 734743652340346316}
 --- !u!95 &7951075294777264420
 Animator:
   serializedVersion: 7
@@ -6913,7 +6721,6 @@ GameObject:
   - component: {fileID: 7995458534534383232}
   - component: {fileID: 4268314655096697947}
   - component: {fileID: 3751328409429051607}
-  - component: {fileID: 4968281990664607180}
   - component: {fileID: 8242153328762332003}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (2)
@@ -7044,36 +6851,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &4968281990664607180
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2395830147862530710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 5605550907518247895}
 --- !u!50 &8242153328762332003
 Rigidbody2D:
   serializedVersion: 5
@@ -7112,7 +6889,6 @@ GameObject:
   - component: {fileID: 6750577923104870834}
   - component: {fileID: 5166591957606771877}
   - component: {fileID: 6339350701222474156}
-  - component: {fileID: 4679975918602874482}
   m_Layer: 7
   m_Name: Platform
   m_TagString: Through
@@ -7241,51 +7017,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4679975918602874482
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2438479120591655451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 1
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 18, y: 0, z: 0}
-  - {x: 18, y: 5, z: 0}
-  - {x: 55, y: 5, z: 0}
-  - {x: 80, y: 11, z: 0}
-  speed: 4
-  cyclic: 0
-  isRepeat: 1
-  originalPositionDelay: 1
-  waitTime: 0.5
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 5166591957606771877}
 --- !u!1 &2641780176762931868
 GameObject:
   m_ObjectHideFlags: 0
@@ -7961,7 +7692,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1322304414675043038}
   - component: {fileID: 6152709879024195720}
-  - component: {fileID: 1814097705091820285}
   m_Layer: 0
   m_Name: Stage 17
   m_TagString: Untagged
@@ -8007,23 +7737,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &1814097705091820285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3846973216450071382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 0
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &4086864838560545951
 GameObject:
   m_ObjectHideFlags: 0
@@ -8033,7 +7746,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8607509386748767383}
-  - component: {fileID: 4979584362988707360}
   m_Layer: 0
   m_Name: OnOffManager
   m_TagString: Untagged
@@ -8060,31 +7772,6 @@ Transform:
   - {fileID: 7216507069423019571}
   m_Father: {fileID: 1322304414675043038}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4979584362988707360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4086864838560545951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f707691b8dce034bb3f42d2b9d49fd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  switches:
-  - {fileID: 6903073179980371226}
-  - {fileID: 6593502740926637989}
-  - {fileID: 7235358465877857639}
-  - {fileID: 2697644595999978391}
-  conveyorBelts: []
-  activeSwitchGround: {fileID: 1951466863537534454}
-  inactiveSwitchGround: {fileID: 8076667632160829645}
-  autoToggleEnabled: 0
-  autoToggleInterval: 3
 --- !u!1 &4237591089304643419
 GameObject:
   m_ObjectHideFlags: 0
@@ -8208,7 +7895,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5065614157373588056}
   - component: {fileID: 1129829652801472700}
-  - component: {fileID: 7235358465877857639}
   - component: {fileID: 5602059591336167463}
   - component: {fileID: 6749777339316902021}
   m_Layer: 6
@@ -8293,34 +7979,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &7235358465877857639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5382017195484245369}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 4979584362988707360}
-  toggleCooldown: 0.5
 --- !u!61 &5602059591336167463
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8576,7 +8234,6 @@ GameObject:
   - component: {fileID: 4547890097363950393}
   - component: {fileID: 6053272863074944494}
   - component: {fileID: 4116012255356251039}
-  - component: {fileID: 7722806092274050247}
   - component: {fileID: 500773414747434134}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (2)
@@ -8707,36 +8364,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &7722806092274050247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6693843194079849795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 759106065793163835}
 --- !u!50 &500773414747434134
 Rigidbody2D:
   serializedVersion: 5
@@ -8774,7 +8401,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7216507069423019571}
   - component: {fileID: 399108637431897149}
-  - component: {fileID: 2697644595999978391}
   - component: {fileID: 7552005058945937222}
   - component: {fileID: 1941753415792930483}
   m_Layer: 6
@@ -8859,34 +8485,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &2697644595999978391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6694075261703786572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 4979584362988707360}
-  toggleCooldown: 0.5
 --- !u!61 &7552005058945937222
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8970,7 +8568,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4377370561180895691}
   - component: {fileID: 2761412471391852237}
-  - component: {fileID: 6593502740926637989}
   - component: {fileID: 2922832256650151121}
   - component: {fileID: 5074469090950473639}
   m_Layer: 6
@@ -9055,34 +8652,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &6593502740926637989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6940154936707033694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ec2edb460f1094c9b76fc5d42ba8b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -6119970287910564725, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  offSwitchSprite: {fileID: 86894960, guid: f93fb462736f11740981080742fb12a1, type: 3}
-  onOffManager: {fileID: 4979584362988707360}
-  toggleCooldown: 0.5
 --- !u!61 &2922832256650151121
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9167,7 +8736,6 @@ GameObject:
   - component: {fileID: 6830303929301265340}
   - component: {fileID: 5686421781533842492}
   - component: {fileID: 8463263804024168847}
-  - component: {fileID: 8678127516782230130}
   - component: {fileID: 1778595238773577777}
   m_Layer: 7
   m_Name: Fall Platforms (1)
@@ -9298,48 +8866,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &8678127516782230130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7220372788021972596}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 6105452008374327066}
 --- !u!95 &1778595238773577777
 Animator:
   serializedVersion: 7
@@ -9373,8 +8899,6 @@ GameObject:
   - component: {fileID: 942771738639817645}
   - component: {fileID: 3664955656542463612}
   - component: {fileID: 6870741472247862402}
-  - component: {fileID: 730924919067931945}
-  - component: {fileID: 5762758625880172489}
   m_Layer: 10
   m_Name: RotateObstacle (1)
   m_TagString: Trap
@@ -9503,60 +9027,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.67}
   m_EdgeRadius: 0
---- !u!114 &730924919067931945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322243472202304268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 0
-  rotationSpeed: 50
-  random: 0
-  randomRange: 0
---- !u!114 &5762758625880172489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322243472202304268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 942771738639817645}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &7466719333365139320
 GameObject:
   m_ObjectHideFlags: 0
@@ -10377,7 +9847,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5814994516498358702}
-  - component: {fileID: 4171884531678048552}
   - component: {fileID: 753206616199764572}
   - component: {fileID: 6082359923718577419}
   m_Layer: 0
@@ -10402,36 +9871,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8066975681692144375}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4171884531678048552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8177077053267378067}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e83ca2b0e15cda147a829a3a906829b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  detectPlatform: {fileID: 4679975918602874482}
 --- !u!212 &753206616199764572
 SpriteRenderer:
   serializedVersion: 3
@@ -13329,7 +12768,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8228115357207278245}
   - component: {fileID: 2308511091274593394}
-  - component: {fileID: 3468094955139525319}
   - component: {fileID: 4889784340260710366}
   m_Layer: 0
   m_Name: Point (0)
@@ -13413,19 +12851,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &3468094955139525319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9186876539995904048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!61 &4889784340260710366
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13540,7 +12965,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13618,7 +13044,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13696,7 +13123,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13828,7 +13256,8 @@ PrefabInstance:
       propertyPath: shootDirection.x
       value: -1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13906,7 +13335,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13984,7 +13414,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -14062,7 +13493,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -14140,7 +13572,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

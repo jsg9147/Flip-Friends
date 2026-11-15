@@ -1,7 +1,8 @@
 # 기본 스테이지 장치와 참조 검증
 
-- 상태: Active
-- 범위: 기본 Stage 1~21, 스위치·전환 지형·벨트와 에디터 참조 검사.
+- 상태: Historical (Mirror 장치 제거됨, Quantum 항목은 QUANTUM_MIGRATION.md 기준)
+- 범위: 기본 Stage 1~21, 스위치·전환 지형·벨트와 에디터 참조 검사. 원본 프리팹은 장치 스크립트를 뗀 참고용이며 원본 수치는 [Notes](Notes/2026-11-15-mirror-device-values.md)에 있다.
+- 2026-11-15 Mirror 제거: 이 문서가 다루던 Mirror 스크립트는 모두 지웠다. Mirror 절은 Historical이며 원본 수치의 근거로만 읽는다. Quantum 항목의 현재 동작·검증은 [QUANTUM_MIGRATION.md](QUANTUM_MIGRATION.md)가 기준이다.
 
 ## 현재 상태
 

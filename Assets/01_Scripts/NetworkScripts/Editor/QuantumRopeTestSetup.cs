@@ -44,7 +44,7 @@ public static class QuantumRopeTestSetup
         if (SceneManager.GetActiveScene().path != QuantumCustomMapSetup.ScenePath || bootstrap == null)
             throw new InvalidOperationException("기존 정적 시험 씬을 열고 실행하세요.");
         var source = AssetDatabase.LoadAssetAtPath<TextAsset>(QuantumCustomMapSetup.SourcePath);
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var conversion = QuantumMapConverter.Convert(JsonUtility.FromJson<MapData>(source.text), palette);
         var manifest = AssetDatabase.LoadAssetAtPath<QuantumCustomMapAsset>(QuantumCustomMapSetup.ManifestPath);
         manifest.Configure(source, palette, AssetDatabase.LoadAssetAtPath<Quantum.Map>(QuantumCustomMapSetup.MapPath), conversion);

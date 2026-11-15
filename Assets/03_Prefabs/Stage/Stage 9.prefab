@@ -730,8 +730,6 @@ GameObject:
   - component: {fileID: 4441538587076815774}
   - component: {fileID: 2390192685671747964}
   - component: {fileID: 6318305538793081753}
-  - component: {fileID: 1886572613665077635}
-  - component: {fileID: 6842773835792632584}
   m_Layer: 14
   m_Name: RotateObstacle (20)
   m_TagString: Trap
@@ -860,60 +858,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &1886572613665077635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1050656414571338173}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 10
---- !u!114 &6842773835792632584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1050656414571338173}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 4441538587076815774}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &1196126978351243920
 GameObject:
   m_ObjectHideFlags: 0
@@ -1198,8 +1142,6 @@ GameObject:
   - component: {fileID: 280011384325483164}
   - component: {fileID: 6614986395339651544}
   - component: {fileID: 2725600482714195166}
-  - component: {fileID: 691145549637535204}
-  - component: {fileID: 1254813000899263953}
   m_Layer: 14
   m_Name: RotateObstacle (9)
   m_TagString: Trap
@@ -1328,60 +1270,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &691145549637535204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1689816805770264852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &1254813000899263953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1689816805770264852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 280011384325483164}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &1767873323520445051
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,8 +1281,6 @@ GameObject:
   - component: {fileID: 1011650179856147615}
   - component: {fileID: 6514352384035858783}
   - component: {fileID: 5668388066487271548}
-  - component: {fileID: 7462061023635192456}
-  - component: {fileID: 99832188910229224}
   m_Layer: 14
   m_Name: RotateObstacle (10)
   m_TagString: Trap
@@ -1523,60 +1409,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &7462061023635192456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1767873323520445051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &99832188910229224
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1767873323520445051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 1011650179856147615}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &1924020792248453693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1619,8 +1451,6 @@ GameObject:
   - component: {fileID: 3796428670061489600}
   - component: {fileID: 1885367856466508556}
   - component: {fileID: 4844171384435449919}
-  - component: {fileID: 2549832974498591919}
-  - component: {fileID: 2703327407650610083}
   m_Layer: 14
   m_Name: RotateObstacle (2)
   m_TagString: Trap
@@ -1749,60 +1579,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &2549832974498591919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1975657960615028565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &2703327407650610083
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1975657960615028565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 3796428670061489600}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &2199742475576873191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1814,8 +1590,6 @@ GameObject:
   - component: {fileID: 7280672191132612329}
   - component: {fileID: 6365487431729708242}
   - component: {fileID: 5939729697562721642}
-  - component: {fileID: 8331740288592985068}
-  - component: {fileID: 427204490975279810}
   m_Layer: 14
   m_Name: RotateObstacle (7)
   m_TagString: Trap
@@ -1944,60 +1718,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &8331740288592985068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2199742475576873191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &427204490975279810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2199742475576873191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 7280672191132612329}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &2526577787089101603
 GameObject:
   m_ObjectHideFlags: 0
@@ -2241,8 +1961,6 @@ GameObject:
   - component: {fileID: 9028600888442014368}
   - component: {fileID: 3944786450260208439}
   - component: {fileID: 6277107081599588907}
-  - component: {fileID: 6069593373455769504}
-  - component: {fileID: 7698224809266564510}
   m_Layer: 14
   m_Name: RotateObstacle (18)
   m_TagString: Trap
@@ -2371,60 +2089,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &6069593373455769504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2722046116490444245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 10
---- !u!114 &7698224809266564510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2722046116490444245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 9028600888442014368}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &3183357447280211103
 GameObject:
   m_ObjectHideFlags: 0
@@ -2436,8 +2100,6 @@ GameObject:
   - component: {fileID: 5371477189675573189}
   - component: {fileID: 3576384905603025528}
   - component: {fileID: 1585983575310350682}
-  - component: {fileID: 1629267726139445436}
-  - component: {fileID: 6832329306771397927}
   m_Layer: 14
   m_Name: RotateObstacle (14)
   m_TagString: Trap
@@ -2566,60 +2228,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &1629267726139445436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3183357447280211103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 60
-  random: 1
-  randomRange: 10
---- !u!114 &6832329306771397927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3183357447280211103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 5371477189675573189}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &3292231277693652391
 GameObject:
   m_ObjectHideFlags: 0
@@ -2662,7 +2270,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8123701225400602451}
   - component: {fileID: 1613170377721453816}
-  - component: {fileID: 5137088813374081804}
   - component: {fileID: 4612705807792796214}
   m_Layer: 8
   m_Name: Box
@@ -2746,34 +2353,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &5137088813374081804
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3292776282386220038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a350a8654aa1feb4c8c5851ba5c7670f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 3520
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  maxSlopeAngle: 45
-  gravity: 9.8
-  velocity: {x: 0, y: 0}
-  wallSlideSpeedMax: 3
 --- !u!61 &4612705807792796214
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2831,8 +2410,6 @@ GameObject:
   - component: {fileID: 513750943454523454}
   - component: {fileID: 1210383186214466985}
   - component: {fileID: 6803414302336987056}
-  - component: {fileID: 9155448187622857643}
-  - component: {fileID: 8974364252038926003}
   m_Layer: 14
   m_Name: RotateObstacle (17)
   m_TagString: Trap
@@ -2961,60 +2538,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &9155448187622857643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3534996636353502557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 10
---- !u!114 &8974364252038926003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3534996636353502557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 513750943454523454}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &3576465966695314686
 GameObject:
   m_ObjectHideFlags: 0
@@ -3166,7 +2689,6 @@ GameObject:
   - component: {fileID: 3409986360644217774}
   - component: {fileID: 3600471984328945283}
   - component: {fileID: 3161604716407776564}
-  - component: {fileID: 7574493421241643510}
   m_Layer: 0
   m_Name: 'RespawnPoint '
   m_TagString: Untagged
@@ -3295,19 +2817,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.625, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7574493421241643510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3658614432557353261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!1 &3819613523761161849
 GameObject:
   m_ObjectHideFlags: 0
@@ -3458,7 +2967,6 @@ GameObject:
   - component: {fileID: 577048871271756461}
   - component: {fileID: 8292079907565428494}
   - component: {fileID: 232744271697633662}
-  - component: {fileID: 7310025904495428815}
   m_Layer: 0
   m_Name: 'SecondRespawnPoint '
   m_TagString: Untagged
@@ -3587,19 +3095,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.625, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7310025904495428815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3885221685625141005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!1 &4626907016583408516
 GameObject:
   m_ObjectHideFlags: 0
@@ -3611,8 +3106,6 @@ GameObject:
   - component: {fileID: 2349990739231196697}
   - component: {fileID: 1551671054614955748}
   - component: {fileID: 2598312339503968344}
-  - component: {fileID: 4276490840567457771}
-  - component: {fileID: 2419895888944439591}
   m_Layer: 14
   m_Name: RotateObstacle (6)
   m_TagString: Trap
@@ -3741,60 +3234,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &4276490840567457771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4626907016583408516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &2419895888944439591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4626907016583408516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 2349990739231196697}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &4642468839062031855
 GameObject:
   m_ObjectHideFlags: 0
@@ -7763,7 +7202,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3267547447635159114}
   - component: {fileID: 7228742249074165530}
-  - component: {fileID: 4653505950145033761}
   m_Layer: 0
   m_Name: Stage 9
   m_TagString: Untagged
@@ -7807,23 +7245,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &4653505950145033761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4839135096584866826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 3277623172
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &5291125929542943703
 GameObject:
   m_ObjectHideFlags: 0
@@ -7836,7 +7257,6 @@ GameObject:
   - component: {fileID: 65417488502262186}
   - component: {fileID: 2937610208406282159}
   - component: {fileID: 7166095445838060490}
-  - component: {fileID: 2923074144325327272}
   - component: {fileID: 729654607707102648}
   m_Layer: 15
   m_Name: ResetTile
@@ -8504,26 +7924,6 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!114 &2923074144325327272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5291125929542943703}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b59456341fa28645b97b2033fba1848, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  targetLayers:
-    serializedVersion: 2
-    m_Bits: 2048
-  resetPoint: {fileID: 577048871271756461}
-  onlyBoxReset: 0
 --- !u!50 &729654607707102648
 Rigidbody2D:
   serializedVersion: 5
@@ -8562,8 +7962,6 @@ GameObject:
   - component: {fileID: 2091997129283304801}
   - component: {fileID: 6557505498837511399}
   - component: {fileID: 5878450140809262695}
-  - component: {fileID: 2638983062911474493}
-  - component: {fileID: 6043877034379414257}
   m_Layer: 14
   m_Name: RotateObstacle (22)
   m_TagString: Trap
@@ -8692,60 +8090,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &2638983062911474493
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5397108683348444086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 10
---- !u!114 &6043877034379414257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5397108683348444086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 2091997129283304801}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &5511308644441552130
 GameObject:
   m_ObjectHideFlags: 0
@@ -8792,7 +8136,6 @@ GameObject:
   - component: {fileID: 6289014995487277282}
   - component: {fileID: 7872742016155429080}
   - component: {fileID: 2205328642163424598}
-  - component: {fileID: 6398519945312993876}
   - component: {fileID: 379703322969094234}
   m_Layer: 12
   m_Name: BoxDoorSwitch
@@ -8922,36 +8265,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &6398519945312993876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5939334076645082507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  door: {fileID: 8318828352976441113}
 --- !u!50 &379703322969094234
 Rigidbody2D:
   serializedVersion: 5
@@ -8990,8 +8303,6 @@ GameObject:
   - component: {fileID: 4372862920270628287}
   - component: {fileID: 2158756803099972260}
   - component: {fileID: 3848635311593470659}
-  - component: {fileID: 9169418607497675418}
-  - component: {fileID: 3251127891326512981}
   m_Layer: 14
   m_Name: RotateObstacle (15)
   m_TagString: Trap
@@ -9120,60 +8431,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &9169418607497675418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5972667092209508035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 60
-  random: 1
-  randomRange: 10
---- !u!114 &3251127891326512981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5972667092209508035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 4372862920270628287}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &5979927851247675493
 GameObject:
   m_ObjectHideFlags: 0
@@ -9185,8 +8442,6 @@ GameObject:
   - component: {fileID: 1202454739133728075}
   - component: {fileID: 6125256684410639429}
   - component: {fileID: 1149310936186406877}
-  - component: {fileID: 6397023444956233103}
-  - component: {fileID: 4535738562165990428}
   m_Layer: 14
   m_Name: RotateObstacle (23)
   m_TagString: Trap
@@ -9315,60 +8570,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &6397023444956233103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5979927851247675493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 60
-  random: 1
-  randomRange: 10
---- !u!114 &4535738562165990428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5979927851247675493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 1202454739133728075}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &6233277416228993242
 GameObject:
   m_ObjectHideFlags: 0
@@ -9381,7 +8582,6 @@ GameObject:
   - component: {fileID: 2394985547694887871}
   - component: {fileID: 5418210705915872688}
   - component: {fileID: 6357056764195073121}
-  - component: {fileID: 7487444921262071348}
   - component: {fileID: 3840419761039847918}
   m_Layer: 15
   m_Name: First ResetTile
@@ -9849,26 +9049,6 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!114 &7487444921262071348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6233277416228993242}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b59456341fa28645b97b2033fba1848, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  targetLayers:
-    serializedVersion: 2
-    m_Bits: 2048
-  resetPoint: {fileID: 3409986360644217774}
-  onlyBoxReset: 0
 --- !u!50 &3840419761039847918
 Rigidbody2D:
   serializedVersion: 5
@@ -9907,8 +9087,6 @@ GameObject:
   - component: {fileID: 7686127507544456904}
   - component: {fileID: 4486777603901616054}
   - component: {fileID: 5498550668654763020}
-  - component: {fileID: 5160954720393946595}
-  - component: {fileID: 5779751443268414566}
   m_Layer: 14
   m_Name: RotateObstacle (19)
   m_TagString: Trap
@@ -10037,60 +9215,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &5160954720393946595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6729886028247341052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 10
---- !u!114 &5779751443268414566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6729886028247341052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 7686127507544456904}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &6827156403520887734
 GameObject:
   m_ObjectHideFlags: 0
@@ -10102,8 +9226,6 @@ GameObject:
   - component: {fileID: 6157875613975520494}
   - component: {fileID: 1688445012296949370}
   - component: {fileID: 30880921554045119}
-  - component: {fileID: 3810921976210115376}
-  - component: {fileID: 5695915094367471863}
   m_Layer: 14
   m_Name: RotateObstacle (3)
   m_TagString: Trap
@@ -10232,60 +9354,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &3810921976210115376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6827156403520887734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &5695915094367471863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6827156403520887734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 6157875613975520494}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &7015514026315065822
 GameObject:
   m_ObjectHideFlags: 0
@@ -10297,8 +9365,6 @@ GameObject:
   - component: {fileID: 5469778185774845466}
   - component: {fileID: 2481848472539109568}
   - component: {fileID: 6890294333704278343}
-  - component: {fileID: 499215112752678277}
-  - component: {fileID: 2371591397934233148}
   m_Layer: 14
   m_Name: RotateObstacle (4)
   m_TagString: Trap
@@ -10427,60 +9493,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &499215112752678277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7015514026315065822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 5
---- !u!114 &2371591397934233148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7015514026315065822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 5469778185774845466}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &7064733802897742628
 GameObject:
   m_ObjectHideFlags: 0
@@ -10492,7 +9504,6 @@ GameObject:
   - component: {fileID: 8278766537365522972}
   - component: {fileID: 4314614887928104962}
   - component: {fileID: 3104439210847473815}
-  - component: {fileID: 1927330371458796175}
   - component: {fileID: 7633827629691709257}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (2)
@@ -10623,36 +9634,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &1927330371458796175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7064733802897742628}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 3576465966695314686}
 --- !u!50 &7633827629691709257
 Rigidbody2D:
   serializedVersion: 5
@@ -10691,8 +9672,6 @@ GameObject:
   - component: {fileID: 7070254317734876500}
   - component: {fileID: 8649201849605964024}
   - component: {fileID: 3050293249550240103}
-  - component: {fileID: 1845882162333485632}
-  - component: {fileID: 8884051334330973793}
   m_Layer: 14
   m_Name: RotateObstacle (1)
   m_TagString: Trap
@@ -10821,60 +9800,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &1845882162333485632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7408666933768309474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 120
-  random: 0
-  randomRange: 0
---- !u!114 &8884051334330973793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7408666933768309474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 7070254317734876500}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &7680041977435455897
 GameObject:
   m_ObjectHideFlags: 0
@@ -10886,8 +9811,6 @@ GameObject:
   - component: {fileID: 992319662949914729}
   - component: {fileID: 1797394406038394878}
   - component: {fileID: 6032943905286309898}
-  - component: {fileID: 978142674326534015}
-  - component: {fileID: 7734482478918455597}
   m_Layer: 14
   m_Name: RotateObstacle (8)
   m_TagString: Trap
@@ -11016,60 +9939,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &978142674326534015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7680041977435455897}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 20
-  random: 1
-  randomRange: 5
---- !u!114 &7734482478918455597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7680041977435455897}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 992319662949914729}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &7700954360232166154
 GameObject:
   m_ObjectHideFlags: 0
@@ -11377,8 +10246,6 @@ GameObject:
   - component: {fileID: 5445618822222641809}
   - component: {fileID: 885904452144993082}
   - component: {fileID: 1228729180593857647}
-  - component: {fileID: 2919175485454728010}
-  - component: {fileID: 5543120992683232642}
   m_Layer: 14
   m_Name: RotateObstacle (13)
   m_TagString: Trap
@@ -11507,60 +10374,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &2919175485454728010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8111138765670057241}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 60
-  random: 1
-  randomRange: 10
---- !u!114 &5543120992683232642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8111138765670057241}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 5445618822222641809}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &8318828352976441113
 GameObject:
   m_ObjectHideFlags: 0
@@ -11712,8 +10525,6 @@ GameObject:
   - component: {fileID: 8612544510818940219}
   - component: {fileID: 1126688354990665847}
   - component: {fileID: 4262721611858948939}
-  - component: {fileID: 173414182258759029}
-  - component: {fileID: 6236156887590242263}
   m_Layer: 14
   m_Name: RotateObstacle (16)
   m_TagString: Trap
@@ -11842,60 +10653,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &173414182258759029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8381483390823078910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 60
-  random: 1
-  randomRange: 10
---- !u!114 &6236156887590242263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8381483390823078910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 8612544510818940219}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &8533199744948272943
 GameObject:
   m_ObjectHideFlags: 0
@@ -13782,7 +12539,6 @@ GameObject:
   - component: {fileID: 3922471251940292550}
   - component: {fileID: 2297939869503091037}
   - component: {fileID: 2955679583255103242}
-  - component: {fileID: 5605257970713889296}
   - component: {fileID: 2786472903809018463}
   m_Layer: 12
   m_Name: PlayerDoorSwitch
@@ -13914,36 +12670,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &5605257970713889296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8725009735681298021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 3819613523761161849}
 --- !u!50 &2786472903809018463
 Rigidbody2D:
   serializedVersion: 5
@@ -13982,8 +12708,6 @@ GameObject:
   - component: {fileID: 104420482378758989}
   - component: {fileID: 2612428156318854956}
   - component: {fileID: 3762317024809276734}
-  - component: {fileID: 3019968765070060489}
-  - component: {fileID: 7281394431436164242}
   m_Layer: 14
   m_Name: RotateObstacle (21)
   m_TagString: Trap
@@ -14112,60 +12836,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.45, y: 2.6093373}
   m_EdgeRadius: 0
---- !u!114 &3019968765070060489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8725797880561749233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d583bfa838a0974d934865115afb69d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  knockbackDir: {x: -1, y: 0}
-  isCounterclockwise: 1
-  rotationSpeed: 45
-  random: 1
-  randomRange: 10
---- !u!114 &7281394431436164242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8725797880561749233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  target: {fileID: 104420482378758989}
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  onlySyncOnChange: 1
-  compressRotation: 1
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
-  timelineOffset: 1
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  bufferResetMultiplier: 3
-  useFixedUpdate: 0
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
 --- !u!1 &8742994583782031262
 GameObject:
   m_ObjectHideFlags: 0
@@ -14177,7 +12847,6 @@ GameObject:
   - component: {fileID: 4779230700779239463}
   - component: {fileID: 7515007283479390422}
   - component: {fileID: 4261446363469619936}
-  - component: {fileID: 1067774269589418910}
   - component: {fileID: 5890676641629380679}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (1)
@@ -14309,36 +12978,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &1067774269589418910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8742994583782031262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 157246114725565530}
 --- !u!50 &5890676641629380679
 Rigidbody2D:
   serializedVersion: 5
@@ -14377,7 +13016,6 @@ GameObject:
   - component: {fileID: 334334731915582875}
   - component: {fileID: 7594571190030400181}
   - component: {fileID: 873163500522554832}
-  - component: {fileID: 8194376802888528327}
   m_Layer: 0
   m_Name: Box Switch Set
   m_TagString: Untagged
@@ -14506,26 +13144,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.79, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &8194376802888528327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9120972065733543168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e56f5ba816af28479c680f83c2f4341, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  summonLocation: {fileID: 8808883421454756835}
-  cooldownTime: 5
-  targetObjTrans: {fileID: 8123701225400602451}
-  defaultSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  pressedSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
 --- !u!1001 &5683871787047822114
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14582,7 +13200,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2389071327718385056, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
@@ -14667,7 +13286,8 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7647417626221537638, guid: 7ae9d6cbd9b4a2746ae3bc46dca2effd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -14749,7 +13369,8 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7647417626221537638, guid: 7ae9d6cbd9b4a2746ae3bc46dca2effd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

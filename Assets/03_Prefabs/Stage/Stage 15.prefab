@@ -6814,7 +6814,6 @@ GameObject:
   - component: {fileID: 6527326182783897558}
   - component: {fileID: 8166841626189211582}
   - component: {fileID: 452576640341770607}
-  - component: {fileID: 4268060643499421188}
   - component: {fileID: 9107792928105900723}
   m_Layer: 7
   m_Name: Fall Platforms (7)
@@ -6945,48 +6944,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &4268060643499421188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648577469948437961}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 1625740036923575396}
 --- !u!95 &9107792928105900723
 Animator:
   serializedVersion: 7
@@ -7362,7 +7319,6 @@ GameObject:
   - component: {fileID: 7818123041166437037}
   - component: {fileID: 2819490467925128597}
   - component: {fileID: 4132179736726129957}
-  - component: {fileID: 3612181369461387128}
   - component: {fileID: 7951075294777264420}
   m_Layer: 7
   m_Name: Fall Platforms
@@ -7493,48 +7449,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &3612181369461387128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1266971515259429014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 734743652340346316}
 --- !u!95 &7951075294777264420
 Animator:
   serializedVersion: 7
@@ -7607,7 +7521,6 @@ GameObject:
   - component: {fileID: 2633984971437914977}
   - component: {fileID: 703638007379354692}
   - component: {fileID: 7121172763443322606}
-  - component: {fileID: 213081783569956254}
   - component: {fileID: 2884097124894718541}
   m_Layer: 7
   m_Name: Fall Platforms (1)
@@ -7738,48 +7651,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &213081783569956254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1754963533938975741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 3454684904084336588}
 --- !u!95 &2884097124894718541
 Animator:
   serializedVersion: 7
@@ -8316,7 +8187,6 @@ GameObject:
   - component: {fileID: 548357914142401059}
   - component: {fileID: 4318290360718568889}
   - component: {fileID: 5557908736762900849}
-  - component: {fileID: 6539291369283036766}
   - component: {fileID: 5530730980607474454}
   m_Layer: 7
   m_Name: Fall Platforms (5)
@@ -8447,48 +8317,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &6539291369283036766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2661821855971839502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 1528949476504606439}
 --- !u!95 &5530730980607474454
 Animator:
   serializedVersion: 7
@@ -10132,7 +9960,6 @@ GameObject:
   - component: {fileID: 7667053697688529923}
   - component: {fileID: 6694637910964163283}
   - component: {fileID: 729033213518552940}
-  - component: {fileID: 4955217945135107446}
   - component: {fileID: 7372909258988286257}
   m_Layer: 7
   m_Name: Fall Platforms (3)
@@ -10263,48 +10090,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &4955217945135107446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3118012234343611264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 8609872943716929170}
 --- !u!95 &7372909258988286257
 Animator:
   serializedVersion: 7
@@ -10337,7 +10122,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6652132836055803408}
   - component: {fileID: 4567569905925377010}
-  - component: {fileID: 8433964308987276429}
   - component: {fileID: 4062657877427324149}
   m_Layer: 0
   m_Name: Point (1)
@@ -10421,19 +10205,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &8433964308987276429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3219519696348305192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 1
 --- !u!61 &4062657877427324149
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10568,7 +10339,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1322304414675043038}
   - component: {fileID: 6152709879024195720}
-  - component: {fileID: 1814097705091820285}
   m_Layer: 0
   m_Name: Stage 15
   m_TagString: Untagged
@@ -10611,23 +10381,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &1814097705091820285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3846973216450071382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 0
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &3860988006291252637
 GameObject:
   m_ObjectHideFlags: 0
@@ -10639,7 +10392,6 @@ GameObject:
   - component: {fileID: 1532690970805349039}
   - component: {fileID: 6028836969963768045}
   - component: {fileID: 2131022306981151266}
-  - component: {fileID: 6800122307342171219}
   m_Layer: 7
   m_Name: Platform
   m_TagString: Through
@@ -10768,52 +10520,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3, y: 1}
   m_EdgeRadius: 0
---- !u!114 &6800122307342171219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3860988006291252637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 1
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 20, y: 0, z: 0}
-  - {x: 25, y: 5, z: 0}
-  - {x: 30, y: 0, z: 0}
-  - {x: 35, y: 5, z: 0}
-  - {x: 40, y: 0, z: 0}
-  speed: 4
-  cyclic: 0
-  isRepeat: 1
-  originalPositionDelay: 1
-  waitTime: 0.5
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 0
-  spriteRenderer: {fileID: 6028836969963768045}
 --- !u!1 &4036914664890520297
 GameObject:
   m_ObjectHideFlags: 0
@@ -10950,7 +10656,6 @@ GameObject:
   - component: {fileID: 8634055022126459262}
   - component: {fileID: 3111490088085588328}
   - component: {fileID: 851444041060661829}
-  - component: {fileID: 5125669806780382925}
   - component: {fileID: 5274972560644711913}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (2)
@@ -11081,36 +10786,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &5125669806780382925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4172294856977856915}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 1844996593648780711}
 --- !u!50 &5274972560644711913
 Rigidbody2D:
   serializedVersion: 5
@@ -11149,7 +10824,6 @@ GameObject:
   - component: {fileID: 5830894527934743311}
   - component: {fileID: 2845930254041874493}
   - component: {fileID: 6640842882941647451}
-  - component: {fileID: 537770984417318631}
   - component: {fileID: 7247059022881992483}
   m_Layer: 7
   m_Name: Fall Platforms (2)
@@ -11280,48 +10954,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &537770984417318631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4558638912560973910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 1784015974751577986}
 --- !u!95 &7247059022881992483
 Animator:
   serializedVersion: 7
@@ -11354,7 +10986,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3958969841466698886}
   - component: {fileID: 6895223020136656804}
-  - component: {fileID: 5974470741493376615}
   - component: {fileID: 8171647918379614825}
   m_Layer: 0
   m_Name: Point (0)
@@ -11438,19 +11069,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &5974470741493376615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4998988824905367145}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!61 &8171647918379614825
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12194,7 +11812,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4012324257012493994}
-  - component: {fileID: 1446489636397153891}
   - component: {fileID: 7768424907795579419}
   - component: {fileID: 8596404257693190840}
   m_Layer: 0
@@ -12219,36 +11836,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2622581523431610615}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1446489636397153891
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6715584869464930842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e83ca2b0e15cda147a829a3a906829b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  detectPlatform: {fileID: 6800122307342171219}
 --- !u!212 &7768424907795579419
 SpriteRenderer:
   serializedVersion: 3
@@ -12366,7 +11953,6 @@ GameObject:
   - component: {fileID: 6392971622824394235}
   - component: {fileID: 1047120389614814799}
   - component: {fileID: 6305660643734465948}
-  - component: {fileID: 1819967303421969095}
   - component: {fileID: 7577682921948388876}
   m_Layer: 12
   m_Name: PlayerDoorSwitch (2)
@@ -12497,36 +12083,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 0.25}
   m_EdgeRadius: 0
---- !u!114 &1819967303421969095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6959320171058171104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: 437443367, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  offSwitchSprite: {fileID: 7086402976811137390, guid: d8f3cf42c8207504f92e0094e1a6a991, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  door: {fileID: 5394087452362087980}
 --- !u!50 &7577682921948388876
 Rigidbody2D:
   serializedVersion: 5
@@ -14338,7 +13894,6 @@ GameObject:
   - component: {fileID: 8822895012187357583}
   - component: {fileID: 2411108766878943426}
   - component: {fileID: 8063378518797792832}
-  - component: {fileID: 61728655878251875}
   - component: {fileID: 8515082156740663720}
   m_Layer: 7
   m_Name: Fall Platforms (6)
@@ -14469,48 +14024,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &61728655878251875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7762833871676823682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 933719322439727444}
 --- !u!95 &8515082156740663720
 Animator:
   serializedVersion: 7
@@ -15152,7 +14665,6 @@ GameObject:
   - component: {fileID: 5655052752454068458}
   - component: {fileID: 8530502153090072813}
   - component: {fileID: 7387391394591667351}
-  - component: {fileID: 3934622178399276240}
   - component: {fileID: 1792407360846592575}
   m_Layer: 7
   m_Name: Fall Platforms (4)
@@ -15283,48 +14795,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &3934622178399276240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9018876545632430490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ccac604ebfdeb4b996d91e4c8c0bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 2304
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  previewColor: {r: 1, g: 0, b: 0, a: 1}
-  passengerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  localWaypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -5, z: 0}
-  speed: 1
-  cyclic: 0
-  isRepeat: 0
-  originalPositionDelay: 0.5
-  waitTime: 0.3
-  easeAmount: 0.2
-  isPassengerTransportEnabled: 1
-  initialWaitTime: 0.5
-  disappearAfterComplete: 0
-  disableColliderWhenFalling: 1
-  spriteRenderer: {fileID: 1530851672265777101}
 --- !u!95 &1792407360846592575
 Animator:
   serializedVersion: 7
@@ -15403,7 +14873,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15531,7 +15002,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15609,7 +15081,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15687,7 +15160,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15753,7 +15227,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15823,7 +15298,8 @@ PrefabInstance:
       propertyPath: shootDirection.x
       value: -1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15889,7 +15365,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15955,7 +15432,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -16021,7 +15499,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -16099,7 +15578,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -16165,7 +15645,8 @@ PrefabInstance:
       propertyPath: projectileSpeed
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8958686434240072535, guid: e4766ad88391d5d47afd9618d6979a8a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -16243,7 +15724,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -16321,7 +15803,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1561392369881700102, guid: f116e79b576760c42868a28897a790a4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

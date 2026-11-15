@@ -35,14 +35,27 @@ public class InputManager : MonoBehaviour
         dir = value.Get<Vector2>();
     }
 
+    // PlayerInput(SendMessages)은 켜진 Player·UI 맵의 같은 이름 액션(Cancel·Submit)을 모두 같은 메서드로 보낸다.
+    // 한 번 누름에 두 번 처리되면 화면 히스토리가 두 단계 풀리므로 프레임당 한 번만 통과시킨다.
+    private int lastCancelFrame = -1;
+    private int lastSubmitFrame = -1;
+
+    private static bool IsFirstThisFrame(ref int lastFrame)
+    {
+        if (lastFrame == Time.frameCount) return false;
+        lastFrame = Time.frameCount;
+        return true;
+    }
+
     void OnCancel(InputValue value)
     {
-        // OnCancelEvent에 구독 중인 함수가 있으면 모두 호출
+        if (!IsFirstThisFrame(ref lastCancelFrame)) return;
         OnCancelEvent?.Invoke();
     }
 
     void OnSubmit(InputValue value)
     {
+        if (!IsFirstThisFrame(ref lastSubmitFrame)) return;
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlayClickSound();
 

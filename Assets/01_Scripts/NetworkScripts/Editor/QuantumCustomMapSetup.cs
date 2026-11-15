@@ -42,7 +42,7 @@ public static class QuantumCustomMapSetup
             throw new InvalidOperationException("정지 상태에서 새 경로로만 시험 자료를 생성합니다.");
         for (int i = 0; i < SceneManager.sceneCount; i++)
             if (SceneManager.GetSceneAt(i).isDirty) throw new InvalidOperationException("저장되지 않은 씬이 있습니다.");
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var conversion = QuantumMapConverter.Convert(data, palette);
         File.WriteAllText(sourcePath, JsonUtility.ToJson(data, true));
         AssetDatabase.ImportAsset(sourcePath);
@@ -86,7 +86,7 @@ public static class QuantumCustomMapSetup
         QuantumMapDataBaker.BakeMapData(UnityEngine.Object.FindAnyObjectByType<QuantumMapData>(), true);
         var manifest = ScriptableObject.CreateInstance<QuantumCustomMapAsset>();
         // SDK 씬 생성 중 미사용 에셋이 해제될 수 있어 저장 전에 팔레트를 다시 읽는다.
-        palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         manifest.Configure(AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath), palette,
             AssetDatabase.LoadAssetAtPath<Quantum.Map>(mapPath), conversion);
         AssetDatabase.CreateAsset(manifest, manifestPath);

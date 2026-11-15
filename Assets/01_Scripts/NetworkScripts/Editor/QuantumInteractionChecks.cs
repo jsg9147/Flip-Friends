@@ -33,7 +33,7 @@ public static class QuantumInteractionChecks
 
     private static void CheckConversion()
     {
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var source = AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(QuantumInteractionSetup.SourcePath);
         MapData Fresh() => UnityEngine.JsonUtility.FromJson<MapData>(source.text);
         var baseline = QuantumMapConverter.Convert(Fresh(), palette);

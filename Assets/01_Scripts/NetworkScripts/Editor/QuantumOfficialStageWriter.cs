@@ -396,7 +396,7 @@ public static class QuantumOfficialStageWriter
             if (component == null)
                 throw new InvalidOperationException($"{stageId}: 누락된 스크립트가 있습니다.");
             if (!AllowedComponents.Contains(component.GetType()))
-                throw new InvalidOperationException($"{stageId}/{PathOf(component.transform, root)}: 미지원 컴포넌트 {component.GetType().Name}입니다. Mirror·원본 장치 대신 Quantum 작성 컴포넌트를 쓰세요.");
+                throw new InvalidOperationException($"{stageId}/{PathOf(component.transform, root)}: 미지원 컴포넌트 {component.GetType().Name}입니다. 원본 장치 대신 Quantum 작성 컴포넌트를 쓰세요.");
         }
     }
 

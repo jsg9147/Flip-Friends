@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,8 +7,25 @@ public class PaletteUI : MonoBehaviour
 {
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject paletteButtonPrefab;
+    [Header("도트 프레임")]
+    [SerializeField] private Sprite normalFrame;
+    [SerializeField] private Sprite selectedFrame;
 
     private Button selectedButton;
+    private readonly Dictionary<string, Button> buttonsById = new();
+    private readonly List<Button> orderedButtons = new();
+    private bool isBuilt;
+    private static readonly Color LabelInk = new Color32(7, 53, 56, 255);
+
+    // HUD가 Start에서 키보드·패드 탐색을 이을 때 팔레트 버튼이 필요하다. Start 순서와 무관하게 먼저 만든다.
+    public IReadOnlyList<Button> Buttons
+    {
+        get
+        {
+            BuildPalette();
+            return orderedButtons;
+        }
+    }
 
     private void Start()
     {
@@ -16,6 +34,9 @@ public class PaletteUI : MonoBehaviour
 
     private void BuildPalette()
     {
+        if (isBuilt) return;
+        isBuilt = true;
+
         if (buttonContainer == null || paletteButtonPrefab == null)
         {
             Debug.LogError($"PaletteUI의 Inspector 참조가 누락되었습니다. buttonContainer: {buttonContainer != null}, paletteButtonPrefab: {paletteButtonPrefab != null}", this);
@@ -47,16 +68,29 @@ public class PaletteUI : MonoBehaviour
     private void CreatePaletteButton(PaletteEntry entry)
     {
         GameObject btnObj = Instantiate(paletteButtonPrefab, buttonContainer);
-        btnObj.GetComponentInChildren<TMP_Text>().text = entry.displayName;
+        TMP_Text label = btnObj.GetComponentInChildren<TMP_Text>();
+        label.text = entry.displayName;
+        // 밝은 도트 프레임 위라 짙은 글자를 쓴다. 흰 글자는 흰 바탕에서 보이지 않았다.
+        label.color = LabelInk;
+        Image buttonImage = btnObj.GetComponent<Image>();
+        if (buttonImage != null)
+        {
+            buttonImage.sprite = normalFrame;
+            buttonImage.type = Image.Type.Sliced;
+            buttonImage.color = Color.white;
+        }
 
         var icon = btnObj.transform.Find("Icon");
         if (icon == null)
         {
             Debug.LogWarning($"팔레트 버튼에 Icon 자식이 없습니다: {entry.id}", btnObj);
         }
-        else if (entry.thumbnail != null)
+        else if (entry.paletteIcon != null || entry.thumbnail != null)
         {
-            icon.GetComponent<Image>().sprite = entry.thumbnail;
+            Image image = icon.GetComponent<Image>();
+            image.sprite = entry.paletteIcon != null ? entry.paletteIcon : entry.thumbnail;
+            if (entry.paletteIcon != null)
+                image.preserveAspect = true;
         }
         else
         {
@@ -64,12 +98,23 @@ public class PaletteUI : MonoBehaviour
         }
 
         string prefabID = entry.id;
-        btnObj.GetComponent<Button>().onClick.AddListener(() => SelectPrefab(prefabID));
+        Button button = btnObj.GetComponent<Button>();
+        button.transition = Selectable.Transition.None;
+        button.onClick.AddListener(() => SelectPrefab(prefabID));
+        buttonsById[prefabID] = button;
+        orderedButtons.Add(button);
     }
 
     private void SelectPrefab(string prefabID)
     {
+        if (selectedButton != null) selectedButton.image.sprite = normalFrame;
+
+        buttonsById.TryGetValue(prefabID, out selectedButton);
+        if (selectedButton != null) selectedButton.image.sprite = selectedFrame;
+
         MapEditorManager.instance?.SelectPrefab(prefabID);
         ObjectPlacer.instance?.OnPaletteChanged(prefabID);
+        if (MapEditorManager.instance?.palette != null && MapEditorManager.instance.palette.TryGetEntry(prefabID, out PaletteEntry entry))
+            FindAnyObjectByType<MapEditorHUD>()?.SetSelectedObjectLabel(entry.displayName);
     }
 }

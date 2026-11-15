@@ -1,8 +1,9 @@
 # 플레이어 이동·상호작용 동기화
 
-- 상태: Active (Quantum 개발2인 검증 완료, 실환경 다인 검증 미완료)
+- 상태: Historical (Mirror 경로 제거됨, Quantum 항목은 QUANTUM_MIGRATION.md 기준)
 - 문서 정리: 2026-11-08 (실행 검증 날짜는 검증 절 참조)
-- 범위: `Controller2D`, `MovementHandler`, `ClientMover`, `ServerMover`, `PlayerLagCompensation`, `PlayerInteraction`, `PlayerController2D`, `PickupObj`, `LocalNetworkTest`
+- 범위: (제거됨) `Controller2D`, `MovementHandler`, `ClientMover`, `ServerMover`, `PlayerLagCompensation`, `PlayerInteraction`, `PlayerController2D`, `PickupObj`, `LocalNetworkTest`
+- 2026-11-15 Mirror 제거: 이 문서가 다루던 Mirror 스크립트는 모두 지웠다. Mirror 절은 Historical이며 원본 수치의 근거로만 읽는다. Quantum 항목의 현재 동작·검증은 [QUANTUM_MIGRATION.md](QUANTUM_MIGRATION.md)가 기준이다.
 
 ## 현재 상태
 

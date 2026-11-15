@@ -1,37 +1,34 @@
 ---
 paths:
-  - "Assets/01_Scripts/ObstacleScripts/**/*.cs"
+  - "Assets/QuantumUser/Simulation/**/*.cs"
+  - "Assets/01_Scripts/MapEditorScripts/Quantum/**/*.cs"
   - "Assets/01_Scripts/PlayingScripts/**/*.cs"
   - "Assets/01_Scripts/GameObjScripts/**/*.cs"
-  - "Assets/01_Scripts/PlayerScripts/**/*.cs"
+  - "Assets/03_Prefabs/OfficialStages/**"
 ---
 
 # 게임플레이 규칙
 
-## 충돌
-
-Rigidbody 물리가 아니라 레이캐스트(`Controller2D`, `RaycastController`)로 판정한다. `Controller2D.collisions`가 이동 판단의 기준이다. 충돌 문제를 고칠 때 Rigidbody 설정을 먼저 의심하지 않는다. 플레이어 `Rigidbody2D`는 트리거 감지용 Kinematic(Full Kinematic Contacts)이다.
-
-`Ground`는 Outline 콜라이더라 안에서 쏜 레이가 벽을 못 본다. 그래서 `Controller2D.Move`가 이동 전에 `ResolvePenetration`으로 겹침을 풀고, 무언가를 놓을 위치는 `RaycastController.CanOccupy`로 먼저 확인한다.
+2026-11-15 Mirror 제거로 플레이어·장애물·스위치의 Unity 런타임 스크립트(`Controller2D`, `BasicTrap`, `MovingTrap`, `Switch` 등)는 없다. 게임 규칙은 Quantum 시뮬레이션(`.claude/rules/network.md`)이 맡는다. 수치와 원본 동작의 근거는 `Docs/QUANTUM_MIGRATION.md`와 그 Notes다.
 
 ## 기능 추가 패턴
 
-기존 코드를 고치지 않고 확장한다. 자식 클래스는 부모를 그대로 대체할 수 있어야 한다.
+- **새 장치·장애물**: 시뮬레이션 시스템(`Assets/QuantumUser/Simulation/FlipFriends*System.cs`)과 프레임 상태를 먼저 정하고, 공식 스테이지용 작성 컴포넌트(`MapEditorScripts/Quantum/Official/QuantumStage*.cs`)를 추가한다. 작성 컴포넌트는 값만 가지며 `Update`·물리 동작을 넣지 않는다.
+- 작성 컴포넌트를 추가하면 `QuantumOfficialStageWriter.AllowedComponents`와 `QuantumOfficialStageConverter`의 변환·해시 입력을 함께 고친다. 허용 목록 밖의 컴포넌트가 있는 프리팹은 작성기가 위치와 함께 거부한다.
+- 크기·방향은 컴포넌트 값으로 정한다. 작성기는 회전0·배율1만 받는다(Tilemap 판정 제외). 경사는 45도 이하만 지원한다.
+- MapEditor 팔레트 프리팹(`03_Prefabs/MapEditor/Quantum`)에는 Transform·SpriteRenderer·BoxCollider2D만 둔다(시작점은 콜라이더 없음). `QuantumMapConverter`가 그 밖의 컴포넌트를 거부한다.
 
-- **장애물**: `BasicTrap`(`ObstacleScripts/`)을 상속한다. 방사형이 아닌 넉백은 Inspector의 `knockbackDir`을 설정한다. 콜라이더 태그를 `"Trap"` 또는 `"Enemy"`로 두어 `PlayerController2D`의 피해 처리가 잡게 한다.
-- **움직이는 장애물**: 위치를 매 틱 보내지 않는다. 서버가 시작 시각만 SyncVar로 주고, 양쪽이 `NetworkTime.predictedTime` 기준 경과 시간으로 위치를 계산한다(`MovingTrap`). 그래야 소유 클라이언트 화면의 트랩이 서버가 그 입력으로 피격을 판정하는 위치와 같다. NetworkTransform을 붙이지 않는다.
-- **스테이지 부품 프리팹**: 기본 스테이지는 루트에만 `NetworkIdentity`가 있고 Mirror는 자식 `NetworkIdentity`를 지원하지 않는다. 그래서 스테이지에 중첩하는 부품 프리팹(`Obstacle/Move Trap.prefab`, 원형 판정 Variant `Move Trap Round.prefab`, `Obstacle/Cannon.prefab`, `bouncy ball.prefab`)에는 `NetworkIdentity`를 넣지 않는다. 스테이지마다 다른 값(이동 경로, 레이어, 판정 크기, 스프라이트)은 인스턴스 오버라이드로 둔다. 기존 스테이지의 판정 차이는 난이도와 연결되므로 통일하지 않았다. 맵 에디터 팔레트에는 Variant에 `NetworkIdentity`를 더해 올린다(`MapEditor/MapEditorCannon.prefab`). 부품 스크립트는 `StagePartBehaviour`를 상속해, 부품 프리팹을 단독으로 임포트·편집할 때 나는 Mirror "requires a NetworkIdentity" 에러를 건너뛴다. 씬에 `NetworkIdentity` 없이 놓이면 에러는 그대로 난다.
-- **스위치**: `Switch` 또는 `LayerBasedSwitch`(`PlayingScripts/SwitchScripts/`)를 상속하고 `OnSwitchStateChanged`를 재정의한다. `isActivated`는 `SyncVar`로 동기화된다.
-- **플레이어 상태**: `PlayerController2D`의 `PlayerState`에 값을 추가하고 `PlayerStateController`, `PlayerAnimationController`를 함께 고친다. 지속 상태는 서버가 `ChangeState`(SyncVar)로 정하고, 피격처럼 순간적인 연출은 `RpcPlayOneShot`으로 보낸다. `PlayerAnimator.controller`는 전이·파라미터 없이 상태만 두고 코드가 `Animator.Play`로 재생한다. `Shrink` 클립이 콜라이더 크기를 바꾸므로 Write Defaults는 켜 둔다.
-- **들 수 있는 오브젝트**: `PickupObj`를 붙이고 레이어를 `"Pickable"`로 둔다. `PlayerInteraction`의 탐색이 이 레이어를 찾는다.
+## 원본 프리팹
+
+`03_Prefabs/Stage` 21개와 `Obstacle`·`Switch.prefab`은 장치 스크립트를 뗀 지형·스프라이트 참고용이다. 공식 맵으로 옮길 때는 `Docs/Notes/2026-11-15-mirror-device-values.md`의 원본 수치를 보고 작성 컴포넌트로 다시 만든다. 원본 프리팹에 런타임 스크립트를 다시 붙이지 않는다.
 
 ## 추락
 
-스테이지 밖 판정은 서버에서 `StageManager.instance.FallBoundary`로 한다. Sprite·Tilemap 렌더러 범위에 여백(`FallBoundary.Margin`)을 더해 정하며 위쪽은 검사하지 않는다. 기본 스테이지는 생성된 렌더러로, 커스텀 맵은 맵 에디터 미리보기와 같은 `MapRenderBounds`(맵 데이터 + 팔레트 프리팹)로 잰다. 둘 중 하나의 렌더러 규칙을 바꾸면 다른 쪽도 맞춘다. 플레이어는 세이브 포인트, 없으면 처음 생성된 위치로 `ServerMover.Teleport`하고, 상자는 서버 시작 시 위치로 돌아간다. 판정 영역에 들어가야 하는 지형이나 장치는 렌더러가 있어야 한다. `"Reset"` 트리거는 구간별 리스폰에 계속 쓴다.
+추락 경계는 Sprite·Tilemap 렌더러 범위에 여백(`FallBoundary.Margin`)을 더해 정하며 위쪽은 검사하지 않는다. 공식 스테이지는 프리팹 렌더러로, 저장 맵은 맵 에디터 미리보기와 같은 `MapRenderBounds`로 잰다. 한쪽 규칙을 바꾸면 다른 쪽도 맞춘다. 판정 영역에 들어가야 하는 지형이나 장치는 렌더러가 있어야 한다.
 
 ## 레이어와 태그
 
-- 태그: `"Trap"`·`"Enemy"`는 피해, `"Rope"`는 등반, `"Finish"`는 스테이지 종료, `"Reset"`은 리스폰, `"Bounce"`·`"Spring"`은 속도 변경
-- 레이어: `"Player"`는 플레이어 감지 레이캐스트, `"Pickable"`은 들 수 있는 오브젝트 감지
+- 태그: `"Ground"`는 지형 Tilemap, `"Reset"`은 구간 복귀 트리거. 원본 프리팹에는 `"Trap"`·`"Enemy"`·`"Rope"`·`"Finish"`·`"Bounce"`·`"Spring"`이 남아 있다.
+- 레이어: `"Ground"`, `"Reset"`, `"Player"`, `"Pickable"`
 
 새 태그나 레이어를 만들기 전에 위 목록으로 해결되는지 본다. 추가하면 이 파일에 적는다.

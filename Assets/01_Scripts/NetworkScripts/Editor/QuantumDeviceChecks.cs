@@ -218,7 +218,7 @@ public static class QuantumDeviceChecks
 
     private static void CheckContent()
     {
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var text = AssetDatabase.LoadAssetAtPath<TextAsset>(QuantumDeviceSetup.SourcePath).text;
         var original = AssetDatabase.LoadAssetAtPath<QuantumMapDevices>(QuantumDeviceSetup.DevicesPath);
         QuantumMapConversion Convert(QuantumMapDevices devices, bool reverse = false)
@@ -267,22 +267,6 @@ public static class QuantumDeviceChecks
             Reject(s => s[0].kind = 3); Reject(s => s[4].cooldownSeconds = float.NaN);
             Reject(s => s[0].size.x = 0); Reject(s => s[0].checkpointId = -1);
             var config = Config(); Require(config.Devices.Single(d => d.Kind == 2).CooldownTicks == 300, "실제 프리팹5초 보존");
-            var root = new GameObject("미지원 장치 형태 검사");
-            try
-            {
-                root.AddComponent<SavePoint>(); root.AddComponent<CircleCollider2D>().isTrigger = true;
-                bool isRejected = false;
-                try { QuantumDeviceSetup.Read(root, "bad-shape"); } catch (InvalidOperationException error) { isRejected = error.Message.Contains("위치="); }
-                Require(isRejected, "원형/미지원 형태 위치 진단 전체 거부");
-                UnityEngine.Object.DestroyImmediate(root.GetComponent<CircleCollider2D>());
-                root.AddComponent<BoxCollider2D>().isTrigger = true;
-                root.AddComponent<SpriteRenderer>().sprite = original.Sources[0].defaultSprite;
-                UnityEngine.Object.DestroyImmediate(root.GetComponent<SavePoint>());
-                root.AddComponent<RespawnHandler>(); isRejected = false;
-                try { QuantumDeviceSetup.Read(root, "bad-link"); } catch (InvalidOperationException error) { isRejected = error.Message.Contains("resetPoint"); }
-                Require(isRejected, "누락된 목적지 연결 전체 거부");
-            }
-            finally { UnityEngine.Object.DestroyImmediate(root); }
         }
         finally { UnityEngine.Object.DestroyImmediate(clone); }
     }

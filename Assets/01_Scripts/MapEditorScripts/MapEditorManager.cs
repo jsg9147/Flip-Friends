@@ -31,7 +31,10 @@ public class MapEditorManager : MonoBehaviour
 
         instance = this;
         if (!TryRestoreDraft())
+        {
             NewMap("새 맵");
+            AddStarterExample();
+        }
     }
 
     private void Start()
@@ -45,6 +48,29 @@ public class MapEditorManager : MonoBehaviour
     {
         if (instance == this)
             instance = null;
+    }
+
+    private void AddStarterExample()
+    {
+        if (CurrentMapData?.objects == null || CurrentMapData.objects.Count > 0) return;
+
+        for (int x = -7; x <= 7; x++)
+            AddStarterObject("terrain.ground.basic", new Vector3(x, -4f, 0f));
+
+        AddStarterObject("essential.player_spawn", new Vector3(-6f, -3f, 0f));
+        AddStarterObject("essential.finish", new Vector3(6f, -3f, 0f));
+        AddStarterObject("terrain.ground.basic", new Vector3(-3f, -1f, 0f));
+        AddStarterObject("terrain.ground.basic", new Vector3(-2f, -1f, 0f));
+        AddStarterObject("terrain.ground.basic", new Vector3(-1f, -1f, 0f));
+        AddStarterObject("terrain.rope", new Vector3(0f, 0f, 0f));
+        AddStarterObject("interactive.box", new Vector3(-2f, 0f, 0f));
+        AddStarterObject("terrain.ground.basic", new Vector3(2f, 1f, 0f));
+        AddStarterObject("terrain.ground.basic", new Vector3(3f, 1f, 0f));
+    }
+
+    private void AddStarterObject(string prefabId, Vector3 position)
+    {
+        CurrentMapData.objects.Add(new PlacedObjectData(prefabId, position, 0f, Vector3.one));
     }
 
     public bool NewMap(string mapName)
@@ -205,8 +231,8 @@ public class MapEditorManager : MonoBehaviour
     private string GetAuthorName()
     {
         // 제작자 정보를 유지하려면 Main 씬에서 생존한 Steam 이름을 우선 사용해야 한다.
-        if (SteamRoomManager.Instance != null)
-            return SteamRoomManager.Instance.playerName;
+        if (SteamLobbyService.Current != null && !string.IsNullOrEmpty(SteamLobbyService.Current.PlayerName))
+            return SteamLobbyService.Current.PlayerName;
         return "Unknown";
     }
 

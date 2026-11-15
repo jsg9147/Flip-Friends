@@ -211,7 +211,7 @@ public static class QuantumRespawnChecks
 
     private static void CheckContent()
     {
-        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>("Assets/07_ScriptableObject/MapEditorPalette.asset");
+        var palette = AssetDatabase.LoadAssetAtPath<MapEditorPalette>(QuantumMapConverter.PaletteAssetPath);
         var source = AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(QuantumRespawnSetup.SourcePath).text;
         var data = UnityEngine.JsonUtility.FromJson<MapData>(source);
         var conversion = QuantumMapConverter.Convert(data, palette, true);
@@ -220,7 +220,7 @@ public static class QuantumRespawnChecks
         var config = Config();
         Require(config.CustomMapAgreement.StartsWith("4:4:") && config.CustomMapAgreement.Contains(":제품15:") && QuantumGameContent.NetworkVersion == "ff-product-15", "새 콘텐츠/입력/제품 합의");
         FallBoundary.TryCreate(data.objects, palette, out var boundary);
-        Require(config.FallMinX == QuantumMapConverter.Q(boundary.MinX) && config.FallMaxX == QuantumMapConverter.Q(boundary.MaxX) && config.FallMinY == QuantumMapConverter.Q(boundary.MinY), "Mirror 렌더러 경계+10 대조");
+        Require(config.FallMinX == QuantumMapConverter.Q(boundary.MinX) && config.FallMaxX == QuantumMapConverter.Q(boundary.MaxX) && config.FallMinY == QuantumMapConverter.Q(boundary.MinY), "원본 렌더러 경계+10 대조");
         data.objects.Single(x => x.prefabID == QuantumMapConverter.Spawn && x.position.x == -1).position.x -= 1;
         Require(conversion.ContentHash != QuantumMapConverter.Convert(data, palette, true).ContentHash, "복귀 위치 해시 반영");
         data = UnityEngine.JsonUtility.FromJson<MapData>(source);
@@ -232,7 +232,7 @@ public static class QuantumRespawnChecks
             category = entry.category, thumbnail = entry.thumbnail, validationRule = entry.validationRule }).ToList();
         try
         {
-            foreach (var type in new[] { typeof(SavePoint), typeof(RespawnHandler), typeof(ObjSummonSwitch) })
+            foreach (var type in new[] { typeof(UnityEngine.AudioSource), typeof(UnityEngine.Animator) })
             {
                 var root = new UnityEngine.GameObject("미지원 복귀 장치 검사");
                 try

@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: FlipFriendsRopeMapManifest
   m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumCustomMapAsset
   source: {fileID: 4900000, guid: 5cc9a1d855b08e94e831dcba29244f90, type: 3}
-  palette: {fileID: 11400000, guid: d0d1b23d6083fcf46868911d60b227e9, type: 2}
+  palette: {fileID: 11400000, guid: c35a088c4a9171246acbd8a88fc23d42, type: 2}
   bakedMap: {fileID: 11400000, guid: 16d66236d3387014f88e1e7c0398a4fd, type: 2}
   contentHash: e5ab54034f8b698c0f62cba13acc46cabc46d82178e1605b691ac71d596fea3c
+  minimumPlayers: 2
   conversionVersion: 2
   paletteVersion: 2
+  devices: {fileID: 0}
+  terrain: {fileID: 0}

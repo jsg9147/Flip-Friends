@@ -55,7 +55,7 @@ public static class QuantumMotionChecks
                 bool rejected = false; try { QuantumOfficialStageConverter.Convert(copy, terrain, null); } catch (InvalidOperationException e) { rejected = e.Message.Contains("위치="); }
                 Require(rejected, test + " 위치/원인 거부"); results.Add("변환 거부 " + test);
             }
-            foreach (var test in new[] { "회전", "다중", "트리거", "오프셋", "물리", "원본", "참조" })
+            foreach (var test in new[] { "회전", "다중", "트리거", "오프셋", "물리", "미지원", "참조" })
             {
                 var previous = SceneManager.GetActiveScene(); var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive); SceneManager.SetActiveScene(scene);
                 try
@@ -67,7 +67,7 @@ public static class QuantumMotionChecks
                     if (test == "트리거") target.GetComponent<BoxCollider2D>().isTrigger = true;
                     if (test == "오프셋") target.GetComponent<BoxCollider2D>().offset = Vector2.up;
                     if (test == "물리") target.gameObject.AddComponent<Rigidbody2D>();
-                    if (test == "원본") { target.gameObject.AddComponent<Mirror.NetworkIdentity>(); target.gameObject.AddComponent<MovingTrap>(); }
+                    if (test == "미지원") target.gameObject.AddComponent<AudioSource>();
                     if (test == "참조") { var b = root.GetComponentInChildren<QuantumStageMotionReset>(); var so = new SerializedObject(b); so.FindProperty("target").objectReferenceValue = null; so.ApplyModifiedPropertiesWithoutUndo(); }
                     bool rejected = false; try { QuantumOfficialStageWriter.Read(root); } catch (InvalidOperationException) { rejected = true; }
                     Require(rejected, "작성기 " + test); results.Add("작성기 거부 " + test);

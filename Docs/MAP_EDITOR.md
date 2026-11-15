@@ -20,11 +20,14 @@
 
 - 경계는 MapRenderBounds+여백10을 FP로 변환하며 제품 시작 때 초기 위치/경계를 재검증한다. 기존2:2 정적/로프·3:3 상호작용·4:4 복귀와 새5:5 장치의 원본/베이크/해시를 보존한다.
 
-- Quantum 변환에서 상자는 원본 `interactive.box` 루트 0.9·중력 9.8·배율 1/회전 0만 지원한다.
+- 팔레트는 `QuantumMapEditorPalette.asset` 하나다(`Assets/03_Prefabs/MapEditor/Quantum/Quantum*.prefab`, Transform·SpriteRenderer·BoxCollider2D만). MapEditor 씬·Quantum 매니페스트6종·저장 맵 검증·Quantum 검사가 모두 쓰며 경로는 `QuantumMapConverter.PaletteAssetPath`다. 기존 Mirror 팔레트(`MapEditorPalette.asset`과 원본 팔레트 프리팹)는 2026-11-15 Mirror와 함께 지웠다. Quantum 콘텐츠 해시는 콜라이더만 쓴다.
+- 맵 에디터 UI용 도트 이미지 9종을 `Assets/02_Sprites/Generated/Codex/`에 추가했다. 타이틀 화면의 청록·연두·종이색 팔레트와 4px 픽셀 그리드를 따르며, 패널·도구·동작·입력 프레임은 가장자리 중앙을 단순하게 유지한다. MapEditor 씬의 HUD·팔레트·불러오기 패널과 입력란·버튼, 팔레트 버튼 프리팹에 연결했다. 패널의 Sprite Border는 48px, 나머지 프레임은 16px이며 UI Image는 Sliced를 사용한다.
+- 초안 복원 대상이 없을 때만 새 맵에 기본 발판·시작점·도착점·로프·상자 예시를 미저장 상태로 채운다. `새 맵`은 빈 맵을 만들며, 저장된 맵과 복원 초안은 바꾸지 않는다.
+- MapEditor HUD 배치는 씬에 있다(2026-11-15, 1600×900 기준·Expand): 상단 맵 관리 막대(테스트 플레이는 오른쪽 위 앵커), 왼쪽 팔레트, 오른쪽 `ToolRail`(`PixelPanel`), 하단 `StatusBar`, 불러오기 바깥 클릭 판정, `OverwritePopup`(확인·취소). 모두 도트 공통 프리팹 인스턴스이고 `MapEditorHUD`는 `[SerializeField]`로 참조해 동작만 연결한다. 실행 중 만드는 UI는 불러오기 목록 항목과 그 삭제 버튼뿐이다. 팝업은 HUD 요소보다 뒤 순서라 위에 그려진다. 현재 도구는 `PixelButton.SetHighlighted`, 선택 팔레트는 `PaletteUI`의 연두 프레임으로 표시한다. 키보드·패드 탐색은 `MapEditorHUD`가 상단 막대(가로)·팔레트(세로)·도구(세로) 세 구역을 명시적으로 잇는다(상단 왼쪽 절반↓팔레트, 오른쪽 절반↓도구, 팔레트↔도구 좌우). 첫 선택은 배치, Esc·B는 열린 팝업만 닫고 에디터를 나가지 않는다. 불러오기 목록·확인 팝업은 그 안에서만 움직이며 확인 팝업은 취소를 먼저 고른다. 맵 이름 입력란은 지나갈 때 편집하지 않고 확인·클릭으로 편집한다. 배치·삭제 자체는 마우스 전용이다. 팔레트 버튼·목록 항목·입력란에도 포커스 링이 있다. 편집 배경은 메뉴와 같은 남색이다. 씬의 HUD·입력란 Image에 붙어 있던 3D `Default-Material`(검은 상자 원인)과 Missing Script 아이콘 3개는 지웠다.
+- Quantum 변환기는 Transform·SpriteRenderer·BoxCollider2D 외 컴포넌트를 거부한다. 상자는 Pickable 루트 0.9·배율 1/회전 0만 지원하며 중력 9.8은 Quantum 규칙에 고정한다.
 - 로프는 수직 루트 박스 트리거이며 오프셋/스케일/180도 회전을 FP로 변환한다. 가로/경사/다중/합성/동적 판정 등 미지원 구성은 위치·원인과 함께 전체 거부한다. [로프 변환 근거](Notes/2026-11-06-quantum-wall-rope.md).
 - 공용 Cannon/MapEditorCannon은 서버에서 탄환을 초기화한 뒤 Spawn하고, CannonProjectile이 거리별 수명을 관리한다. 원격 탄환은 서버 위치만 따르며 팔레트 저장 스키마와 발사 설정은 유지했다.
 
-- 팔레트 `interactive.box`는 공용 Box.prefab을 사용한다. 단계 2의 PickupObj 서버 리셋 API가 추락 복귀·운반 해제에 적용되며 저장 형식/팔레트 연결은 유지한다.
 
 - `MapData` 스키마는 2.1이며 정규 GUID `N` 형식의 `mapId`를 사용한다.
 - 2.0 로컬 데이터는 최초 로드 시 2.1로 안전하게 마이그레이션한다. 잘못된 2.1 ID는 자동 교체하지 않고 거부한다.
@@ -32,14 +35,16 @@
 - 맵 목록은 MapId, 파일명, 표시 이름을 분리하고 중복 ID 항목의 선택을 막는다.
 - 팔레트 문자열 ID와 검증 규칙을 사용한다. 플레이어 시작점과 도착점 등 필수 조건을 검사한다.
 - 배치, 드래그 연속 배치·삭제, 회전, 반전, 저장·불러오기 UI가 구현되어 있다.
-- `Data`·`Validation` 폴더는 `FlipFriends.MapEditorCore` 어셈블리다(`Validation`은 asmref). Mirror에 의존하지 않으며, 검증기는 `MapEditorPalette` 대신 `IMapPaletteLookup`을 받는다. Mirror 패킷 한계를 쓰는 `SavedMapCatalog`는 Assembly-CSharp에 남는다.
+- `Data`·`Validation` 폴더는 `FlipFriends.MapEditorCore` 어셈블리다(`Validation`은 asmref). 네트워크 코드에 의존하지 않으며, 검증기는 `MapEditorPalette` 대신 `IMapPaletteLookup`을 받는다. Quantum 전송 한계(`MapSessionSnapshot.MaximumContentBytes`)를 쓰는 `SavedMapCatalog`는 Assembly-CSharp에 남는다.
 - Main에서 MapEditor로 들어가 HUD의 `테스트 플레이`를 누르면 편집본 스냅샷을 검증하고 QuantumPlay에서 오프라인 1인 세션을 실행한다. 지원 팔레트는 기본 지형, 시작점, 도착점, 수직 로프, 상자다. 변환기가 거부한 항목은 HUD에 위치와 원인을 표시한다.
 - 변환된 FP 지형은 세션 전용 동적 맵의 정적 콜라이더와 QuantumPlay 표시에 함께 쓰인다. 도착 또는 메뉴 종료 시 러너를 정리하고 MapEditor로 복귀한다. 테스트 플레이는 저장 파일을 쓰지 않는다.
 - 편집 상태(MapData 복사본, 저장 파일명)는 `MapEditorDraftStore`가 씬 전환 동안 맡고, `MapEditorManager.Awake`가 한 번 꺼내 복원한다.
-- Quantum 테스트 플레이와 Mirror 커스텀 맵은 모두 `MapRenderBounds`로 추락 경계를 계산한다. 경계를 벗어난 플레이어는 시작점으로, 상자는 배치 위치로 돌아간다.
+- Quantum 테스트 플레이는 `MapRenderBounds`로 추락 경계를 계산한다. 경계를 벗어난 플레이어는 시작점으로, 상자는 배치 위치로 돌아간다.
 - `MapBoundsPreview`(MapEditor 씬)가 배치 가능 범위를 흰 사각형으로, 추락 경계를 위가 열린 빨간 ㄷ자로 그린다. 추락 경계는 런타임과 같은 `MapRenderBounds` 계산이며, 이동·회전·크기 변경도 데이터 서명 비교로 바로 반영한다. 에디터 화면은 썸네일을 그리므로 선이 썸네일 크기와 어긋나 보일 수 있다.
 - Main의 Quantum 준비 화면에서 저장한 맵을 선택할 수 있다. HUD 테스트 플레이에서 사용하는 Quantum 팔레트 지원 범위가 적용된다. 수신한 친구 맵은 세션 동안만 유지된다.
 - 로비 선택과 자동 공유는 `Docs/CUSTOM_MAP_NETWORK.md`가 담당한다.
+
+- 새 맵 에디터 레이아웃에 사용할 팔레트 썸네일 5종과 회전·반전·테스트 아이콘 3종을 같은 Codex 폴더에 추가했다. 썸네일은 Quantum 팔레트 버튼에 연결하고 맵 캔버스의 배치·미리보기에는 기존 스프라이트를 사용한다. 회전·반전·테스트 아이콘은 기존 HUD 버튼에 연결했다.
 
 ## 핵심 흐름
 
@@ -56,10 +61,18 @@ MapEditorManager
 - `Assets/01_Scripts/MapEditorScripts/Data`
 - `Assets/01_Scripts/MapEditorScripts/Validation`
 - `Assets/01_Scripts/MapEditorScripts/UI`
-- `Assets/07_ScriptableObject/MapEditorPalette.asset`
+- `Assets/07_ScriptableObject/QuantumMapEditorPalette.asset`
 
 ## 검증
 
+- 2026-11-15 HUD 씬 이전: 지정 SDK 빌드·Unity 재컴파일 오류 0건, 새 Play 첫 Main `RunOffline` 통과. 실행 중 배치하던 값 그대로 씬에 옮긴 뒤 1920×1080 캡처가 이전과 같고, 1280×720·1680×1050·2560×1080에서 잘림이 없음을 확인했다. `맵 관리`(x 184)·상태 문구(x 470)를 패널 장식에서 띄우고 테스트 안내를 오른쪽 아래 앵커로 바꿨다. 불러오기 팝업·테스트 플레이(QuantumPlay) 진입도 캡처로 확인했다.
+- 2026-11-15 HUD 키보드 탐색: 지정 SDK 빌드·Unity 재컴파일·Console 오류 0건, 새 Play 첫 Main `RunOffline` 통과. Main `맵 에디터` 진입 후 Input System 키 이벤트만으로 ↓(배치→지우개)·←(팔레트)·↓·Enter(도착 지점 선택)·↑↑(입력란, 편집 꺼짐)·→→(불러오기)·Enter(목록 첫 항목)·→(삭제)·Enter(확인 팝업, 취소 선택)·Esc(삭제 버튼 복귀)·Esc(팝업 닫힘, 불러오기 복귀)·입력란 Enter(편집 시작)를 확인하고 `Temp/FocusCaptures/M*.png`로 캡처했다. 실제 패드는 미실행이다.
+- 2026-11-15 HUD 공통 프리팹: 지정 SDK 빌드·Unity 재컴파일·Console 오류 0건. 새 Play 첫 Main `RunOffline` 통과 뒤 Main `맵 에디터` 버튼 → HUD `테스트 플레이`(QuantumPlay) → `메뉴로 종료` → MapEditor(러너 0) → `나가기` → Main을 버튼 콜백으로 확인했다. HUD·불러오기·삭제 확인 팝업을 1600×900으로 캡처했고 지우개/배치 선택 프레임 전환과 확인 팝업 취소를 확인했다. 직접 마우스 배치·실제 삭제·다른 해상도는 실행하지 않았다.
+
+- MapEditor HUD·PaletteUI·기본 예시 맵 변경을 포함해 `Assembly-CSharp.csproj` 빌드 오류 0건을 확인했다. 경고는 기존 프로젝트 경고 154건이다. 변경된 실행 중 UI의 Game View 캡처와 직접 조작은 아직 확인하지 않았다.
+
+- 2026-11-15 Mirror 제거 후 Main→MapEditor 진입, 7개 오브젝트 편집본의 HUD 테스트 플레이(QuantumPlay 러너1)→메뉴 종료→MapEditor 복귀(러너0·편집본 7개 복원)→Main 복귀를 Play 모드 API로 확인했다. 수동 조작은 미실행이다. Codex 커밋 `4355286`이 추가한 HUD의 `rotate_icon`·`flip_icon`·`test_icon`에 없는 스크립트 GUID 참조(Missing Script 3개)가 있다.
+- 2026-11-14 팔레트 분리: Unity 재컴파일 오류0. Quantum 매니페스트6종이 새 팔레트로 변환·`ValidateAndApply`를 통과하고 저장 해시와 일치했다. 기존 Mirror 팔레트는 변환기가 `NetworkIdentity`로 거부한다. 준비 화면 전환 중 클릭이 버려지므로 `QuantumProductChecks.Click`은 버튼이 실제로 누를 수 있을 때까지 기다린다. 이 수정 뒤 새 Play 첫 Main 검사 `RunOffline`이 전체 통과했다(장치·복귀·상호작용·이동·정적/로프 재생, Main 왕복, 잔존·Unity 오류0). MapEditor HUD 테스트 플레이 수동 확인은 미실행이다.
 - Quantum 준비 화면의 저장 맵 선택과 오프라인 시작, 미지원 및 잘못된 버전 거부, 준비 화면에서 2.0 파일 내용 보존, 수신 후 Maps에 파일을 쓰지 않는 동작을 확인했다. [개발 Photon과 미실행 조건](CUSTOM_MAP_NETWORK.md#검증).
 
 - 2026-11-10 Unity 6000.6.8f1 재컴파일 오류 0건. 새 Play 세션의 첫 Main 검사로 `QuantumProductChecks.RunOffline`을 실행해 통과했다.
@@ -69,7 +82,7 @@ MapEditorManager
 - `official-conveyor-test` 재변환과 공식3 해시가 일치하고 배열 순서와 무관하며 방향 변경은 해시를 바꾼다. 벨트 변환 거부9종·작성기 거부7종을 위치와 원인으로 확인했고 기존 공식1/2 해시6종은 유지된다.
 - `official-switch-test` 프리팹 재변환과 저장된 공식2 해시가 일치했다. 배열 재정렬로 해시가 바뀌지 않고 쿨다운 변경은 해시를 바꾼다. 누락·중복 ID, 참조, 판정 크기, 문 그룹, 지원하지 않는 감지 대상 6종을 거부했다.
 - Quantum 공식·샘플 맵의 변환/해시/잘못된 참조 거부·Main/재생/Photon 결과는 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다.
-- Mirror: 2026-10-26 Main→MapEditor→API 배치5개→KCP 테스트 플레이에서 탄환·상자 추락/재소환·완료/종료 후 편집 JSON 보존을 확인했다. [실행 범위](Notes/2026-10-26-stage-live-validation.md).
+- Mirror 테스트 플레이 경로(2026-10-26 KCP)는 Mirror와 함께 폐기했다. [기록](Notes/2026-10-26-stage-live-validation.md).
 - 2026-10-10 EditMode 전체102개 통과 기록이 있으며 MapEditorCore의 저장/마이그레이션·ID·경로·초안 복원·데이터 검증을 포함한다. 세부 테스트별 범위와 과거 UI 실조작/렌더러 경계 결과는 [과거 상세 검증](Notes/2026-11-08-documentation-reference-history.md)에 보존한다.
 
 ## 남은 작업

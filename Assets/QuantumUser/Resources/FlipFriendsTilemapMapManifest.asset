@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: FlipFriendsTilemapMapManifest
   m_EditorClassIdentifier: Assembly-CSharp::FlipFriends.Maps.QuantumCustomMapAsset
   source: {fileID: 4900000, guid: f0fe66f813e394548abd428f637bc387, type: 3}
-  palette: {fileID: 11400000, guid: d0d1b23d6083fcf46868911d60b227e9, type: 2}
+  palette: {fileID: 11400000, guid: c35a088c4a9171246acbd8a88fc23d42, type: 2}
   bakedMap: {fileID: 11400000, guid: a8b6c772d3d62ab488c05642b557e9c5, type: 2}
   contentHash: 3450d8081224b87f132fdc40dfec90479c91c50e059817a915a2ded6eb995930
+  minimumPlayers: 2
   conversionVersion: 6
   paletteVersion: 6
   devices: {fileID: 11400000, guid: 2bf0e0170d9d7cb418c5e94b8e786c6f, type: 2}

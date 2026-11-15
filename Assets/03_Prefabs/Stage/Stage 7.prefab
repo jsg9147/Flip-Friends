@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2829359085825623503}
   - component: {fileID: 8445966902321177990}
   - component: {fileID: 4712648691167509277}
-  - component: {fileID: 4512891838509905781}
   - component: {fileID: 329964575157889200}
   m_Layer: 15
   m_Name: ResetTile
@@ -364,26 +363,6 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!114 &4512891838509905781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 694321838681302929}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b59456341fa28645b97b2033fba1848, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  targetLayers:
-    serializedVersion: 2
-    m_Bits: 2304
-  resetPoint: {fileID: 4798662490342670616}
-  onlyBoxReset: 0
 --- !u!50 &329964575157889200
 Rigidbody2D:
   serializedVersion: 5
@@ -4180,7 +4159,6 @@ GameObject:
   - component: {fileID: 8423059859233385272}
   - component: {fileID: 159935146729056086}
   - component: {fileID: 9107641089243555380}
-  - component: {fileID: 6015616974990855203}
   m_Layer: 0
   m_Name: Switch
   m_TagString: Untagged
@@ -4309,26 +4287,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.79, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &6015616974990855203
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2870004291090562133}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e56f5ba816af28479c680f83c2f4341, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  summonLocation: {fileID: 3477331052345613600}
-  cooldownTime: 5
-  targetObjTrans: {fileID: 7433563537347357775}
-  defaultSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  pressedSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
 --- !u!1 &4190097024235628314
 GameObject:
   m_ObjectHideFlags: 0
@@ -4339,7 +4297,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7433563537347357775}
   - component: {fileID: 141683581567057892}
-  - component: {fileID: 5827348477490866192}
   - component: {fileID: 6311762854841471274}
   m_Layer: 8
   m_Name: Box
@@ -4423,34 +4380,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &5827348477490866192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4190097024235628314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a350a8654aa1feb4c8c5851ba5c7670f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 3392
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  maxSlopeAngle: 45
-  gravity: 9.8
-  velocity: {x: 0, y: 0}
-  wallSlideSpeedMax: 3
 --- !u!61 &6311762854841471274
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4556,7 +4485,6 @@ GameObject:
   - component: {fileID: 32786049860973814}
   - component: {fileID: 411678415534450636}
   - component: {fileID: 699417555882647583}
-  - component: {fileID: 840138590973389243}
   - component: {fileID: 6860328514491501004}
   m_Layer: 12
   m_Name: DoorSwitch
@@ -4687,36 +4615,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.6, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &840138590973389243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5587810854422011948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d6d8bbc3d76d24bbb2ba5dbeef7e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  onSwitchSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  offSwitchSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  activationLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  door: {fileID: 5808738922820769469}
 --- !u!50 &6860328514491501004
 Rigidbody2D:
   serializedVersion: 5
@@ -4893,7 +4791,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5101156923762463120}
   - component: {fileID: 5290161225690591328}
-  - component: {fileID: 2600580914763249107}
   m_Layer: 0
   m_Name: Stage 7
   m_TagString: Untagged
@@ -4937,23 +4834,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &2600580914763249107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5813359405025824721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 3912196159
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &6377957707638993918
 GameObject:
   m_ObjectHideFlags: 0
@@ -9088,7 +8968,8 @@ PrefabInstance:
       propertyPath: rotationSpeed
       value: 1000
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7647417626221537638, guid: 7ae9d6cbd9b4a2746ae3bc46dca2effd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -9244,7 +9125,8 @@ PrefabInstance:
       propertyPath: rotationSpeed
       value: 1000
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7647417626221537638, guid: 7ae9d6cbd9b4a2746ae3bc46dca2effd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -9338,7 +9220,8 @@ PrefabInstance:
       propertyPath: rotationSpeed
       value: 1000
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7647417626221537638, guid: 7ae9d6cbd9b4a2746ae3bc46dca2effd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

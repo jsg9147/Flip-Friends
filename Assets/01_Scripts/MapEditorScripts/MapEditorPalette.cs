@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MapEditorPalette", menuName = "Flip Friends/Map Editor Palette")]
@@ -63,9 +62,6 @@ public class MapEditorPalette : ScriptableObject, IMapPaletteLookup
 
             if (entry.thumbnail == null)
                 Debug.LogWarning($"썸네일이 연결되지 않은 팔레트 항목입니다: {entry.id}", this);
-
-            if (entry.prefab.GetComponent<NetworkIdentity>() == null)
-                Debug.LogError($"NetworkIdentity가 없는 팔레트 프리팹입니다: {entry.id}", entry.prefab);
         }
     }
 

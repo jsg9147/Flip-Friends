@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 200693651}
   - component: {fileID: 200693650}
   - component: {fileID: 200693649}
-  - component: {fileID: 200693648}
   m_Layer: 0
   m_Name: "\uAD6C\uAC04 \uBCF5\uADC0"
   m_TagString: Reset
@@ -138,26 +137,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &200693648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 200693647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b59456341fa28645b97b2033fba1848, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RespawnHandler
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  targetLayers:
-    serializedVersion: 2
-    m_Bits: 2048
-  resetPoint: {fileID: 1992667100}
-  onlyBoxReset: 0
 --- !u!212 &200693649
 SpriteRenderer:
   serializedVersion: 3
@@ -291,7 +270,6 @@ GameObject:
   - component: {fileID: 448220890}
   - component: {fileID: 448220889}
   - component: {fileID: 448220888}
-  - component: {fileID: 448220887}
   m_Layer: 0
   m_Name: "\uC0C1\uC790 \uC6B4\uBC18 \uAD6C\uAC04 \uBCF5\uADC0"
   m_TagString: Reset
@@ -299,26 +277,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &448220887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 448220886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b59456341fa28645b97b2033fba1848, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RespawnHandler
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  targetLayers:
-    serializedVersion: 2
-    m_Bits: 2048
-  resetPoint: {fileID: 569668231}
-  onlyBoxReset: 1
 --- !u!212 &448220888
 SpriteRenderer:
   serializedVersion: 3
@@ -550,6 +508,7 @@ MonoBehaviour:
       Id:
         Value: 4184427124634683561
     CustomMapAgreement: 
+    FlipFriendsPlayerCount: 2
     EnableRespawn: 0
     FallMinX:
       RawValue: 0
@@ -566,6 +525,14 @@ MonoBehaviour:
     BoxCenters: []
     BoxSizes: []
     Devices: []
+    TerrainContours: []
+    Traps: []
+    Launchers: []
+    Motions: []
+    MotionResets: []
+    StageSwitches: []
+    Conveyors: []
+    Cannons: []
   UseRandomSeed: 0
   SessionConfig: {fileID: 0}
   LocalPlayers: []
@@ -606,7 +573,6 @@ GameObject:
   m_Component:
   - component: {fileID: 688017218}
   - component: {fileID: 688017221}
-  - component: {fileID: 688017220}
   - component: {fileID: 688017219}
   m_Layer: 8
   m_Name: Box
@@ -676,34 +642,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
---- !u!114 &688017220
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 688017217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a350a8654aa1feb4c8c5851ba5c7670f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  offsetApply: 0
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 3520
-  horizontalRayCount: 0
-  verticalRayCount: 0
-  horizontalRaySpacing: 0
-  verticalRaySpacing: 0
-  boxCollider: {fileID: 0}
-  maxSlopeAngle: 45
-  gravity: 9.8
-  velocity: {x: 0, y: 0}
-  wallSlideSpeedMax: 3
 --- !u!212 &688017221
 SpriteRenderer:
   serializedVersion: 3
@@ -873,7 +811,6 @@ GameObject:
   - component: {fileID: 1261887262}
   - component: {fileID: 1261887265}
   - component: {fileID: 1261887264}
-  - component: {fileID: 1261887263}
   m_Layer: 0
   m_Name: Box Switch Set
   m_TagString: Untagged
@@ -896,26 +833,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1792499943}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1261887263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1261887261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e56f5ba816af28479c680f83c2f4341, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  summonLocation: {fileID: 635566399}
-  cooldownTime: 5
-  targetObjTrans: {fileID: 688017218}
-  defaultSprite: {fileID: -1494352897237206093, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
-  pressedSprite: {fileID: -1061929297, guid: c9c2cefb0ccf38f459dfe3a29caf5551, type: 3}
 --- !u!61 &1261887264
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1032,7 +949,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1413916223}
   - component: {fileID: 1413916222}
-  - component: {fileID: 1413916221}
   - component: {fileID: 1413916220}
   m_Layer: 0
   m_Name: "\uCCB4\uD06C\uD3EC\uC778\uD2B8 0"
@@ -1087,19 +1003,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1413916221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1413916219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 0
 --- !u!212 &1413916222
 SpriteRenderer:
   serializedVersion: 3
@@ -1185,7 +1088,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1453624879}
   - component: {fileID: 1453624878}
-  - component: {fileID: 1453624877}
   - component: {fileID: 1453624876}
   m_Layer: 0
   m_Name: "\uCCB4\uD06C\uD3EC\uC778\uD2B8 1"
@@ -1240,19 +1142,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1453624877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453624875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b458af16263b33241b717ea9f6463e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savePointID: 1
 --- !u!212 &1453624878
 SpriteRenderer:
   serializedVersion: 3
@@ -1486,7 +1375,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1792499943}
-  - component: {fileID: 1792499942}
   m_Layer: 0
   m_Name: "\uC0C1\uC790 \uC18C\uD658 \uC7A5\uCE58"
   m_TagString: Untagged
@@ -1494,23 +1382,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1792499942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1792499941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 3614227031
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!4 &1792499943
 Transform:
   m_ObjectHideFlags: 0

@@ -119,7 +119,7 @@ public static class QuantumOfficialStageChecks
         finally { UnityEngine.Object.DestroyImmediate(slope); }
 
         RejectPrefab(root => root.transform.Find("도착").gameObject.AddComponent<BoxCollider2D>(), "미지원 Collider/컴포넌트");
-        RejectPrefab(root => root.transform.Find("상자").gameObject.AddComponent<RespawnHandler>(), "Mirror 원본 장치 스크립트");
+        RejectPrefab(root => root.transform.Find("상자").gameObject.AddComponent<AudioSource>(), "작성 컴포넌트 외 런타임 컴포넌트");
         RejectPrefab(root => root.transform.Find("도착").gameObject.SetActive(false), "비활성 작성 컴포넌트");
         RejectPrefab(root => root.transform.Find("도착").rotation = Quaternion.Euler(0, 0, 90), "회전한 도착");
         RejectPrefab(root => UnityEngine.Object.Instantiate(root.transform.Find("Grid/Ground").gameObject, root.transform.Find("Grid")), "Ground Tilemap 2개");
