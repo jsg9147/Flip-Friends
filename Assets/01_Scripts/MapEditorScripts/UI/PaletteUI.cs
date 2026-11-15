@@ -13,7 +13,19 @@ public class PaletteUI : MonoBehaviour
 
     private Button selectedButton;
     private readonly Dictionary<string, Button> buttonsById = new();
+    private readonly List<Button> orderedButtons = new();
+    private bool isBuilt;
     private static readonly Color LabelInk = new Color32(7, 53, 56, 255);
+
+    // HUD가 Start에서 키보드·패드 탐색을 이을 때 팔레트 버튼이 필요하다. Start 순서와 무관하게 먼저 만든다.
+    public IReadOnlyList<Button> Buttons
+    {
+        get
+        {
+            BuildPalette();
+            return orderedButtons;
+        }
+    }
 
     private void Start()
     {
@@ -22,6 +34,9 @@ public class PaletteUI : MonoBehaviour
 
     private void BuildPalette()
     {
+        if (isBuilt) return;
+        isBuilt = true;
+
         if (buttonContainer == null || paletteButtonPrefab == null)
         {
             Debug.LogError($"PaletteUI의 Inspector 참조가 누락되었습니다. buttonContainer: {buttonContainer != null}, paletteButtonPrefab: {paletteButtonPrefab != null}", this);
@@ -87,6 +102,7 @@ public class PaletteUI : MonoBehaviour
         button.transition = Selectable.Transition.None;
         button.onClick.AddListener(() => SelectPrefab(prefabID));
         buttonsById[prefabID] = button;
+        orderedButtons.Add(button);
     }
 
     private void SelectPrefab(string prefabID)

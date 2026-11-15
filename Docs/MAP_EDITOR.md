@@ -23,7 +23,7 @@
 - 팔레트는 `QuantumMapEditorPalette.asset` 하나다(`Assets/03_Prefabs/MapEditor/Quantum/Quantum*.prefab`, Transform·SpriteRenderer·BoxCollider2D만). MapEditor 씬·Quantum 매니페스트6종·저장 맵 검증·Quantum 검사가 모두 쓰며 경로는 `QuantumMapConverter.PaletteAssetPath`다. 기존 Mirror 팔레트(`MapEditorPalette.asset`과 원본 팔레트 프리팹)는 2026-11-15 Mirror와 함께 지웠다. Quantum 콘텐츠 해시는 콜라이더만 쓴다.
 - 맵 에디터 UI용 도트 이미지 9종을 `Assets/02_Sprites/Generated/Codex/`에 추가했다. 타이틀 화면의 청록·연두·종이색 팔레트와 4px 픽셀 그리드를 따르며, 패널·도구·동작·입력 프레임은 가장자리 중앙을 단순하게 유지한다. MapEditor 씬의 HUD·팔레트·불러오기 패널과 입력란·버튼, 팔레트 버튼 프리팹에 연결했다. 패널의 Sprite Border는 48px, 나머지 프레임은 16px이며 UI Image는 Sliced를 사용한다.
 - 초안 복원 대상이 없을 때만 새 맵에 기본 발판·시작점·도착점·로프·상자 예시를 미저장 상태로 채운다. `새 맵`은 빈 맵을 만들며, 저장된 맵과 복원 초안은 바꾸지 않는다.
-- MapEditor HUD는 실행 시 1600×900 기준으로 상단 맵 관리 막대(테스트 플레이 포함), 왼쪽 팔레트, 오른쪽 `도구` 패널, 하단 상태 막대로 재배치한다. 2026-11-15부터 메뉴와 같은 도트 공통 프리팹을 쓴다. 상단·도구 버튼 8개는 씬의 `PixelButton` 인스턴스이고 `MapEditorHUD`가 `[SerializeField]`로 참조한다(나가기는 `Back`, 테스트 플레이는 `Primary`). 패널·확인 팝업은 `PixelPanel`, 배치 버튼·목록 삭제 버튼은 `PixelButton`으로 실행 중 만든다. 현재 도구는 `PixelButton.SetHighlighted`, 선택 팔레트는 `PaletteUI`의 연두 프레임으로 표시한다. 편집 배경은 메뉴와 같은 남색이다. 씬의 HUD·입력란 Image에 붙어 있던 3D `Default-Material`(검은 상자 원인)과 Missing Script 아이콘 3개는 지웠다.
+- MapEditor HUD는 실행 시 1600×900 기준으로 상단 맵 관리 막대(테스트 플레이 포함), 왼쪽 팔레트, 오른쪽 `도구` 패널, 하단 상태 막대로 재배치한다. 2026-11-15부터 메뉴와 같은 도트 공통 프리팹을 쓴다. 상단·도구 버튼 8개는 씬의 `PixelButton` 인스턴스이고 `MapEditorHUD`가 `[SerializeField]`로 참조한다(나가기는 `Back`, 테스트 플레이는 `Primary`). 패널·확인 팝업은 `PixelPanel`, 배치 버튼·목록 삭제 버튼은 `PixelButton`으로 실행 중 만든다. 현재 도구는 `PixelButton.SetHighlighted`, 선택 팔레트는 `PaletteUI`의 연두 프레임으로 표시한다. 키보드·패드 탐색은 `MapEditorHUD`가 상단 막대(가로)·팔레트(세로)·도구(세로) 세 구역을 명시적으로 잇는다(상단 왼쪽 절반↓팔레트, 오른쪽 절반↓도구, 팔레트↔도구 좌우). 첫 선택은 배치, Esc·B는 열린 팝업만 닫고 에디터를 나가지 않는다. 불러오기 목록·확인 팝업은 그 안에서만 움직이며 확인 팝업은 취소를 먼저 고른다. 맵 이름 입력란은 지나갈 때 편집하지 않고 확인·클릭으로 편집한다. 배치·삭제 자체는 마우스 전용이다. 팔레트 버튼·목록 항목·입력란에도 포커스 링이 있다. 편집 배경은 메뉴와 같은 남색이다. 씬의 HUD·입력란 Image에 붙어 있던 3D `Default-Material`(검은 상자 원인)과 Missing Script 아이콘 3개는 지웠다.
 - Quantum 변환기는 Transform·SpriteRenderer·BoxCollider2D 외 컴포넌트를 거부한다. 상자는 Pickable 루트 0.9·배율 1/회전 0만 지원하며 중력 9.8은 Quantum 규칙에 고정한다.
 - 로프는 수직 루트 박스 트리거이며 오프셋/스케일/180도 회전을 FP로 변환한다. 가로/경사/다중/합성/동적 판정 등 미지원 구성은 위치·원인과 함께 전체 거부한다. [로프 변환 근거](Notes/2026-11-06-quantum-wall-rope.md).
 - 공용 Cannon/MapEditorCannon은 서버에서 탄환을 초기화한 뒤 Spawn하고, CannonProjectile이 거리별 수명을 관리한다. 원격 탄환은 서버 위치만 따르며 팔레트 저장 스키마와 발사 설정은 유지했다.
@@ -65,6 +65,7 @@ MapEditorManager
 
 ## 검증
 
+- 2026-11-15 HUD 키보드 탐색: 지정 SDK 빌드·Unity 재컴파일·Console 오류 0건, 새 Play 첫 Main `RunOffline` 통과. Main `맵 에디터` 진입 후 Input System 키 이벤트만으로 ↓(배치→지우개)·←(팔레트)·↓·Enter(도착 지점 선택)·↑↑(입력란, 편집 꺼짐)·→→(불러오기)·Enter(목록 첫 항목)·→(삭제)·Enter(확인 팝업, 취소 선택)·Esc(삭제 버튼 복귀)·Esc(팝업 닫힘, 불러오기 복귀)·입력란 Enter(편집 시작)를 확인하고 `Temp/FocusCaptures/M*.png`로 캡처했다. 실제 패드는 미실행이다.
 - 2026-11-15 HUD 공통 프리팹: 지정 SDK 빌드·Unity 재컴파일·Console 오류 0건. 새 Play 첫 Main `RunOffline` 통과 뒤 Main `맵 에디터` 버튼 → HUD `테스트 플레이`(QuantumPlay) → `메뉴로 종료` → MapEditor(러너 0) → `나가기` → Main을 버튼 콜백으로 확인했다. HUD·불러오기·삭제 확인 팝업을 1600×900으로 캡처했고 지우개/배치 선택 프레임 전환과 확인 팝업 취소를 확인했다. 직접 마우스 배치·실제 삭제·다른 해상도는 실행하지 않았다.
 
 - MapEditor HUD·PaletteUI·기본 예시 맵 변경을 포함해 `Assembly-CSharp.csproj` 빌드 오류 0건을 확인했다. 경고는 기존 프로젝트 경고 154건이다. 변경된 실행 중 UI의 Game View 캡처와 직접 조작은 아직 확인하지 않았다.

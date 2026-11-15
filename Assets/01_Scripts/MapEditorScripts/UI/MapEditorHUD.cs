@@ -37,6 +37,9 @@ public class MapEditorHUD : MonoBehaviour
     [SerializeField] private PixelButton rotateButton;
     [SerializeField] private PixelButton flipButton;
 
+    [Header("키보드·패드 탐색")]
+    [SerializeField] private PaletteUI paletteUI;
+
     private static readonly Color Ink = new Color32(7, 53, 56, 255);
     // 메뉴 화면의 남색 도트 배경과 같은 색이라 Main↔MapEditor 전환 때 바탕이 튀지 않는다.
     private static readonly Color EditorBackground = new Color32(5, 38, 52, 255);
@@ -49,6 +52,10 @@ public class MapEditorHUD : MonoBehaviour
     private GameObject loadPopupBlocker;
     private GameObject overwritePopup;
     private TMP_Text overwriteMessage;
+    private PixelButton confirmButton;
+    private PixelButton cancelButton;
+    private GameObject confirmationReturnSelection;
+    private bool isCancelSubscribed;
     private ConfirmationAction pendingConfirmation;
     private string pendingDeleteMapName;
     private bool isStartingTestPlay;
@@ -71,6 +78,70 @@ public class MapEditorHUD : MonoBehaviour
         mapNameInput.onEndEdit.AddListener(OnMapNameChanged);
         mapNameInput.text = MapEditorManager.instance?.CurrentMapData?.mapName ?? "새 맵";
         SetLoadPopupVisible(false);
+        LinkHudNavigation();
+        SubscribeToCancel();
+        // Main에서 남은 선택은 씬과 함께 사라졌다. 키보드·패드로 처음 움직일 때 배치 도구부터 고르게 한다.
+        if (placeButton != null) UIInputModeController.RequestSelection(placeButton.gameObject);
+    }
+
+    // 자동 탐색은 화면 가운데가 비어 있어 반전↓대포, 새 맵↓대포처럼 먼 버튼으로 튄다.
+    // 상단 막대(가로)·왼쪽 팔레트(세로)·오른쪽 도구(세로) 세 구역으로 나눠 직접 잇는다.
+    private void LinkHudNavigation()
+    {
+        IReadOnlyList<Button> palette = paletteUI != null ? paletteUI.Buttons : System.Array.Empty<Button>();
+        if (paletteUI == null) Debug.LogWarning("MapEditorHUD에 PaletteUI 참조가 없어 팔레트 키보드 탐색을 잇지 못했습니다.", this);
+        Selectable firstPalette = palette.Count > 0 ? palette[0] : null;
+
+        List<Selectable> topBar = CollectSelectables(mapNameInput, ButtonOf(newMapButton), ButtonOf(loadButton), ButtonOf(saveButton),
+            ButtonOf(returnButton), ButtonOf(testPlayButton));
+        List<Selectable> tools = CollectSelectables(ButtonOf(placeButton), ButtonOf(deleteButton), ButtonOf(rotateButton), ButtonOf(flipButton));
+        Selectable firstTool = tools.Count > 0 ? tools[0] : null;
+
+        // 상단 막대 왼쪽 절반은 팔레트로, 오른쪽 절반은 도구로 내려간다(화면 위치와 맞춘다).
+        for (int i = 0; i < topBar.Count; i++)
+        {
+            Selectable down = i < topBar.Count / 2 ? firstPalette : firstTool;
+            SetExplicitNavigation(topBar[i], null, down ?? firstTool ?? firstPalette,
+                i > 0 ? topBar[i - 1] : null, i < topBar.Count - 1 ? topBar[i + 1] : null);
+        }
+
+        Selectable topLeft = topBar.Count > 0 ? topBar[0] : null;
+        Selectable topRight = topBar.Count > 0 ? topBar[topBar.Count - 1] : null;
+        for (int i = 0; i < palette.Count; i++)
+            SetExplicitNavigation(palette[i], i > 0 ? palette[i - 1] : topLeft,
+                i < palette.Count - 1 ? palette[i + 1] : null, null, firstTool);
+        for (int i = 0; i < tools.Count; i++)
+            SetExplicitNavigation(tools[i], i > 0 ? tools[i - 1] : topRight,
+                i < tools.Count - 1 ? tools[i + 1] : null, firstPalette, null);
+    }
+
+    private static Selectable ButtonOf(PixelButton button)
+    {
+        return button != null ? button.Button : null;
+    }
+
+    private static List<Selectable> CollectSelectables(params Selectable[] candidates)
+    {
+        List<Selectable> result = new();
+        foreach (Selectable candidate in candidates)
+            if (candidate != null) result.Add(candidate);
+        return result;
+    }
+
+    private void SubscribeToCancel()
+    {
+        if (InputManager.instance == null) return;
+        InputManager.instance.OnCancelEvent += HandleCancel;
+        isCancelSubscribed = true;
+    }
+
+    // 키보드 Esc·패드 B는 열린 팝업만 닫는다. 에디터 나가기는 저장 안 된 편집을 잃을 수 있어 버튼으로만 한다.
+    private void HandleCancel()
+    {
+        if (overwritePopup != null && overwritePopup.activeSelf)
+            CancelConfirmation();
+        else if (loadPopup.activeSelf)
+            SetLoadPopupVisible(false);
     }
 
     public void SetSelectedObjectLabel(string label)
@@ -158,6 +229,9 @@ public class MapEditorHUD : MonoBehaviour
     private void PlaceMapNameInput(RectTransform canvasRect)
     {
         mapNameInput.transform.SetParent(canvasRect, false);
+        // 키보드·패드로 지나가기만 해도 편집이 켜지면 좌우 키가 커서 이동에 묶여 상단 막대를 벗어날 수 없다.
+        // 편집은 확인(Enter·A)이나 클릭으로 시작한다.
+        mapNameInput.shouldActivateOnSelect = false;
         SetRect((RectTransform)mapNameInput.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(455f, -52f), new Vector2(320f, 60f));
         if (mapNameInput.image != null && fieldFrame != null)
         {
@@ -388,26 +462,60 @@ public class MapEditorHUD : MonoBehaviour
             Destroy(child.gameObject);
 
         List<string> mapNames = MapDataRepository.GetAllMapNames();
+        List<Button> items = new();
+        List<Button> deleteButtons = new();
         foreach (string mapName in mapNames)
         {
-            CreateLoadListItem(mapName);
+            if (!CreateLoadListItem(mapName, out Button item, out Button deleteItemButton)) continue;
+            items.Add(item);
+            deleteButtons.Add(deleteItemButton);
+        }
+
+        LinkLoadListNavigation(items, deleteButtons);
+        // 목록이 비면 불러오기 버튼에 선택이 남아 같은 버튼으로 팝업을 다시 닫을 수 있다.
+        if (items.Count > 0) UIInputModeController.RequestSelection(items[0].gameObject);
+    }
+
+    // 자동 탐색은 팝업 뒤 HUD 버튼까지 고르므로, 목록 안에서만 움직이도록 직접 잇는다(이름 ↔ 삭제, 위아래는 같은 열).
+    private static void LinkLoadListNavigation(List<Button> items, List<Button> deleteButtons)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            Button previousItem = i > 0 ? items[i - 1] : null;
+            Button nextItem = i < items.Count - 1 ? items[i + 1] : null;
+            SetExplicitNavigation(items[i], previousItem, nextItem, null, deleteButtons[i]);
+            SetExplicitNavigation(deleteButtons[i], i > 0 ? deleteButtons[i - 1] : null,
+                i < deleteButtons.Count - 1 ? deleteButtons[i + 1] : null, items[i], null);
         }
     }
 
-    private void CreateLoadListItem(string mapName)
+    private static void SetExplicitNavigation(Selectable selectable, Selectable up, Selectable down, Selectable left, Selectable right)
     {
+        selectable.navigation = new Navigation
+        {
+            mode = Navigation.Mode.Explicit,
+            selectOnUp = up,
+            selectOnDown = down,
+            selectOnLeft = left,
+            selectOnRight = right
+        };
+    }
+
+    private bool CreateLoadListItem(string mapName, out Button button, out Button deleteItemButton)
+    {
+        deleteItemButton = null;
         GameObject item = Instantiate(loadListItemPrefab, loadListContainer);
         TMP_Text label = item.GetComponentInChildren<TMP_Text>();
-        Button button = item.GetComponent<Button>();
+        button = item.GetComponent<Button>();
         if (label == null || button == null)
         {
             Debug.LogError($"맵 목록 버튼 프리팹에 필요한 TMP_Text 또는 Button이 없습니다: {loadListItemPrefab.name}", loadListItemPrefab);
             Destroy(item);
-            return;
+            return false;
         }
 
         label.text = mapName;
-        AddDeleteButton(item, label, mapName);
+        deleteItemButton = AddDeleteButton(item, label, mapName);
         button.onClick.AddListener(() =>
         {
             MapEditorManager.instance?.LoadMap(mapName);
@@ -415,9 +523,10 @@ public class MapEditorHUD : MonoBehaviour
             ShowCurrentValidation();
             SetLoadPopupVisible(false);
         });
+        return true;
     }
 
-    private void AddDeleteButton(GameObject item, TMP_Text label, string mapName)
+    private Button AddDeleteButton(GameObject item, TMP_Text label, string mapName)
     {
         RectTransform labelRect = label.rectTransform;
         labelRect.offsetMax = new Vector2(-130f, labelRect.offsetMax.y);
@@ -432,7 +541,8 @@ public class MapEditorHUD : MonoBehaviour
         deleteItemButton.Text = "삭제";
         deleteItemButton.SetFontRange(14f, 20f);
         deleteItemButton.SetLabelInsets(18f, 18f);
-        deleteItemButton.Button.onClick.AddListener(() => ShowDeletePopup(mapName));
+        deleteItemButton.Button.onClick.AddListener(() => ShowDeletePopup(mapName, deleteItemButton.gameObject));
+        return deleteItemButton.Button;
     }
 
     private bool ValidateReferences()
@@ -477,6 +587,8 @@ public class MapEditorHUD : MonoBehaviour
     private void OnDestroy()
     {
         MapDataRepository.OperationFailed -= ShowError;
+        if (isCancelSubscribed && InputManager.instance != null)
+            InputManager.instance.OnCancelEvent -= HandleCancel;
         UnsubscribeFromMapChanges();
         if (transformEditor != null)
             transformEditor.DeleteModeChanged -= OnDeleteModeChanged;
@@ -524,14 +636,19 @@ public class MapEditorHUD : MonoBehaviour
         Button blockerButton = loadPopupBlocker.AddComponent<Button>();
         blockerButton.targetGraphic = blockerImage;
         blockerButton.transition = Selectable.Transition.None;
+        // 화면 전체를 덮는 바깥 클릭 판정이라 키보드·패드 탐색 대상이 되면 안 된다.
+        blockerButton.navigation = new Navigation { mode = Navigation.Mode.None };
         blockerButton.onClick.AddListener(() => SetLoadPopupVisible(false));
         loadPopupBlocker.transform.SetSiblingIndex(loadPopup.transform.GetSiblingIndex());
     }
 
     private void SetLoadPopupVisible(bool isVisible)
     {
+        bool wasVisible = loadPopup.activeSelf;
         loadPopupBlocker?.SetActive(isVisible);
         loadPopup.SetActive(isVisible);
+        if (wasVisible && !isVisible && loadButton != null)
+            UIInputModeController.RequestSelection(loadButton.gameObject);
     }
 
     private TMP_Text CreateStatusText()
@@ -564,12 +681,15 @@ public class MapEditorHUD : MonoBehaviour
 
         overwriteMessage = CreateLayoutLabel(dialog.transform, string.Empty, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(540f, 110f), 26f);
         overwriteMessage.name = "Message";
-        CreatePopupButton(primaryButtonPrefab, dialog.transform, "확인", new Vector2(-120f, -80f), ConfirmPendingAction);
-        CreatePopupButton(buttonPrefab, dialog.transform, "취소", new Vector2(120f, -80f), CancelConfirmation);
+        confirmButton = CreatePopupButton(primaryButtonPrefab, dialog.transform, "확인", new Vector2(-120f, -80f), ConfirmPendingAction);
+        cancelButton = CreatePopupButton(buttonPrefab, dialog.transform, "취소", new Vector2(120f, -80f), CancelConfirmation);
+        // 확인 창이 떠 있는 동안 뒤의 HUD 버튼으로 선택이 빠지지 않게 두 버튼끼리만 잇는다.
+        SetExplicitNavigation(confirmButton.Button, null, null, null, cancelButton.Button);
+        SetExplicitNavigation(cancelButton.Button, null, null, confirmButton.Button, null);
         return blocker;
     }
 
-    private void CreatePopupButton(
+    private PixelButton CreatePopupButton(
         PixelButton prefab,
         Transform parent,
         string label,
@@ -581,6 +701,7 @@ public class MapEditorHUD : MonoBehaviour
         SetRect((RectTransform)button.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), position, new Vector2(200f, ToolButtonHeight));
         button.Text = label;
         button.Button.onClick.AddListener(onClick);
+        return button;
     }
 
     private GameObject CreateUIObject(string objectName, Transform parent)
@@ -603,20 +724,36 @@ public class MapEditorHUD : MonoBehaviour
     {
         pendingConfirmation = ConfirmationAction.Overwrite;
         overwriteMessage.text = $"'{mapName}' 맵이 이미 존재합니다.\n덮어쓰시겠습니까?";
-        overwritePopup.SetActive(true);
+        OpenConfirmation(saveButton != null ? saveButton.gameObject : null);
     }
 
-    private void ShowDeletePopup(string mapName)
+    private void ShowDeletePopup(string mapName, GameObject returnSelection)
     {
         pendingDeleteMapName = mapName;
         pendingConfirmation = ConfirmationAction.Delete;
         overwriteMessage.text = $"'{mapName}' 맵을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.";
+        OpenConfirmation(returnSelection);
+    }
+
+    // 덮어쓰기·삭제는 되돌릴 수 없으므로 패드로 연속 입력해도 바로 실행되지 않게 취소를 먼저 고른다.
+    private void OpenConfirmation(GameObject returnSelection)
+    {
+        confirmationReturnSelection = returnSelection;
         overwritePopup.SetActive(true);
+        UIInputModeController.RequestSelection(cancelButton.gameObject);
+    }
+
+    private void CloseConfirmation()
+    {
+        overwritePopup.SetActive(false);
+        if (confirmationReturnSelection != null)
+            UIInputModeController.RequestSelection(confirmationReturnSelection);
+        confirmationReturnSelection = null;
     }
 
     private void ConfirmPendingAction()
     {
-        overwritePopup.SetActive(false);
+        CloseConfirmation();
         if (pendingConfirmation == ConfirmationAction.Overwrite)
             SaveCurrentMap(true);
         else if (pendingConfirmation == ConfirmationAction.Delete)
@@ -627,7 +764,7 @@ public class MapEditorHUD : MonoBehaviour
 
     private void CancelConfirmation()
     {
-        overwritePopup.SetActive(false);
+        CloseConfirmation();
         string message = pendingConfirmation == ConfirmationAction.Delete
             ? "삭제를 취소했습니다."
             : "저장을 취소했습니다.";
