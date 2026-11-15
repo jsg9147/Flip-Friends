@@ -54,7 +54,7 @@
 6. MapEditor 검증/베이크·Quantum 테스트 플레이·커스텀 맵 선택/친구 전송/실패 복구.
 7. Steam 로비/초대→Quantum 세션, 준비/취소/이탈/재시도·진행 중 입장 제한.
 8. ~~Mirror 제거~~ (완료, 2026-11-15; NGO 포함. 공식8종·매니페스트6종 해시 유지).
-9. UI 선별 프리팹화(2026-11-15 결정, Mirror 제거 후). ① 도트 프레임·아이콘·뒤로 버튼 공통 프리팹+Variant ② `MapEditorHUD`·`QuantumPrepareScreen`의 런타임 생성 UI(`new GameObject`·`transform.Find`)를 프리팹 참조로 교체 ③ 화면 단위 프리팹은 남은 화면(Settings·KeyBinding·Quantum 준비)만 검토. GameRoom은 Mirror와 함께 지웠다. Main 전체 일괄 분리는 하지 않는다.
+9. UI 선별 프리팹화(2026-11-15 결정, Mirror 제거 후). ① ~~도트 프레임·아이콘·뒤로 버튼 공통 프리팹+Variant~~ (2026-11-15, `03_Prefabs/UI/Common`) ② `MapEditorHUD`(남음)·~~`QuantumPrepareScreen`~~(완료)의 런타임 생성 UI(`new GameObject`·`transform.Find`)를 프리팹 참조로 교체 ③ 화면 단위 프리팹은 남은 화면(Settings·KeyBinding·Quantum 준비)만 검토. GameRoom은 Mirror와 함께 지웠다. Main 전체 일괄 분리는 하지 않는다.
 - 신규9개 스테이지 제작은 전환 필수 작업과 분리한다. 출시 앱 준비는 위 구현과 병행할 수 있다.
 
 ## 동작 문제 수정 기준
