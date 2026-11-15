@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,9 +21,6 @@ public class MapEditorHUD : MonoBehaviour
     [SerializeField] private Transform loadListContainer;
     [SerializeField] private GameObject loadListItemPrefab;
 
-    private const string DeleteModeEnabledText = "삭제 ON";
-    private const string DeleteModeDisabledText = "삭제 OFF";
-
     private ObjectTransformEditor transformEditor;
     private TMP_Text deleteModeLabel;
     private TMP_Text validationText;
@@ -34,11 +30,15 @@ public class MapEditorHUD : MonoBehaviour
     private ConfirmationAction pendingConfirmation;
     private string pendingDeleteMapName;
     private bool isStartingTestPlay;
+    private TMP_Text selectedObjectText;
+    private TMP_Text testHintText;
+    private string selectedObjectLabel = "오브젝트를 선택하세요";
 
     private void Start()
     {
         if (!ValidateReferences()) return;
 
+        ConfigureEditorLayout();
         InitializeStatusText();
         InitializeValidationText();
         InitializeLoadPopupBlocker();
@@ -49,6 +49,277 @@ public class MapEditorHUD : MonoBehaviour
         mapNameInput.onEndEdit.AddListener(OnMapNameChanged);
         mapNameInput.text = MapEditorManager.instance?.CurrentMapData?.mapName ?? "새 맵";
         SetLoadPopupVisible(false);
+    }
+
+    public void SetSelectedObjectLabel(string label)
+    {
+        selectedObjectLabel = string.IsNullOrWhiteSpace(label) ? "오브젝트를 선택하세요" : label;
+        if (selectedObjectText != null)
+            selectedObjectText.text = $"{selectedObjectLabel} 선택됨";
+        if (statusText != null && (transformEditor == null || !transformEditor.IsDeleteMode))
+            statusText.text = $"배치 도구 | {selectedObjectLabel} 선택됨";
+    }
+
+    private void ConfigureEditorLayout()
+    {
+        RectTransform canvasRect = transform.parent as RectTransform;
+        if (canvasRect == null) return;
+
+        HorizontalLayoutGroup headerLayout = GetComponent<HorizontalLayoutGroup>();
+        if (headerLayout != null) headerLayout.enabled = false;
+        Image headerImage = GetComponent<Image>();
+        if (headerImage != null)
+        {
+            headerImage.sprite = null;
+            headerImage.color = Color.white;
+            headerImage.raycastTarget = false;
+        }
+        SetRect(transform as RectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -48f), new Vector2(0f, 96f));
+
+        SetChildRect("MapNameInput", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(420f, -48f), new Vector2(250f, 54f));
+        StyleSecondaryButton(transform.Find("MapNameInput"));
+        SetChildRect("NewMapButton", canvasRect, Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
+        SetCanvasRect("NewMapButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(760f, -48f), new Vector2(124f, 54f));
+        SetCanvasRect("LoadButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(900f, -48f), new Vector2(142f, 54f));
+        SetCanvasRect("SaveButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(1058f, -48f), new Vector2(122f, 54f));
+        SetCanvasRect("ReturnButton", canvasRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(1196f, -48f), new Vector2(132f, 54f));
+        SetCanvasRect("TestPlayButton", canvasRect, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(410f, -132f), new Vector2(250f, 58f));
+
+        SetPanelRect("PalettePanel", canvasRect, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(132f, 0f), new Vector2(248f, -220f));
+        Transform palettePanel = canvasRect.Find("PalettePanel");
+        StyleWhitePanel(palettePanel);
+        Transform paletteContainer = palettePanel?.Find("ButtonContainer");
+        if (paletteContainer is RectTransform containerRect)
+        {
+            containerRect.anchorMin = Vector2.zero;
+            containerRect.anchorMax = Vector2.one;
+            containerRect.offsetMin = new Vector2(10f, 14f);
+            containerRect.offsetMax = new Vector2(-10f, -72f);
+        }
+        TMP_Text managementTitle = CreateLayoutLabel(canvasRect, "맵 관리", new Vector2(92f, -48f), new Vector2(150f, 42f), 25f);
+        SetRect(managementTitle.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(92f, -48f), new Vector2(150f, 42f));
+        TMP_Text mapNameLabel = CreateLayoutLabel(canvasRect, "맵 이름", new Vector2(215f, -48f), new Vector2(70f, 42f), 18f);
+        SetRect(mapNameLabel.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(215f, -48f), new Vector2(70f, 42f));
+        TMP_Text paletteTitle = CreateLayoutLabel(palettePanel, "오브젝트", new Vector2(74f, -27f), new Vector2(150f, 42f), 23f);
+        SetRect(paletteTitle.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(74f, -27f), new Vector2(150f, 42f));
+        paletteTitle.alignment = TextAlignmentOptions.MidlineLeft;
+        Transform paletteIcon = palettePanel?.Find("tile_icon");
+        if (paletteIcon is RectTransform iconRect)
+            SetRect(iconRect, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(38f, -27f), new Vector2(28f, 28f));
+
+        GameObject toolRail = CreateUIObject("ToolRail", canvasRect);
+        RectTransform railRect = toolRail.GetComponent<RectTransform>();
+        SetRect(railRect, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-112f, 0f), new Vector2(220f, -220f));
+        Image railImage = toolRail.AddComponent<Image>();
+        railImage.color = Color.white;
+        railImage.raycastTarget = false;
+        AddThinOutline(toolRail, new Color(0.35f, 0.76f, 0.86f, 1f), 1f);
+
+        MoveAndPlaceTool("DeleteButton", toolRail.transform, "지우개", new Vector2(0f, -170f));
+        MoveAndPlaceTool("RotateButton", toolRail.transform, "회전", new Vector2(0f, -245f));
+        MoveAndPlaceTool("FlipButton", toolRail.transform, "반전", new Vector2(0f, -320f));
+        CreatePlaceButton(toolRail.transform);
+
+        CreateLayoutLabel(toolRail.transform, "상자 선택됨", new Vector2(0f, -390f), new Vector2(190f, 36f), 18f, out selectedObjectText);
+        selectedObjectText.text = $"{selectedObjectLabel} 선택됨";
+        TMP_Text hint = CreateLayoutLabel(canvasRect, "도착 지점을 배치하면 테스트할 수 있어요", new Vector2(930f, 48f), new Vector2(630f, 28f), 17f);
+        SetRect(hint.rectTransform, Vector2.zero, Vector2.zero, new Vector2(930f, 48f), new Vector2(630f, 28f));
+        hint.alignment = TextAlignmentOptions.MidlineLeft;
+        testHintText = hint;
+        CreateStatusRule(canvasRect);
+        CreateRule(canvasRect, new Vector2(0f, -96f));
+        ConfigureEditorCamera();
+    }
+
+    private void CreateStatusRule(Transform parent)
+    {
+        CreateRule(parent, new Vector2(0f, 92f));
+    }
+
+    private void CreateRule(Transform parent, Vector2 position)
+    {
+        GameObject rule = CreateUIObject("StatusRule", parent);
+        RectTransform rect = rule.GetComponent<RectTransform>();
+        SetRect(rect, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        bool isHeaderRule = position.y < 0f;
+        rect.anchorMin = new Vector2(0f, isHeaderRule ? 1f : 0f);
+        rect.anchorMax = new Vector2(1f, isHeaderRule ? 1f : 0f);
+        rect.pivot = new Vector2(0.5f, isHeaderRule ? 1f : 0f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(-32f, 3f);
+        Image image = rule.AddComponent<Image>();
+        image.color = new Color(0.16f, 0.68f, 0.73f, 1f);
+        image.raycastTarget = false;
+    }
+
+    private void ConfigureEditorCamera()
+    {
+        Camera editorCamera = null;
+        foreach (Camera candidate in FindObjectsByType<Camera>())
+        {
+            if (candidate.gameObject.scene == gameObject.scene)
+            {
+                editorCamera = candidate;
+                break;
+            }
+        }
+        if (editorCamera == null) return;
+        editorCamera.clearFlags = CameraClearFlags.SolidColor;
+        editorCamera.backgroundColor = Color.white;
+    }
+
+    private void StyleWhitePanel(Transform panel)
+    {
+        if (panel == null) return;
+        Image image = panel.GetComponent<Image>();
+        if (image != null)
+        {
+            image.sprite = null;
+            image.color = Color.white;
+        }
+        AddThinOutline(panel.gameObject, new Color(0.35f, 0.76f, 0.86f, 1f), 1f);
+    }
+
+    private void ObjectTransformEditorMode(bool isDeleteMode)
+    {
+        ObjectTransformEditor editor = GetTransformEditor();
+        if (editor == null) return;
+        if (editor.IsDeleteMode != isDeleteMode) editor.ToggleDeleteMode();
+    }
+
+    private void CreatePlaceButton(Transform parent)
+    {
+        GameObject placeButton = CreateUIObject("PlaceButton", parent);
+        SetRect(placeButton.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -95f), new Vector2(178f, 62f));
+        Image image = placeButton.AddComponent<Image>();
+        image.color = new Color(0.68f, 0.94f, 0.31f, 1f);
+        AddThinOutline(placeButton, new Color(0f, 0.45f, 0.52f, 1f), 1f);
+        Button button = placeButton.AddComponent<Button>();
+        button.transition = Selectable.Transition.None;
+        button.targetGraphic = image;
+        button.onClick.AddListener(() => ObjectTransformEditorMode(false));
+        TMP_Text label = CreateLayoutLabel(placeButton.transform, "배치", Vector2.zero, new Vector2(165f, 52f), 20f);
+        label.rectTransform.anchorMin = Vector2.zero;
+        label.rectTransform.anchorMax = Vector2.one;
+        label.rectTransform.offsetMin = new Vector2(8f, 4f);
+        label.rectTransform.offsetMax = new Vector2(-8f, -4f);
+        GameObject dot = CreateUIObject("PixelDot", placeButton.transform);
+        SetRect(dot.GetComponent<RectTransform>(), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(18f, 0f), new Vector2(8f, 8f));
+        Image dotImage = dot.AddComponent<Image>();
+        dotImage.color = new Color(0f, 0.247f, 0.282f, 1f);
+        dotImage.raycastTarget = false;
+        label.rectTransform.offsetMin = new Vector2(34f, 4f);
+    }
+
+    private void MoveAndPlaceTool(string childName, Transform parent, string label, Vector2 position, string newName = null)
+    {
+        Transform child = transform.Find(childName);
+        if (child == null) return;
+        child.SetParent(parent, false);
+        if (!string.IsNullOrEmpty(newName)) child.name = newName;
+        SetRect(child as RectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), position, new Vector2(178f, 62f));
+        StyleSecondaryButton(child);
+        SetButtonLabel(child, label);
+    }
+
+    private void MoveAndPlaceTool(string childName, Transform parent, string label, Vector2 anchor, Vector2 position, Vector2 size)
+    {
+        Transform child = transform.Find(childName);
+        if (child == null) return;
+        child.SetParent(parent, false);
+        SetRect(child as RectTransform, anchor, anchor, position, size);
+        if (childName != "TestPlayButton") StyleSecondaryButton(child);
+        SetButtonLabel(child, label);
+    }
+
+    private void SetButtonLabel(Transform button, string label)
+    {
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
+        if (text == null) return;
+        text.text = label;
+        RectTransform rect = text.rectTransform;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        bool hasIcon = button.GetComponentsInChildren<Image>(true).Length > 1;
+        rect.offsetMin = new Vector2(hasIcon ? 42f : 8f, 4f);
+        rect.offsetMax = new Vector2(-8f, -4f);
+        text.alignment = TextAlignmentOptions.Midline;
+        text.color = new Color(0f, 0.247f, 0.282f, 1f);
+        text.fontSize = label == "테스트 플레이" ? 19f : 20f;
+    }
+
+    private void SetChildRect(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
+    {
+        Transform child = transform.Find(name);
+        if (child != null) SetRect(child as RectTransform, anchorMin, anchorMax, position, size);
+    }
+
+    private void SetCanvasRect(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
+    {
+        Transform child = transform.Find(name);
+        if (child == null) return;
+        child.SetParent(parent, false);
+        SetRect(child as RectTransform, anchorMin, anchorMax, position, size);
+        if (name != "TestPlayButton") StyleSecondaryButton(child);
+        SetButtonLabel(child, name == "TestPlayButton" ? "테스트 플레이" : name == "NewMapButton" ? "새 맵" : name == "LoadButton" ? "불러오기" : name == "SaveButton" ? "저장" : "나가기");
+    }
+
+    private void StyleSecondaryButton(Transform button)
+    {
+        if (button == null) return;
+        Image image = button.GetComponent<Image>();
+        if (image == null) return;
+        image.sprite = null;
+        image.color = Color.white;
+        Button control = button.GetComponent<Button>();
+        if (control != null) control.transition = Selectable.Transition.None;
+        AddThinOutline(button.gameObject, new Color(0.35f, 0.76f, 0.86f, 1f), 1f);
+    }
+
+    private void AddThinOutline(GameObject target, Color color, float width)
+    {
+        Outline outline = target.GetComponent<Outline>();
+        if (outline == null) outline = target.AddComponent<Outline>();
+        outline.effectColor = color;
+        outline.effectDistance = new Vector2(width, -width);
+        outline.useGraphicAlpha = true;
+    }
+
+    private void SetPanelRect(string name, RectTransform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
+    {
+        Transform child = parent.Find(name);
+        if (child != null) SetRect(child as RectTransform, anchorMin, anchorMax, position, size);
+    }
+
+    private void SetRect(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size)
+    {
+        if (rect == null) return;
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+    }
+
+    private TMP_Text CreateLayoutLabel(Transform parent, string label, Vector2 position, Vector2 size, float fontSize)
+    {
+        return CreateLayoutLabel(parent, label, position, size, fontSize, out _);
+    }
+
+    private TMP_Text CreateLayoutLabel(Transform parent, string label, Vector2 position, Vector2 size, float fontSize, out TMP_Text text)
+    {
+        GameObject labelObject = CreateUIObject($"Label_{label}", parent);
+        RectTransform rect = labelObject.GetComponent<RectTransform>();
+        SetRect(rect, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), position, size);
+        text = labelObject.AddComponent<TextMeshProUGUI>();
+        text.font = mapNameInput.textComponent.font;
+        text.fontSize = fontSize;
+        text.alignment = TextAlignmentOptions.Center;
+        text.color = new Color(0f, 0.247f, 0.282f, 1f);
+        text.raycastTarget = false;
+        text.text = label;
+        return text;
     }
 
     private void OnMapNameChanged(string newName)
@@ -244,7 +515,7 @@ public class MapEditorHUD : MonoBehaviour
 
     private void InitializeDeleteModeUI()
     {
-        Transform deleteButton = transform.Find("DeleteButton");
+        Transform deleteButton = GameObject.Find("DeleteButton")?.transform;
         deleteModeLabel = deleteButton?.GetComponentInChildren<TMP_Text>(true);
         transformEditor = GetTransformEditor();
         if (deleteModeLabel == null)
@@ -258,7 +529,20 @@ public class MapEditorHUD : MonoBehaviour
     private void OnDeleteModeChanged(bool isEnabled)
     {
         if (deleteModeLabel != null)
-            deleteModeLabel.text = isEnabled ? DeleteModeEnabledText : DeleteModeDisabledText;
+            deleteModeLabel.text = "지우개";
+
+        if (statusText != null)
+            statusText.text = isEnabled ? "지우개 도구 선택됨" : $"배치 도구 | {selectedObjectLabel} 선택됨";
+
+        Transform button = GameObject.Find("DeleteButton")?.transform;
+        Image image = button != null ? button.GetComponent<Image>() : null;
+        if (image != null)
+            image.color = isEnabled ? new Color(0.68f, 0.94f, 0.31f, 1f) : Color.white;
+
+        Transform placeButton = GameObject.Find("PlaceButton")?.transform;
+        Image placeImage = placeButton != null ? placeButton.GetComponent<Image>() : null;
+        if (placeImage != null)
+            placeImage.color = isEnabled ? Color.white : new Color(0.68f, 0.94f, 0.31f, 1f);
     }
 
     private void OnDestroy()
@@ -286,7 +570,7 @@ public class MapEditorHUD : MonoBehaviour
         if (statusText == null)
             statusText = CreateStatusText();
 
-        statusText.text = string.Empty;
+        statusText.text = $"배치 도구 | {selectedObjectLabel} 선택됨";
     }
 
     private void InitializeValidationText()
@@ -327,17 +611,18 @@ public class MapEditorHUD : MonoBehaviour
         statusObject.layer = gameObject.layer;
         RectTransform rectTransform = statusObject.GetComponent<RectTransform>();
         rectTransform.SetParent(transform.parent, false);
-        rectTransform.anchorMin = new Vector2(0.5f, 1f);
-        rectTransform.anchorMax = new Vector2(0.5f, 1f);
-        rectTransform.pivot = new Vector2(0.5f, 1f);
-        rectTransform.anchoredPosition = new Vector2(0f, -70f);
-        rectTransform.sizeDelta = new Vector2(900f, 36f);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.pivot = new Vector2(0f, 0.5f);
+        rectTransform.anchoredPosition = new Vector2(300f, 63f);
+        rectTransform.sizeDelta = new Vector2(610f, 26f);
 
         TextMeshProUGUI text = statusObject.AddComponent<TextMeshProUGUI>();
         text.font = mapNameInput.textComponent.font;
-        text.fontSize = 24f;
-        text.alignment = TextAlignmentOptions.Center;
+        text.fontSize = 19f;
+        text.alignment = TextAlignmentOptions.MidlineLeft;
         text.raycastTarget = false;
+        text.color = new Color(0f, 0.247f, 0.282f, 1f);
         return text;
     }
 
@@ -347,16 +632,18 @@ public class MapEditorHUD : MonoBehaviour
         validationObject.layer = gameObject.layer;
         RectTransform rectTransform = validationObject.GetComponent<RectTransform>();
         rectTransform.SetParent(transform.parent, false);
-        rectTransform.anchorMin = new Vector2(0.5f, 1f);
-        rectTransform.anchorMax = new Vector2(0.5f, 1f);
-        rectTransform.pivot = new Vector2(0.5f, 1f);
-        rectTransform.anchoredPosition = new Vector2(0f, -110f);
-        rectTransform.sizeDelta = new Vector2(1100f, 220f);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.pivot = new Vector2(0f, 0.5f);
+        rectTransform.anchoredPosition = new Vector2(300f, 29f);
+        rectTransform.sizeDelta = new Vector2(610f, 42f);
 
         TextMeshProUGUI text = validationObject.AddComponent<TextMeshProUGUI>();
         text.font = mapNameInput.textComponent.font;
-        text.fontSize = 20f;
-        text.alignment = TextAlignmentOptions.TopLeft;
+        text.fontSize = 17f;
+        text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.color = new Color(0f, 0.247f, 0.282f, 1f);
         text.raycastTarget = false;
         return text;
     }
@@ -504,36 +791,30 @@ public class MapEditorHUD : MonoBehaviour
         if (report.Issues.Count == 0)
         {
             validationText.text = "플레이 가능성 검증 통과";
-            validationText.color = new Color(0.35f, 1f, 0.55f);
+            validationText.color = new Color(0f, 0.247f, 0.282f, 1f);
+            if (testHintText != null) testHintText.text = "테스트 플레이를 실행할 수 있어요";
             return;
         }
 
         validationText.text = BuildValidationMessage(report);
         validationText.color = report.HasErrors
-            ? new Color(1f, 0.35f, 0.35f)
-            : new Color(1f, 0.8f, 0.25f);
+            ? new Color(0.65f, 0.17f, 0.2f)
+            : new Color(0f, 0.247f, 0.282f, 1f);
+        if (testHintText != null)
+            testHintText.text = report.CanStartPlay
+                ? "테스트 플레이를 실행할 수 있어요"
+                : "시작점과 도착점을 배치하면 테스트할 수 있어요";
     }
 
     private string BuildValidationMessage(MapValidationReport report)
     {
-        var builder = new StringBuilder();
-        builder.AppendLine(report.CanStartPlay
-            ? "플레이 가능(경고 확인 권장)"
-            : "저장 가능 / 테스트 플레이 불가");
-        foreach (MapValidationIssue issue in report.Issues)
-            builder.AppendLine($"[{GetSeverityLabel(issue.Severity)}] {issue.Message}");
+        if (report.CanStartPlay)
+            return $"플레이 가능 | 경고 {report.Issues.Count}건";
 
-        return builder.ToString().TrimEnd();
-    }
-
-    private string GetSeverityLabel(MapValidationSeverity severity)
-    {
-        return severity switch
-        {
-            MapValidationSeverity.Error => "오류",
-            MapValidationSeverity.Warning => "경고",
-            _ => "정보"
-        };
+        MapValidationIssue firstIssue = report.Issues[0];
+        return report.Issues.Count == 1
+            ? firstIssue.Message
+            : $"{firstIssue.Message} 외 {report.Issues.Count - 1}건";
     }
 
     private void DeletePendingMap()
@@ -569,7 +850,7 @@ public class MapEditorHUD : MonoBehaviour
         if (statusText == null) return;
 
         statusText.text = message;
-        statusText.color = color;
+        statusText.color = color == Color.white ? new Color(0f, 0.247f, 0.282f, 1f) : color;
     }
 
     private bool ValidateReference(Object reference, string fieldName)

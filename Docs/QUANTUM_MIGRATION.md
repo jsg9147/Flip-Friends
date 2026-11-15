@@ -27,7 +27,7 @@
 - 실제 Unity6000.6.8f1·Quantum3.0.14 Stable2241·Steamworks.NET2024.8.0이다. 버전은 변경하지 않았다. [공식 지원 표](https://doc.photonengine.com/quantum/v3/getting-started/initial-setup)의6000.6 미명시와 프로젝트 실행 성공은 별개다.
 - Steam 로비 생성·참가·초대·`+connect_lobby`와 Quantum 로비 연결은 Mirror에 의존하지 않는 `SteamLobbyService`(DDOL, 지연 생성)가 소유한다. `SteamRoomManager`는 Mirror 세션을 외부 세션으로 등록하고 Mirror 로비 진입·생성 실패만 받는다. 지금은 `SteamRoomManager.Start`가 서비스를 일찍 만들므로, Mirror 제거 시 Main에서 서비스를 만드는 다른 소유자가 필요하다.
 - Main의 Steam Quantum 로비는 기존 Steam 생성·참가·초대를 재사용한다. Steam은 방장·멤버·선택 맵·준비 세대·시작 시도를 소유한다. 방장 시작 시 Steam 신규 입장을 닫고 참가자와 맵을 확정하며, 시도별 숨김 Photon 방에서 전원 콘텐츠 합의 후 입장을 닫고 QuantumPlay를 연다. 완료·메뉴 종료·시작 실패·이탈 시 정리 후 같은 Steam 로비 준비 화면으로 돌아온다. 로비가 사라지면 Main 준비 화면에 사유를 표시한다.
-- 기존 Steam 게임 버튼의 Mirror GameRoom·친구 맵 전송·21개 스테이지를 유지한다. MapEditor HUD 테스트는 Quantum 오프라인이다. 별도 저장 맵 친구 방도 출시 Photon 인증과 세션 한정 전송을 계속 사용한다. 개발 익명 연결은 UNITY_EDITOR 검사에만 있다. [커스텀 맵 검증](CUSTOM_MAP_NETWORK.md#검증).
+- 기존 Steam 게임 버튼의 Mirror GameRoom·친구 맵 전송·21개 스테이지는 아직 코드에 남아 있지만 출시하지 않으며 제거 대상이다(2026-11-14 사용자 결정, [제거 프롬프트](CLAUDE_NEXT_PROMPT.md)). MapEditor HUD 테스트는 Quantum 오프라인이다. 별도 저장 맵 친구 방도 출시 Photon 인증과 세션 한정 전송을 계속 사용한다. 개발 익명 연결은 UNITY_EDITOR 검사에만 있다. [커스텀 맵 검증](CUSTOM_MAP_NETWORK.md#검증).
 
 ## 핵심 흐름
 
@@ -69,4 +69,4 @@
 
 ## 다음 작업
 
-[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 출시 Steam 앱과 Photon 공급자를 설정하고 실계정 로비 왕복을 확인한다.
+[최신 착수 순서](NEXT_SESSION.md#다음-작업)에 따라 Mirror를 제거한다. 그다음 출시 Steam 앱과 Photon 공급자를 설정하고 실계정 로비 왕복을 확인한다.

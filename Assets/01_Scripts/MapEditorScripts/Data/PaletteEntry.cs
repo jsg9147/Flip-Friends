@@ -18,5 +18,6 @@ public class PaletteEntry
     public MapObjectCategory category;
     public GameObject prefab;
     public Sprite thumbnail;
+    public Sprite paletteIcon;
     public MapObjectValidationRule validationRule = new();
 }

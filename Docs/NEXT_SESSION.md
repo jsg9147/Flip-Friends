@@ -11,10 +11,10 @@
 ## 현재 상태
 
 - 제품15/ff-product-15. Main 사용례6종과 공식 시험8종(`official-test`, `official-slope-test`, `official-hazard-test`, `official-launcher-test`, `official-motion-test`, `official-switch-test`, `official-conveyor-test`, `official-cannon-test`)이 있다. 공식 작성기의 FP 변환과 스위치/문·수동 전환·컨베이어·대포의 제품 경로는 [현재 범위](QUANTUM_MIGRATION.md#현재-상태)를 따른다.
-- 기존 21개 스테이지와 GameRoom은 Mirror 경로다. Steam 로비는 생성 시 선택한 모드에 따라 Mirror GameRoom 또는 Main의 Quantum 로비 준비 화면으로 연결한다. Quantum 제품은 맵별 최소 인원과 최대 4인, 시작점 부족 시 옆 칸 생성, 입력 장치 배정과 프레임 기반 연출을 지원한다.
+- 기존 21개 스테이지와 GameRoom은 Mirror 경로이며 출시하지 않는다(제거 예정). Steam 로비는 Mirror 비의존 `SteamLobbyService`가 소유하고, 생성 시 선택한 모드에 따라 Mirror GameRoom 또는 Main의 Quantum 로비 준비 화면으로 연결한다. Quantum 팔레트는 Mirror 컴포넌트 없는 `QuantumMapEditorPalette`로 분리했다. Quantum 제품은 맵별 최소 인원과 최대 4인, 시작점 부족 시 옆 칸 생성, 입력 장치 배정과 프레임 기반 연출을 지원한다.
 - Quantum 준비 화면은 저장 맵 선택과 출시 Steam 인증을 거치는 Photon 친구 방의 Steam 오버레이 초대·코드 참가를 지원한다. [콘텐츠 검증과 전송](CUSTOM_MAP_NETWORK.md#현재-상태).
 - MapEditor HUD는 미저장 편집본을 QuantumPlay 오프라인 1인 세션으로 실행한다. 지원 범위와 실제 실행 결과는 [맵 에디터 문서](MAP_EDITOR.md#검증)를 따른다.
-- 기존21개 스테이지는 사용자가 새로 구성해 프리팹 기반 공식 맵으로 등록할 예정이다. 원본 프리팹은 보존한다.
+- 기존21개 스테이지는 사용자가 새로 구성해 프리팹 기반 공식 맵으로 등록할 예정이다. 원본 프리팹에 붙은 Mirror 장치 스크립트의 처리는 Mirror 제거 작업에서 정한다.
 - 최신 검증과 미실행 환경은 [공통 검증](QUANTUM_MIGRATION.md#검증)을 따른다. 문서 정리로 새 실행 통과를 주장하지 않는다.
 - 실제 프로젝트 버전은 ProjectSettings/ProjectVersion.txt의6000.6.8f1, SDK는 Quantum3.0.14 Stable2241이다. 임의 업그레이드하지 않는다.
 
@@ -33,9 +33,15 @@
 - 공식 맵 프리팹에는 Mirror 스크립트 대신 **Quantum 작성 전용 컴포넌트**를 쓴다. 두 경로는 같은 FP 지형·장치 데이터와 시뮬레이션 규칙을 공유한다.
 - 원본 Stage7 등 기존 스테이지 그대로의 이식은 보류한다([Stage7 검사 기록](Notes/2026-11-08-quantum-stage7-tilemap.md)).
 
+## 확정 방향 (2026-11-14 사용자 결정)
+
+- **Mirror 버전은 출시하지 않는다.** 제품 경로는 Quantum만이다. Mirror는 병행 운영하지 않고 제거한다.
+- 맵 전송은 Quantum(`QuantumSavedMapTransfer`, Photon)으로 이미 대체되어 Mirror 제거를 막지 않는다.
+- Mirror를 제거하면 기존 21개 스테이지는 공식 맵으로 재구성될 때까지 플레이 경로가 없다. Mirror 경로의 미실행 검증 항목은 Mirror와 함께 폐기한다.
+
 ## 다음 작업
 
-출시 Steam 앱과 Photon 소유권 공급자를 설정한 뒤 실계정 초대·참가·콘텐츠 합의와 Quantum 왕복을 확인한다. 공식 스테이지 등록은 별도로 이어간다.
+[Mirror 제거 작업 프롬프트](CLAUDE_NEXT_PROMPT.md)에 따라 Mirror 패키지·스크립트·씬·프리팹과 Mirror 진입점을 제거한다. 출시 Steam 앱·Photon 공급자 설정과 실계정 검증, 공식 스테이지 등록은 별도로 이어간다.
 - `QuantumProductChecks.RunOffline`은 새 플레이 세션에서 다른 Main 검사보다 먼저 돌린다.
 
 ## 전체 교체 순서
@@ -43,11 +49,12 @@
 1. ~~공식 스테이지 변환 경로와 공식 맵 목록·선택~~ (완료, 제품7).
 2. ~~경사 이동과 작성기의 경사 수용~~ (완료, 제품8; 실제 프리팹30/45도).
 3. ~~피격/넉백(정적 트랩)~~ (제품9) → ~~스프링/바운스~~ (제품10) → ~~이동 발판·자동 전환 지형·이동/회전 트랩~~ (제품11) → ~~스위치/문·수동 전환~~ (제품12) → ~~컨베이어~~ (제품13) → ~~대포/투사체~~ (제품14). 각 장치는 작성 전용 컴포넌트에서 변환한다.
-4. 사용자가 새로 구성한 공식 스테이지를 등록하고 인원·선택/완료/복귀를 연결한다. 원본 프리팹은 보존한다.
+4. 사용자가 새로 구성한 공식 스테이지를 등록하고 인원·선택/완료/복귀를 연결한다. Mirror 제거와 독립적으로 진행한다.
 5. ~~최대4인 전제, 키 재설정/게임패드·장치 배정, 애니메이션/효과음/카메라 연결~~ (제품15).
 6. MapEditor 검증/베이크·Quantum 테스트 플레이·커스텀 맵 선택/친구 전송/실패 복구.
 7. Steam 로비/초대→Quantum 세션, 준비/취소/이탈/재시도·진행 중 입장 제한.
-8. 제품 경로 교체와 검증 후 Mirror 전용 참조/진입점·패키지 정리 여부 결정.
+8. Mirror 제거(2026-11-14 출시 미사용 확정). 선행 분리 완료: Steam 로비(`SteamLobbyService`), Quantum 팔레트(`QuantumMapEditorPalette`). 남은 범위는 [작업 프롬프트](CLAUDE_NEXT_PROMPT.md).
+9. UI 선별 프리팹화(2026-11-15 결정, Mirror 제거 후). ① 도트 프레임·아이콘·뒤로 버튼 공통 프리팹+Variant ② GameRoom `Stage Select Button` 21개를 단일 프리팹 인스턴스로 ③ `MapEditorHUD`·`QuantumPrepareScreen`의 런타임 생성 UI(`new GameObject`·`transform.Find`)를 프리팹 참조로 교체 ④ 화면 단위 프리팹은 남은 화면만 검토. Main 전체 일괄 분리는 하지 않는다.
 - 신규9개 스테이지 제작은 전환 필수 작업과 분리한다. 출시 앱 준비는 위 구현과 병행할 수 있다.
 
 ## 동작 문제 수정 기준
@@ -60,5 +67,5 @@
 ## 외부 조건과 보존
 
 - Steam 출시 앱 미발급. 출시 Photon/Steam 공급자·소유권/익명 차단과 실계정 검증은 [보안 Draft](QUANTUM_SECURITY.md)를 따른다. 개발 익명 폴백을 출시 경로에 넣지 않는다.
-- 다른 PC·실제2~4인·배포 빌드·Steam 다계정·지연/손실 주입은 실행 여부를 따로 기록한다. 기존 Mirror 실조작 미완료 항목은 해당 기능 문서에 남긴다.
+- 다른 PC·실제2~4인·배포 빌드·Steam 다계정·지연/손실 주입은 실행 여부를 따로 기록한다. Mirror 실조작 미완료 항목은 Mirror 제거와 함께 폐기한다.
 - 기존 미커밋 변경·미저장 씬과 원본 맵/프리팹을 보존한다. 제품 자동 씬 로딩 Disabled를 유지한다.

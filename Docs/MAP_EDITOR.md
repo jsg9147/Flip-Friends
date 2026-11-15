@@ -21,6 +21,9 @@
 - 경계는 MapRenderBounds+여백10을 FP로 변환하며 제품 시작 때 초기 위치/경계를 재검증한다. 기존2:2 정적/로프·3:3 상호작용·4:4 복귀와 새5:5 장치의 원본/베이크/해시를 보존한다.
 
 - 팔레트는 두 벌이다. MapEditor 씬·Quantum 매니페스트6종·Quantum 검사는 Mirror 컴포넌트가 없는 `QuantumMapEditorPalette.asset`(`Assets/03_Prefabs/MapEditor/Quantum/Quantum*.prefab`, Transform·SpriteRenderer·BoxCollider2D만)을 쓴다. 경로는 `QuantumMapConverter.PaletteAssetPath`다. 기존 `MapEditorPalette.asset`과 원본 프리팹은 Mirror GameRoom/GamePlay의 커스텀 맵 Spawn 전용이며 Mirror 제거 때 함께 지운다. 두 팔레트의 ID·썸네일·콜라이더는 같아야 하고, Quantum 콘텐츠 해시는 콜라이더만 쓰므로 교체 전후 6종 해시가 같다.
+- 맵 에디터 UI용 도트 이미지 9종을 `Assets/02_Sprites/Generated/Codex/`에 추가했다. 타이틀 화면의 청록·연두·종이색 팔레트와 4px 픽셀 그리드를 따르며, 패널·도구·동작·입력 프레임은 가장자리 중앙을 단순하게 유지한다. MapEditor 씬의 HUD·팔레트·불러오기 패널과 입력란·버튼, 팔레트 버튼 프리팹에 연결했다. 패널의 Sprite Border는 48px, 나머지 프레임은 16px이며 UI Image는 Sliced를 사용한다.
+- 초안 복원 대상이 없을 때만 새 맵에 기본 발판·시작점·도착점·로프·상자 예시를 미저장 상태로 채운다. `새 맵`은 빈 맵을 만들며, 저장된 맵과 복원 초안은 바꾸지 않는다.
+- MapEditor HUD는 실행 시 1600×900 기준으로 상단 맵 관리, 왼쪽 팔레트, 오른쪽 편집 도구와 테스트 버튼, 하단 상태 안내로 재배치한다. 선택 팔레트와 지우개 모드만 연두색으로 표시하고 나머지 기본 컨트롤은 흰색·얇은 청록 테두리로 표시한다. 저장·불러오기·회전·반전·테스트 이벤트를 유지한다.
 - Quantum 변환기는 Transform·SpriteRenderer·BoxCollider2D 외 컴포넌트를 거부한다. 상자는 Pickable 루트 0.9·배율 1/회전 0만 지원하며 중력 9.8은 Quantum 규칙에 고정한다.
 - 로프는 수직 루트 박스 트리거이며 오프셋/스케일/180도 회전을 FP로 변환한다. 가로/경사/다중/합성/동적 판정 등 미지원 구성은 위치·원인과 함께 전체 거부한다. [로프 변환 근거](Notes/2026-11-06-quantum-wall-rope.md).
 - 공용 Cannon/MapEditorCannon은 서버에서 탄환을 초기화한 뒤 Spawn하고, CannonProjectile이 거리별 수명을 관리한다. 원격 탄환은 서버 위치만 따르며 팔레트 저장 스키마와 발사 설정은 유지했다.
@@ -42,6 +45,8 @@
 - Main의 Quantum 준비 화면에서 저장한 맵을 선택할 수 있다. HUD 테스트 플레이에서 사용하는 Quantum 팔레트 지원 범위가 적용된다. 수신한 친구 맵은 세션 동안만 유지된다.
 - 로비 선택과 자동 공유는 `Docs/CUSTOM_MAP_NETWORK.md`가 담당한다.
 
+- 새 맵 에디터 레이아웃에 사용할 팔레트 썸네일 5종과 회전·반전·테스트 아이콘 3종을 같은 Codex 폴더에 추가했다. 썸네일은 Quantum 팔레트 버튼에 연결하고 맵 캔버스의 배치·미리보기에는 기존 스프라이트를 사용한다. 회전·반전·테스트 아이콘은 기존 HUD 버튼에 연결했다.
+
 ## 핵심 흐름
 
 ```text
@@ -60,6 +65,8 @@ MapEditorManager
 - `Assets/07_ScriptableObject/MapEditorPalette.asset`
 
 ## 검증
+
+- MapEditor HUD·PaletteUI·기본 예시 맵 변경을 포함해 `Assembly-CSharp.csproj` 빌드 오류 0건을 확인했다. 경고는 기존 프로젝트 경고 154건이다. 변경된 실행 중 UI의 Game View 캡처와 직접 조작은 아직 확인하지 않았다.
 
 - 2026-11-14 팔레트 분리: Unity 재컴파일 오류0. Quantum 매니페스트6종이 새 팔레트로 변환·`ValidateAndApply`를 통과하고 저장 해시와 일치했다. 기존 Mirror 팔레트는 변환기가 `NetworkIdentity`로 거부한다. 준비 화면 전환 중 클릭이 버려지므로 `QuantumProductChecks.Click`은 버튼이 실제로 누를 수 있을 때까지 기다린다. 이 수정 뒤 새 Play 첫 Main 검사 `RunOffline`이 전체 통과했다(장치·복귀·상호작용·이동·정적/로프 재생, Main 왕복, 잔존·Unity 오류0). MapEditor HUD 테스트 플레이 수동 확인과 Mirror GameRoom 커스텀 맵 Spawn은 미실행이다.
 - Quantum 준비 화면의 저장 맵 선택과 오프라인 시작, 미지원 및 잘못된 버전 거부, 준비 화면에서 2.0 파일 내용 보존, 수신 후 Maps에 파일을 쓰지 않는 동작을 확인했다. [개발 Photon과 미실행 조건](CUSTOM_MAP_NETWORK.md#검증).

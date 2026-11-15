@@ -18,6 +18,7 @@ MonoBehaviour:
     category: 0
     prefab: {fileID: 1000000000000000002, guid: e0ee8ca611875854ca33afa3d578fd06, type: 3}
     thumbnail: {fileID: 21300000, guid: e8e34133732eb474db79f939cb15f950, type: 3}
+    paletteIcon: {fileID: 21300000, guid: 838f087865d007e459c4340f8a500253, type: 3}
     validationRule:
       minimumCount: 1
       maximumCount: 0
@@ -28,6 +29,7 @@ MonoBehaviour:
     category: 0
     prefab: {fileID: 1000000000000000003, guid: cd07afd8567b1804cbb25525380330cd, type: 3}
     thumbnail: {fileID: 21300000, guid: 40a17abce6d888446bb40f26eedd5d25, type: 3}
+    paletteIcon: {fileID: 21300000, guid: 8bec98f29af05784c82131e51755b093, type: 3}
     validationRule:
       minimumCount: 1
       maximumCount: 0
@@ -38,6 +40,7 @@ MonoBehaviour:
     category: 1
     prefab: {fileID: 1000000000000000001, guid: feaa87b9d474de441b7d30b98d5b4c1d, type: 3}
     thumbnail: {fileID: 1931142719, guid: 3e22bb20af2a89846ab4ef32208ace48, type: 3}
+    paletteIcon: {fileID: 21300000, guid: 94f79bdf702a7f942ad30277184a191a, type: 3}
     validationRule:
       minimumCount: 0
       maximumCount: 0
@@ -48,6 +51,7 @@ MonoBehaviour:
     category: 1
     prefab: {fileID: 7947001633615829510, guid: 9eb77da89fcd45e4db6fc1ec25b47974, type: 3}
     thumbnail: {fileID: 321559554, guid: dbda552731c496942b04e67a85b733e2, type: 3}
+    paletteIcon: {fileID: 21300000, guid: b2a14516cc9afd8489503db78ab339e7, type: 3}
     validationRule:
       minimumCount: 0
       maximumCount: 0
@@ -58,6 +62,7 @@ MonoBehaviour:
     category: 3
     prefab: {fileID: 959400136612832559, guid: e8d82d2aef768684e8f089b7f674f0d4, type: 3}
     thumbnail: {fileID: 21300000, guid: 6f420fdc6d6f0144d8a2b46a2fb00a6f, type: 3}
+    paletteIcon: {fileID: 21300000, guid: 01bcb44e38877a0498214a7cf9d955e7, type: 3}
     validationRule:
       minimumCount: 0
       maximumCount: 0
