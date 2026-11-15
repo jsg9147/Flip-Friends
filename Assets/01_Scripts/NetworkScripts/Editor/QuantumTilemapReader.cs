@@ -42,19 +42,6 @@ public static class QuantumTilemapReader
     public static string TerrainSignature(TilemapCollider2D tile, string id) =>
         id + ";Merge;Outlines;Kinematic;Ground;반경0;" + Signature(tile.GetComponent<Tilemap>());
 
-    public static QuantumDeviceSource ReadReset(RespawnHandler reset, string id)
-    {
-        if (!reset.CompareTag("Reset") || reset.resetPoint == null)
-            throw new InvalidOperationException($"Reset {id} 위치={reset.transform.position}: 원본 정적 Tilemap 트리거/목적지를 확인하세요.");
-        int player = 1 << LayerMask.NameToLayer("Player"), box = 1 << LayerMask.NameToLayer("Pickable");
-        var source = ReadTilemapReset(reset.GetComponent<TilemapCollider2D>(), reset.resetPoint, id, (reset.targetLayers.value & player) != 0, true, reset.onlyBoxReset,
-            FormattableString.Invariant($"{reset.targetLayers.value};Reset;Trigger;None;목적지참조="), () =>
-            {
-                if ((reset.targetLayers.value & ~(player | box)) != 0) throw new InvalidOperationException($"Reset {id}: 미지원 마스크입니다.");
-            });
-        return source;
-    }
-
     public static QuantumDeviceSource ReadTilemapReset(TilemapCollider2D tile, Transform destination, string id, bool detectPlayers, bool detectBoxes, bool onlyBoxReset,
         string signaturePrefix, Action validateTargets = null)
     {

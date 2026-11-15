@@ -1,4 +1,3 @@
-using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -97,12 +96,6 @@ public class MainMenuScreen : UIScreen
 
     public void OpenMapEditor()
     {
-        if (NetworkServer.active || NetworkClient.active)
-        {
-            Debug.LogWarning("네트워크 세션이 활성화되어 있어 맵 에디터 진입을 차단했습니다. 세션을 종료한 뒤 다시 시도하세요.", this);
-            return;
-        }
-
         if (!Application.CanStreamedLevelBeLoaded(MapEditorSceneName))
         {
             Debug.LogError($"맵 에디터 씬을 불러올 수 없습니다. Build Settings에서 '{MapEditorSceneName}' 씬이 활성화되어 있는지 확인하세요.", this);

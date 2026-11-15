@@ -148,7 +148,7 @@ namespace FlipFriends.Network
 
                 mapId = id;
                 hash = expectedHash;
-                var entry = new SavedMapCatalog(palette, isQuantum: true).FindById(id);
+                var entry = new SavedMapCatalog(palette).FindById(id);
                 if (entry?.CanSelect == true &&
                     MapSessionSnapshot.TryCreate(0, entry.Json, MapSessionSnapshot.MaximumContentBytes, palette, out var snapshot, out _) &&
                     snapshot.ContentHash == hash && snapshot.ByteLength == length)

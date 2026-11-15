@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mirror;
 using UnityEngine;
 
 public enum SavedMapAvailability
@@ -74,17 +73,11 @@ public sealed class SavedMapListEntry
 
 public sealed class SavedMapCatalog
 {
-    private const int FallbackPacketLimit = 1024 * 1024;
-    private const int PacketReserveBytes = 4096;
-    private const float SafePacketRatio = 0.8f;
-
     private readonly MapDataValidator validator;
-    private readonly bool isQuantum;
 
-    public SavedMapCatalog(MapEditorPalette palette, bool isQuantum = false)
+    public SavedMapCatalog(MapEditorPalette palette)
     {
         validator = new MapDataValidator(palette);
-        this.isQuantum = isQuantum;
     }
 
     public IReadOnlyList<SavedMapListEntry> GetEntries()
@@ -118,13 +111,14 @@ public sealed class SavedMapCatalog
                 fileName,
                 out MapData mapData,
                 out string json,
-                out MapRepositoryFailure failure, persistMigration: !isQuantum))
+                out MapRepositoryFailure failure, persistMigration: false))
             return CreateUnavailableEntry(fileName, failure);
 
         MapValidationReport report = validator.Validate(mapData);
-        if (isQuantum) json = MapDataRepository.ToJson(mapData);
+        // 전송 본문은 마이그레이션 후 정규화한 JSON이므로 크기도 그 기준으로 잰다.
+        json = MapDataRepository.ToJson(mapData);
         int byteCount = Encoding.UTF8.GetByteCount(json);
-        if (isQuantum ? byteCount > GetSafeTransferLimit() : byteCount >= GetSafeTransferLimit())
+        if (byteCount > MapSessionSnapshot.MaximumContentBytes)
             return CreateTransferBlockedEntry(fileName, mapData, json, byteCount, report);
         if (report.HasErrors)
             return CreateValidationBlockedEntry(fileName, mapData, json, byteCount, report);
@@ -167,10 +161,10 @@ public sealed class SavedMapCatalog
         int byteCount,
         MapValidationReport report)
     {
-        int limit = GetSafeTransferLimit();
+        int limit = MapSessionSnapshot.MaximumContentBytes;
         string message =
             $"JSON 크기 {FormatBytes(byteCount)}가 안전 전송 한계 " +
-            $"{FormatBytes(limit)} 이상입니다. 맵 오브젝트 수를 줄여 주세요.";
+            $"{FormatBytes(limit)}를 넘습니다. 맵 오브젝트 수를 줄여 주세요.";
         Debug.LogWarning($"커스텀 맵 전송을 차단했습니다: {data.mapName}\n{message}");
         return CreateEntry(
             fileName,
@@ -237,16 +231,6 @@ public sealed class SavedMapCatalog
             if (duplicateIds.Contains(entries[index].MapId))
                 entries[index] = entries[index].AsDuplicateMapId();
         }
-    }
-
-    private int GetSafeTransferLimit()
-    {
-        if (isQuantum) return MapSessionSnapshot.MaximumContentBytes;
-        int packetLimit = Transport.active != null
-            ? Transport.active.GetMaxPacketSize(Channels.Reliable)
-            : FallbackPacketLimit;
-        int ratioLimit = Mathf.FloorToInt(packetLimit * SafePacketRatio);
-        return Mathf.Max(1, Mathf.Min(ratioLimit, packetLimit - PacketReserveBytes));
     }
 
     private string BuildIssueMessage(MapValidationReport report)

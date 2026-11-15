@@ -371,7 +371,6 @@ public static class QuantumProductChecks
         Require(QuantumGameSession.ActiveInputSubscriptions == 0, "잔존 제품 입력 콜백 없음");
         Require(!UnityEngine.Object.FindObjectsByType<QuantumGameView>().Any(), "잔존 표시 객체 없음");
         Require(QuantumGameFlow.Instance.Session == null, "잔존 세션 없음");
-        Require(!Mirror.NetworkClient.active && !Mirror.NetworkServer.active, "Mirror 비활성 유지");
         var menuEvent = typeof(InputManager).GetField("OnMenuEvent", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?.GetValue(InputManager.instance) as Action;
         Require(menuEvent == null || menuEvent.GetInvocationList().All(callback => callback.Target is not QuantumGameView), "잔존 메뉴 콜백 없음");
     }

@@ -219,7 +219,7 @@ namespace FlipFriends.Network
             {
                 var palette = SavedMapPalette;
                 if (palette == null) throw new InvalidOperationException("맵 에디터 팔레트가 연결되지 않았습니다.");
-                var entries = new SavedMapCatalog(palette, isQuantum: true).GetEntries();
+                var entries = new SavedMapCatalog(palette).GetEntries();
                 if (entries.Count == 0) throw new InvalidOperationException("저장된 커스텀 맵이 없습니다.");
                 int current = entries.ToList().FindIndex(entry => entry.FileName == catalogCursor);
                 var selected = entries[(current + 1) % entries.Count];
@@ -339,7 +339,7 @@ namespace FlipFriends.Network
                     }
                     else if (joinRoom == null)
                     {
-                        var entry = new SavedMapCatalog(palette, isQuantum: true).GetEntries()
+                        var entry = new SavedMapCatalog(palette).GetEntries()
                             .FirstOrDefault(item => item.FileName == savedFileName);
                         snapshot = ReadSavedMap(entry, palette, out var savedConversion);
                         Content = savedConversion;
