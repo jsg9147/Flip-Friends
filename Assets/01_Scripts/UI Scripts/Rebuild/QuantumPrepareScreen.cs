@@ -24,6 +24,21 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     [SerializeField] private Sprite hostIcon;
     [SerializeField] private Sprite backIcon;
     private static readonly Color32 ControlInk = new(7, 53, 56, 255);
+    // 짙은 청록 보조 프레임 위에서는 짙은 글자가 묻혀 밝은 크림색을 쓴다.
+    private static readonly Color32 LightInk = new(246, 241, 220, 255);
+    // 도트 프레임의 테두리·그림자 두께. 라벨이 이 안쪽에만 그려져야 프레임과 겹치지 않는다.
+    private const float FrameInsetX = 24;
+    private const float FrameInsetY = 14;
+    private const int MapColumns = 4;
+    private const float MapButtonWidth = 290;
+    private const float MapButtonHeight = 64;
+    private const float MapButtonGap = 12;
+    private const float MapRowTop = 245;
+    private const float MiddleRowHeight = 64;
+    private static readonly Vector2 OfflineStatusPosition = new(0, 60);
+    private static readonly Vector2 OfflineStatusSize = new(1150, 120);
+    private static readonly Vector2 OfflineTitlePosition = new(0, 322);
+    private static readonly Vector2 OfflineTitleSize = new(1100, 60);
     private QuantumGameFlow flow;
     private Button interactionMapButton;
     private Button respawnMapButton;
@@ -68,15 +83,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         {
             interactionMapButton = Instantiate(ropeMapButton, ropeMapButton.transform.parent);
             interactionMapButton.name = "상호작용 맵 선택";
-            interactionMapButton.GetComponentInChildren<TMP_Text>().text = "밟기·운반\n상자";
-            var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton };
-            for (int i = 0; i < choices.Length; i++)
-            {
-                var rect = (RectTransform)choices[i].transform;
-                rect.anchoredPosition = new Vector2((i - 1) * 410, rect.anchoredPosition.y);
-                rect.sizeDelta = new Vector2(390, rect.sizeDelta.y);
-                ((RectTransform)choices[i].GetComponentInChildren<TMP_Text>().transform).sizeDelta = new Vector2(370, 70);
-            }
+            interactionMapButton.GetComponentInChildren<TMP_Text>().text = "밟기/운반 상자";
             interactionMapButton.onClick.AddListener(() => flow.SelectMap(2));
             GetComponent<ButtonSelectController>().tagetButtonList.Insert(2, interactionMapButton);
         }
@@ -84,59 +91,34 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         {
             respawnMapButton = Instantiate(ropeMapButton, ropeMapButton.transform.parent);
             respawnMapButton.name = "복귀 맵 선택";
-            respawnMapButton.GetComponentInChildren<TMP_Text>().text = "리셋·추락\n복귀";
+            respawnMapButton.GetComponentInChildren<TMP_Text>().text = "리셋/추락 복귀";
             respawnMapButton.onClick.AddListener(() => flow.SelectMap(3));
             GetComponent<ButtonSelectController>().tagetButtonList.Insert(3, respawnMapButton);
-            var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton, respawnMapButton };
-            for (int i = 0; i < choices.Length; i++)
-            {
-                var rect = (RectTransform)choices[i].transform;
-                rect.anchoredPosition = new Vector2((i - 1.5f) * 310, rect.anchoredPosition.y);
-                rect.sizeDelta = new Vector2(290, rect.sizeDelta.y);
-                ((RectTransform)choices[i].GetComponentInChildren<TMP_Text>().transform).sizeDelta = new Vector2(270, 70);
-            }
         }
         if (Resources.Load<FlipFriends.Maps.QuantumCustomMapAsset>("FlipFriendsDeviceMapManifest") != null)
         {
             deviceMapButton = Instantiate(ropeMapButton, ropeMapButton.transform.parent);
             deviceMapButton.name = "장치 맵 선택";
-            deviceMapButton.GetComponentInChildren<TMP_Text>().text = "체크포인트\n구간·소환";
+            deviceMapButton.GetComponentInChildren<TMP_Text>().text = "체크포인트/소환";
             deviceMapButton.onClick.AddListener(() => flow.SelectMap(4));
             GetComponent<ButtonSelectController>().tagetButtonList.Insert(4, deviceMapButton);
-            var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton, respawnMapButton, deviceMapButton };
-            for (int i = 0; i < choices.Length; i++)
-            {
-                var rect = (RectTransform)choices[i].transform;
-                rect.anchoredPosition = new Vector2((i - 2f) * 260, rect.anchoredPosition.y);
-                rect.sizeDelta = new Vector2(250, rect.sizeDelta.y);
-                var label = choices[i].GetComponentInChildren<TMP_Text>();
-                ((RectTransform)label.transform).sizeDelta = new Vector2(240, 70);
-                label.enableAutoSizing = true;
-            }
         }
         if (Resources.Load<FlipFriends.Maps.QuantumCustomMapAsset>("FlipFriendsTilemapMapManifest") != null)
         {
             tilemapButton = Instantiate(ropeMapButton, ropeMapButton.transform.parent);
             tilemapButton.name = "Tilemap 사용례 선택";
-            tilemapButton.GetComponentInChildren<TMP_Text>().text = "타일 지형\n구간 Reset";
+            tilemapButton.GetComponentInChildren<TMP_Text>().text = "타일 지형 리셋";
             tilemapButton.onClick.AddListener(() => flow.SelectMap(5));
             GetComponent<ButtonSelectController>().tagetButtonList.Insert(5, tilemapButton);
-            var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton, respawnMapButton, deviceMapButton, tilemapButton };
-            for (int i = 0; i < choices.Length; i++)
-            {
-                var rect = (RectTransform)choices[i].transform;
-                rect.anchoredPosition = new Vector2((i - 2.5f) * 215, rect.anchoredPosition.y);
-                rect.sizeDelta = new Vector2(205, rect.sizeDelta.y);
-                var label = choices[i].GetComponentInChildren<TMP_Text>();
-                ((RectTransform)label.transform).sizeDelta = new Vector2(195, 70); label.enableAutoSizing = true;
-            }
         }
         AddOfficialStageButton();
+        LayoutMapChoices();
         participantButton = Instantiate(offlineButton, offlineButton.transform.parent);
         participantButton.name = "참가 인원 및 장치 배정";
         var participantRect = (RectTransform)participantButton.transform;
         participantRect.anchoredPosition = new Vector2(0, -45);
-        participantRect.sizeDelta = new Vector2(440, 54);
+        participantRect.sizeDelta = new Vector2(440, MiddleRowHeight);
+        FitLabelInsideFrame(participantButton, 16, 26);
         savedMapButton = AddSavedMapControl("저장 맵 선택", -420, () => flow.SelectNextSavedMap());
         joinSavedMapButton = AddSavedMapControl("코드로 참가", 420, () =>
         {
@@ -145,8 +127,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         });
         status.richText = false;
         status.color = ControlInk;
-        status.rectTransform.anchoredPosition = new Vector2(0, 100);
-        status.rectTransform.sizeDelta = new Vector2(1150, 145);
+        status.rectTransform.anchoredPosition = OfflineStatusPosition;
+        status.rectTransform.sizeDelta = OfflineStatusSize;
         offlineButton.GetComponentInChildren<TMP_Text>().text = "오프라인 플레이 시작";
         participantButton.onClick.AddListener(() =>
         {
@@ -165,15 +147,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         offlineControls = GetComponent<ButtonSelectController>().tagetButtonList.ToArray();
         title = GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(label =>
             label.transform.parent == status.transform.parent && label != status);
-        offlineTitle = title != null ? title.text : null;
-        if (title != null)
-        {
-            offlineTitle = "플레이 준비";
-            title.text = offlineTitle;
-            title.enableAutoSizing = true;
-            title.fontSizeMin = 36;
-            title.fontSizeMax = 54;
-        }
+        offlineTitle = "플레이 준비";
+        ApplyOfflineTitle();
         offlineLayout = offlineControls.Select(control =>
         {
             var rect = (RectTransform)control.transform;
@@ -188,9 +163,9 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             var fill = ApplyControlFrame(control, ((Button)control).image, secondaryFrame != null ? secondaryFrame : controlFrame);
             if (control == inviteButton) inviteFrameFill = fill;
             var label = control.GetComponentInChildren<TMP_Text>();
-            label.color = ControlInk;
+            label.color = control == hostLobbyButton ? ControlInk : LightInk;
             label.enableAutoSizing = true;
-            label.fontSizeMax = control == hostLobbyButton ? 46 : 28;
+            label.fontSizeMax = control == hostLobbyButton ? 46 : Mathf.Min(label.fontSizeMax, 28);
         }
         ApplyControlFrame(hostLobbyButton, hostLobbyButton.image, primaryFrame != null ? primaryFrame : secondaryFrame);
         AddButtonIcon(hostLobbyButton, hostIcon, 48);
@@ -254,8 +229,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         icon.raycastTarget = false;
         var iconRect = icon.rectTransform;
         iconRect.anchorMin = iconRect.anchorMax = new Vector2(0.5f, 0.5f);
-        iconRect.anchoredPosition = new Vector2(-((RectTransform)button.transform).sizeDelta.x * 0.5f + size * 0.8f, 0);
         iconRect.sizeDelta = new Vector2(size, size);
+        PlaceIcon(iconRect, ((RectTransform)button.transform).sizeDelta.x);
         TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
         if (label != null)
         {
@@ -353,6 +328,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         input.characterLimit = 64;
         input.lineType = TMP_InputField.LineType.SingleLine;
         var label = Instantiate(offlineButton.GetComponentInChildren<TextMeshProUGUI>(), root.transform);
+        // 입력란 프레임은 밝아서 버튼용 밝은 글자 대신 짙은 글자를 쓴다.
+        label.color = ControlInk;
         label.text = string.Empty;
         label.richText = false;
         label.raycastTarget = false;
@@ -387,10 +364,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         button.name = label;
         var rect = (RectTransform)button.transform;
         rect.anchoredPosition = new Vector2(x, -45);
-        rect.sizeDelta = new Vector2(370, 54);
-        var text = button.GetComponentInChildren<TMP_Text>();
-        text.rectTransform.sizeDelta = new Vector2(350, 54);
-        text.enableAutoSizing = true;
+        rect.sizeDelta = new Vector2(370, MiddleRowHeight);
+        var text = FitLabelInsideFrame(button, 16, 26);
         text.richText = false;
         text.text = label;
         button.onClick.AddListener(click);
@@ -468,18 +443,45 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         officialStageButton.name = "공식 스테이지 선택";
         officialStageButton.onClick.AddListener(SelectNextOfficialStage);
         GetComponent<ButtonSelectController>().tagetButtonList.Insert(6, officialStageButton);
-        var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton, respawnMapButton, deviceMapButton, tilemapButton, officialStageButton };
+    }
+
+    // 맵 버튼을 한 줄에 몰면 패널 폭을 넘고 라벨이 두 줄로 잘려서, 4열 격자에 한 줄 라벨로 배치한다.
+    private void LayoutMapChoices()
+    {
+        var choices = new[] { staticMapButton, ropeMapButton, interactionMapButton, respawnMapButton, deviceMapButton, tilemapButton, officialStageButton }
+            .Where(button => button != null).ToArray();
         for (int i = 0; i < choices.Length; i++)
         {
+            int row = i / MapColumns;
+            int column = i % MapColumns;
+            int columnsInRow = Mathf.Min(MapColumns, choices.Length - row * MapColumns);
+            float x = (column - (columnsInRow - 1) * 0.5f) * (MapButtonWidth + MapButtonGap);
+            float y = MapRowTop - row * (MapButtonHeight + MapButtonGap);
             var rect = (RectTransform)choices[i].transform;
-            rect.anchoredPosition = new Vector2((i - 3f) * OfficialRowSpacing, rect.anchoredPosition.y);
-            rect.sizeDelta = new Vector2(OfficialRowSpacing - 10, rect.sizeDelta.y);
-            var label = choices[i].GetComponentInChildren<TMP_Text>();
-            ((RectTransform)label.transform).sizeDelta = new Vector2(OfficialRowSpacing - 20, 70); label.enableAutoSizing = true;
+            rect.anchoredPosition = new Vector2(x, y);
+            rect.sizeDelta = new Vector2(MapButtonWidth, MapButtonHeight);
+            FitLabelInsideFrame(choices[i], 16, 24);
         }
     }
 
-    private const float OfficialRowSpacing = 182;
+    private static TMP_Text FitLabelInsideFrame(Button button, float minSize, float maxSize)
+    {
+        var size = ((RectTransform)button.transform).sizeDelta;
+        var label = button.GetComponentInChildren<TMP_Text>();
+        label.rectTransform.anchoredPosition = Vector2.zero;
+        label.rectTransform.sizeDelta = new Vector2(size.x - FrameInsetX * 2, size.y - FrameInsetY * 2);
+        label.enableAutoSizing = true;
+        label.fontSizeMin = minSize;
+        label.fontSizeMax = maxSize;
+        label.textWrappingMode = TextWrappingModes.NoWrap;
+        label.overflowMode = TextOverflowModes.Ellipsis;
+        return label;
+    }
+
+    private static void PlaceIcon(RectTransform iconRect, float buttonWidth)
+    {
+        iconRect.anchoredPosition = new Vector2(-buttonWidth * 0.5f + FrameInsetX + iconRect.sizeDelta.x * 0.5f, 0);
+    }
 
     private void SelectNextOfficialStage()
     {
@@ -677,6 +679,8 @@ public sealed class QuantumPrepareScreen : NavigableScreen
             rect.anchoredPosition = layout.Position;
             rect.sizeDelta = layout.Size;
             control.GetComponentInChildren<TMP_Text>().rectTransform.sizeDelta = layout.LabelSize;
+            // 온라인 레이아웃이 버튼 폭을 바꾸며 옮긴 아이콘을 원래 폭 기준으로 되돌린다.
+            if (control is Button button) UpdateButtonIcon(button, layout.Size.x);
             navigation.Add(control);
         }
         foreach (var button in new[] { hostLobbyButton, submitCodeButton, inviteButton, joinInviteButton })
@@ -684,12 +688,28 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         codeInput.gameObject.SetActive(false);
         lobbyHeader.gameObject.SetActive(false);
         lobbyNotice.gameObject.SetActive(false);
-        status.rectTransform.anchoredPosition = new Vector2(0, 100);
-        status.rectTransform.sizeDelta = new Vector2(1150, 145);
-        status.enableAutoSizing = false;
-        status.fontSize = 28;
-        if (title != null) title.text = offlineTitle;
+        status.rectTransform.anchoredPosition = OfflineStatusPosition;
+        status.rectTransform.sizeDelta = OfflineStatusSize;
+        status.enableAutoSizing = true;
+        status.fontSizeMin = 18;
+        status.fontSizeMax = 26;
+        ApplyOfflineTitle();
         SetLabel(cancelButton, "뒤로");
+    }
+
+    // 온라인 화면이 제목 위치·크기를 바꾸므로 오프라인으로 돌아올 때마다 다시 맞춘다.
+    private void ApplyOfflineTitle()
+    {
+        if (title == null) return;
+        title.text = offlineTitle;
+        // 씬의 흰 제목색은 크림색 패널 위에서 읽히지 않는다.
+        title.color = ControlInk;
+        title.rectTransform.anchoredPosition = OfflineTitlePosition;
+        title.rectTransform.sizeDelta = OfflineTitleSize;
+        title.alignment = TextAlignmentOptions.Center;
+        title.enableAutoSizing = true;
+        title.fontSizeMin = 36;
+        title.fontSizeMax = 50;
     }
 
     private void EnsureSelection()
@@ -716,9 +736,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
     {
         Transform iconTransform = button.transform.Find("도트 아이콘");
         if (iconTransform == null) return;
-        RectTransform rect = (RectTransform)iconTransform;
-        float size = rect.sizeDelta.x;
-        rect.anchoredPosition = new Vector2(-width * 0.5f + size * 0.8f, 0);
+        PlaceIcon((RectTransform)iconTransform, width);
     }
 
     private void Refresh()
@@ -816,7 +834,7 @@ public sealed class QuantumPrepareScreen : NavigableScreen
         if (officialStageButton != null)
         {
             officialStageButton.interactable = !isBusy;
-            officialStageButton.GetComponentInChildren<TMP_Text>().text = "공식 스테이지\n" + (isOfficial ? flow.SelectedContent.DisplayName : $"{officialStages.Count}개");
+            officialStageButton.GetComponentInChildren<TMP_Text>().text = isOfficial ? "공식: " + flow.SelectedContent.DisplayName : $"공식 스테이지 {officialStages.Count}개";
         }
         cancelButton.interactable = flow.State != QuantumGameState.Stopping;
         EnsureSelection();
