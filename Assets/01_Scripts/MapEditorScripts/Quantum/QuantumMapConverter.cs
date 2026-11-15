@@ -76,7 +76,7 @@ namespace FlipFriends.Maps
     {
         public const int ConversionVersion = 5;
         public const int PaletteVersion = 5;
-        // Mirror 컴포넌트가 없는 Quantum·MapEditor 전용 팔레트. 기존 MapEditorPalette.asset은 Mirror GameRoom 전용이다.
+        // 표시·판정 형상만 가진 Quantum·MapEditor 팔레트. 런타임 동작은 Quantum 시뮬레이션이 맡는다.
         public const string PaletteAssetPath = "Assets/07_ScriptableObject/QuantumMapEditorPalette.asset";
         public const string Ground = "terrain.ground.basic";
         public const string Spawn = "essential.player_spawn";

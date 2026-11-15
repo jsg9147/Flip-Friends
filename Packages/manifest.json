@@ -11,7 +11,6 @@
     "com.unity.multiplayer.center": "2.1.0",
     "com.unity.multiplayer.playmode": "3.0.0",
     "com.unity.multiplayer.tools": "2.2.12",
-    "com.unity.netcode.gameobjects": "2.13.3",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.pipeline": "0.9.1-exp.1",
     "com.unity.render-pipelines.universal": "17.6.0",
