@@ -10,6 +10,7 @@
 - 2026-11-15 Main·설정 화면 통일: `MainMenuScreen`의 남색 도트 배경(`Pixel Menu Backdrop`)을 항상 켜 두고, 로고는 `Background.png`에서 흰 바탕을 뺀 `UI Sprites/TitleLogo.png`를 쓴다. 옛 `Sling Slimes` 제목은 지웠다. 메뉴·설정 문구는 한국어(단조 글꼴)이고 뒤로/닫기는 모두 `PixelButton Back`의 "뒤로"다. 화면 모드 값은 "창 모드"/"전체 화면"으로 표시한다. 색·글꼴·크기 기준은 [UI 스타일 기준](UI_STYLE.md)이다.
 - 2026-11-15 포커스 표시: 키보드·패드로 고른 항목은 버튼 바깥 링(짙은 청록 12px 가운데 크림 6px)과 왼쪽 도트 화살표로 표시한다. `SelectionFocusIndicator`가 EventSystem 선택과 탐색 모드일 때만 `PixelFocusIndicator` 프리팹 자식을 켠다. `PixelButton`·`PixelCodeField`·`KeyBind Prefab`의 입력 버튼에 들어 있고, Main 씬의 설정 값 행 7개(해상도·화면 모드·배경음·효과음·R·G·B)에도 붙였다. `SetHighlighted`(안쪽 프레임을 연두로 교체)와 겹쳐도 구분된다. 단조는 원본 OTF부터 `·`가 빈 글리프라, 단조 SDF의 폴백으로 `LiberationSans SDF`를 등록해 공식 스테이지 이름의 `·`를 표시한다.
 - 2026-11-15 `PlayerInput`(SendMessages)이 Player·UI 맵의 같은 이름 `Cancel`·`Submit`을 모두 보내 한 번 누름에 두 번 처리되던 문제(Esc/패드 B 한 번에 설정 하위 창→메인으로 두 단계 복귀, 클릭음 두 번)를 `InputManager`가 프레임당 한 번만 통과시키도록 고쳤다.
+- 2026-11-15 해상도: 세 씬의 CanvasScaler는 Scale With Screen Size·**Expand**다. 기준 해상도는 씬마다 그대로다(Main 1920×1080, QuantumPlay·MapEditor 1600×900). Expand는 어느 화면비에서도 기준 영역 전체를 보이므로, 16:9에서는 예전과 같고 16:10·21:9에서는 남는 공간만 생긴다. 새 화면은 가장자리 요소를 해당 모서리에 앵커한다.
 
 - 친구 초대 버튼에 [Codex 생성 PNG](../Assets/02_Sprites/Generated/Codex/Resources/CodexUI/codex_invite_button.png)를 적용한다. 슬라임 아이콘 오른쪽에 Unity 텍스트로 라벨을 표시한다.
 
@@ -59,6 +60,7 @@ SettingsScreen.OnShow 또는 OnHide
 
 ## 검증
 
+- 2026-11-15 해상도 일관성: 지정 SDK 빌드·Unity 재컴파일 오류 0건, 새 Play 첫 Main `RunOffline` 통과(2회). 게임 뷰를 1280×720·1680×1050(16:10)·2560×1080(21:9)·1920×1080으로 바꿔 메인·설정·키 설정(목록)·준비·온라인·MapEditor(불러오기 포함)·QuantumPlay HUD를 `Temp/ResCaptures`에 캡처했다. 잘림은 없었다. MapEditor에서 `맵 관리`·하단 상태 문구가 패널 장식에 닿고 테스트 안내가 21:9에서 가운데로 몰리던 것은 고쳤다. 남은 점: 1280×720에서 MapEditor 17~18 단위 글자가 11~12px로 작다. 준비 화면 4줄 안내의 끝줄이 가운데 버튼 포커스 링에 닿는다. 16:10에서 QuantumPlay 월드 카메라가 맵 오른쪽을 자른다(UI 아님). 실제 창 크기 변경·전체 화면 빌드는 미실행이다.
 - 2026-11-15 포커스 표시·키 설정 한국어·`·` 폴백: 지정 SDK 빌드·Unity 재컴파일·Console 오류 0건. 수정마다 새 Play 첫 Main `RunOffline` 통과(Unity 오류 0). Input System 키 이벤트(방향키·Enter·Esc)만으로 메인→설정→그래픽/사운드·플레이어 색·키 설정(키보드·게임패드 목록)→뒤로→메인, 준비(격자·공식 스테이지)→온라인 진입(방 만들기·코드 입력란)→뒤로→Main `맵 에디터`를 돌며 1920×1080을 `Temp/FocusCaptures`에 캡처했다. 모든 선택 항목에서 링이 켜지고 포인터 모드 0, Esc 한 번에 한 단계 복귀, `이동 발판·트랩 시험`의 `·`가 LiberationSans 글리프로 보임을 확인했다. MapEditor HUD 탐색은 같은 날 추가했다([MAP_EDITOR.md](MAP_EDITOR.md) 검증). 실제 패드·다른 해상도는 미실행이다.
 - 2026-11-15 Main·설정 통일: Unity 재컴파일·Console 오류 0건, 새 Play 첫 Main에서 `RunOffline` 통과. 메인·설정 6개 화면을 1600×900으로 캡처했다. 실제 버튼 콜백으로 메인→설정→각 하위 창→뒤로→메인을 왕복했고 보이는 화면 TMP overflow 0건, 초기화 버튼의 `KeyRebindingManager.ResetBindings` 연결이 유지됨을 확인했다. 패드 포커스 표시와 다른 해상도는 보지 않았다.
 
