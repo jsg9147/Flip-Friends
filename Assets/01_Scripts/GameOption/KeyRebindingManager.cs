@@ -322,13 +322,16 @@ public class KeyRebindingManager : MonoBehaviour
     {
         switch (actionName)
         {
-            case "Submit": return "Confirm";
-            case "Cancel": return "Back";
-            case "Interact": return "Pick Up / Throw";
-            case "Previous": return "Previous Camera";
-            case "Next": return "Next Camera";
-            case "Sprint": return "Run";
-            case "Reset": return "Respawn";
+            case "Move": return "이동";
+            case "Submit": return "확인";
+            case "Cancel": return "뒤로";
+            case "Interact": return "들기/던지기";
+            case "Jump": return "점프";
+            case "Previous": return "이전 카메라";
+            case "Next": return "다음 카메라";
+            case "Sprint": return "달리기";
+            case "Reset": return "리스폰";
+            case "Menu": return "메뉴";
             default: return actionName;
         }
     }
@@ -337,10 +340,10 @@ public class KeyRebindingManager : MonoBehaviour
     {
         switch (direction)
         {
-            case "up": return "Up";
-            case "down": return "Down";
-            case "left": return "Left";
-            case "right": return "Right";
+            case "up": return "위";
+            case "down": return "아래";
+            case "left": return "왼쪽";
+            case "right": return "오른쪽";
             default: return direction;
         }
     }
